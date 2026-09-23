@@ -6,9 +6,9 @@ namespace Topaz.LoopStudy
     public sealed class StructureDefinition : ScriptableObject
     {
         [SerializeField] string stableId = "structure.storage_chest";
-        [SerializeField, Min(1)] int woodCapacity = 20;
+        [SerializeField, Min(1)] int slotCapacity = 12;
 
         public string StableId => stableId;
-        public int WoodCapacity => woodCapacity;
+        public int SlotCapacity => slotCapacity;
     }
 }

@@ -15,6 +15,9 @@ Topaz is an early-stage, single-player action RPG and survival crafting game in 
 
 Use Unity **6000.6.2f1**. The project was created from the Universal 3D template. Unity CLI and `com.unity.pipeline` let agents operate a running Editor; [AGENTS.md](AGENTS.md) describes the workflow.
 
+Topaz's [Unity feature policy](docs/UNITY_FEATURE_POLICY.md) favors built-in and official features, with custom code limited to game-specific rules and replaceable adapters.
+Agents can find versioned Unity 6.6 and installed-package sources in the [Unity reference guide](docs/UNITY_REFERENCE_GUIDE.md), with links from each local feature study.
+
 ```sh
 git lfs install
 unity mcp configure codex --local --project-path "$PWD" --yes

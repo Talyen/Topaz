@@ -6,7 +6,7 @@ namespace Topaz.LoopStudy
     [Serializable]
     public sealed class TopazSaveData
     {
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
 
         public int version = CurrentVersion;
         public int day = 1;
@@ -15,7 +15,7 @@ namespace Topaz.LoopStudy
         public float playerX;
         public float playerZ;
         public bool pendingChest;
-        public List<ItemStackRecord> backpack = new List<ItemStackRecord>();
+        public List<ItemStackRecord> backpackSlots = new List<ItemStackRecord>();
         public List<NodeStateRecord> nodes = new List<NodeStateRecord>();
         public List<StructureStateRecord> structures = new List<StructureStateRecord>();
     }
@@ -42,6 +42,6 @@ namespace Topaz.LoopStudy
         public string definitionId;
         public float x;
         public float z;
-        public int woodStored;
+        public List<ItemStackRecord> slots = new List<ItemStackRecord>();
     }
 }

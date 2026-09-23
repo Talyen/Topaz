@@ -11,10 +11,13 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
 - First feel prototype: screen-relative WASD and analog gamepad movement, one travel speed, a short directional dodge without stamina, and bounded camera look-ahead toward aim. Tune numerical values in a Mac build.
 - When combat arrives: the dodge has brief invulnerability and a cooldown; melee swings in an aimed arc without lock-on. Expeditions return to the homestead by player choice, not a timer.
 - Keep static definitions separate from runtime state. Future persistent objects need stable IDs and versioned saves; unloaded regions pause and resolve bounded changes on return.
+- Prefer Unity's maintained first-party features and supported official packages for gameplay foundations, content authoring, UI, graphics, effects, audio, and tooling. Check the installed version and English Unity docs before custom work; use small custom code for Topaz-specific rules. Record tradeoffs and upgrade paths in `docs/UNITY_FEATURE_POLICY.md`.
 
 ## Agent workflow
 
 1. Inspect `git status`, relevant scenes, settings, and current package versions. Preserve unrelated edits.
+   For substantial features, check whether a supported Unity core feature or official package already provides the capability; document why a custom layer is necessary.
+   Start with the task map in `docs/UNITY_REFERENCE_GUIDE.md` for versioned Unity 6.6 and installed-package documentation.
 2. Prefer the connected Editor through `unity` / Unity MCP to modify scenes, prefabs, settings, and assets. Configure locally with `unity mcp configure codex --local --project-path "$PWD" --yes`; its absolute-path config is ignored.
 3. Add packages through Unity's Package Manager API or `unity pipeline install`, not by hand-editing `Packages/manifest.json`.
 4. Keep every asset with its `.meta` file. Do not commit `Library`, `Temp`, logs, builds, reports, or machine-specific settings.

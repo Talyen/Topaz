@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using Topaz.CombatStudy;
 using Topaz.FeelStudy;
 using UnityEngine;
@@ -28,25 +29,33 @@ namespace Topaz.LoopStudy
 
         const float InteractionRadius = 1.4f;
         const float PlacementStep = 0.75f;
+        public const int BackpackCapacity = 16;
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         static readonly Color ValidColor = new Color(0.36f, 0.95f, 0.57f);
         static readonly Color InvalidColor = new Color(0.96f, 0.38f, 0.34f);
 
         SaveRepository _repository;
         TopazSaveData _data;
+        InventorySlots _backpack;
         InputAction _placeAction;
         InputAction _cancelAction;
+        InputAction _inventoryAction;
         MaterialPropertyBlock _previewProperties;
         Vector3 _previewPosition;
         float _placementReadyAt;
         bool _placeRequested;
         bool _cancelRequested;
+        bool _inventoryRequested;
         bool _placing;
         bool _savingEnabled = true;
         string _saveProblem;
 
         public int CurrentDay => _data?.day ?? 1;
         public int WoodCount => _data == null ? 0 : CountWood();
+        public IReadOnlyList<ItemStackRecord> BackpackSlots => _backpack?.Slots;
+        public IReadOnlyList<ItemStackRecord> ChestSlots => chest?.Inventory?.Slots;
+        public bool BackpackHasItems => _backpack != null && _backpack.Slots.Any(slot => slot.count > 0);
+        public bool ChestHasItems => chest?.Inventory != null && chest.Inventory.Slots.Any(slot => slot.count > 0);
         public int LoggingExperience => _data?.loggingExperience ?? 0;
         public int LoggingLevel => 1 + LoggingExperience / 10;
         public bool PendingChest => _data != null && _data.pendingChest;
@@ -55,8 +64,8 @@ namespace Topaz.LoopStudy
             WoodCount >= ChestCost;
         public string EquippedToolName => combat != null ? combat.EquippedToolName : "Sword";
         public bool ChestPlaced => chest != null && chest.IsPlaced;
-        public int ChestWood => chest?.WoodStored ?? 0;
-        public int ChestCapacity => chest?.WoodCapacity ?? 0;
+        public int ChestWood => chest?.Inventory?.Count(wood.StableId) ?? 0;
+        public int ChestCapacity => chest?.SlotCapacity ?? 0;
         public bool IsPlacing => _placing;
         public bool MenuOpen => hud != null && hud.MenuOpen;
         public bool BlockMovement => MenuOpen;
@@ -81,10 +90,15 @@ namespace Topaz.LoopStudy
                 ? Path.Combine(Application.temporaryCachePath, "TopazTest-" + Guid.NewGuid().ToString("N"))
                 : Application.persistentDataPath;
             _repository = new SaveRepository(directory);
-            try { _data = _repository.Load(); }
+            try
+            {
+                _data = _repository.Load();
+                _backpack = new InventorySlots(_data.backpackSlots, BackpackCapacity);
+            }
             catch (Exception error)
             {
                 _data = new TopazSaveData();
+                _backpack = new InventorySlots(_data.backpackSlots, BackpackCapacity);
                 _savingEnabled = false;
                 _saveProblem = "Save could not be read; saving is disabled to protect it.";
                 Debug.LogError($"[Topaz] {_saveProblem} {error.Message}", this);
@@ -93,18 +107,21 @@ namespace Topaz.LoopStudy
             InputActionMap map = controls.FindActionMap("Player", true);
             _placeAction = map.FindAction("Place", true);
             _cancelAction = map.FindAction("Cancel", true);
+            _inventoryAction = map.FindAction("Inventory", true);
         }
 
         void OnEnable()
         {
             if (_placeAction != null) _placeAction.performed += OnPlacePerformed;
             if (_cancelAction != null) _cancelAction.performed += OnCancelPerformed;
+            if (_inventoryAction != null) _inventoryAction.performed += OnInventoryPerformed;
         }
 
         void OnDisable()
         {
             if (_placeAction != null) _placeAction.performed -= OnPlacePerformed;
             if (_cancelAction != null) _cancelAction.performed -= OnCancelPerformed;
+            if (_inventoryAction != null) _inventoryAction.performed -= OnInventoryPerformed;
         }
 
         void Start()
@@ -127,6 +144,7 @@ namespace Topaz.LoopStudy
 
         void Update()
         {
+            if (_inventoryRequested && !_placing) hud.ToggleInventoryPanel();
             if (_cancelRequested)
             {
                 if (_placing) ExitPlacement();
@@ -142,7 +160,8 @@ namespace Topaz.LoopStudy
 
             _placeRequested = false;
             _cancelRequested = false;
-            hud?.Refresh();
+            _inventoryRequested = false;
+            hud?.Tick();
         }
 
         void OnApplicationPause(bool paused)
@@ -154,6 +173,7 @@ namespace Topaz.LoopStudy
 
         void OnPlacePerformed(InputAction.CallbackContext context) => _placeRequested = true;
         void OnCancelPerformed(InputAction.CallbackContext context) => _cancelRequested = true;
+        void OnInventoryPerformed(InputAction.CallbackContext context) => _inventoryRequested = true;
 
         public NodeStateRecord GetOrCreateNodeState(string objectId)
         {
@@ -167,10 +187,19 @@ namespace Topaz.LoopStudy
         public void CompleteHarvest(HarvestDefinition definition)
         {
             if (definition == null || definition.YieldItem == null) return;
-            AddWood(definition.YieldCount);
+            int accepted = _backpack.Add(definition.YieldItem, definition.YieldCount);
+            if (accepted != definition.YieldCount)
+                throw new InvalidOperationException("Harvest capacity changed during completion.");
             _data.loggingExperience += definition.LoggingExperience;
             Commit();
             hud.ShowStatus($"+{definition.YieldCount} Wood   +{definition.LoggingExperience} Logging XP");
+        }
+
+        public bool CanReceiveHarvest(HarvestDefinition definition)
+        {
+            if (_backpack.SpaceFor(definition.YieldItem) >= definition.YieldCount) return true;
+            hud.ShowStatus("Backpack full. Store items before finishing this harvest.");
+            return false;
         }
 
         public bool TryInteract()
@@ -235,6 +264,7 @@ namespace Topaz.LoopStudy
             if (prompt.Length == 0 && tree.IsAvailable &&
                 (tree.transform.position - transform.position).sqrMagnitude < 12f)
                 prompt = "Equip axe (2 / Y), aim, and chop (click / RT)";
+            if (prompt.Length == 0) prompt = "I / Start: backpack";
             return prompt;
         }
 
@@ -248,7 +278,7 @@ namespace Topaz.LoopStudy
                 return false;
             }
 
-            AddWood(-chestRecipe.IngredientCount);
+            _backpack.Remove(chestRecipe.Ingredient.StableId, chestRecipe.IngredientCount);
             _data.pendingChest = true;
             Commit();
             hud.ClosePanels();
@@ -257,24 +287,22 @@ namespace Topaz.LoopStudy
             return true;
         }
 
-        public void DepositAllWood()
+        public void DepositAllItems()
         {
             if (!chest.IsPlaced) return;
-            int deposited = chest.Deposit(CountWood());
+            int deposited = _backpack.TransferAllTo(chest.Inventory, ResolveItem);
             if (deposited == 0) return;
-            AddWood(-deposited);
             Commit();
-            hud.ShowStatus($"Stored {deposited} Wood.");
+            hud.ShowStatus($"Stored {deposited} items.");
         }
 
-        public void WithdrawAllWood()
+        public void WithdrawAllItems()
         {
             if (!chest.IsPlaced) return;
-            int withdrawn = chest.WithdrawAll();
+            int withdrawn = chest.Inventory.TransferAllTo(_backpack, ResolveItem);
             if (withdrawn == 0) return;
-            AddWood(withdrawn);
             Commit();
-            hud.ShowStatus($"Took {withdrawn} Wood.");
+            hud.ShowStatus($"Took {withdrawn} items.");
         }
 
         public void ToolChanged(string toolId)
@@ -373,18 +401,11 @@ namespace Topaz.LoopStudy
             hud.ShowStatus($"Day {_data.day}. The tree regrows after three days.");
         }
 
-        void AddWood(int amount)
-        {
-            ItemStackRecord stack = _data.backpack.FirstOrDefault(item => item.itemId == wood.StableId);
-            if (stack == null)
-            {
-                stack = new ItemStackRecord { itemId = wood.StableId };
-                _data.backpack.Add(stack);
-            }
-            stack.count = Mathf.Max(0, stack.count + amount);
-        }
+        ItemDefinition ResolveItem(string id) => id == wood.StableId ? wood : null;
 
-        int CountWood() => _data.backpack.FirstOrDefault(item => item.itemId == wood.StableId)?.count ?? 0;
+        public string ItemName(string id) => ResolveItem(id)?.DisplayName ?? id;
+
+        int CountWood() => _backpack.Count(wood.StableId);
 
         float DistanceSquared(Transform target)
         {

@@ -9,15 +9,17 @@ namespace Topaz.LoopStudy
         [SerializeField] Renderer chestRenderer;
 
         StructureStateRecord _state;
+        InventorySlots _inventory;
 
         public bool IsPlaced => _state != null;
-        public int WoodStored => _state?.woodStored ?? 0;
-        public int WoodCapacity => definition != null ? definition.WoodCapacity : 0;
+        public int SlotCapacity => definition != null ? definition.SlotCapacity : 0;
+        public InventorySlots Inventory => _inventory;
         public StructureStateRecord State => _state;
 
         public void Bind(StructureStateRecord state)
         {
             _state = state;
+            _inventory = state == null ? null : new InventorySlots(state.slots, SlotCapacity);
             if (state == null)
             {
                 gameObject.SetActive(false);
@@ -27,20 +29,5 @@ namespace Topaz.LoopStudy
             gameObject.SetActive(true);
         }
 
-        public int Deposit(int offered)
-        {
-            if (_state == null || offered <= 0) return 0;
-            int accepted = Mathf.Min(offered, WoodCapacity - _state.woodStored);
-            _state.woodStored += accepted;
-            return accepted;
-        }
-
-        public int WithdrawAll()
-        {
-            if (_state == null) return 0;
-            int count = _state.woodStored;
-            _state.woodStored = 0;
-            return count;
-        }
     }
 }

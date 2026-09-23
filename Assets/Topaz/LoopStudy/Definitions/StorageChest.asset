@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: StorageChest
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.StructureDefinition
   stableId: structure.storage_chest
-  woodCapacity: 20
+  slotCapacity: 12

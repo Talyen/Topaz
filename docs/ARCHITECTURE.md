@@ -22,6 +22,8 @@ The first combat slice uses one sword and one enemy with a visible attack windup
 
 The first gathering slice adds an aimed axe with deliberate chops. Only a completed tree harvest awards Wood and Logging XP. The player can craft one chest from Wood and place it within the home boundary. Resting advances the study day; that tree returns after three days. This deliberately small loop tests use-based progress, authored resource state, crafting, placement, storage, and persistence before broadening any one of them.
 
+The backpack uses 16 fixed slots and the first chest uses 12. Items have authored maximum stack sizes; Wood currently stacks to 20. There is no weight or encumbrance system. A harvest must fit in full before awarding items or XP. The save schema migrates version 1's aggregate Wood amounts into version 2 slots, preserving older standalone saves.
+
 ## Boundaries for later systems
 
 - **Content definitions:** immutable item, recipe, skill, talent, loot, and building definitions. Author in Unity assets; use stable definition IDs rather than scene object references in saves.
@@ -32,3 +34,5 @@ The first gathering slice adds an aimed axe with deliberate chops. Only a comple
 - **Progression:** classless, use-based skills with deliberate talent choices. Domain events such as a completed harvest or a confirmed hit award progress, rather than per-frame polling.
 
 The loop study implements a first version of definition IDs, one stable authored tree ID, a versioned local save, and one player-built instance ID. The broader region, dungeon, migration, and progression systems remain future work. Choose concrete schemas and gameplay numbers during representative feature slices.
+
+For later region work, use Unity 6.6 [Build Profile scene lists](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html) and [asynchronous scene loading](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/SceneManagement.SceneManager.LoadSceneAsync.html). For authored definition and runtime data boundaries, use [ScriptableObject](https://docs.unity3d.com/6000.6/Documentation/Manual/class-ScriptableObject.html) and [serialization rules](https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization.html). The [reference index](UNITY_REFERENCE_GUIDE.md) collects current Unity and package sources by task.

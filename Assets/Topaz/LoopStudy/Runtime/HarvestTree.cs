@@ -56,6 +56,11 @@ namespace Topaz.LoopStudy
             _state.chops++;
             if (_state.chops >= definition.ChopsRequired)
             {
+                if (!_session.CanReceiveHarvest(definition))
+                {
+                    _state.chops--;
+                    return false;
+                }
                 _state.chops = 0;
                 _state.nextAvailableDay = _session.CurrentDay + definition.RegrowthDays;
                 _session.CompleteHarvest(definition);

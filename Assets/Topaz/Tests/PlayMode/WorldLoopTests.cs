@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.IO;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,6 +12,53 @@ namespace Topaz.Tests
 {
     public sealed class WorldLoopTests : InputTestFixture
     {
+        [UnityTest]
+        public IEnumerator InventoryKeyTogglesSixteenSlotPanel()
+        {
+            Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            Component hud = GameObject.Find("Loop HUD").GetComponent("LoopHud");
+            Component session = GameObject.Find("Player").GetComponent("WorldSession");
+            var slots = (System.Collections.IList)Read<object>(session, "BackpackSlots");
+            Assert.That(slots.Count, Is.EqualTo(16));
+            Press(keyboard.iKey);
+            yield return null;
+            Assert.That(Read<bool>(hud, "MenuOpen"), Is.True);
+            Release(keyboard.iKey);
+            yield return null;
+            Press(keyboard.iKey);
+            yield return null;
+            Assert.That(Read<bool>(hud, "MenuOpen"), Is.False);
+            Release(keyboard.iKey);
+        }
+
+        [UnityTest]
+        public IEnumerator FullBackpackDefersHarvestWithoutAwardingLoggingExperience()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject player = GameObject.Find("Player");
+            GameObject tree = GameObject.Find("Authored Tree 01");
+            Component session = player.GetComponent("WorldSession");
+            Component harvest = tree.GetComponent("HarvestTree");
+            object backpack = session.GetType().GetField("_backpack",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
+            object wood = session.GetType().GetField("wood",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
+            int accepted = (int)backpack.GetType().GetMethod("Add").Invoke(backpack, new[] { wood, (object)320 });
+            Assert.That(accepted, Is.EqualTo(320));
+            Teleport(player, tree.transform.position + Vector3.back * 1.3f);
+            for (int i = 0; i < 2; i++)
+                Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
+                    Vector3.forward, 2.1f, 90f), Is.True);
+            Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
+                Vector3.forward, 2.1f, 90f), Is.False);
+            Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(1));
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
+            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(320));
+        }
+
         [UnityTest]
         public IEnumerator GamepadAxeSwingChopsInAimedDirection()
         {
@@ -131,7 +179,7 @@ namespace Topaz.Tests
                 .Invoke(session, null);
             Assert.That(Read<bool>(session, "ChestPlaced"), Is.True);
             Assert.That(Read<bool>(session, "PendingChest"), Is.False);
-            session.GetType().GetMethod("DepositAllWood").Invoke(session, null);
+            session.GetType().GetMethod("DepositAllItems").Invoke(session, null);
             Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
             Assert.That(Read<int>(session, "ChestWood"), Is.EqualTo(3));
 
@@ -146,7 +194,39 @@ namespace Topaz.Tests
             Assert.That(structures.Count, Is.EqualTo(1));
             object placed = structures[0];
             Assert.That((string)placed.GetType().GetField("instanceId").GetValue(placed), Is.Not.Empty);
-            Assert.That((int)placed.GetType().GetField("woodStored").GetValue(placed), Is.EqualTo(3));
+            var slots = (System.Collections.IList)placed.GetType().GetField("slots").GetValue(placed);
+            Assert.That(slots.Count, Is.EqualTo(12));
+            Assert.That((int)slots[0].GetType().GetField("count").GetValue(slots[0]), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void VersionOneSaveMigratesStacksWithoutLosingWood()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), "TopazMigration-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                string json = "{\"version\":1,\"day\":4,\"loggingExperience\":5," +
+                    "\"equippedTool\":\"axe\",\"backpack\":[{\"itemId\":\"material.wood\",\"count\":25}]," +
+                    "\"nodes\":[],\"structures\":[{\"instanceId\":\"chest1\",\"definitionId\":\"structure.storage_chest\"," +
+                    "\"x\":1,\"z\":1,\"woodStored\":23}]}";
+                File.WriteAllText(Path.Combine(directory, "topaz-save.json"), json);
+                Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
+                object repository = Activator.CreateInstance(type, directory);
+                object migrated = type.GetMethod("Load").Invoke(repository, null);
+                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(2));
+                var backpack = (System.Collections.IList)migrated.GetType().GetField("backpackSlots").GetValue(migrated);
+                Assert.That(backpack.Count, Is.EqualTo(2));
+                Assert.That((int)backpack[0].GetType().GetField("count").GetValue(backpack[0]), Is.EqualTo(20));
+                Assert.That((int)backpack[1].GetType().GetField("count").GetValue(backpack[1]), Is.EqualTo(5));
+                var structures = (System.Collections.IList)migrated.GetType().GetField("structures").GetValue(migrated);
+                var chestSlots = (System.Collections.IList)structures[0].GetType().GetField("slots").GetValue(structures[0]);
+                Assert.That(chestSlots.Count, Is.EqualTo(2));
+                type.GetMethod("Save").Invoke(repository, new[] { migrated });
+                object reloaded = type.GetMethod("Load").Invoke(repository, null);
+                Assert.That((int)reloaded.GetType().GetField("version").GetValue(reloaded), Is.EqualTo(2));
+            }
+            finally { Directory.Delete(directory, true); }
         }
 
         static T Read<T>(Component target, string property) => (T)target.GetType()

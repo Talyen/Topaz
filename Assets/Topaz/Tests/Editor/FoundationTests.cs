@@ -66,6 +66,7 @@ namespace Topaz.Tests
             Assert.That(player.FindAction("CycleTool").bindings.Any(binding => binding.path == "<Gamepad>/buttonNorth"), Is.True);
             Assert.That(player.FindAction("Place").bindings.Any(binding => binding.path == "<Gamepad>/buttonSouth"), Is.True);
             Assert.That(player.FindAction("Cancel").bindings.Any(binding => binding.path == "<Keyboard>/escape"), Is.True);
+            Assert.That(player.FindAction("Inventory").bindings.Any(binding => binding.path == "<Keyboard>/i"), Is.True);
         }
 
         [Test]

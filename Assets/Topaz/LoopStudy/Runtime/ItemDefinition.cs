@@ -7,8 +7,10 @@ namespace Topaz.LoopStudy
     {
         [SerializeField] string stableId = "material.wood";
         [SerializeField] string displayName = "Wood";
+        [SerializeField, Min(1)] int maxStack = 20;
 
         public string StableId => stableId;
         public string DisplayName => displayName;
+        public int MaxStack => maxStack;
     }
 }

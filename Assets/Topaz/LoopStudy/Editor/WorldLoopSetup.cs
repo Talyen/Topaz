@@ -36,6 +36,8 @@ namespace Topaz.Editor
             Ref(harvest, "yieldItem", wood);
             Ref(recipe, "ingredient", wood);
             Ref(recipe, "result", chestDefinition);
+            Value(wood, "maxStack", 20);
+            Value(chestDefinition, "slotCapacity", 12);
             Value(axe, "stableId", "axe.chop");
             Value(axe, "windupSeconds", 0.26f);
             Value(axe, "activeSeconds", 0.12f);
@@ -137,6 +139,8 @@ namespace Topaz.Editor
             Ref(combat, "axeArcMaterial", arcMat);
 
             LoopHud hud = CreateHud(root.transform);
+            AddInventoryUi(hud);
+            SizeButtons(hud);
             Ref(session, "wood", wood);
             Ref(session, "tree", tree);
             Ref(session, "chestRecipe", recipe);
@@ -157,6 +161,23 @@ namespace Topaz.Editor
             Debug.Log("[Topaz] World loop study authored.");
         }
 
+        [MenuItem("Topaz/Upgrade Inventory UI")]
+        public static void UpgradeInventoryScene()
+        {
+            EnsureBindings();
+            Value(Asset<ItemDefinition>($"{Definitions}/Wood.asset"), "maxStack", 20);
+            Value(Asset<StructureDefinition>($"{Definitions}/StorageChest.asset"), "slotCapacity", 12);
+            Scene scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            GameObject hudObject = GameObject.Find("Loop HUD");
+            if (hudObject == null) throw new InvalidOperationException("World loop HUD is missing.");
+            AddInventoryUi(hudObject.GetComponent<LoopHud>());
+            SizeButtons(hudObject.GetComponent<LoopHud>());
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Topaz] Inventory UI and input are ready.");
+        }
+
         static void EnsureBindings()
         {
             InputActionAsset asset = AssetDatabase.LoadAssetAtPath<InputActionAsset>(ControlsPath);
@@ -166,6 +187,7 @@ namespace Topaz.Editor
             Add(map, "CycleTool", "<Keyboard>/tab", "<Gamepad>/buttonNorth");
             Add(map, "Place", "<Mouse>/leftButton", "<Gamepad>/buttonSouth");
             Add(map, "Cancel", "<Keyboard>/escape", "<Gamepad>/buttonEast");
+            Add(map, "Inventory", "<Keyboard>/i", "<Gamepad>/start");
             File.WriteAllText(ControlsPath, asset.ToJson());
             AssetDatabase.ImportAsset(ControlsPath, ImportAssetOptions.ForceSynchronousImport);
         }
@@ -248,6 +270,104 @@ namespace Topaz.Editor
             return hud;
         }
 
+        static void AddInventoryUi(LoopHud hud)
+        {
+            if (hud == null) throw new InvalidOperationException("Loop HUD component is missing.");
+            Transform canvas = hud.transform;
+            if (canvas.Find("Backpack") != null) return;
+            TMP_FontAsset font = TMP_Settings.defaultFontAsset;
+            RectTransform backpack = Box("Backpack", canvas, new Vector2(.5f,.5f),
+                new Vector2(.5f,.5f), Vector2.zero, new Vector2(510,470),
+                new Color(.09f,.15f,.18f,.96f));
+            Vertical(backpack, 25, 20, 10);
+            TMP_Text title = Text("Backpack Heading", backpack, font, 32);
+            title.text = "Backpack  •  16 slots";
+            TMP_Text[] backpackLabels = SlotGrid(backpack, font, 16);
+            UnityEngine.UI.Button inventoryClose = Button("Close  •  I / B", backpack, font);
+            backpack.gameObject.SetActive(false);
+            Ref(hud, "inventoryPanel", backpack.gameObject);
+            Ref(hud, "inventoryCloseButton", inventoryClose);
+            RefArray(hud, "backpackSlotLabels", backpackLabels);
+
+            Transform chest = canvas.Find("Storage Chest");
+            if (chest == null) throw new InvalidOperationException("Storage chest panel is missing.");
+            RectTransform chestRect = chest.GetComponent<RectTransform>();
+            chestRect.sizeDelta = new Vector2(510, 620);
+            TMP_Text[] chestLabels = SlotGrid(chest, font, 12);
+            chestLabels[0].transform.parent.SetSiblingIndex(2);
+            RefArray(hud, "chestSlotLabels", chestLabels);
+            Transform deposit = chest.Find("Deposit all Wood");
+            Transform withdraw = chest.Find("Withdraw all Wood");
+            if (deposit != null) deposit.GetComponentInChildren<TMP_Text>().text = "Deposit all";
+            if (withdraw != null) withdraw.GetComponentInChildren<TMP_Text>().text = "Withdraw all";
+        }
+
+        static void SizeButtons(LoopHud hud)
+        {
+            foreach (UnityEngine.UI.Button button in
+                hud.GetComponentsInChildren<UnityEngine.UI.Button>(true))
+            {
+                var layout = button.GetComponent<UnityEngine.UI.LayoutElement>();
+                if (layout == null) layout = button.gameObject.AddComponent<UnityEngine.UI.LayoutElement>();
+                layout.preferredHeight = 55;
+                layout.preferredWidth = 430;
+            }
+        }
+
+        static void Vertical(RectTransform rect, int horizontalPadding, int verticalPadding, int spacing)
+        {
+            var layout = rect.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
+            layout.padding = new RectOffset(horizontalPadding, horizontalPadding,
+                verticalPadding, verticalPadding);
+            layout.spacing = spacing;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childForceExpandHeight = false;
+            layout.childControlHeight = true;
+        }
+
+        static TMP_Text[] SlotGrid(Transform parent, TMP_FontAsset font, int count)
+        {
+            var gridObject = new GameObject(count == 16 ? "Backpack Slots" : "Chest Slots",
+                typeof(RectTransform), typeof(UnityEngine.UI.GridLayoutGroup),
+                typeof(UnityEngine.UI.LayoutElement));
+            gridObject.transform.SetParent(parent, false);
+            var grid = gridObject.GetComponent<UnityEngine.UI.GridLayoutGroup>();
+            grid.cellSize = new Vector2(98, 55);
+            grid.spacing = new Vector2(8, 8);
+            grid.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 4;
+            grid.childAlignment = TextAnchor.UpperCenter;
+            gridObject.GetComponent<UnityEngine.UI.LayoutElement>().preferredHeight =
+                (count / 4) * 55 + (count / 4 - 1) * 8;
+            var result = new TMP_Text[count];
+            for (int i = 0; i < count; i++)
+            {
+                RectTransform cell = Box($"Slot {i + 1:00}", gridObject.transform,
+                    Vector2.zero, Vector2.zero, Vector2.zero, grid.cellSize,
+                    new Color(.18f,.27f,.30f,.95f));
+                cell.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
+                TMP_Text label = Text("Contents", cell, font, 18);
+                label.alignment = TextAlignmentOptions.Center;
+                label.text = $"{i + 1}\n—";
+                label.rectTransform.anchorMin = Vector2.zero;
+                label.rectTransform.anchorMax = Vector2.one;
+                label.rectTransform.offsetMin = Vector2.zero;
+                label.rectTransform.offsetMax = Vector2.zero;
+                result[i] = label;
+            }
+            return result;
+        }
+
+        static void RefArray(UnityEngine.Object target, string name, TMP_Text[] values)
+        {
+            var objectView = new SerializedObject(target);
+            SerializedProperty field = objectView.FindProperty(name);
+            if (field == null) throw new InvalidOperationException($"Missing {name} on {target.name}");
+            field.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++) field.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            objectView.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         static RectTransform Panel(string title, Transform parent, TMP_FontAsset font,
             out TMP_Text description, out UnityEngine.UI.Button primary,
             out UnityEngine.UI.Button close, string primaryName, string closeName)
@@ -274,6 +394,9 @@ namespace Topaz.Editor
                 Vector2.zero, new Vector2(430,55), new Color(.22f,.47f,.53f,1));
             var button = rect.gameObject.AddComponent<UnityEngine.UI.Button>();
             button.targetGraphic = rect.GetComponent<UnityEngine.UI.Image>();
+            var layout = rect.gameObject.AddComponent<UnityEngine.UI.LayoutElement>();
+            layout.preferredHeight = 55;
+            layout.preferredWidth = 430;
             TMP_Text label = Text(name + " Label", rect, font, 26);
             label.text = name;
             label.alignment = TextAlignmentOptions.Center;
@@ -389,6 +512,14 @@ namespace Topaz.Editor
             var objectView = new SerializedObject(target);
             objectView.FindProperty(name).floatValue = value;
             objectView.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void Value(UnityEngine.Object target, string name, int value)
+        {
+            var objectView = new SerializedObject(target);
+            objectView.FindProperty(name).intValue = value;
+            objectView.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(target);
         }
     }
 }
