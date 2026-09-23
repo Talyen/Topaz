@@ -137,6 +137,9 @@ namespace Topaz.Tests
 
             object repository = session.GetType().GetField("_repository",
                 BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
+            string savePath = (string)repository.GetType().GetProperty("PathOnDisk").GetValue(repository);
+            Assert.That(savePath, Does.StartWith(Application.temporaryCachePath),
+                "Editor tests must never use the standalone player save directory.");
             object saved = repository.GetType().GetMethod("Load").Invoke(repository, null);
             Assert.That((bool)saved.GetType().GetField("pendingChest").GetValue(saved), Is.False);
             var structures = (System.Collections.IList)saved.GetType().GetField("structures").GetValue(saved);

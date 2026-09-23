@@ -15,7 +15,7 @@ The HUD reports the day, backpack Wood, Logging XP and level, equipped tool, and
 
 - Unity assets hold immutable Wood, tree, chest, recipe, and axe definitions with stable IDs. Scene objects and save records hold mutable state.
 - The authored tree has a stable object ID. The placed chest receives an instance ID. The save records day, position, tool, backpack, partial tree chops and regrowth, pending chest, and placed chest contents.
-- One versioned JSON save lives in Unity's persistent data directory (`topaz-save.json`). A replacement keeps a `.bak` copy. An unsupported or unreadable save disables writes rather than overwriting it. Tests use an isolated temporary directory.
+- One versioned JSON save lives in Unity's persistent data directory (`topaz-save.json`). A replacement keeps a `.bak` copy. An unsupported or unreadable save disables writes rather than overwriting it. Editor sessions, including tests, use isolated temporary directories so they cannot change the standalone player's save.
 - Resting advances an abstract day for regrowth; there is no simulated time of day, hunger, or unloaded-region simulation here. Building is limited to one chest and one home plot so we can review feel and clarity before generalizing.
 
 Run `./scripts/verify.sh` and `./scripts/build.sh windows` after changes. The Mac build is for a 60 Hz smoothness playtest; it does not establish the later Windows 120 FPS target.

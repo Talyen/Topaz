@@ -75,7 +75,7 @@ namespace Topaz.LoopStudy
                 return;
             }
 
-            bool runningTests = Environment.GetCommandLineArgs().Any(arg =>
+            bool runningTests = Application.isEditor || Environment.GetCommandLineArgs().Any(arg =>
                 arg.Equals("-runTests", StringComparison.OrdinalIgnoreCase));
             string directory = runningTests
                 ? Path.Combine(Application.temporaryCachePath, "TopazTest-" + Guid.NewGuid().ToString("N"))

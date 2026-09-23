@@ -154,7 +154,7 @@ namespace Topaz.FeelStudy
             float nearestDistanceSq = interactionRadius * interactionRadius;
             foreach (PracticeNode node in practiceNodes)
             {
-                if (node == null) continue;
+                if (node == null || !node.isActiveAndEnabled) continue;
                 float distanceSq = (node.transform.position - transform.position).sqrMagnitude;
                 if (distanceSq >= nearestDistanceSq) continue;
                 nearest = node;
@@ -162,7 +162,7 @@ namespace Topaz.FeelStudy
             }
 
             foreach (PracticeNode node in practiceNodes)
-                if (node != null) node.SetNearby(node == nearest);
+                if (node != null && node.isActiveAndEnabled) node.SetNearby(node == nearest);
             if (_interactRequested && (_worldSession == null || !_worldSession.TryInteract()) &&
                 nearest != null) nearest.Interact();
             _interactRequested = false;
