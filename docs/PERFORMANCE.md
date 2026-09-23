@@ -1,8 +1,12 @@
 # Performance process
 
-## Contract
+## Near-term baseline
 
-The first gameplay target is **1080p at 120 FPS** on one designated Windows gaming PC, equivalent to an 8.33 ms frame budget. A 60 Hz target has a 16.67 ms budget; choose a lower-tier reference PC once a representative scene exists. On desktop, use display synchronization for even pacing and aim at the display's native refresh rate when hardware permits. Quality settings may trade visual cost for a stable cadence.
+Use the Mac player on a 60 Hz display to review input response, camera motion, and visible jitter as the first playable systems are built. The current desktop setting uses one vertical sync per frame, so this Mac's 60 Hz display provides a 60 FPS presentation baseline without a software frame cap. Do not make formal benchmark reports a gate for each early design iteration. Fix obvious hitches when encountered and keep their reproduction steps.
+
+## Medium-term contract
+
+The first Windows gameplay target is **1080p at 120 FPS** on one designated gaming PC, equivalent to an 8.33 ms frame budget. A 60 Hz target has a 16.67 ms budget; choose a lower-tier reference PC once a representative scene exists. On desktop, use display synchronization for even pacing and aim at the display's native refresh rate when hardware permits. Quality settings may trade visual cost for a stable cadence.
 
 This is a target for named hardware, resolution, quality settings, and representative scenarios. It is not a promise for every PC or for an empty scene. Measure standalone players on the target OS; Editor Play mode is diagnostic only.
 

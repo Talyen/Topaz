@@ -18,6 +18,6 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
 4. Keep every asset with its `.meta` file. Do not commit `Library`, `Temp`, logs, builds, reports, or machine-specific settings.
 5. Before importing any free placeholder asset, verify that its terms allow public source redistribution and record source, license, attribution, and files in `docs/THIRD_PARTY_ASSETS.md`. Ordinary Unity Asset Store downloads do not qualify.
 6. Run `./scripts/verify.sh` for project changes and `./scripts/build.sh windows` when Windows build compatibility is affected. Inspect console/build errors and `git diff --check`.
-7. For gameplay or art changes, capture a representative standalone-player measurement and compare frame times, hitch counts, CPU/GPU cost, and memory with the prior baseline. See `docs/PERFORMANCE.md`.
+7. During early feel prototypes, play the Mac build on a 60 Hz display and fix obvious jitter or hitches. Formal scenario capture and CPU/GPU/memory comparisons begin when a representative gameplay slice exists. See `docs/PERFORMANCE.md`.
 
-Do not claim the 1080p/120 target from Editor Play mode or the empty bootstrap scene. Windows performance requires measurements on the designated Windows PC.
+Do not claim the future 1080p/120 target from Editor Play mode or the empty bootstrap scene. Windows performance requires measurements on the designated Windows PC.
