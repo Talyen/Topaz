@@ -9,6 +9,7 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
 - Use ordinary Unity GameObjects and components first. Add Burst, Jobs, ECS, custom rendering, or Addressables only for a measured bottleneck or clear content-loading need.
 - Use the Input System action model for keyboard/mouse and gamepad. Keep simulation, rendering, and camera motion coherent at both 60 Hz and 120 Hz.
 - First feel prototype: screen-relative WASD and analog gamepad movement, one travel speed, a short directional dodge without stamina, and bounded camera look-ahead toward aim. Tune numerical values in a Mac build.
+- When combat arrives: the dodge has brief invulnerability and a cooldown; melee swings in an aimed arc without lock-on. Expeditions return to the homestead by player choice, not a timer.
 - Keep static definitions separate from runtime state. Future persistent objects need stable IDs and versioned saves; unloaded regions pause and resolve bounded changes on return.
 
 ## Agent workflow

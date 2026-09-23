@@ -16,6 +16,8 @@ Moment-to-moment play favors responsive travel and deliberate, readable attacks.
 
 WASD moves relative to the screen; W moves toward the top of the view. Gamepad movement is analog. Start with one responsive travel speed and a short directional dodge, without stamina. The fixed-angle orthographic camera supports zoom and gently, within a bounded distance, looks ahead toward the aim direction while keeping the character near center. Tune speeds, dodge duration, zoom range, and camera smoothing by playtesting rather than freezing numbers in this document.
 
+The dodge provides brief invulnerability and uses a cooldown rather than stamina. Early melee attacks sweep a readable arc toward the mouse cursor or right-stick aim, without automatic lock-on. Homestead crafting, storage, and recovery make return trips valuable, but expeditions have no forced return timer.
+
 ## Boundaries for later systems
 
 - **Content definitions:** immutable item, recipe, skill, talent, loot, and building definitions. Author in Unity assets; use stable definition IDs rather than scene object references in saves.
