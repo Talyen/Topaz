@@ -1,0 +1,7 @@
+{
+    "name": "Topaz.EditModeTests",
+    "rootNamespace": "Topaz.Tests",
+    "references": [],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}
