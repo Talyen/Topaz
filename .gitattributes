@@ -8,5 +8,6 @@
 # Unity writes blank YAML fields with trailing spaces. Keep its serialization untouched.
 *.unity -whitespace
 *.asset -whitespace
+*.mat -whitespace
 *.meta -whitespace
 ProjectSettings/** -whitespace

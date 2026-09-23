@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.Build.Profile;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 namespace Topaz.Tests
@@ -40,6 +41,24 @@ namespace Topaz.Tests
             {
                 QualitySettings.SetQualityLevel(original, false);
             }
+        }
+
+        [Test]
+        public void FeelStudyHasKeyboardMouseAndGamepadActions()
+        {
+            var controls = AssetDatabase.LoadAssetAtPath<InputActionAsset>(
+                "Assets/Topaz/Input/TopazControls.inputactions");
+            Assert.That(controls, Is.Not.Null);
+
+            InputActionMap player = controls.FindActionMap("Player", true);
+            string[] required = { "Move", "AimPointer", "AimStick", "Dodge", "Interact", "ZoomWheel", "ZoomIn", "ZoomOut" };
+            foreach (string name in required)
+                Assert.That(player.FindAction(name), Is.Not.Null, name);
+
+            Assert.That(player.FindAction("Move").bindings.Any(binding => binding.path == "<Keyboard>/w"), Is.True);
+            Assert.That(player.FindAction("Move").bindings.Any(binding => binding.path == "<Gamepad>/leftStick"), Is.True);
+            Assert.That(player.FindAction("Dodge").bindings.Any(binding => binding.path == "<Gamepad>/buttonEast"), Is.True);
+            Assert.That(player.FindAction("Interact").bindings.Any(binding => binding.path == "<Gamepad>/buttonWest"), Is.True);
         }
     }
 }

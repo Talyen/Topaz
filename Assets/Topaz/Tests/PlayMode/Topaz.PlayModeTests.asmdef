@@ -1,0 +1,6 @@
+{
+    "name": "Topaz.PlayModeTests",
+    "rootNamespace": "Topaz.Tests",
+    "references": ["Unity.InputSystem", "Unity.InputSystem.TestFramework"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}

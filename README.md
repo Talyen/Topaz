@@ -1,6 +1,6 @@
 # Topaz
 
-Topaz is an early-stage, single-player action RPG and survival crafting game in a hand-authored world. This repository currently contains the Unity foundation and verification tools, not a playable game.
+Topaz is an early-stage, single-player action RPG and survival crafting game in a hand-authored world. The current Mac build contains a small [movement and camera feel study](docs/FEEL_STUDY.md), not a gameplay loop.
 
 ## Project brief
 
@@ -22,7 +22,7 @@ unity mcp configure codex --local --project-path "$PWD" --yes
 ./scripts/build.sh windows
 ```
 
-The `unity mcp configure` command writes a machine-specific `.codex/config.toml` that is ignored by Git. `verify.sh` checks Unity Edit Mode tests and builds a Mac player. The Windows build is a cross-platform smoke check; final Windows performance must be measured on Windows hardware. Generated players, reports, Unity `Library`, and logs are ignored.
+The `unity mcp configure` command writes a machine-specific `.codex/config.toml` that is ignored by Git. `verify.sh` runs Edit Mode and Play Mode tests and builds a Mac player. The Windows build is a cross-platform smoke check; final Windows performance must be measured on Windows hardware. Generated players, reports, Unity `Library`, and logs are ignored.
 
 An empty bootstrap scene can produce a diagnostic timing report when a player is launched with `--topaz-perf`. That report only checks the capture pipeline; it says nothing about the future game's frame rate. See [performance process](docs/PERFORMANCE.md).
 

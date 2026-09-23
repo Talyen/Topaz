@@ -35,10 +35,13 @@ namespace Topaz.Editor
 
             Camera camera = Camera.main ?? UnityEngine.Object.FindFirstObjectByType<Camera>();
             if (camera == null) throw new InvalidOperationException("The template scene has no camera.");
-            camera.orthographic = true;
-            camera.orthographicSize = 10f;
-            camera.transform.rotation = Quaternion.Euler(35.264f, 45f, 0f);
-            camera.transform.position = -camera.transform.forward * 20f;
+            if (GameObject.Find("Feel Study") == null)
+            {
+                camera.orthographic = true;
+                camera.orthographicSize = 10f;
+                camera.transform.rotation = Quaternion.Euler(35.264f, 45f, 0f);
+                camera.transform.position = -camera.transform.forward * 20f;
+            }
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
 
