@@ -111,6 +111,9 @@ InitTestScene*.unity*
 # Local Codex connection contains an absolute path to this checkout.
 /.codex/config.toml
 
+# macOS Finder state is machine-specific.
+.DS_Store
+
 # Local test reports and performance captures.
 /TestResults/
 /PerformanceReports/

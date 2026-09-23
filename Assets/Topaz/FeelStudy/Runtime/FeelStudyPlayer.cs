@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Topaz.CombatStudy;
 
 namespace Topaz.FeelStudy
 {
-    /// <summary>Temporary movement and aiming study. No combat or progression lives here.</summary>
+    /// <summary>Responsive movement and aim shared by the combat graybox.</summary>
+    [DefaultExecutionOrder(-10)]
     [RequireComponent(typeof(CharacterController))]
     public sealed class FeelStudyPlayer : MonoBehaviour
     {
@@ -23,9 +25,11 @@ namespace Topaz.FeelStudy
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         static readonly Color NormalColor = new Color(0.24f, 0.76f, 0.84f);
         static readonly Color DodgeColor = new Color(0.88f, 0.98f, 1f);
+        static readonly Color HitColor = new Color(1f, 0.30f, 0.25f);
 
         MaterialPropertyBlock _bodyProperties;
         CharacterController _controller;
+        PlayerCombat _combat;
         InputActionMap _playerMap;
         InputAction _move;
         InputAction _aimPointer;
@@ -41,17 +45,29 @@ namespace Topaz.FeelStudy
         bool _usingStickAim = true;
         Vector2 _previousPointerPosition;
         bool _hasPointerPosition;
-        bool _wasDodging;
+        Color _appliedColor;
+        float _hitUntil;
         bool _dodgeRequested;
         bool _interactRequested;
 
         public Vector3 AimDirection => _aimDirection;
-        public bool IsInvulnerable => Time.time < _dodgeUntil;
+        public bool IsDodging => Time.time < _dodgeUntil;
+        public bool IsInvulnerable => IsDodging;
+
+        public void ShowHit() => _hitUntil = Time.time + 0.22f;
+
+        public void ResetMotion()
+        {
+            _verticalVelocity = 0f;
+            _dodgeUntil = 0f;
+            _dodgeRequested = false;
+        }
 
         void Awake()
         {
             _bodyProperties = new MaterialPropertyBlock();
             _controller = GetComponent<CharacterController>();
+            _combat = GetComponent<PlayerCombat>();
             if (controls == null || viewCamera == null || visualRoot == null || bodyRenderer == null || aimMarker == null)
             {
                 Debug.LogError("Feel study player is missing a required reference.", this);
@@ -95,30 +111,37 @@ namespace Topaz.FeelStudy
             Vector3 moveDirection = ScreenRelative(moveInput);
             UpdateAim();
 
-            if (_dodgeRequested && Time.time >= _nextDodgeAt)
+            if (_dodgeRequested && Time.time >= _nextDodgeAt &&
+                (_combat == null || _combat.CanStartDodge))
             {
                 _dodgeDirection = moveDirection.sqrMagnitude > 0.01f ? moveDirection.normalized : _aimDirection;
                 _dodgeUntil = Time.time + dodgeSeconds;
                 _nextDodgeAt = _dodgeUntil + dodgeCooldownSeconds;
+                _combat?.OnDodgeStarted();
             }
             _dodgeRequested = false;
 
-            bool dodging = Time.time < _dodgeUntil;
-            Vector3 horizontal = dodging ? _dodgeDirection * dodgeSpeed : moveDirection * travelSpeed;
+            bool dodging = IsDodging;
+            float movementMultiplier = _combat != null ? _combat.MovementMultiplier : 1f;
+            Vector3 horizontal = dodging ? _dodgeDirection * dodgeSpeed :
+                moveDirection * travelSpeed * movementMultiplier;
             _verticalVelocity = _controller.isGrounded ? -1f : _verticalVelocity - 24f * deltaTime;
             _controller.Move((horizontal + Vector3.up * _verticalVelocity) * deltaTime);
 
+            Vector3 facing = _combat != null && _combat.IsAttackLocked
+                ? _combat.LockedDirection : _aimDirection;
             visualRoot.rotation = Quaternion.RotateTowards(
                 visualRoot.rotation,
-                Quaternion.LookRotation(_aimDirection, Vector3.up),
+                Quaternion.LookRotation(facing, Vector3.up),
                 900f * deltaTime);
             aimMarker.position = transform.position + _aimDirection * 4.2f + Vector3.up * 0.08f;
 
-            if (dodging != _wasDodging)
+            Color tint = dodging ? DodgeColor : Time.time < _hitUntil ? HitColor : NormalColor;
+            if (tint != _appliedColor)
             {
-                _bodyProperties.SetColor(BaseColor, dodging ? DodgeColor : NormalColor);
+                _bodyProperties.SetColor(BaseColor, tint);
                 bodyRenderer.SetPropertyBlock(_bodyProperties);
-                _wasDodging = dodging;
+                _appliedColor = tint;
             }
 
             PracticeNode nearest = null;

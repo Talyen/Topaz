@@ -18,6 +18,8 @@ WASD moves relative to the screen; W moves toward the top of the view. Gamepad m
 
 The dodge provides brief invulnerability and uses a cooldown rather than stamina. Early melee attacks sweep a readable arc toward the mouse cursor or right-stick aim, without automatic lock-on. Homestead crafting, storage, and recovery make return trips valuable, but expeditions have no forced return timer.
 
+The first combat slice uses one sword and one enemy with a visible attack windup. A sword swing slows movement during windup and strike; dodge can cancel recovery, but not the committed swing. The central homestead is safe: threats stay in the expedition space and no mandatory raids interrupt crafting or rest.
+
 ## Boundaries for later systems
 
 - **Content definitions:** immutable item, recipe, skill, talent, loot, and building definitions. Author in Unity assets; use stable definition IDs rather than scene object references in saves.

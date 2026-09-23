@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.Build.Profile;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.AI;
 using UnityEngine.Rendering;
 
 namespace Topaz.Tests
@@ -59,6 +60,19 @@ namespace Topaz.Tests
             Assert.That(player.FindAction("Move").bindings.Any(binding => binding.path == "<Gamepad>/leftStick"), Is.True);
             Assert.That(player.FindAction("Dodge").bindings.Any(binding => binding.path == "<Gamepad>/buttonEast"), Is.True);
             Assert.That(player.FindAction("Interact").bindings.Any(binding => binding.path == "<Gamepad>/buttonWest"), Is.True);
+            Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Mouse>/leftButton"), Is.True);
+            Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Gamepad>/rightTrigger"), Is.True);
+        }
+
+        [Test]
+        public void CombatStudyHasAuthoredDefinitionsAndBakedNavigation()
+        {
+            Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+                "Assets/Topaz/CombatStudy/Definitions/PracticeSword.asset"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+                "Assets/Topaz/CombatStudy/Definitions/PracticeEnemy.asset"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<NavMeshData>(
+                "Assets/Topaz/CombatStudy/Navigation/PracticeNavMesh.asset"), Is.Not.Null);
         }
     }
 }
