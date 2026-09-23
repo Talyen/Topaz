@@ -58,27 +58,34 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator InteractActivatesNearbyPracticeResource()
+        public IEnumerator InteractOpensAndClosesNearbyWorkbench()
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
 
             GameObject player = GameObject.Find("Player");
-            GameObject node = GameObject.Find("Practice Resource");
+            GameObject bench = GameObject.Find("Workbench");
+            GameObject hud = GameObject.Find("Loop HUD");
             Assert.That(player, Is.Not.Null);
-            Assert.That(node, Is.Not.Null);
+            Assert.That(bench, Is.Not.Null);
+            Assert.That(hud, Is.Not.Null);
 
-            player.transform.position = node.transform.position + Vector3.right * 1.2f;
+            player.transform.position = bench.transform.position + Vector3.forward * .7f;
             yield return new WaitForSeconds(0.1f);
             Press(keyboard.eKey);
             yield return new WaitForSeconds(0.1f);
             Release(keyboard.eKey);
-
-            var properties = new MaterialPropertyBlock();
-            node.GetComponentInChildren<Renderer>().GetPropertyBlock(properties);
-            Color color = properties.GetColor("_BaseColor");
-            Assert.That(color.g, Is.GreaterThan(color.r), "Interaction should turn the node green.");
+            bool menuOpen = (bool)hud.GetComponent("LoopHud").GetType()
+                .GetProperty("MenuOpen").GetValue(hud.GetComponent("LoopHud"));
+            Assert.That(menuOpen, Is.True, "Interaction should open the workbench panel.");
+            yield return null;
+            Press(keyboard.eKey);
+            yield return new WaitForSeconds(0.1f);
+            Release(keyboard.eKey);
+            menuOpen = (bool)hud.GetComponent("LoopHud").GetType()
+                .GetProperty("MenuOpen").GetValue(hud.GetComponent("LoopHud"));
+            Assert.That(menuOpen, Is.False, "Interaction should close the workbench panel.");
         }
     }
 }

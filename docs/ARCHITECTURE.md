@@ -20,6 +20,8 @@ The dodge provides brief invulnerability and uses a cooldown rather than stamina
 
 The first combat slice uses one sword and one enemy with a visible attack windup. A sword swing slows movement during windup and strike; dodge can cancel recovery, but not the committed swing. The central homestead is safe: threats stay in the expedition space and no mandatory raids interrupt crafting or rest.
 
+The first gathering slice adds an aimed axe with deliberate chops. Only a completed tree harvest awards Wood and Logging XP. The player can craft one chest from Wood and place it within the home boundary. Resting advances the study day; that tree returns after three days. This deliberately small loop tests use-based progress, authored resource state, crafting, placement, storage, and persistence before broadening any one of them.
+
 ## Boundaries for later systems
 
 - **Content definitions:** immutable item, recipe, skill, talent, loot, and building definitions. Author in Unity assets; use stable definition IDs rather than scene object references in saves.
@@ -29,4 +31,4 @@ The first combat slice uses one sword and one enemy with a visible attack windup
 - **Building:** designated homestead plots, with snapping or a grid. A placement change updates local navigation and persisted state, not the entire world.
 - **Progression:** classless, use-based skills with deliberate talent choices. Domain events such as a completed harvest or a confirmed hit award progress, rather than per-frame polling.
 
-These are design contracts for future work, not systems implemented by this foundation milestone. Choose concrete schemas and gameplay numbers during representative feature slices.
+The loop study implements a first version of definition IDs, one stable authored tree ID, a versioned local save, and one player-built instance ID. The broader region, dungeon, migration, and progression systems remain future work. Choose concrete schemas and gameplay numbers during representative feature slices.

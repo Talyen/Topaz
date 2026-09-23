@@ -62,6 +62,10 @@ namespace Topaz.Tests
             Assert.That(player.FindAction("Interact").bindings.Any(binding => binding.path == "<Gamepad>/buttonWest"), Is.True);
             Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Mouse>/leftButton"), Is.True);
             Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Gamepad>/rightTrigger"), Is.True);
+            Assert.That(player.FindAction("EquipAxe").bindings.Any(binding => binding.path == "<Keyboard>/2"), Is.True);
+            Assert.That(player.FindAction("CycleTool").bindings.Any(binding => binding.path == "<Gamepad>/buttonNorth"), Is.True);
+            Assert.That(player.FindAction("Place").bindings.Any(binding => binding.path == "<Gamepad>/buttonSouth"), Is.True);
+            Assert.That(player.FindAction("Cancel").bindings.Any(binding => binding.path == "<Keyboard>/escape"), Is.True);
         }
 
         [Test]
@@ -73,6 +77,15 @@ namespace Topaz.Tests
                 "Assets/Topaz/CombatStudy/Definitions/PracticeEnemy.asset"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<NavMeshData>(
                 "Assets/Topaz/CombatStudy/Navigation/PracticeNavMesh.asset"), Is.Not.Null);
+        }
+
+        [Test]
+        public void WorldLoopHasStableDefinitionAssets()
+        {
+            string root = "Assets/Topaz/LoopStudy/Definitions/";
+            foreach (string asset in new[] { "Wood", "Tree", "StorageChest", "StorageChestRecipe", "AxeChop" })
+                Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(root + asset + ".asset"),
+                    Is.Not.Null, asset);
         }
     }
 }

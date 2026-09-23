@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Topaz.CombatStudy;
+using Topaz.LoopStudy;
 
 namespace Topaz.FeelStudy
 {
@@ -30,6 +31,7 @@ namespace Topaz.FeelStudy
         MaterialPropertyBlock _bodyProperties;
         CharacterController _controller;
         PlayerCombat _combat;
+        WorldSession _worldSession;
         InputActionMap _playerMap;
         InputAction _move;
         InputAction _aimPointer;
@@ -51,6 +53,7 @@ namespace Topaz.FeelStudy
         bool _interactRequested;
 
         public Vector3 AimDirection => _aimDirection;
+        public Vector3 AimPointOnGround { get; private set; }
         public bool IsDodging => Time.time < _dodgeUntil;
         public bool IsInvulnerable => IsDodging;
 
@@ -68,6 +71,7 @@ namespace Topaz.FeelStudy
             _bodyProperties = new MaterialPropertyBlock();
             _controller = GetComponent<CharacterController>();
             _combat = GetComponent<PlayerCombat>();
+            _worldSession = GetComponent<WorldSession>();
             if (controls == null || viewCamera == null || visualRoot == null || bodyRenderer == null || aimMarker == null)
             {
                 Debug.LogError("Feel study player is missing a required reference.", this);
@@ -108,11 +112,13 @@ namespace Topaz.FeelStudy
             if (deltaTime <= 0f) return;
 
             Vector2 moveInput = Vector2.ClampMagnitude(_move.ReadValue<Vector2>(), 1f);
+            if (_worldSession != null && _worldSession.BlockMovement) moveInput = Vector2.zero;
             Vector3 moveDirection = ScreenRelative(moveInput);
             UpdateAim();
 
             if (_dodgeRequested && Time.time >= _nextDodgeAt &&
-                (_combat == null || _combat.CanStartDodge))
+                (_combat == null || _combat.CanStartDodge) &&
+                (_worldSession == null || (!_worldSession.BlockMovement && !_worldSession.IsPlacing)))
             {
                 _dodgeDirection = moveDirection.sqrMagnitude > 0.01f ? moveDirection.normalized : _aimDirection;
                 _dodgeUntil = Time.time + dodgeSeconds;
@@ -157,7 +163,8 @@ namespace Topaz.FeelStudy
 
             foreach (PracticeNode node in practiceNodes)
                 if (node != null) node.SetNearby(node == nearest);
-            if (_interactRequested && nearest != null) nearest.Interact();
+            if (_interactRequested && (_worldSession == null || !_worldSession.TryInteract()) &&
+                nearest != null) nearest.Interact();
             _interactRequested = false;
         }
 
@@ -188,13 +195,23 @@ namespace Topaz.FeelStudy
                 if (direction.sqrMagnitude > 0.01f) _aimDirection = direction.normalized;
             }
 
-            if (_usingStickAim) return;
+            if (_usingStickAim)
+            {
+                AimPointOnGround = transform.position + _aimDirection * 2.2f;
+                AimPointOnGround = new Vector3(AimPointOnGround.x, 0f, AimPointOnGround.z);
+                return;
+            }
 
             Ray ray = viewCamera.ScreenPointToRay(pointerPosition);
             Plane ground = new Plane(Vector3.up, Vector3.zero);
-            if (!ground.Raycast(ray, out float distance)) return;
+            if (!ground.Raycast(ray, out float distance))
+            {
+                AimPointOnGround = transform.position + _aimDirection * 2.2f;
+                return;
+            }
 
-            Vector3 directionToPointer = ray.GetPoint(distance) - transform.position;
+            AimPointOnGround = ray.GetPoint(distance);
+            Vector3 directionToPointer = AimPointOnGround - transform.position;
             directionToPointer.y = 0f;
             if (directionToPointer.sqrMagnitude > 0.04f)
                 _aimDirection = directionToPointer.normalized;
