@@ -10,6 +10,12 @@ Use the URP 3D renderer, a fixed-angle orthographic camera with zoom, stylized m
 
 Build around readable combat with 1–10 visible enemies, not mass swarms. Use conventional GameObjects, physics, and navigation initially. Profile before introducing spatial indexes, Burst/Jobs, ECS, GPU animation, or custom draw submission.
 
+## Player feel and first prototype
+
+Moment-to-moment play favors responsive travel and deliberate, readable attacks. One safe homestead anchors expeditions into the authored world. The first playable study should prove movement and camera feel in a small Mac build before adding progression systems.
+
+WASD moves relative to the screen; W moves toward the top of the view. Gamepad movement is analog. Start with one responsive travel speed and a short directional dodge, without stamina. The fixed-angle orthographic camera supports zoom and gently, within a bounded distance, looks ahead toward the aim direction while keeping the character near center. Tune speeds, dodge duration, zoom range, and camera smoothing by playtesting rather than freezing numbers in this document.
+
 ## Boundaries for later systems
 
 - **Content definitions:** immutable item, recipe, skill, talent, loot, and building definitions. Author in Unity assets; use stable definition IDs rather than scene object references in saves.
