@@ -1,6 +1,6 @@
 # URP Visual Lab
 
-The Bootstrap Mac build contains a reversible visual study for the KayKit art. Press **F7** for the in-game Visual Lab. F5 cycles Lighting only, Painterly, and Focus preview; F6 cycles anti-aliasing Off, FXAA, SMAA, and TAA. These are review controls, not final game settings.
+The Bootstrap Mac build contains a reversible visual study for the KayKit art. Open **Options → Visual Lab** from the title or Esc pause menu, or press **F7** during play. F5 cycles Lighting only, Painterly, and Focus preview; F6 cycles anti-aliasing Off, FXAA, SMAA, and TAA. These are review controls, not final game settings.
 
 The menu changes 14 values live: color temperature, exposure, contrast, saturation, bloom strength and threshold, vignette, depth-of-field start/end/radius, fog end distance, home light intensity, shadow strength, and the extra warmth near home. Focus start/end stay ordered when either slider moves. The Look, AA, and Depth of field buttons provide the same comparisons as the shortcuts. **Reset** restores authored study values. **Save selection** writes `visual-study-settings.json` in Unity's persistent data directory and reloads it on the next Mac launch; it is separate from the gameplay save. **Copy values** places that JSON on the clipboard. When the owner chooses defaults, an agent can read the saved file on this Mac or the pasted JSON and author the selected values into the project. Editor tests use isolated temporary settings paths.
 

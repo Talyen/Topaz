@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Topaz.CombatStudy;
 using Topaz.FeelStudy;
+using Topaz.Menus;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,6 +28,7 @@ namespace Topaz.LoopStudy
         [SerializeField] GameObject chestPreview;
         [SerializeField] Renderer previewRenderer;
         [SerializeField] GameObject pickupPrefab;
+        [SerializeField] GameMenus menus;
 
         const float InteractionRadius = 1.4f;
         const float PlacementStep = 0.75f;
@@ -71,7 +73,7 @@ namespace Topaz.LoopStudy
         public int ChestWood => chest?.Inventory?.Count(wood.StableId) ?? 0;
         public int ChestCapacity => chest?.SlotCapacity ?? 0;
         public bool IsPlacing => _placing;
-        public bool MenuOpen => hud != null && hud.MenuOpen;
+        public bool MenuOpen => (hud != null && hud.MenuOpen) || (menus != null && menus.BlockGameplay);
         public bool BlockMovement => MenuOpen;
         public bool SuppressAttack => MenuOpen || _placing;
         public string SaveProblem => _saveProblem;
@@ -81,7 +83,7 @@ namespace Topaz.LoopStudy
             _previewProperties = new MaterialPropertyBlock();
             if (controls == null || wood == null || tree == null || chest == null ||
                 chestRecipe == null || chestDefinition == null || home == null ||
-                movement == null || combat == null || hud == null || pickupPrefab == null)
+                movement == null || combat == null || hud == null || pickupPrefab == null || menus == null)
             {
                 Debug.LogError("World session is missing a required reference.", this);
                 enabled = false;
@@ -165,11 +167,11 @@ namespace Topaz.LoopStudy
                 Debug.LogError($"[Topaz] {_saveProblem} {_repository.BackgroundError.Message}", this);
                 hud?.Refresh();
             }
-            if (_inventoryRequested && !_placing) hud.ToggleInventoryPanel();
+            if (_inventoryRequested && !_placing && !menus.BlockGameplay) hud.ToggleInventoryPanel();
             if (_cancelRequested)
             {
                 if (_placing) ExitPlacement();
-                else if (MenuOpen) hud.ClosePanels();
+                else menus.HandleEscape();
             }
 
             if (_placing)
@@ -281,6 +283,7 @@ namespace Topaz.LoopStudy
 
         public bool TryInteract()
         {
+            if (menus.BlockGameplay) return true;
             if (_placing) return true;
             if (MenuOpen)
             {

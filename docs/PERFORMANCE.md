@@ -23,3 +23,7 @@ The bootstrap player can write a JSON diagnostic report with `--topaz-perf`. Kee
 3. Make the smallest targeted change, rerun the same scenario, and check that visual quality and input feel remain acceptable.
 
 For the planned scale, do not adopt the thousand-entity solutions from Deep Rock Galactic: Survivor by default. Its useful pattern is scripted stress scenarios and real-device measurement. Benchmark loading and first-use effects as well as steady-state frames; avoid synchronous scene loads during interactive play.
+
+## Unity references
+
+Use the Unity 6.6 [Profiler](https://docs.unity3d.com/6000.6/Documentation/Manual/Profiler.html) and [player data collection guide](https://docs.unity3d.com/6000.6/Documentation/Manual/profiler-profiling-applications.html) to investigate CPU and memory cost. Use the [Frame Debugger](https://docs.unity3d.com/6000.6/Documentation/Manual/FrameDebugger.html) or [URP Render Graph Viewer](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/render-graph-view.html) for rendering cost. The [reference index](UNITY_REFERENCE_GUIDE.md) links timing and build documentation. These tools explain measurements; the standalone scenario process above remains the performance gate.

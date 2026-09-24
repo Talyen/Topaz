@@ -60,12 +60,23 @@ namespace Topaz.VisualStudy
         public void Toggle()
         {
             bool open = !IsOpen;
+            Topaz.Menus.GameMenus menus = GetComponent<Topaz.Menus.GameMenus>();
             loopHud.ClosePanels();
             panel.SetActive(open);
-            if (open) Refresh();
+            if (open)
+            {
+                menus?.OnVisualLabOpening();
+                panel.transform.SetAsLastSibling();
+                Refresh();
+            }
+            else menus?.OnVisualLabClosed();
         }
 
-        public void Close() => panel.SetActive(false);
+        public void Close()
+        {
+            panel.SetActive(false);
+            GetComponent<Topaz.Menus.GameMenus>()?.OnVisualLabClosed();
+        }
 
         public void MarkUnsaved() => SetStatus("Unsaved changes");
 

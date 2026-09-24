@@ -13,7 +13,7 @@ namespace Topaz.FeelStudy
         [SerializeField] float aimLookAhead = 1.35f;
         [SerializeField] float followSmoothSeconds = 0.14f;
         [SerializeField] float zoomSmoothSeconds = 0.12f;
-        [SerializeField] float minimumZoom = 7f;
+        [SerializeField] float minimumZoom = 5.5f;
         [SerializeField] float maximumZoom = 13f;
 
         Camera _camera;
@@ -23,6 +23,13 @@ namespace Topaz.FeelStudy
         Vector3 _followVelocity;
         float _zoomVelocity;
         float _desiredZoom;
+
+        public float CurrentZoom => _desiredZoom;
+
+        public void SetZoom(float size)
+        {
+            _desiredZoom = Mathf.Clamp(size, minimumZoom, maximumZoom);
+        }
 
         void Awake()
         {

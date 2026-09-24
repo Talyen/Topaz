@@ -8,4 +8,8 @@ This small extension to the movement graybox tests combat timing. It is not an i
 
 The sword and enemy have separate authored definition assets with stable IDs. Current health, attack phase, path, and cooldowns are runtime state. The graybox has a baked NavMesh for Unity's default humanoid agent; its floor and static obstacles are the only included navigation geometry. Re-bake through `Topaz/Build Combat Study` after changing those obstacles.
 
-Playtest whether swing commitment, dodge timing, enemy tells, and the safe-home boundary are legible. Keep numerical tuning flexible until those choices feel good. Inventory, loot, skill experience, and final death consequences come later.
+Playtest whether swing commitment, dodge timing, enemy tells, and the safe-home boundary are legible. Keep numerical tuning flexible until those choices feel good. Inventory, visible Wood drops, and use-based Swords/Logging experience now live in the [world loop study](WORLD_LOOP_STUDY.md); final death consequences remain later work.
+
+## Unity references
+
+The installed [AI Navigation 2.0 overview](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/NavigationOverview.html) and [NavMesh Surface reference](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/NavMeshSurface.html) cover the package used by the practice enemy. Use them when changing bake inputs, agent behavior, or navigation registration. The [reference index](UNITY_REFERENCE_GUIDE.md) links the obstacle and testing docs.
