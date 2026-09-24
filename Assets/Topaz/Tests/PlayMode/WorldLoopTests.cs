@@ -248,7 +248,7 @@ namespace Topaz.Tests
                 Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
                 object repository = Activator.CreateInstance(type, directory);
                 object migrated = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(3));
+                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(4));
                 var backpack = (System.Collections.IList)migrated.GetType().GetField("backpackSlots").GetValue(migrated);
                 Assert.That(backpack.Count, Is.EqualTo(2));
                 Assert.That((int)backpack[0].GetType().GetField("count").GetValue(backpack[0]), Is.EqualTo(20));
@@ -258,7 +258,7 @@ namespace Topaz.Tests
                 Assert.That(chestSlots.Count, Is.EqualTo(2));
                 type.GetMethod("Save").Invoke(repository, new[] { migrated });
                 object reloaded = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)reloaded.GetType().GetField("version").GetValue(reloaded), Is.EqualTo(3));
+                Assert.That((int)reloaded.GetType().GetField("version").GetValue(reloaded), Is.EqualTo(4));
             }
             finally { Directory.Delete(directory, true); }
         }
@@ -277,10 +277,59 @@ namespace Topaz.Tests
                 Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
                 object repository = Activator.CreateInstance(type, directory);
                 object migrated = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(3));
+                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(4));
                 Assert.That((int)migrated.GetType().GetField("loggingExperience").GetValue(migrated), Is.EqualTo(7));
                 var slots = (System.Collections.IList)migrated.GetType().GetField("backpackSlots").GetValue(migrated);
                 Assert.That((int)slots[0].GetType().GetField("count").GetValue(slots[0]), Is.EqualTo(11));
+            }
+            finally { Directory.Delete(directory, true); }
+        }
+
+        [Test]
+        public void VersionThreeSaveMigratesToHomeWithoutLosingDrops()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), "TopazMigration-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                string json = "{\"version\":3,\"day\":4,\"backpackSlots\":[]," +
+                    "\"nodes\":[],\"structures\":[],\"pickups\":[{" +
+                    "\"instanceId\":\"drop1\",\"itemId\":\"material.wood\",\"count\":2," +
+                    "\"x\":5,\"z\":6}]}";
+                File.WriteAllText(Path.Combine(directory, "topaz-save.json"), json);
+                Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
+                object repository = Activator.CreateInstance(type, directory);
+                object migrated = type.GetMethod("Load").Invoke(repository, null);
+                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(4));
+                Assert.That((string)migrated.GetType().GetField("regionId").GetValue(migrated), Is.EqualTo("home"));
+                var drops = (System.Collections.IList)migrated.GetType().GetField("pickups").GetValue(migrated);
+                Assert.That(drops.Count, Is.EqualTo(1));
+                Assert.That((int)drops[0].GetType().GetField("count").GetValue(drops[0]), Is.EqualTo(2));
+            }
+            finally { Directory.Delete(directory, true); }
+        }
+
+        [Test]
+        public void ExpeditionRegionAndClaimedCacheSurviveSaveReload()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), "TopazExpeditionSave-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                Type repositoryType = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
+                Type dataType = Type.GetType("Topaz.LoopStudy.TopazSaveData, Assembly-CSharp", true);
+                object repository = Activator.CreateInstance(repositoryType, directory);
+                object data = Activator.CreateInstance(dataType);
+                dataType.GetField("regionId").SetValue(data, "expedition.clearing");
+                dataType.GetField("expeditionCacheClaimed").SetValue(data, true);
+                dataType.GetField("playerX").SetValue(data, 100f);
+                repositoryType.GetMethod("Save").Invoke(repository, new[] { data });
+
+                object reloaded = repositoryType.GetMethod("Load").Invoke(repository, null);
+                Assert.That((string)dataType.GetField("regionId").GetValue(reloaded),
+                    Is.EqualTo("expedition.clearing"));
+                Assert.That((bool)dataType.GetField("expeditionCacheClaimed").GetValue(reloaded), Is.True);
+                Assert.That((float)dataType.GetField("playerX").GetValue(reloaded), Is.EqualTo(100f));
             }
             finally { Directory.Delete(directory, true); }
         }

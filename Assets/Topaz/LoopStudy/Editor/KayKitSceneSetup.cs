@@ -149,6 +149,7 @@ namespace Topaz.Editor
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
             Debug.Log("[Topaz] KayKit art study is ready.");
+            Topaz.AnimationStudy.Editor.AnimationStudySetup.Configure();
         }
 
         static GameObject CreatePickupPrefab(Material material)
@@ -180,6 +181,9 @@ namespace Topaz.Editor
         static Renderer Attach(Transform parent, string path, Material material,
             float height, string name)
         {
+            foreach (Transform duplicate in parent.Cast<Transform>()
+                .Where(child => child.name == name).ToArray())
+                UnityEngine.Object.DestroyImmediate(duplicate.gameObject);
             GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(ThirdParty + "/" + path);
             if (model == null) throw new InvalidOperationException("KayKit model missing: " + path);
             GameObject instance = PrefabUtility.InstantiatePrefab(model) as GameObject;

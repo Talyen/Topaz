@@ -58,6 +58,52 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
+        public IEnumerator SidewaysMovementBlendsIntoAimRelativeStrafe()
+        {
+            Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+
+            Animator animator = GameObject.Find("Player").GetComponentInChildren<Animator>();
+            Assert.That(animator, Is.Not.Null);
+            Set(gamepad.rightStick, Vector2.up);
+            Set(gamepad.leftStick, Vector2.right);
+            yield return new WaitForSeconds(0.25f);
+
+            Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion"), Is.True);
+            Assert.That(animator.GetFloat("MoveX"), Is.GreaterThan(0.5f));
+            Assert.That(Mathf.Abs(animator.GetFloat("MoveY")), Is.LessThan(0.35f));
+        }
+
+        [UnityTest]
+        public IEnumerator SideDodgeKeepsItsPoseAfterInvulnerabilityEnds()
+        {
+            Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+
+            Component player = GameObject.Find("Player").GetComponent("FeelStudyPlayer");
+            Animator animator = GameObject.Find("Player").GetComponentInChildren<Animator>();
+            Assert.That(animator, Is.Not.Null);
+            Set(gamepad.rightStick, Vector2.up);
+            Set(gamepad.leftStick, Vector2.right);
+            yield return null;
+            Set(gamepad.buttonEast, 1f);
+            yield return new WaitForSeconds(0.05f);
+            Assert.That((bool)player.GetType().GetProperty("IsDodging").GetValue(player), Is.True);
+            Assert.That(player.GetType().GetProperty("LastDodgeFacing").GetValue(player).ToString(),
+                Is.EqualTo("Right"));
+            Set(gamepad.buttonEast, 0f);
+
+            yield return new WaitForSeconds(0.18f);
+            Assert.That((bool)player.GetType().GetProperty("IsInvulnerable").GetValue(player), Is.False);
+            Assert.That((bool)player.GetType().GetProperty("IsDodgeVisualActive").GetValue(player), Is.True,
+                "The visual finish should read after the movement and invulnerability window.");
+            Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("DodgeRight"), Is.True,
+                "A rightward dodge should play KayKit's right dodge pose.");
+        }
+
+        [UnityTest]
         public IEnumerator InteractOpensAndClosesNearbyWorkbench()
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();

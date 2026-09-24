@@ -1,132 +1,156 @@
 using TMPro;
+using Topaz.Menus;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Topaz.VisualStudy
 {
-    /// <summary>Temporary uGUI controls for choosing art-study defaults in a player.</summary>
+    /// <summary>Compact Graphics menu over authored URP settings.</summary>
     public sealed class VisualOptionsMenu : MonoBehaviour
     {
         [SerializeField] GameObject panel;
-        [SerializeField] UnityEngine.UI.Slider[] sliders;
-        [SerializeField] TMP_Text[] values;
-        [SerializeField] UnityEngine.UI.Button lookButton;
-        [SerializeField] UnityEngine.UI.Button aaButton;
-        [SerializeField] UnityEngine.UI.Button depthButton;
-        [SerializeField] UnityEngine.UI.Button focusModeButton;
-        [SerializeField] UnityEngine.UI.Button ambientOcclusionButton;
-        [SerializeField] UnityEngine.UI.Button groundDetailButton;
-        [SerializeField] UnityEngine.UI.Button resetButton;
-        [SerializeField] UnityEngine.UI.Button saveButton;
-        [SerializeField] UnityEngine.UI.Button copyButton;
-        [SerializeField] UnityEngine.UI.Button closeButton;
+        [SerializeField] TMP_Dropdown cameraZoomDropdown;
+        [SerializeField] TMP_Dropdown antiAliasingDropdown;
+        [SerializeField] TMP_Dropdown depthOfFieldDropdown;
+        [SerializeField] Toggle bloomToggle;
+        [SerializeField] Toggle ambientOcclusionToggle;
+        [SerializeField] Button resetButton;
+        [SerializeField] Button closeButton;
         [SerializeField] TMP_Text status;
         [SerializeField] Topaz.LoopStudy.LoopHud loopHud;
 
         VisualLookController _controller;
-        bool _refreshing;
+        GameMenus _menus;
+        bool _bound;
 
         public bool IsOpen => panel != null && panel.activeSelf;
 
         public void Bind(VisualLookController controller)
         {
+            if (_bound) return;
             _controller = controller;
-            for (int i = 0; i < sliders.Length; i++)
+            _menus = GetComponent<GameMenus>();
+            if (panel == null || cameraZoomDropdown == null || antiAliasingDropdown == null ||
+                depthOfFieldDropdown == null || bloomToggle == null ||
+                ambientOcclusionToggle == null || resetButton == null || closeButton == null ||
+                status == null || loopHud == null || _menus == null)
             {
-                int index = i;
-                sliders[i].onValueChanged.AddListener(value =>
-                {
-                    if (_refreshing) return;
-                    _controller.SetSetting(index, value);
-                    SetStatus("Unsaved changes");
-                });
+                Debug.LogError("Graphics menu is missing a required reference.", this);
+                enabled = false;
+                return;
             }
-            lookButton.onClick.AddListener(() => _controller.SetLook((_controller.CurrentLook + 1) % 3));
-            aaButton.onClick.AddListener(() => _controller.SetAa((_controller.CurrentAa + 1) % 4));
-            depthButton.onClick.AddListener(_controller.ToggleDepthOfField);
-            focusModeButton.onClick.AddListener(_controller.ToggleFocusMode);
-            ambientOcclusionButton.onClick.AddListener(_controller.ToggleAmbientOcclusion);
-            groundDetailButton.onClick.AddListener(_controller.ToggleGroundDetail);
-            resetButton.onClick.AddListener(() =>
+            SetOptions(cameraZoomDropdown, "Close", "Balanced", "Far");
+            SetOptions(antiAliasingDropdown, "Off", "FXAA", "SMAA", "TAA",
+                "MSAA 2×", "MSAA 4×", "MSAA 8×");
+            SetOptions(depthOfFieldDropdown, "Off", "Gaussian", "Bokeh");
+            cameraZoomDropdown.onValueChanged.AddListener(OnCameraZoomChanged);
+            antiAliasingDropdown.onValueChanged.AddListener(OnAntiAliasingChanged);
+            depthOfFieldDropdown.onValueChanged.AddListener(OnDepthOfFieldChanged);
+            bloomToggle.onValueChanged.AddListener(OnBloomChanged);
+            ambientOcclusionToggle.onValueChanged.AddListener(OnAmbientOcclusionChanged);
+            resetButton.onClick.AddListener(ResetToDefaults);
+            closeButton.onClick.AddListener(Close);
+            _bound = true;
+            Refresh();
+        }
+
+        void OnDestroy()
+        {
+            if (!_bound) return;
+            cameraZoomDropdown.onValueChanged.RemoveListener(OnCameraZoomChanged);
+            antiAliasingDropdown.onValueChanged.RemoveListener(OnAntiAliasingChanged);
+            depthOfFieldDropdown.onValueChanged.RemoveListener(OnDepthOfFieldChanged);
+            bloomToggle.onValueChanged.RemoveListener(OnBloomChanged);
+            ambientOcclusionToggle.onValueChanged.RemoveListener(OnAmbientOcclusionChanged);
+            resetButton.onClick.RemoveListener(ResetToDefaults);
+            closeButton.onClick.RemoveListener(Close);
+        }
+
+        static void SetOptions(TMP_Dropdown dropdown, params string[] labels)
+        {
+            dropdown.ClearOptions();
+            foreach (string label in labels)
+                dropdown.options.Add(new TMP_Dropdown.OptionData(label));
+            dropdown.RefreshShownValue();
+        }
+
+        void OnCameraZoomChanged(int value) => Change(() => _menus.SetCameraZoomIndex(value));
+        void OnAntiAliasingChanged(int value) => Change(() => _controller.SetAa(value));
+        void OnDepthOfFieldChanged(int value) => Change(() => _controller.SetDepthMode(value));
+        void OnBloomChanged(bool value) => Change(() => _controller.SetBloom(value));
+        void OnAmbientOcclusionChanged(bool value) =>
+            Change(() => _controller.SetAmbientOcclusion(value));
+
+        void Change(System.Action apply)
+        {
+            try
+            {
+                apply();
+                _controller.SaveSelection();
+                SetStatus("Saved automatically.");
+                Refresh();
+            }
+            catch (System.Exception error)
+            {
+                SetStatus("Could not save settings: " + error.Message);
+                Debug.LogWarning("[Topaz] Graphics preference save failed: " + error.Message, this);
+            }
+        }
+
+        void ResetToDefaults()
+        {
+            try
             {
                 _controller.ResetSelection();
-                SetStatus("Project defaults restored; save to keep them.");
-            });
-            saveButton.onClick.AddListener(() =>
+                _menus.SetCameraZoomIndex(1);
+                _controller.SaveSelection();
+                Refresh();
+                SetStatus("Defaults restored and saved.");
+            }
+            catch (System.Exception error)
             {
-                try { _controller.SaveSelection(); SetStatus("Saved. These values load next launch."); }
-                catch (System.Exception error) { SetStatus("Save failed: " + error.Message); }
-            });
-            copyButton.onClick.AddListener(() =>
-            {
-                _controller.CopySelection();
-                SetStatus("Settings copied to clipboard.");
-            });
-            closeButton.onClick.AddListener(Close);
-            Refresh();
+                SetStatus("Could not save defaults: " + error.Message);
+                Debug.LogWarning("[Topaz] Graphics reset failed: " + error.Message, this);
+            }
         }
 
         public void Toggle()
         {
             bool open = !IsOpen;
-            Topaz.Menus.GameMenus menus = GetComponent<Topaz.Menus.GameMenus>();
             loopHud.ClosePanels();
             panel.SetActive(open);
             if (open)
             {
-                menus?.OnVisualLabOpening();
+                _menus?.OnVisualLabOpening();
                 panel.transform.SetAsLastSibling();
                 Refresh();
+                UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(
+                    cameraZoomDropdown.gameObject);
             }
-            else menus?.OnVisualLabClosed();
+            else _menus?.OnVisualLabClosed();
         }
 
         public void Close()
         {
             panel.SetActive(false);
-            GetComponent<Topaz.Menus.GameMenus>()?.OnVisualLabClosed();
+            _menus?.OnVisualLabClosed();
         }
 
-        public void MarkUnsaved() => SetStatus("Unsaved changes");
+        public void MarkUnsaved() => SetStatus("Applying…");
 
         public void Refresh()
         {
-            if (_controller == null) return;
-            _refreshing = true;
-            for (int i = 0; i < sliders.Length; i++)
-            {
-                sliders[i].minValue = _controller.GetMinimum(i);
-                sliders[i].maxValue = _controller.GetMaximum(i);
-                sliders[i].wholeNumbers = _controller.UsesWholeNumbers(i);
-                sliders[i].SetValueWithoutNotify(_controller.GetSetting(i));
-                values[i].text = _controller.FormatSetting(i);
-                TMP_Text name = sliders[i].transform.parent.Find("Name")?.GetComponent<TMP_Text>();
-                if (name != null) name.text = _controller.GetSettingName(i);
-            }
-            _refreshing = false;
-            SetButton(lookButton, _controller.CurrentLook switch
-            {
-                0 => "Look: Lighting only", 1 => "Look: Painterly", _ => "Look: Focus preview"
-            });
-            SetButton(aaButton, _controller.CurrentAa switch
-            {
-                1 => "AA: FXAA", 2 => "AA: SMAA", 3 => "AA: TAA", _ => "AA: Off"
-            });
-            SetButton(depthButton, _controller.CurrentLook == 2
-                ? "Depth of field: On" : "Depth of field: Off");
-            SetButton(focusModeButton, _controller.CurrentFocusMode == 1
-                ? "Focus mode: Bokeh" : "Focus mode: Gaussian");
-            SetButton(ambientOcclusionButton, _controller.AmbientOcclusionEnabled
-                ? "Ambient occlusion: On" : "Ambient occlusion: Off");
-            SetButton(groundDetailButton, _controller.GroundDetailEnabled
-                ? "Ground detail: On" : "Ground detail: Off");
+            if (_controller == null || _menus == null || !_bound) return;
+            cameraZoomDropdown.SetValueWithoutNotify(_menus.CurrentCameraZoomIndex);
+            antiAliasingDropdown.SetValueWithoutNotify(_controller.CurrentAa);
+            depthOfFieldDropdown.SetValueWithoutNotify(_controller.CurrentDepthMode);
+            bloomToggle.SetIsOnWithoutNotify(_controller.BloomEnabled);
+            ambientOcclusionToggle.SetIsOnWithoutNotify(_controller.AmbientOcclusionEnabled);
         }
 
-        void SetStatus(string message) => status.text = message;
-
-        static void SetButton(UnityEngine.UI.Button button, string label)
+        void SetStatus(string message)
         {
-            TMP_Text text = button.GetComponentInChildren<TMP_Text>();
-            if (text != null) text.text = label;
+            if (status != null) status.text = message;
         }
     }
 }

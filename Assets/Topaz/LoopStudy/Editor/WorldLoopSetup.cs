@@ -254,6 +254,7 @@ namespace Topaz.Editor
             Ref(hud, "woodLabel", wood);
             Ref(hud, "loggingLabel", logging);
             Ref(hud, "toolLabel", tool);
+            top.gameObject.SetActive(false);
             Ref(hud, "contextLabel", context);
             Ref(hud, "statusLabel", status);
             Ref(hud, "craftDescription", craftDescription);

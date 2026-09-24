@@ -1,4 +1,5 @@
 using Topaz.FeelStudy;
+using Topaz.LoopStudy;
 using UnityEngine;
 
 namespace Topaz.CombatStudy
@@ -50,6 +51,7 @@ namespace Topaz.CombatStudy
             movement.ResetMotion();
             CurrentHealth = maximumHealth;
             _wasAtHome = true;
+            GetComponent<WorldSession>()?.ReturnHomeAfterDefeat();
         }
     }
 }

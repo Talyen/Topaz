@@ -28,7 +28,6 @@ namespace Topaz.Menus
         [SerializeField] UnityEngine.UI.Button pauseQuitButton;
         [SerializeField] UnityEngine.UI.Button displayModeButton;
         [SerializeField] UnityEngine.UI.Button windowSizeButton;
-        [SerializeField] UnityEngine.UI.Button cameraScaleButton;
         [SerializeField] UnityEngine.UI.Button visualLabButton;
         [SerializeField] UnityEngine.UI.Button optionsBackButton;
         [SerializeField] TMP_Text displayInfo;
@@ -36,7 +35,6 @@ namespace Topaz.Menus
         static readonly int[] Widths = { 1280, 1600, 1920 };
         static readonly int[] Heights = { 720, 900, 1080 };
         static readonly float[] CameraSizes = { 5.8f, 7.2f, 9f };
-        static readonly string[] CameraNames = { "Close", "Balanced", "Wide" };
 
         ScreenState _state;
         int _windowIndex = 1;
@@ -46,6 +44,7 @@ namespace Topaz.Menus
         public bool BlockGameplay => _state != ScreenState.Game;
         public bool IsTitle => _state == ScreenState.Title;
         public bool IsPaused => _state == ScreenState.Pause;
+        public int CurrentCameraZoomIndex => _cameraIndex;
 
         void Awake()
         {
@@ -65,7 +64,6 @@ namespace Topaz.Menus
             pauseQuitButton.onClick.AddListener(Quit);
             displayModeButton.onClick.AddListener(ToggleDisplayMode);
             windowSizeButton.onClick.AddListener(CycleWindowSize);
-            cameraScaleButton.onClick.AddListener(CycleCameraScale);
             visualLabButton.onClick.AddListener(() => visualLab.Toggle());
             optionsBackButton.onClick.AddListener(BackFromOptions);
         }
@@ -176,9 +174,9 @@ namespace Topaz.Menus
             UpdateLabels();
         }
 
-        void CycleCameraScale()
+        public void SetCameraZoomIndex(int index)
         {
-            _cameraIndex = (_cameraIndex + 1) % CameraSizes.Length;
+            _cameraIndex = Mathf.Clamp(index, 0, CameraSizes.Length - 1);
             cameraRig.SetZoom(CameraSizes[_cameraIndex]);
             SavePreferences();
             UpdateLabels();
@@ -209,7 +207,6 @@ namespace Topaz.Menus
         {
             SetButton(displayModeButton, _borderless ? "Display: Borderless native" : "Display: Windowed");
             SetButton(windowSizeButton, $"Window size: {Widths[_windowIndex]} × {Heights[_windowIndex]}");
-            SetButton(cameraScaleButton, $"Camera: {CameraNames[_cameraIndex]}");
             displayInfo.text = _borderless
                 ? "Uses the display's native resolution. Choose Window size to switch to a window."
                 : "Window size changes at the end of this frame. You can return to borderless anytime.";

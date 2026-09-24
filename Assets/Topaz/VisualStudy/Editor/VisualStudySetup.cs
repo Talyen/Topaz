@@ -1,12 +1,10 @@
 using System;
-using System.IO;
 using System.Linq;
 using TMPro;
 using Topaz.VisualStudy;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
@@ -17,7 +15,6 @@ namespace Topaz.Editor
     public static class VisualStudySetup
     {
         const string ScenePath = "Assets/Scenes/Bootstrap.unity";
-        const string ControlsPath = "Assets/Topaz/Input/TopazControls.inputactions";
         const string ProfileFolder = "Assets/Topaz/VisualStudy/Profiles";
         const string OrthographicDofShaderPath =
             "Assets/Topaz/VisualStudy/Shaders/OrthographicGaussianDepthOfField.shader";
@@ -98,7 +95,6 @@ namespace Topaz.Editor
                 throw new InvalidOperationException("URP global settings asset is missing.");
             EditorUtility.SetDirty(globalSettings);
             EnsureFolder(ProfileFolder);
-            AddBindings();
             VolumeProfile painterly = Profile("Painterly Clear");
             ConfigurePainterly(painterly);
             VolumeProfile home = Profile("Warm Home");
@@ -189,19 +185,15 @@ namespace Topaz.Editor
             homeLight.range = 7.5f;
             homeLight.shadows = LightShadows.None;
 
-            TMP_Text lookLabel = CreateLabel(hud.transform);
             VisualOptionsMenu optionsMenu = CreateOptionsMenu(hud.transform,
                 hud.GetComponent<Topaz.LoopStudy.LoopHud>());
-            InputActionAsset controls = AssetDatabase.LoadAssetAtPath<InputActionAsset>(ControlsPath);
             VisualLookController controller = root.AddComponent<VisualLookController>();
-            Ref(controller, "controls", controls);
             Ref(controller, "cameraData", cameraData);
             Ref(controller, "painterlyVolume", painterlyVolume);
             Ref(controller, "homeVolume", homeVolume);
             Ref(controller, "focusVolume", focusVolume);
             Ref(controller, "homeLight", homeLight);
             Ref(controller, "sun", sun);
-            Ref(controller, "lookLabel", lookLabel);
             Ref(controller, "optionsMenu", optionsMenu);
 
             EditorSceneManager.MarkSceneDirty(scene);
@@ -275,12 +267,13 @@ namespace Topaz.Editor
             if (profile.Has<Vignette>()) profile.Remove<Vignette>();
             DepthOfField depth = Effect<DepthOfField>(profile);
             depth.mode.Override(DepthOfFieldMode.Gaussian);
-            depth.gaussianStart.Override(24f);
-            depth.gaussianEnd.Override(30f);
-            depth.gaussianMaxRadius.Override(1.0f);
+            depth.gaussianStart.Override(30f);
+            depth.gaussianEnd.Override(40f);
+            depth.gaussianMaxRadius.Override(.5f);
             depth.focusDistance.Override(22f);
-            depth.aperture.Override(1.25f);
-            depth.focalLength.Override(145f);
+            depth.aperture.Override(2.8f);
+            depth.focalLength.Override(120f);
+            depth.bladeCount.Override(6);
             Dirty(profile);
         }
 
@@ -359,97 +352,59 @@ namespace Topaz.Editor
             particleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
         }
 
-        static TMP_Text CreateLabel(Transform canvas)
+        [MenuItem("Topaz/Rebuild Graphics Menu")]
+        public static void RebuildGraphicsMenu()
         {
-            Transform prior = canvas.Find("Visual Study Label");
-            if (prior != null) UnityEngine.Object.DestroyImmediate(prior.gameObject);
-            var panel = new GameObject("Visual Study Label", typeof(RectTransform),
-                typeof(UnityEngine.UI.Image));
-            panel.transform.SetParent(canvas, false);
-            RectTransform rect = panel.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(1f,1f);
-            rect.anchorMax = rect.anchorMin;
-            rect.pivot = new Vector2(1f,1f);
-            rect.anchoredPosition = new Vector2(-24f,-24f);
-            rect.sizeDelta = new Vector2(450f,102f);
-            var image = panel.GetComponent<UnityEngine.UI.Image>();
-            image.color = new Color(.07f,.11f,.14f,.72f);
-            image.raycastTarget = false;
-            var text = new GameObject("Look and AA", typeof(RectTransform), typeof(TextMeshProUGUI));
-            text.transform.SetParent(panel.transform, false);
-            RectTransform textRect = text.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = new Vector2(12f,10f);
-            textRect.offsetMax = new Vector2(-12f,-10f);
-            TextMeshProUGUI label = text.GetComponent<TextMeshProUGUI>();
-            label.font = TMP_Settings.defaultFontAsset;
-            label.fontSize = 23;
-            label.color = Color.white;
-            label.text = "LOOK  Focus preview  •  AA TAA\nF5 look   F6 AA   F7 options";
-            label.alignment = TextAlignmentOptions.Right;
-            label.raycastTarget = false;
-            return label;
+            Scene scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            GameObject canvas = GameObject.Find("Loop HUD");
+            if (canvas == null) throw new InvalidOperationException("Bootstrap HUD is missing.");
+            VisualOptionsMenu menu = CreateOptionsMenu(canvas.transform,
+                canvas.GetComponent<Topaz.LoopStudy.LoopHud>());
+            ConfigureFocus(Profile("Focus Preview"));
+            GameObject menus = canvas;
+            if (menus.GetComponent<Topaz.Menus.GameMenus>() != null)
+                Ref(menus.GetComponent<Topaz.Menus.GameMenus>(), "visualLab", menu);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Topaz] Graphics menu rebuilt.");
         }
 
         static VisualOptionsMenu CreateOptionsMenu(Transform canvas,
             Topaz.LoopStudy.LoopHud hud)
         {
-            Transform prior = canvas.Find("Visual Lab");
-            if (prior != null) UnityEngine.Object.DestroyImmediate(prior.gameObject);
+            Transform previous = canvas.Find("Visual Lab") ?? canvas.Find("Graphics");
+            if (previous != null) UnityEngine.Object.DestroyImmediate(previous.gameObject);
             TMP_FontAsset font = TMP_Settings.defaultFontAsset;
-            RectTransform panel = Box("Visual Lab", canvas, new Vector2(1120f,860f),
-                new Vector2(.5f,.5f), Vector2.zero, new Color(.07f,.12f,.15f,.97f));
+            RectTransform panel = Box("Graphics", canvas, new Vector2(980f,800f),
+                new Vector2(.5f,.5f), Vector2.zero, new Color(.07f,.12f,.15f,.98f));
             panel.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
-            Text(panel, "Heading", font, "Visual Lab", 34,
-                new Vector2(0f,-22f), new Vector2(1040f,52f), TextAlignmentOptions.Center);
-            Text(panel, "Explanation", font,
-                "Adjust live in the Mac build. Save selection to reload it; Copy lets you share exact values.",
-                21, new Vector2(0f,-70f), new Vector2(1050f,38f), TextAlignmentOptions.Center);
+            Text(panel, "Heading", font, "Graphics", 42,
+                new Vector2(0f,-23f), new Vector2(900f,56f), TextAlignmentOptions.Center);
+            Text(panel, "Explanation", font, "Changes apply and save automatically.", 21,
+                new Vector2(0f,-79f), new Vector2(900f,40f), TextAlignmentOptions.Center);
 
-            UnityEngine.UI.Button look = Button(panel, "Look", font,
-                new Vector2(-350f,-115f), new Vector2(320f,50f));
-            UnityEngine.UI.Button aa = Button(panel, "AA", font,
-                new Vector2(0f,-115f), new Vector2(320f,50f));
-            UnityEngine.UI.Button depth = Button(panel, "Depth of field", font,
-                new Vector2(350f,-115f), new Vector2(320f,50f));
-
-            RectTransform grid = Box("Settings Grid", panel, new Vector2(1040f,548f),
-                new Vector2(.5f,1f), new Vector2(0f,-163f), Color.clear);
-            grid.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
-            var layout = grid.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
-            layout.cellSize = new Vector2(510f,70f);
-            layout.spacing = new Vector2(20f,8f);
-            layout.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
-            layout.constraintCount = 2;
-            var sliders = new UnityEngine.UI.Slider[VisualLookController.SettingNames.Length];
-            var values = new TMP_Text[sliders.Length];
-            for (int i = 0; i < sliders.Length; i++)
-                SliderRow(grid, font, i, out sliders[i], out values[i]);
-
-            TMP_Text status = Text(panel, "Status", font,
-                "Preset changes are local until saved.", 20,
-                new Vector2(0f,-735f), new Vector2(1020f,32f), TextAlignmentOptions.Center);
-            UnityEngine.UI.Button reset = Button(panel, "Reset", font,
-                new Vector2(-390f,-790f), new Vector2(245f,52f));
-            UnityEngine.UI.Button save = Button(panel, "Save selection", font,
-                new Vector2(-130f,-790f), new Vector2(245f,52f));
-            UnityEngine.UI.Button copy = Button(panel, "Copy values", font,
-                new Vector2(130f,-790f), new Vector2(245f,52f));
-            UnityEngine.UI.Button close = Button(panel, "Close  •  F7", font,
-                new Vector2(390f,-790f), new Vector2(245f,52f));
+            TMP_Dropdown zoom = DropdownRow(panel, font, "Camera Zoom", -138f);
+            TMP_Dropdown aa = DropdownRow(panel, font, "Anti-aliasing", -236f);
+            TMP_Dropdown depth = DropdownRow(panel, font, "Depth of Field", -334f);
+            UnityEngine.UI.Toggle bloom = ToggleRow(panel, font, "Bloom", -432f);
+            UnityEngine.UI.Toggle ao = ToggleRow(panel, font, "Ambient Occlusion", -530f);
+            TMP_Text status = Text(panel, "Status", font, "Changes save automatically.", 19,
+                new Vector2(0f,-653f), new Vector2(880f,34f), TextAlignmentOptions.Center);
+            UnityEngine.UI.Button reset = Button(panel, "Reset to Default", font,
+                new Vector2(-220f,-714f), new Vector2(330f,58f));
+            UnityEngine.UI.Button close = Button(panel, "Back", font,
+                new Vector2(220f,-714f), new Vector2(330f,58f));
 
             VisualOptionsMenu menu = canvas.GetComponent<VisualOptionsMenu>();
             if (menu == null) menu = canvas.gameObject.AddComponent<VisualOptionsMenu>();
             Ref(menu, "panel", panel.gameObject);
-            Refs(menu, "sliders", sliders);
-            Refs(menu, "values", values);
-            Ref(menu, "lookButton", look);
-            Ref(menu, "aaButton", aa);
-            Ref(menu, "depthButton", depth);
+            Ref(menu, "cameraZoomDropdown", zoom);
+            Ref(menu, "antiAliasingDropdown", aa);
+            Ref(menu, "depthOfFieldDropdown", depth);
+            Ref(menu, "bloomToggle", bloom);
+            Ref(menu, "ambientOcclusionToggle", ao);
             Ref(menu, "resetButton", reset);
-            Ref(menu, "saveButton", save);
-            Ref(menu, "copyButton", copy);
             Ref(menu, "closeButton", close);
             Ref(menu, "status", status);
             Ref(menu, "loopHud", hud);
@@ -458,41 +413,73 @@ namespace Topaz.Editor
             return menu;
         }
 
-        static void SliderRow(Transform parent, TMP_FontAsset font, int index,
-            out UnityEngine.UI.Slider slider, out TMP_Text valueLabel)
+        static TMP_Dropdown DropdownRow(Transform parent, TMP_FontAsset font,
+            string name, float top)
         {
-            RectTransform row = Box(VisualLookController.SettingNames[index], parent,
-                new Vector2(510f,70f), new Vector2(.5f,.5f), Vector2.zero,
-                new Color(.16f,.23f,.27f,.95f));
+            RectTransform row = Box(name, parent, new Vector2(880f,80f),
+                new Vector2(.5f,1f), new Vector2(0f,top),
+                new Color(.16f,.23f,.27f,.96f));
             row.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
-            Text(row, "Name", font, VisualLookController.SettingNames[index], 22,
-                new Vector2(-54f,-6f), new Vector2(355f,30f), TextAlignmentOptions.Left);
-            valueLabel = Text(row, "Value", font, "0", 22,
-                new Vector2(207f,-6f), new Vector2(88f,30f), TextAlignmentOptions.Right);
-            RectTransform sliderRect = Box("Slider", row, new Vector2(466f,23f),
-                new Vector2(.5f,1f), new Vector2(0f,-40f), Color.clear);
-            UnityEngine.Object.DestroyImmediate(sliderRect.GetComponent<UnityEngine.UI.Image>());
-            slider = sliderRect.gameObject.AddComponent<UnityEngine.UI.Slider>();
-            slider.minValue = VisualLookController.Minimum[index];
-            slider.maxValue = VisualLookController.Maximum[index];
-            slider.wholeNumbers = index == 0 || index == 2 || index == 3 || index == 7 ||
-                index == 8 || index == 10 || index == 13;
-            RectTransform track = Box("Track", sliderRect, new Vector2(466f,9f),
-                new Vector2(.5f,.5f), Vector2.zero, new Color(.06f,.10f,.12f,1f));
-            track.GetComponent<UnityEngine.UI.Image>().raycastTarget = true;
-            RectTransform fill = Box("Fill", sliderRect, new Vector2(466f,9f),
-                new Vector2(.5f,.5f), Vector2.zero, new Color(.44f,.73f,.72f,1f));
-            fill.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
-            fill.anchorMin = Vector2.zero;
-            fill.anchorMax = new Vector2(0f,1f);
-            fill.pivot = new Vector2(0f,.5f);
-            fill.offsetMin = Vector2.zero;
-            fill.offsetMax = Vector2.zero;
-            RectTransform handle = Box("Handle", sliderRect, new Vector2(18f,26f),
-                new Vector2(0f,.5f), Vector2.zero, new Color(.93f,.96f,.85f,1f));
-            slider.fillRect = fill;
-            slider.handleRect = handle;
-            slider.targetGraphic = handle.GetComponent<UnityEngine.UI.Image>();
+            Text(row, "Name", font, name, 25, new Vector2(-198f,-19f),
+                new Vector2(430f,48f), TextAlignmentOptions.Left);
+            var resources = new TMP_DefaultControls.Resources
+            {
+                standard = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"),
+                background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"),
+                inputField = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/InputFieldBackground.psd"),
+                knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd"),
+                checkmark = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Checkmark.psd"),
+                dropdown = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/DropdownArrow.psd"),
+                mask = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UIMask.psd")
+            };
+            GameObject control = TMP_DefaultControls.CreateDropdown(resources);
+            control.name = name + " Dropdown";
+            control.transform.SetParent(row, false);
+            RectTransform rect = control.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(1f,.5f);
+            rect.pivot = new Vector2(1f,.5f);
+            rect.anchoredPosition = new Vector2(-24f,0f);
+            rect.sizeDelta = new Vector2(340f,54f);
+            TMP_Dropdown dropdown = control.GetComponent<TMP_Dropdown>();
+            control.GetComponent<UnityEngine.UI.Image>().color = new Color(.23f,.44f,.49f,1f);
+            dropdown.captionText.font = font;
+            dropdown.captionText.fontSize = 23;
+            dropdown.captionText.color = Color.white;
+            dropdown.itemText.font = font;
+            dropdown.itemText.fontSize = 20;
+            dropdown.itemText.color = Color.white;
+            dropdown.template.GetComponent<UnityEngine.UI.Image>().color =
+                new Color(.10f,.18f,.22f,1f);
+            RectTransform template = dropdown.template;
+            template.sizeDelta = new Vector2(0f,250f);
+            Transform item = template.Find("Viewport/Content/Item");
+            if (item == null) throw new InvalidOperationException("TMP dropdown item is missing.");
+            item.GetComponent<RectTransform>().sizeDelta = new Vector2(0f,42f);
+            item.Find("Item Background").GetComponent<UnityEngine.UI.Image>().color =
+                new Color(.14f,.24f,.28f,1f);
+            control.transform.Find("Arrow").GetComponent<UnityEngine.UI.Image>().color = Color.white;
+            dropdown.template.gameObject.SetActive(false);
+            return dropdown;
+        }
+
+        static UnityEngine.UI.Toggle ToggleRow(Transform parent, TMP_FontAsset font,
+            string name, float top)
+        {
+            RectTransform row = Box(name, parent, new Vector2(880f,80f),
+                new Vector2(.5f,1f), new Vector2(0f,top),
+                new Color(.16f,.23f,.27f,.96f));
+            Text(row, "Name", font, name, 25, new Vector2(-198f,-19f),
+                new Vector2(430f,48f), TextAlignmentOptions.Left);
+            RectTransform square = Box("Checkbox", row, new Vector2(46f,46f),
+                new Vector2(.5f,.5f), new Vector2(235f,0f),
+                new Color(.07f,.12f,.15f,1f));
+            RectTransform mark = Box("Checkmark", square, new Vector2(28f,28f),
+                new Vector2(.5f,.5f), Vector2.zero, new Color(.63f,.90f,.80f,1f));
+            UnityEngine.UI.Toggle toggle = row.gameObject.AddComponent<UnityEngine.UI.Toggle>();
+            toggle.targetGraphic = row.GetComponent<UnityEngine.UI.Image>();
+            toggle.graphic = mark.GetComponent<UnityEngine.UI.Image>();
+            toggle.isOn = true;
+            return toggle;
         }
 
         static RectTransform Box(string name, Transform parent, Vector2 size,
@@ -556,20 +543,6 @@ namespace Topaz.Editor
             for (int i = 0; i < values.Length; i++)
                 field.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
             data.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        static void AddBindings()
-        {
-            InputActionAsset asset = AssetDatabase.LoadAssetAtPath<InputActionAsset>(ControlsPath);
-            InputActionMap map = asset.FindActionMap("Player", true);
-            if (map.FindAction("CycleLook") == null)
-                map.AddAction("CycleLook", InputActionType.Button).AddBinding("<Keyboard>/f5");
-            if (map.FindAction("ToggleAA") == null)
-                map.AddAction("ToggleAA", InputActionType.Button).AddBinding("<Keyboard>/f6");
-            if (map.FindAction("VisualOptions") == null)
-                map.AddAction("VisualOptions", InputActionType.Button).AddBinding("<Keyboard>/f7");
-            File.WriteAllText(ControlsPath, asset.ToJson());
-            AssetDatabase.ImportAsset(ControlsPath, ImportAssetOptions.ForceSynchronousImport);
         }
 
         static void EnsureFolder(string path)

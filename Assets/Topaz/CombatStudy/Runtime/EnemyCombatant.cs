@@ -16,9 +16,11 @@ namespace Topaz.CombatStudy
         [SerializeField] Renderer bodyRenderer;
         [SerializeField] Collider bodyCollider;
         [SerializeField] LineRenderer telegraph;
+        [SerializeField] bool keepVisualOnDefeat;
+        [SerializeField] bool respawns = true;
+        [SerializeField] Color normalBodyTint = new Color(0.87f, 0.36f, 0.31f);
 
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
-        static readonly Color NormalColor = new Color(0.87f, 0.36f, 0.31f);
         static readonly Color HitColor = new Color(1f, 0.92f, 0.72f);
 
         NavMeshAgent _agent;
@@ -33,6 +35,20 @@ namespace Topaz.CombatStudy
 
         public int CurrentHealth { get; private set; }
         public bool IsAlive => CurrentHealth > 0;
+        public bool IsAttacking => _state == State.Windup || _state == State.Recovery;
+        public bool IsWindingUp => _state == State.Windup;
+        public bool HasHitReaction => Time.time < _flashUntil;
+        public float HitReactionSeconds => 0.3f;
+        public float AttackAnimationSeconds => definition.TelegraphSeconds + definition.RecoverySeconds;
+        public float AttackWindupSeconds => definition.TelegraphSeconds;
+        public float AttackRecoverySeconds => definition.RecoverySeconds;
+        public float TravelSpeed => definition.TravelSpeed;
+
+        public void BindTarget(PlayerVitality player, SafeZone home)
+        {
+            target = player;
+            safeZone = home;
+        }
 
         void Awake()
         {
@@ -58,14 +74,14 @@ namespace Topaz.CombatStudy
         {
             if (_state == State.Down)
             {
-                if (Time.time >= _phaseEnd) Respawn();
+                if (respawns && Time.time >= _phaseEnd) Respawn();
                 return;
             }
 
             if (_flashing && Time.time >= _flashUntil)
             {
                 _flashing = false;
-                SetColor(NormalColor);
+                SetColor(normalBodyTint);
             }
 
             if (!_agent.isOnNavMesh) return;
@@ -125,7 +141,7 @@ namespace Topaz.CombatStudy
                 Fall();
                 return;
             }
-            _flashUntil = Time.time + 0.16f;
+            _flashUntil = Time.time + HitReactionSeconds;
             _flashing = true;
             SetColor(HitColor);
         }
@@ -174,11 +190,11 @@ namespace Topaz.CombatStudy
         void Fall()
         {
             _state = State.Down;
-            _phaseEnd = Time.time + 3f;
+            _phaseEnd = respawns ? Time.time + 3f : float.PositiveInfinity;
             telegraph.enabled = false;
             if (_agent.isOnNavMesh) _agent.ResetPath();
             _agent.enabled = false;
-            visualRoot.gameObject.SetActive(false);
+            if (!keepVisualOnDefeat) visualRoot.gameObject.SetActive(false);
             if (bodyCollider != null) bodyCollider.enabled = false;
         }
 
@@ -195,7 +211,7 @@ namespace Topaz.CombatStudy
             if (bodyCollider != null) bodyCollider.enabled = true;
             CurrentHealth = definition.Health;
             _state = State.Idle;
-            SetColor(NormalColor);
+            SetColor(normalBodyTint);
         }
 
         void DrawTelegraph()

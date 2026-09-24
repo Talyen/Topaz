@@ -1,8 +1,6 @@
 using System;
 using System.IO;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -24,43 +22,38 @@ namespace Topaz.VisualStudy
             40f, 1f, 30f, 40f, 1f, 2f, .4f, 36f, 60f, 1.5f, 100f, 16f, 1f, 35f
         };
 
-        [SerializeField] InputActionAsset controls;
         [SerializeField] UniversalAdditionalCameraData cameraData;
         [SerializeField] Volume painterlyVolume;
         [SerializeField] Volume homeVolume;
         [SerializeField] Volume focusVolume;
         [SerializeField] ScriptableRendererFeature ambientOcclusionFeature;
-        [SerializeField] ScriptableRendererFeature groundDecalFeature;
-        [SerializeField] GameObject groundDetailRoot;
         [SerializeField] Light homeLight;
         [SerializeField] Light sun;
-        [SerializeField] TMP_Text lookLabel;
         [SerializeField] VisualOptionsMenu optionsMenu;
 
-        InputAction _cycleLook;
-        InputAction _toggleAa;
-        InputAction _options;
         VolumeProfile _baseProfile;
         VolumeProfile _homeProfile;
         VolumeProfile _focusProfile;
+        UniversalRenderPipelineAsset _urp;
+        int _originalMsaa;
         VisualStudySettings _settings = new VisualStudySettings();
         string _settingsPath;
         bool _ready;
 
         public int CurrentLook => _settings.look;
         public int CurrentAa => _settings.antiAliasing;
+        public int CurrentDepthMode => _settings.look == 2
+            ? (_settings.focusMode == 1 ? 2 : 1) : 0;
         public int CurrentFocusMode => _settings.focusMode;
         public bool AmbientOcclusionEnabled => _settings.ambientOcclusion;
-        public bool GroundDetailEnabled => _settings.groundDetail;
+        public bool BloomEnabled => _settings.bloomEnabled;
         public string SettingsPath => _settingsPath;
 
         void Awake()
         {
-            if (controls == null || cameraData == null || painterlyVolume == null ||
-                homeVolume == null || focusVolume == null || ambientOcclusionFeature == null ||
-                groundDecalFeature == null ||
-                groundDetailRoot == null || homeLight == null || sun == null ||
-                lookLabel == null || optionsMenu == null)
+            if (cameraData == null || painterlyVolume == null || homeVolume == null ||
+                focusVolume == null || ambientOcclusionFeature == null ||
+                homeLight == null || sun == null || optionsMenu == null)
             {
                 Debug.LogError("Visual look study is missing a required reference.", this);
                 enabled = false;
@@ -70,24 +63,6 @@ namespace Topaz.VisualStudy
                 ? Path.Combine(Application.temporaryCachePath, "TopazVisual-" + Guid.NewGuid().ToString("N"))
                 : Application.persistentDataPath;
             _settingsPath = Path.Combine(directory, "visual-study-settings.json");
-            InputActionMap map = controls.FindActionMap("Player", true);
-            _cycleLook = map.FindAction("CycleLook", true);
-            _toggleAa = map.FindAction("ToggleAA", true);
-            _options = map.FindAction("VisualOptions", true);
-        }
-
-        void OnEnable()
-        {
-            if (_cycleLook != null) _cycleLook.performed += OnCycleLook;
-            if (_toggleAa != null) _toggleAa.performed += OnToggleAa;
-            if (_options != null) _options.performed += OnOptions;
-        }
-
-        void OnDisable()
-        {
-            if (_cycleLook != null) _cycleLook.performed -= OnCycleLook;
-            if (_toggleAa != null) _toggleAa.performed -= OnToggleAa;
-            if (_options != null) _options.performed -= OnOptions;
         }
 
         void Start()
@@ -96,15 +71,14 @@ namespace Topaz.VisualStudy
             _baseProfile = painterlyVolume.profile;
             _homeProfile = homeVolume.profile;
             _focusProfile = focusVolume.profile;
+            _urp = UniversalRenderPipeline.asset;
+            _originalMsaa = _urp != null ? _urp.msaaSampleCount : 1;
             LoadSelection();
+            gameObject.AddComponent<VisualEffectsComparison>().Initialize();
             Apply();
             optionsMenu.Bind(this);
             _ready = true;
         }
-
-        void OnCycleLook(InputAction.CallbackContext context) => SetLook((_settings.look + 1) % 3);
-        void OnToggleAa(InputAction.CallbackContext context) => SetAa((_settings.antiAliasing + 1) % 4);
-        void OnOptions(InputAction.CallbackContext context) => optionsMenu.Toggle();
 
         public void SetLook(int look)
         {
@@ -113,9 +87,37 @@ namespace Topaz.VisualStudy
             if (_ready) optionsMenu.MarkUnsaved();
         }
 
+        void OnDestroy()
+        {
+            if (_urp != null) _urp.msaaSampleCount = _originalMsaa;
+        }
+
         public void SetAa(int aa)
         {
-            _settings.antiAliasing = Mathf.Clamp(aa, 0, 3);
+            _settings.antiAliasing = Mathf.Clamp(aa, 0, 6);
+            Apply();
+            if (_ready) optionsMenu.MarkUnsaved();
+        }
+
+        public void SetDepthMode(int mode)
+        {
+            mode = Mathf.Clamp(mode, 0, 2);
+            _settings.look = mode == 0 ? 1 : 2;
+            _settings.focusMode = mode == 2 ? 1 : 0;
+            Apply();
+            if (_ready) optionsMenu.MarkUnsaved();
+        }
+
+        public void SetAmbientOcclusion(bool enabled)
+        {
+            _settings.ambientOcclusion = enabled;
+            Apply();
+            if (_ready) optionsMenu.MarkUnsaved();
+        }
+
+        public void SetBloom(bool enabled)
+        {
+            _settings.bloomEnabled = enabled;
             Apply();
             if (_ready) optionsMenu.MarkUnsaved();
         }
@@ -132,13 +134,6 @@ namespace Topaz.VisualStudy
         public void ToggleAmbientOcclusion()
         {
             _settings.ambientOcclusion = !_settings.ambientOcclusion;
-            Apply();
-            if (_ready) optionsMenu.MarkUnsaved();
-        }
-
-        public void ToggleGroundDetail()
-        {
-            _settings.groundDetail = !_settings.groundDetail;
             Apply();
             if (_ready) optionsMenu.MarkUnsaved();
         }
@@ -241,29 +236,50 @@ namespace Topaz.VisualStudy
                 var loaded = new VisualStudySettings();
                 JsonUtility.FromJsonOverwrite(File.ReadAllText(SettingsPath), loaded);
                 if (loaded.version < 1 || loaded.version > VisualStudySettings.CurrentVersion) return;
+                if (loaded.version < 4 && loaded.focusMode == 0 &&
+                    Mathf.Approximately(loaded.depthStart, 24f) &&
+                    Mathf.Approximately(loaded.depthEnd, 30f) &&
+                    Mathf.Approximately(loaded.depthRadius, 1f))
+                {
+                    loaded.depthStart = 30f;
+                    loaded.depthEnd = 40f;
+                    loaded.depthRadius = .5f;
+                }
+                if (loaded.version < 5 &&
+                    Mathf.Approximately(loaded.bokehAperture, 1.25f) &&
+                    Mathf.Approximately(loaded.bokehFocalLength, 145f))
+                {
+                    loaded.bokehAperture = 2.8f;
+                    loaded.bokehFocalLength = 120f;
+                }
                 loaded.version = VisualStudySettings.CurrentVersion;
                 _settings = loaded;
-                _settings.look = Mathf.Clamp(_settings.look, 0, 2);
-                _settings.antiAliasing = Mathf.Clamp(_settings.antiAliasing, 0, 3);
+                _settings.look = _settings.look == 2 ? 2 : 1;
+                _settings.antiAliasing = Mathf.Clamp(_settings.antiAliasing, 0, 6);
                 _settings.focusMode = Mathf.Clamp(_settings.focusMode, 0, 1);
                 for (int i = 0; i < SettingNames.Length; i++)
                     SetSetting(i, GetSetting(i));
             }
             catch (Exception error)
             {
-                Debug.LogWarning($"[Topaz] Visual Lab settings could not be loaded: {error.Message}");
+                Debug.LogWarning($"[Topaz] Graphics settings could not be loaded: {error.Message}");
             }
         }
 
         void Apply()
         {
             if (_baseProfile == null) return;
-            painterlyVolume.enabled = _settings.look != 0;
-            homeVolume.enabled = _settings.look != 0;
+            painterlyVolume.enabled = true;
+            homeVolume.enabled = true;
             focusVolume.enabled = _settings.look == 2;
             ambientOcclusionFeature.SetActive(_settings.ambientOcclusion);
-            groundDecalFeature.SetActive(_settings.groundDetail);
-            groundDetailRoot.SetActive(_settings.groundDetail);
+            int msaa = _settings.antiAliasing switch
+            {
+                4 => 2, 5 => 4, 6 => 8, _ => 1
+            };
+            if (_urp != null) _urp.msaaSampleCount = msaa;
+            Camera camera = cameraData.GetComponent<Camera>();
+            if (camera != null) camera.allowMSAA = msaa > 1;
             cameraData.antialiasing = _settings.antiAliasing switch
             {
                 1 => AntialiasingMode.FastApproximateAntialiasing,
@@ -277,7 +293,8 @@ namespace Topaz.VisualStudy
             Get<ColorAdjustments>(_homeProfile).postExposure.Override(_settings.exposure + .06f);
             Get<ColorAdjustments>(_baseProfile).contrast.Override(_settings.contrast);
             Get<ColorAdjustments>(_baseProfile).saturation.Override(_settings.saturation);
-            Get<Bloom>(_baseProfile).intensity.Override(_settings.bloomIntensity);
+            Get<Bloom>(_baseProfile).intensity.Override(
+                _settings.bloomEnabled ? _settings.bloomIntensity : 0f);
             Get<Bloom>(_baseProfile).threshold.Override(_settings.bloomThreshold);
             Get<Vignette>(_baseProfile).intensity.Override(_settings.vignette);
             DepthOfField depth = Get<DepthOfField>(_focusProfile);
@@ -289,10 +306,10 @@ namespace Topaz.VisualStudy
             depth.focusDistance.Override(_settings.bokehFocusDistance);
             depth.aperture.Override(_settings.bokehAperture);
             depth.focalLength.Override(_settings.bokehFocalLength);
+            depth.bladeCount.Override(6);
             RenderSettings.fogEndDistance = _settings.fogEnd;
             homeLight.intensity = _settings.homeLight;
             sun.shadowStrength = _settings.shadowStrength;
-            UpdateLabel();
             optionsMenu?.Refresh();
         }
 
@@ -302,16 +319,5 @@ namespace Topaz.VisualStudy
             throw new InvalidOperationException("Visual Study profile is missing " + typeof(T).Name);
         }
 
-        void UpdateLabel()
-        {
-            string name = _settings.look == 0 ? "Lighting only" :
-                _settings.look == 1 ? "Painterly" :
-                _settings.focusMode == 1 ? "Bokeh preview" : "Focus preview";
-            string aa = _settings.antiAliasing switch
-            {
-                1 => "FXAA", 2 => "SMAA", 3 => "TAA", _ => "Off"
-            };
-            lookLabel.text = $"LOOK  {name}  •  AA {aa}\nF5 look   F6 AA   F7 options";
-        }
     }
 }

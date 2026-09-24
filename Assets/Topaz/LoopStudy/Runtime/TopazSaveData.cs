@@ -6,7 +6,9 @@ namespace Topaz.LoopStudy
     [Serializable]
     public sealed class TopazSaveData
     {
-        public const int CurrentVersion = 3;
+        public const int CurrentVersion = 4;
+        public const string HomeRegion = "home";
+        public const string ExpeditionRegion = "expedition.clearing";
 
         public int version = CurrentVersion;
         public int day = 1;
@@ -15,6 +17,8 @@ namespace Topaz.LoopStudy
         public string equippedTool = "sword";
         public float playerX;
         public float playerZ;
+        public string regionId = HomeRegion;
+        public bool expeditionCacheClaimed;
         public bool pendingChest;
         public List<ItemStackRecord> backpackSlots = new List<ItemStackRecord>();
         public List<NodeStateRecord> nodes = new List<NodeStateRecord>();

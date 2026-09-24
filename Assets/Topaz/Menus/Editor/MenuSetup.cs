@@ -62,18 +62,17 @@ namespace Topaz.Editor
             UnityEngine.UI.Button pauseQuit = Button(pauseCard, "Quit", -455, 540);
 
             GameObject options = FullPanel(root.transform, "Options Screen", .65f);
-            RectTransform optionsCard = Card(options.transform, new Vector2(880,760));
+            RectTransform optionsCard = Card(options.transform, new Vector2(880,680));
             Label(optionsCard, "Options", 59, -34, 85, Color.white);
-            Label(optionsCard, "Display and camera settings are saved on this computer.", 24,
+            Label(optionsCard, "Display and graphics preferences save automatically.", 24,
                 -115, 50, new Color(.77f,.87f,.85f));
             UnityEngine.UI.Button displayMode = Button(optionsCard, "Display: Borderless native", -195, 670);
             UnityEngine.UI.Button windowSize = Button(optionsCard, "Window size: 1600 × 900", -285, 670);
-            UnityEngine.UI.Button cameraScale = Button(optionsCard, "Camera: Balanced", -375, 670);
-            UnityEngine.UI.Button visualLabButton = Button(optionsCard, "Visual Lab  •  Lighting and effects", -465, 670);
+            UnityEngine.UI.Button visualLabButton = Button(optionsCard, "Graphics", -375, 670);
             TMP_Text displayInfo = Label(optionsCard,
                 "Uses the display's native resolution. Choose Window size to switch to a window.",
-                21, -553, 56, new Color(.69f,.80f,.79f));
-            UnityEngine.UI.Button back = Button(optionsCard, "Back  •  Esc", -645, 670);
+                21, -463, 56, new Color(.69f,.80f,.79f));
+            UnityEngine.UI.Button back = Button(optionsCard, "Back  •  Esc", -555, 670);
 
             GameMenus menus = canvas.GetComponent<GameMenus>();
             if (menus == null) menus = canvas.AddComponent<GameMenus>();
@@ -92,7 +91,6 @@ namespace Topaz.Editor
             Ref(menus, "pauseQuitButton", pauseQuit);
             Ref(menus, "displayModeButton", displayMode);
             Ref(menus, "windowSizeButton", windowSize);
-            Ref(menus, "cameraScaleButton", cameraScale);
             Ref(menus, "visualLabButton", visualLabButton);
             Ref(menus, "optionsBackButton", back);
             Ref(menus, "displayInfo", displayInfo);

@@ -162,12 +162,18 @@ namespace Topaz.LoopStudy
                 : JsonUtility.FromJson<TopazSaveData>(json);
             if (data != null && envelope != null && envelope.version == 2)
             {
-                data.version = TopazSaveData.CurrentVersion;
                 data.pickups = new List<PickupStateRecord>();
+            }
+            if (data != null && envelope != null && (envelope.version == 2 || envelope.version == 3))
+            {
+                data.version = TopazSaveData.CurrentVersion;
+                data.regionId = TopazSaveData.HomeRegion;
             }
             if (data == null || data.version != TopazSaveData.CurrentVersion ||
                 data.day < 1 || data.backpackSlots == null || data.backpackSlots.Count > 16 ||
-                data.nodes == null || data.structures == null || data.pickups == null)
+                data.nodes == null || data.structures == null || data.pickups == null ||
+                (data.regionId != TopazSaveData.HomeRegion &&
+                 data.regionId != TopazSaveData.ExpeditionRegion))
                 throw new InvalidDataException("Topaz save format or version is invalid.");
             foreach (StructureStateRecord structure in data.structures)
                 if (structure == null || structure.slots == null || structure.slots.Count > 12)

@@ -1,18 +1,24 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using Topaz.CombatStudy;
+using Topaz.Expedition;
 using Topaz.FeelStudy;
 using Topaz.Menus;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Topaz.LoopStudy
 {
     /// <summary>Coordinates the one-resource expedition and one-chest home loop.</summary>
     public sealed class WorldSession : MonoBehaviour
     {
+#if UNITY_EDITOR
+        public static string EditorTestSaveDirectory { get; set; }
+#endif
         [SerializeField] ItemDefinition wood;
         [SerializeField] HarvestTree tree;
         [SerializeField] RecipeDefinition chestRecipe;
@@ -29,9 +35,12 @@ namespace Topaz.LoopStudy
         [SerializeField] Renderer previewRenderer;
         [SerializeField] GameObject pickupPrefab;
         [SerializeField] GameMenus menus;
+        [SerializeField] Transform homeGate;
 
         const float InteractionRadius = 1.4f;
         const float PlacementStep = 0.75f;
+        const int ExpeditionWoodReward = 3;
+        const string ExpeditionSceneName = "Expedition";
         public const int BackpackCapacity = 16;
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         static readonly Color ValidColor = new Color(0.36f, 0.95f, 0.57f);
@@ -52,8 +61,12 @@ namespace Topaz.LoopStudy
         bool _placing;
         bool _savingEnabled = true;
         string _saveProblem;
+        bool _traveling;
+        ExpeditionSceneBootstrap _expedition;
 
         public int CurrentDay => _data?.day ?? 1;
+        public string CurrentRegionId => _data?.regionId ?? TopazSaveData.HomeRegion;
+        public bool ExpeditionCacheClaimed => _data != null && _data.expeditionCacheClaimed;
         public int WoodCount => _data == null ? 0 : CountWood();
         public IReadOnlyList<ItemStackRecord> BackpackSlots => _backpack?.Slots;
         public IReadOnlyList<ItemStackRecord> ChestSlots => chest?.Inventory?.Slots;
@@ -74,8 +87,8 @@ namespace Topaz.LoopStudy
         public int ChestCapacity => chest?.SlotCapacity ?? 0;
         public bool IsPlacing => _placing;
         public bool MenuOpen => (hud != null && hud.MenuOpen) || (menus != null && menus.BlockGameplay);
-        public bool BlockMovement => MenuOpen;
-        public bool SuppressAttack => MenuOpen || _placing;
+        public bool BlockMovement => MenuOpen || _traveling;
+        public bool SuppressAttack => MenuOpen || _placing || _traveling;
         public string SaveProblem => _saveProblem;
 
         void Awake()
@@ -83,7 +96,8 @@ namespace Topaz.LoopStudy
             _previewProperties = new MaterialPropertyBlock();
             if (controls == null || wood == null || tree == null || chest == null ||
                 chestRecipe == null || chestDefinition == null || home == null ||
-                movement == null || combat == null || hud == null || pickupPrefab == null || menus == null)
+                movement == null || combat == null || hud == null || pickupPrefab == null ||
+                menus == null || homeGate == null)
             {
                 Debug.LogError("World session is missing a required reference.", this);
                 enabled = false;
@@ -95,6 +109,10 @@ namespace Topaz.LoopStudy
             string directory = runningTests
                 ? Path.Combine(Application.temporaryCachePath, "TopazTest-" + Guid.NewGuid().ToString("N"))
                 : Application.persistentDataPath;
+#if UNITY_EDITOR
+            if (runningTests && !string.IsNullOrEmpty(EditorTestSaveDirectory))
+                directory = EditorTestSaveDirectory;
+#endif
             _repository = new SaveRepository(directory);
             try
             {
@@ -132,11 +150,10 @@ namespace Topaz.LoopStudy
 
         void Start()
         {
-            CharacterController controller = GetComponent<CharacterController>();
-            if (controller != null) controller.enabled = false;
-            transform.position = new Vector3(_data.playerX, 0f, _data.playerZ);
-            if (controller != null) controller.enabled = true;
-            movement.ResetMotion();
+            bool restoreExpedition = _data.regionId == TopazSaveData.ExpeditionRegion;
+            _traveling = restoreExpedition;
+            Teleport(restoreExpedition ? home.transform.position :
+                new Vector3(_data.playerX, 0f, _data.playerZ));
 
             tree.Bind(this);
             StructureStateRecord placed = _data.structures.FirstOrDefault(record =>
@@ -155,7 +172,8 @@ namespace Topaz.LoopStudy
             }
             if (chestPreview != null) chestPreview.SetActive(false);
             hud.Bind(this);
-            Commit();
+            if (restoreExpedition) StartCoroutine(EnterExpedition(true));
+            else Commit();
         }
 
         void Update()
@@ -283,11 +301,33 @@ namespace Topaz.LoopStudy
 
         public bool TryInteract()
         {
+            if (_traveling) return true;
             if (menus.BlockGameplay) return true;
             if (_placing) return true;
             if (MenuOpen)
             {
                 hud.ClosePanels();
+                return true;
+            }
+
+            if (_data.regionId == TopazSaveData.ExpeditionRegion && _expedition != null)
+            {
+                if (DistanceSquared(_expedition.Departure) < InteractionRadius * InteractionRadius)
+                {
+                    StartCoroutine(ReturnHome(false));
+                    return true;
+                }
+                if (DistanceSquared(_expedition.SupplyCache) < InteractionRadius * InteractionRadius)
+                {
+                    TryClaimExpeditionCache();
+                    return true;
+                }
+                return false;
+            }
+            if (_data.regionId == TopazSaveData.HomeRegion &&
+                DistanceSquared(homeGate) < InteractionRadius * InteractionRadius)
+            {
+                StartCoroutine(EnterExpedition(false));
                 return true;
             }
 
@@ -323,10 +363,119 @@ namespace Topaz.LoopStudy
             }
         }
 
+        public void ReturnHomeAfterDefeat()
+        {
+            if (_data != null && _data.regionId == TopazSaveData.ExpeditionRegion && !_traveling)
+                StartCoroutine(ReturnHome(true));
+        }
+
+        bool TryClaimExpeditionCache()
+        {
+            if (_expedition == null || _data.expeditionCacheClaimed) return false;
+            if (!_expedition.CacheUnlocked)
+            {
+                hud.ShowStatus("Defeat the guardian before taking the supplies.");
+                return false;
+            }
+            if (_backpack.SpaceFor(wood) < ExpeditionWoodReward)
+            {
+                hud.ShowStatus("Make room for 3 Wood before opening the cache.");
+                return false;
+            }
+
+            _backpack.Add(wood, ExpeditionWoodReward);
+            _data.expeditionCacheClaimed = true;
+            _expedition.HideClaimedCache();
+            Commit();
+            hud.ShowStatus("Guarded supplies collected: +3 Wood. Return home to craft.");
+            return true;
+        }
+
+        IEnumerator EnterExpedition(bool restoring)
+        {
+            _traveling = true;
+            hud.ClosePanels();
+            Scene scene = SceneManager.GetSceneByName(ExpeditionSceneName);
+            if (!scene.isLoaded)
+            {
+                AsyncOperation load = SceneManager.LoadSceneAsync(ExpeditionSceneName, LoadSceneMode.Additive);
+                if (load == null)
+                {
+                    RestoreHomeAfterTravelFailure();
+                    yield break;
+                }
+                yield return load;
+            }
+
+            _expedition = FindAnyObjectByType<ExpeditionSceneBootstrap>();
+            if (_expedition == null || _expedition.Arrival == null ||
+                _expedition.Departure == null || _expedition.SupplyCache == null)
+            {
+                RestoreHomeAfterTravelFailure();
+                yield break;
+            }
+            _expedition.Bind(GetComponent<PlayerVitality>(), home, _data.expeditionCacheClaimed);
+            Teleport(restoring ? new Vector3(_data.playerX, 0f, _data.playerZ) :
+                _expedition.Arrival.position);
+            _data.regionId = TopazSaveData.ExpeditionRegion;
+            _traveling = false;
+            Commit();
+            hud.ShowStatus(restoring ? "Expedition resumed." :
+                "Expedition clearing. The trail marker returns you home at any time.");
+        }
+
+        IEnumerator ReturnHome(bool afterDefeat)
+        {
+            _traveling = true;
+            Teleport(afterDefeat ? home.transform.position : homeGate.position + Vector3.forward * 1.7f);
+            _data.regionId = TopazSaveData.HomeRegion;
+            Scene scene = SceneManager.GetSceneByName(ExpeditionSceneName);
+            _expedition = null;
+            if (scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+            _traveling = false;
+            Commit();
+            hud.ShowStatus(afterDefeat ? "Returned home to recover." :
+                "Returned home with your supplies.");
+        }
+
+        void RestoreHomeAfterTravelFailure()
+        {
+            Debug.LogError("Expedition clearing could not be loaded; returning home.", this);
+            _expedition = null;
+            Teleport(home.transform.position);
+            _data.regionId = TopazSaveData.HomeRegion;
+            _traveling = false;
+            Commit();
+            hud.ShowStatus("Expedition is unavailable; you returned home.");
+        }
+
+        void Teleport(Vector3 position)
+        {
+            CharacterController controller = GetComponent<CharacterController>();
+            if (controller != null) controller.enabled = false;
+            transform.position = position;
+            if (controller != null) controller.enabled = true;
+            movement.ResetMotion();
+        }
+
         public string ContextPrompt()
         {
+            if (_traveling) return "Traveling between regions...";
             if (_placing) return "Place chest: aim and click / A   •   Esc / B cancels";
             if (MenuOpen) return "E or Esc / B closes the panel";
+            if (_data.regionId == TopazSaveData.ExpeditionRegion)
+            {
+                if (_expedition == null) return "Entering the clearing...";
+                if (DistanceSquared(_expedition.Departure) < InteractionRadius * InteractionRadius)
+                    return "E / X: return to the homestead";
+                if (DistanceSquared(_expedition.SupplyCache) < InteractionRadius * InteractionRadius)
+                    return _data.expeditionCacheClaimed ? "Supply cache is empty" :
+                        _expedition.CacheUnlocked ? "E / X: take guarded Wood" :
+                        "Defeat the guardian to open the supply cache";
+                return "Find the guarded cache, or return by the trail marker";
+            }
+            if (DistanceSquared(homeGate) < InteractionRadius * InteractionRadius)
+                return "E / X: travel to the expedition clearing";
             float nearest = InteractionRadius * InteractionRadius;
             string prompt = "";
             if (workbench != null && DistanceSquared(workbench) < nearest)
@@ -394,7 +543,7 @@ namespace Topaz.LoopStudy
 
         public void Commit()
         {
-            if (_data == null || _repository == null || !_savingEnabled) return;
+            if (_data == null || _repository == null || !_savingEnabled || _traveling) return;
             _data.playerX = transform.position.x;
             _data.playerZ = transform.position.z;
             try { _repository.QueueSave(_data); }

@@ -51,7 +51,7 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator VisualLabTemporarilyReplacesOptionsCard()
+        public IEnumerator GraphicsMenuTemporarilyReplacesOptionsCard()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
@@ -66,6 +66,7 @@ namespace Topaz.Tests
             Assert.That(options.activeSelf, Is.True);
             visualLab.GetType().GetMethod("Toggle").Invoke(visualLab, null);
             Assert.That(options.activeSelf, Is.False);
+            Assert.That(hud.transform.Find("Graphics").gameObject.activeSelf, Is.True);
             visualLab.GetType().GetMethod("Close").Invoke(visualLab, null);
             Assert.That(options.activeSelf, Is.True);
             menus.GetType().GetMethod("Continue").Invoke(menus, null);

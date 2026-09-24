@@ -6,13 +6,13 @@ namespace Topaz.VisualStudy
     [Serializable]
     public sealed class VisualStudySettings
     {
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 5;
         public int version = CurrentVersion;
         public int look = 2;
         public int antiAliasing = 3;
         public int focusMode = 0; // Gaussian; Bokeh is an optional desktop comparison.
         public bool ambientOcclusion = true;
-        public bool groundDetail = true;
+        public bool bloomEnabled = true;
         public float temperature = 25f;
         public float exposure = 0f;
         public float contrast = 0f;
@@ -20,12 +20,12 @@ namespace Topaz.VisualStudy
         public float bloomIntensity = 1f;
         public float bloomThreshold = .70f;
         public float vignette = 0f;
-        public float depthStart = 24f;
-        public float depthEnd = 30f;
-        public float depthRadius = 1f;
+        public float depthStart = 30f;
+        public float depthEnd = 40f;
+        public float depthRadius = .5f;
         public float bokehFocusDistance = 22f;
-        public float bokehAperture = 1.25f;
-        public float bokehFocalLength = 145f;
+        public float bokehAperture = 2.8f;
+        public float bokehFocalLength = 120f;
         public float fogEnd = 65f;
         public float homeLight = 10f;
         public float shadowStrength = .90f;

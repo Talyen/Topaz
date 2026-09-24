@@ -14,10 +14,13 @@ namespace Topaz.Tests
     public sealed class FoundationTests
     {
         [Test]
-        public void BootstrapIsTheOnlyEnabledBuildScene()
+        public void HomesteadAndExpeditionAreEnabledBuildScenes()
         {
             var enabled = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
-            Assert.That(enabled.Select(scene => scene.path), Is.EqualTo(new[] { "Assets/Scenes/Bootstrap.unity" }));
+            Assert.That(enabled.Select(scene => scene.path), Is.EqualTo(new[]
+            {
+                "Assets/Scenes/Bootstrap.unity", "Assets/Scenes/Expedition.unity"
+            }));
         }
 
         [Test]
@@ -104,8 +107,13 @@ namespace Topaz.Tests
             Assert.That(focus, Is.Not.Null);
             Assert.That(focus.TryGet(out DepthOfField depth), Is.True);
             Assert.That(depth.mode.value, Is.EqualTo(DepthOfFieldMode.Gaussian));
-            Assert.That(depth.gaussianStart.value, Is.EqualTo(24f));
-            Assert.That(depth.gaussianEnd.value, Is.EqualTo(30f));
+            Assert.That(depth.gaussianStart.value, Is.EqualTo(30f));
+            Assert.That(depth.gaussianEnd.value, Is.EqualTo(40f));
+            Assert.That(depth.gaussianMaxRadius.value, Is.EqualTo(.5f));
+            Assert.That(depth.focusDistance.value, Is.EqualTo(22f));
+            Assert.That(depth.aperture.value, Is.EqualTo(2.8f));
+            Assert.That(depth.focalLength.value, Is.EqualTo(120f));
+            Assert.That(depth.bladeCount.value, Is.EqualTo(6));
 
             var painterly = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
                 "Assets/Topaz/VisualStudy/Profiles/Painterly Clear.asset");

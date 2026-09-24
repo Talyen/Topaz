@@ -98,10 +98,18 @@ namespace Topaz.Tests
             yield return new WaitForSeconds(0.12f);
 
             LineRenderer tell = GameObject.Find("Enemy Attack Tell").GetComponent<LineRenderer>();
+            Animator animator = enemy.GetComponentInChildren<Animator>();
+            Assert.That(animator, Is.Not.Null);
             Assert.That(tell.enabled, Is.True, "The red arc must appear before the strike.");
             Assert.That(Health(vitality), Is.EqualTo(3));
-            yield return new WaitForSeconds(0.7f);
+            float deadline = Time.time + 1f;
+            while (tell.enabled && Time.time < deadline) yield return null;
+            Assert.That(tell.enabled, Is.False, "The warning arc should end at the strike.");
             Assert.That(Health(vitality), Is.LessThan(3));
+            AnimatorStateInfo attackPose = animator.GetCurrentAnimatorStateInfo(0);
+            Assert.That(attackPose.IsName("Attack"), Is.True);
+            Assert.That(attackPose.normalizedTime, Is.InRange(0.44f, 0.62f),
+                "The punch should reach full extension when the strike resolves.");
         }
 
         [UnityTest]

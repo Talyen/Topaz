@@ -12,11 +12,13 @@ This is a small, authored systems study in the Bootstrap scene. It is not an inv
 
 The HUD reports the day, backpack Wood, Logging XP and level, equipped tool, and nearby interaction. The combat study sword and enemy remain available.
 
+The [first expedition clearing](EXPEDITION_STUDY.md) adds a player-chosen trip through two scouts and a wide-sweep guardian. Its one-time Wood cache feeds this same chest recipe, inventory, and save.
+
 ## Data boundaries
 
 - Unity assets hold immutable Wood, tree, chest, recipe, and axe definitions with stable IDs. Scene objects and save records hold mutable state.
 - The authored tree has a stable object ID. The placed chest receives an instance ID. The save records day, position, tool, backpack, partial tree chops and regrowth, pending chest, and placed chest contents.
-- One versioned JSON save lives in Unity's persistent data directory (`topaz-save.json`). A replacement keeps a `.bak` copy. Versions 1 and 2 migrate to version 3, which records world drops and Swords XP. An oversized legacy inventory is left untouched with saving disabled for that run. An unsupported or unreadable save also disables writes. Editor sessions, including tests, use isolated temporary directories so they cannot change the standalone player's save. Gameplay writes are queued for background I/O and coalesced; pause and quit flush the queue.
+- One versioned JSON save lives in Unity's persistent data directory (`topaz-save.json`). A replacement keeps a `.bak` copy. Versions 1–3 migrate to version 4, which also records the current region and one claimed expedition cache. An oversized legacy inventory is left untouched with saving disabled for that run. An unsupported or unreadable save also disables writes. Editor sessions, including tests, use isolated temporary directories so they cannot change the standalone player's save. Gameplay writes are queued for background I/O and coalesced; pause and quit flush the queue.
 - Resting advances an abstract day for regrowth; there is no simulated time of day, hunger, or unloaded-region simulation here. Building is limited to one chest and one home plot so we can review feel and clarity before generalizing.
 
 Run `./scripts/verify.sh` and `./scripts/build.sh windows` after changes. The Mac build is for a 60 Hz smoothness playtest; it does not establish the later Windows 120 FPS target.

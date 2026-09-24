@@ -10,6 +10,8 @@ namespace Topaz.FeelStudy
     [RequireComponent(typeof(CharacterController))]
     public sealed class FeelStudyPlayer : MonoBehaviour
     {
+        public enum DodgeFacing { Forward, Backward, Left, Right }
+
         [SerializeField] InputActionAsset controls;
         [SerializeField] Camera viewCamera;
         [SerializeField] Transform visualRoot;
@@ -43,6 +45,7 @@ namespace Topaz.FeelStudy
         Vector3 _dodgeDirection;
         float _verticalVelocity;
         float _dodgeUntil;
+        float _dodgeVisualUntil;
         float _nextDodgeAt;
         bool _usingStickAim = true;
         Vector2 _previousPointerPosition;
@@ -55,15 +58,27 @@ namespace Topaz.FeelStudy
         public Vector3 AimDirection => _aimDirection;
         public Vector3 AimPointOnGround { get; private set; }
         public bool IsDodging => Time.time < _dodgeUntil;
+        public bool IsDodgeVisualActive => Time.time < _dodgeVisualUntil;
         public bool IsInvulnerable => IsDodging;
+        public DodgeFacing LastDodgeFacing { get; private set; }
+        public bool HasHitReaction => Time.time < _hitUntil;
+        public Vector3 PlanarVelocity { get; private set; }
+        public float PlanarSpeed { get; private set; }
+        public float TravelSpeed => travelSpeed;
+        public float DodgeSeconds => dodgeSeconds;
+        public float DodgeVisualSeconds => Mathf.Max(0.36f, dodgeSeconds);
+        public float HitReactionSeconds => 0.3f;
 
-        public void ShowHit() => _hitUntil = Time.time + 0.22f;
+        public void ShowHit() => _hitUntil = Time.time + HitReactionSeconds;
 
         public void ResetMotion()
         {
             _verticalVelocity = 0f;
             _dodgeUntil = 0f;
+            _dodgeVisualUntil = 0f;
             _dodgeRequested = false;
+            PlanarVelocity = Vector3.zero;
+            PlanarSpeed = 0f;
         }
 
         void Awake()
@@ -121,7 +136,9 @@ namespace Topaz.FeelStudy
                 (_worldSession == null || (!_worldSession.BlockMovement && !_worldSession.IsPlacing)))
             {
                 _dodgeDirection = moveDirection.sqrMagnitude > 0.01f ? moveDirection.normalized : _aimDirection;
+                LastDodgeFacing = ClassifyDodge(_dodgeDirection, _aimDirection);
                 _dodgeUntil = Time.time + dodgeSeconds;
+                _dodgeVisualUntil = Time.time + DodgeVisualSeconds;
                 _nextDodgeAt = _dodgeUntil + dodgeCooldownSeconds;
                 _combat?.OnDodgeStarted();
             }
@@ -132,7 +149,12 @@ namespace Topaz.FeelStudy
             Vector3 horizontal = dodging ? _dodgeDirection * dodgeSpeed :
                 moveDirection * travelSpeed * movementMultiplier;
             _verticalVelocity = _controller.isGrounded ? -1f : _verticalVelocity - 24f * deltaTime;
+            Vector3 beforeMove = transform.position;
             _controller.Move((horizontal + Vector3.up * _verticalVelocity) * deltaTime);
+            Vector3 actualMove = transform.position - beforeMove;
+            actualMove.y = 0f;
+            PlanarVelocity = actualMove / deltaTime;
+            PlanarSpeed = PlanarVelocity.magnitude;
 
             Vector3 facing = _combat != null && _combat.IsAttackLocked
                 ? _combat.LockedDirection : _aimDirection;
@@ -166,6 +188,15 @@ namespace Topaz.FeelStudy
             if (_interactRequested && (_worldSession == null || !_worldSession.TryInteract()) &&
                 nearest != null) nearest.Interact();
             _interactRequested = false;
+        }
+
+        static DodgeFacing ClassifyDodge(Vector3 movement, Vector3 facing)
+        {
+            float forward = Vector3.Dot(movement, facing);
+            float right = Vector3.Dot(movement, Vector3.Cross(Vector3.up, facing));
+            if (Mathf.Abs(forward) >= Mathf.Abs(right))
+                return forward >= 0f ? DodgeFacing.Forward : DodgeFacing.Backward;
+            return right >= 0f ? DodgeFacing.Right : DodgeFacing.Left;
         }
 
         Vector3 ScreenRelative(Vector2 input)

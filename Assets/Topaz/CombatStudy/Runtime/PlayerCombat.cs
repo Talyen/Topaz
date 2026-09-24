@@ -37,6 +37,9 @@ namespace Topaz.CombatStudy
 
         public bool CanStartDodge => _phase == Phase.Ready || _phase == Phase.Recovery;
         public bool IsAttackLocked => _phase != Phase.Ready;
+        public bool IsStrikeActive => _phase == Phase.Active;
+        public float AttackAnimationSeconds => CurrentAttack.WindupSeconds +
+            CurrentAttack.ActiveSeconds + CurrentAttack.RecoverySeconds;
         public Vector3 LockedDirection => _lockedDirection;
         public string EquippedToolId => _equippedTool == Tool.Axe ? "axe" : "sword";
         public string EquippedToolName => _equippedTool == Tool.Axe ? "Axe" : "Sword";
@@ -157,16 +160,23 @@ namespace Topaz.CombatStudy
                     CurrentAttack.ArcDegrees);
                 return;
             }
-            if (enemy == null || !enemy.IsAlive) return;
-            Vector3 toEnemy = enemy.transform.position - transform.position;
+            if (enemy != null) TryDamage(enemy);
+            foreach (EnemyCombatant other in FindObjectsByType<EnemyCombatant>(FindObjectsInactive.Exclude))
+                if (other != enemy) TryDamage(other);
+        }
+
+        void TryDamage(EnemyCombatant target)
+        {
+            if (target == null || !target.IsAlive) return;
+            Vector3 toEnemy = target.transform.position - transform.position;
             toEnemy.y = 0f;
             if (toEnemy.sqrMagnitude > CurrentAttack.Range * CurrentAttack.Range ||
                 toEnemy.sqrMagnitude < 0.001f) return;
             if (Vector3.Angle(_lockedDirection, toEnemy) <= CurrentAttack.ArcDegrees * 0.5f)
             {
-                int before = enemy.CurrentHealth;
-                enemy.TakeDamage(CurrentAttack.Damage);
-                _worldSession?.RecordSwordHit(before - enemy.CurrentHealth);
+                int before = target.CurrentHealth;
+                target.TakeDamage(CurrentAttack.Damage);
+                _worldSession?.RecordSwordHit(before - target.CurrentHealth);
             }
         }
 
