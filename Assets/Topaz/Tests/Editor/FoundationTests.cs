@@ -107,8 +107,17 @@ namespace Topaz.Tests
             Assert.That(depth.gaussianEnd.value, Is.EqualTo(30f));
 
             var urp = UniversalRenderPipeline.asset;
-            Assert.That(urp.shadowDistance, Is.EqualTo(60f));
+            Assert.That(urp.shadowDistance, Is.EqualTo(52f));
             Assert.That(urp.cascade2Split, Is.EqualTo(.45f));
+
+            var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(
+                "Assets/Settings/PC_Renderer.asset");
+            var correctedShader = AssetDatabase.LoadAssetAtPath<Shader>(
+                "Assets/Topaz/VisualStudy/Shaders/OrthographicGaussianDepthOfField.shader");
+            Assert.That(renderer.postProcessData, Is.Not.Null);
+            Assert.That(renderer.postProcessData.shaders.gaussianDepthOfFieldPS,
+                Is.SameAs(correctedShader));
+            Assert.That(correctedShader.passCount, Is.EqualTo(5));
         }
     }
 }

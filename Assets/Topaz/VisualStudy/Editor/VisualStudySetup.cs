@@ -19,6 +19,10 @@ namespace Topaz.Editor
         const string ScenePath = "Assets/Scenes/Bootstrap.unity";
         const string ControlsPath = "Assets/Topaz/Input/TopazControls.inputactions";
         const string ProfileFolder = "Assets/Topaz/VisualStudy/Profiles";
+        const string OrthographicDofShaderPath =
+            "Assets/Topaz/VisualStudy/Shaders/OrthographicGaussianDepthOfField.shader";
+        const string PostProcessDataPath =
+            "Assets/Topaz/VisualStudy/OrthographicPostProcessData.asset";
 
         [MenuItem("Topaz/Apply Focus And Shadow Defaults")]
         public static void ApplyFocusAndShadowDefaults()
@@ -27,14 +31,40 @@ namespace Topaz.Editor
             if (urp == null) throw new InvalidOperationException("Topaz URP asset is missing.");
             ConfigureShadows(urp);
             ConfigureFocus(Profile("Focus Preview"));
+            ConfigureOrthographicDepthOfField();
             AssetDatabase.SaveAssets();
             Debug.Log("[Topaz] Focus and shadow defaults updated.");
+        }
+
+        static void ConfigureOrthographicDepthOfField()
+        {
+            var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(
+                "Assets/Settings/PC_Renderer.asset");
+            var shader = AssetDatabase.LoadAssetAtPath<Shader>(OrthographicDofShaderPath);
+            if (renderer == null || shader == null)
+                throw new InvalidOperationException("Topaz renderer or orthographic depth shader is missing.");
+
+            var data = AssetDatabase.LoadAssetAtPath<PostProcessData>(PostProcessDataPath);
+            if (data == null)
+            {
+                var source = renderer.postProcessData;
+                if (source == null) throw new InvalidOperationException("URP PostProcessData is missing.");
+                data = UnityEngine.Object.Instantiate(source);
+                data.name = "Topaz Orthographic Post-process Data";
+                AssetDatabase.CreateAsset(data, PostProcessDataPath);
+            }
+            if (data.shaders == null)
+                throw new InvalidOperationException("URP PostProcessData shader resources are missing.");
+            data.shaders.gaussianDepthOfFieldPS = shader;
+            renderer.postProcessData = data;
+            EditorUtility.SetDirty(data);
+            EditorUtility.SetDirty(renderer);
         }
 
         static void ConfigureShadows(UniversalRenderPipelineAsset urp)
         {
             // Keep the last-cascade fade beyond the ground visible at maximum zoom.
-            urp.shadowDistance = 60f;
+            urp.shadowDistance = 52f;
             urp.shadowCascadeCount = 2;
             urp.cascade2Split = .45f;
             EditorUtility.SetDirty(urp);
@@ -51,6 +81,7 @@ namespace Topaz.Editor
             if (renderer == null || new SerializedObject(renderer).FindProperty("postProcessData")
                 ?.objectReferenceValue == null)
                 throw new InvalidOperationException("URP renderer PostProcessData is missing.");
+            ConfigureOrthographicDepthOfField();
             URPShaderStrippingSetting stripping =
                 GraphicsSettings.GetRenderPipelineSettings<URPShaderStrippingSetting>();
             if (stripping == null) throw new InvalidOperationException("URP shader stripping settings are missing.");
