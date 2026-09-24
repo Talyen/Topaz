@@ -6,4 +6,4 @@ License: CC0 1.0 Universal. The exact included terms are in `LICENSE.txt`. The c
 
 Original extracted-folder SHA-256 tree digest: `e349ca3d48db449c5a7360f28d289062a835aa50b35bb5b129b46a2b62446718`. Computed over sorted relative file paths and SHA-256 digests of file contents.
 
-Imported: 16 FBX models/animation files and 1 texture atlases. FBX files come from the Unity export where supplied, plus unique character and animation files. Duplicate OBJ, glTF, generic FBX exports, marketing samples, and web shortcuts were omitted. The source download remains in Downloads as a backup.
+Imported: 16 FBX models/animation files and 1 texture atlases. FBX files come from the Unity export where supplied, plus unique character and animation files. Duplicate OBJ, glTF, generic FBX exports, marketing samples, and web shortcuts were omitted. The original extracted download is retained locally under `LocalSourceArchives/KayKit/` (ignored by Git).

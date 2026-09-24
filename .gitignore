@@ -117,3 +117,6 @@ InitTestScene*.unity*
 # Local test reports and performance captures.
 /TestResults/
 /PerformanceReports/
+
+# Owner-supplied original KayKit downloads (duplicate formats and samples).
+/LocalSourceArchives/
