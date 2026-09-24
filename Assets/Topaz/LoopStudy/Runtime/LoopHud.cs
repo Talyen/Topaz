@@ -9,6 +9,7 @@ namespace Topaz.LoopStudy
         [SerializeField] TMP_Text dayLabel;
         [SerializeField] TMP_Text woodLabel;
         [SerializeField] TMP_Text loggingLabel;
+        [SerializeField] TMP_Text swordsLabel;
         [SerializeField] TMP_Text toolLabel;
         [SerializeField] TMP_Text contextLabel;
         [SerializeField] TMP_Text statusLabel;
@@ -53,6 +54,7 @@ namespace Topaz.LoopStudy
             Set(dayLabel, $"DAY {_session.CurrentDay}");
             Set(woodLabel, $"WOOD  {_session.WoodCount}");
             Set(loggingLabel, $"LOGGING  LV {_session.LoggingLevel}  •  {_session.LoggingExperience} XP");
+            Set(swordsLabel, $"SWORDS  LV {_session.SwordsLevel}  •  {_session.SwordsExperience} XP");
             Set(toolLabel, $"TOOL  {_session.EquippedToolName.ToUpperInvariant()}  •  1 / 2 or Y");
             Set(contextLabel, _session.ContextPrompt());
             Set(craftDescription, $"Storage chest  •  {_session.ChestCost} Wood\n" +

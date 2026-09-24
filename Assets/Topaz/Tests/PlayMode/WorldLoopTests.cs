@@ -34,7 +34,7 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator FullBackpackDefersHarvestWithoutAwardingLoggingExperience()
+        public IEnumerator FullBackpackLeavesHarvestDropOnGround()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
@@ -53,10 +53,13 @@ namespace Topaz.Tests
                 Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                     Vector3.forward, 2.1f, 90f), Is.True);
             Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
-                Vector3.forward, 2.1f, 90f), Is.False);
-            Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(1));
-            Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
+                Vector3.forward, 2.1f, 90f), Is.True);
+            Assert.That(Read<bool>(harvest, "IsAvailable"), Is.False);
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(3));
             Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(320));
+            Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
+            CollectDrop(session);
+            Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
         }
 
         [UnityTest]
@@ -88,10 +91,11 @@ namespace Topaz.Tests
 
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2));
             Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(1));
         }
 
         [UnityTest]
-        public IEnumerator LoggingAwardsOnlyOnCompletedHarvestAndTreeReturnsOnDayFour()
+        public IEnumerator EachChopAwardsLoggingAndHarvestDropsWoodUntilCollected()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
@@ -111,14 +115,18 @@ namespace Topaz.Tests
                 Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                     towardTree, 2.1f, 90f), Is.True);
                 Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
-                Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
+                Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(chop + 1));
             }
 
             Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                 towardTree, 2.1f, 90f), Is.True);
-            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(6));
-            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(5));
+            Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(3));
+            Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
             Assert.That(Read<bool>(harvest, "IsAvailable"), Is.False);
+            CollectDrop(session);
+            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(6));
+            Assert.That(Read<int>(session, "PickupCount"), Is.Zero);
 
             Teleport(player, new Vector3(1.5f, 0, -.1f));
             for (int day = 2; day <= 3; day++)
@@ -130,6 +138,30 @@ namespace Topaz.Tests
             Assert.That(Call<bool>(session, "TryInteract"), Is.True);
             Assert.That(Read<int>(session, "CurrentDay"), Is.EqualTo(4));
             Assert.That(Read<bool>(harvest, "IsAvailable"), Is.True);
+            Teleport(player, tree.transform.position + Vector3.back * 1.3f);
+            Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
+                Vector3.forward, 2.1f, 90f), Is.True);
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(4));
+        }
+
+        [UnityTest]
+        public IEnumerator WalkingNearDropCollectsItAutomatically()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject player = GameObject.Find("Player");
+            GameObject tree = GameObject.Find("Authored Tree 01");
+            Component session = player.GetComponent("WorldSession");
+            Component harvest = tree.GetComponent("HarvestTree");
+            Teleport(player, tree.transform.position + Vector3.back * 1.3f);
+            for (int i = 0; i < 3; i++)
+                Call<bool>(harvest, "TryChop", player.transform.position,
+                    Vector3.forward, 2.1f, 90f);
+            Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
+            Teleport(player, tree.transform.position + Vector3.back * .6f);
+            yield return new WaitForSeconds(.7f);
+            Assert.That(Read<int>(session, "PickupCount"), Is.Zero);
+            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(6));
         }
 
         [UnityTest]
@@ -146,6 +178,7 @@ namespace Topaz.Tests
             for (int i = 0; i < 3; i++)
                 Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                     Vector3.forward, 2.1f, 90f), Is.True);
+            CollectDrop(session);
             Teleport(player, Vector3.zero);
 
             Assert.That(Call<bool>(session, "TryCraftChest"), Is.True);
@@ -169,6 +202,7 @@ namespace Topaz.Tests
             for (int i = 0; i < 3; i++)
                 Call<bool>(harvest, "TryChop", player.transform.position,
                     Vector3.forward, 2.1f, 90f);
+            CollectDrop(session);
             Teleport(player, Vector3.zero);
             Assert.That(Call<bool>(session, "TryCraftChest"), Is.True);
 
@@ -214,7 +248,7 @@ namespace Topaz.Tests
                 Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
                 object repository = Activator.CreateInstance(type, directory);
                 object migrated = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(2));
+                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(3));
                 var backpack = (System.Collections.IList)migrated.GetType().GetField("backpackSlots").GetValue(migrated);
                 Assert.That(backpack.Count, Is.EqualTo(2));
                 Assert.That((int)backpack[0].GetType().GetField("count").GetValue(backpack[0]), Is.EqualTo(20));
@@ -224,9 +258,61 @@ namespace Topaz.Tests
                 Assert.That(chestSlots.Count, Is.EqualTo(2));
                 type.GetMethod("Save").Invoke(repository, new[] { migrated });
                 object reloaded = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)reloaded.GetType().GetField("version").GetValue(reloaded), Is.EqualTo(2));
+                Assert.That((int)reloaded.GetType().GetField("version").GetValue(reloaded), Is.EqualTo(3));
             }
             finally { Directory.Delete(directory, true); }
+        }
+
+        [Test]
+        public void VersionTwoSaveMigratesWithoutLosingSlots()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), "TopazMigration-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                string json = "{\"version\":2,\"day\":2,\"loggingExperience\":7," +
+                    "\"backpackSlots\":[{\"itemId\":\"material.wood\",\"count\":11}]," +
+                    "\"nodes\":[],\"structures\":[]}";
+                File.WriteAllText(Path.Combine(directory, "topaz-save.json"), json);
+                Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
+                object repository = Activator.CreateInstance(type, directory);
+                object migrated = type.GetMethod("Load").Invoke(repository, null);
+                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(3));
+                Assert.That((int)migrated.GetType().GetField("loggingExperience").GetValue(migrated), Is.EqualTo(7));
+                var slots = (System.Collections.IList)migrated.GetType().GetField("backpackSlots").GetValue(migrated);
+                Assert.That((int)slots[0].GetType().GetField("count").GetValue(slots[0]), Is.EqualTo(11));
+            }
+            finally { Directory.Delete(directory, true); }
+        }
+
+        [Test]
+        public void QueuedSavesKeepTheNewestSnapshot()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), "TopazQueuedSave-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                Type repositoryType = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
+                Type dataType = Type.GetType("Topaz.LoopStudy.TopazSaveData, Assembly-CSharp", true);
+                object repository = Activator.CreateInstance(repositoryType, directory);
+                object data = Activator.CreateInstance(dataType);
+                dataType.GetField("day").SetValue(data, 2);
+                repositoryType.GetMethod("QueueSave").Invoke(repository, new[] { data });
+                dataType.GetField("day").SetValue(data, 3);
+                repositoryType.GetMethod("QueueSave").Invoke(repository, new[] { data });
+                object reloaded = repositoryType.GetMethod("Load").Invoke(repository, null);
+                Assert.That((int)dataType.GetField("day").GetValue(reloaded), Is.EqualTo(3));
+            }
+            finally { Directory.Delete(directory, true); }
+        }
+
+        static void CollectDrop(Component session)
+        {
+            GameObject drop = GameObject.Find("Wood Pickup");
+            Assert.That(drop, Is.Not.Null);
+            Component pickup = drop.GetComponent("WorldPickup");
+            Assert.That(pickup, Is.Not.Null);
+            session.GetType().GetMethod("TryCollect").Invoke(session, new object[] { pickup });
         }
 
         static T Read<T>(Component target, string property) => (T)target.GetType()

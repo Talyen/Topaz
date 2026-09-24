@@ -9,14 +9,14 @@ namespace Topaz.LoopStudy
         [SerializeField] ItemDefinition yieldItem;
         [SerializeField, Min(1)] int chopsRequired = 3;
         [SerializeField, Min(1)] int yieldCount = 6;
-        [SerializeField, Min(1)] int loggingExperience = 5;
+        [SerializeField, Min(1)] int loggingExperiencePerChop = 1;
         [SerializeField, Min(1)] int regrowthDays = 3;
 
         public string StableId => stableId;
         public ItemDefinition YieldItem => yieldItem;
         public int ChopsRequired => chopsRequired;
         public int YieldCount => yieldCount;
-        public int LoggingExperience => loggingExperience;
+        public int LoggingExperiencePerChop => loggingExperiencePerChop;
         public int RegrowthDays => regrowthDays;
     }
 }

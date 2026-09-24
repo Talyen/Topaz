@@ -12,10 +12,10 @@ namespace Topaz.LoopStudy
         [SerializeField] Renderer trunkRenderer;
         [SerializeField] Collider trunkCollider;
         [SerializeField] NavMeshObstacle obstacle;
+        [SerializeField] Color idleTint = new Color(0.44f, 0.67f, 0.43f);
+        [SerializeField] Color chopTint = new Color(0.91f, 0.83f, 0.46f);
 
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
-        static readonly Color IdleColor = new Color(0.44f, 0.67f, 0.43f);
-        static readonly Color ChopColor = new Color(0.91f, 0.83f, 0.46f);
 
         WorldSession _session;
         NodeStateRecord _state;
@@ -33,7 +33,7 @@ namespace Topaz.LoopStudy
         {
             if (_flashUntil <= 0f || Time.time < _flashUntil) return;
             _flashUntil = 0f;
-            SetColor(IdleColor);
+            SetColor(idleTint);
         }
 
         public void Bind(WorldSession session)
@@ -54,24 +54,20 @@ namespace Topaz.LoopStudy
                 Vector3.Angle(direction, toTree) > arcDegrees * 0.5f) return false;
 
             _state.chops++;
+            _session.RecordLoggingChop(definition.LoggingExperiencePerChop);
             if (_state.chops >= definition.ChopsRequired)
             {
-                if (!_session.CanReceiveHarvest(definition))
-                {
-                    _state.chops--;
-                    return false;
-                }
                 _state.chops = 0;
                 _state.nextAvailableDay = _session.CurrentDay + definition.RegrowthDays;
-                _session.CompleteHarvest(definition);
+                _session.DropHarvest(definition, transform.position);
                 ApplyAvailability();
             }
             else
             {
                 _flashUntil = Time.time + 0.18f;
-                SetColor(ChopColor);
-                _session.Commit();
+                SetColor(chopTint);
             }
+            _session.Commit();
             return true;
         }
 
@@ -92,7 +88,7 @@ namespace Topaz.LoopStudy
             if (visualRoot != null) visualRoot.SetActive(available);
             if (trunkCollider != null) trunkCollider.enabled = available;
             if (obstacle != null) obstacle.enabled = available;
-            if (available) SetColor(IdleColor);
+            if (available) SetColor(idleTint);
         }
 
         void SetColor(Color color)

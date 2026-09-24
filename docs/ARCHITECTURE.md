@@ -20,9 +20,9 @@ The dodge provides brief invulnerability and uses a cooldown rather than stamina
 
 The first combat slice uses one sword and one enemy with a visible attack windup. A sword swing slows movement during windup and strike; dodge can cancel recovery, but not the committed swing. The central homestead is safe: threats stay in the expedition space and no mandatory raids interrupt crafting or rest.
 
-The first gathering slice adds an aimed axe with deliberate chops. Only a completed tree harvest awards Wood and Logging XP. The player can craft one chest from Wood and place it within the home boundary. Resting advances the study day; that tree returns after three days. This deliberately small loop tests use-based progress, authored resource state, crafting, placement, storage, and persistence before broadening any one of them.
+The first gathering slice adds an aimed axe with deliberate chops. Each successful chop awards Logging XP; a completed tree drops persistent Wood that is picked up nearby. Damaging sword hits award Swords XP. The player can craft one chest from Wood and place it within the home boundary. Resting advances the study day; that tree returns after three days. This deliberately small loop tests use-based progress, authored resource state, crafting, placement, storage, and persistence before broadening any one of them.
 
-The backpack uses 16 fixed slots and the first chest uses 12. Items have authored maximum stack sizes; Wood currently stacks to 20. There is no weight or encumbrance system. A harvest must fit in full before awarding items or XP. The save schema migrates version 1's aggregate Wood amounts into version 2 slots, preserving older standalone saves.
+The backpack uses 16 fixed slots and the first chest uses 12. Items have authored maximum stack sizes; Wood currently stacks to 20. There is no weight or encumbrance system. Full backpacks leave uncollected items in the world. The save schema migrates versions 1 and 2 to version 3 without discarding older standalone progress.
 
 ## Boundaries for later systems
 

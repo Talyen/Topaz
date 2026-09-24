@@ -163,7 +163,11 @@ namespace Topaz.CombatStudy
             if (toEnemy.sqrMagnitude > CurrentAttack.Range * CurrentAttack.Range ||
                 toEnemy.sqrMagnitude < 0.001f) return;
             if (Vector3.Angle(_lockedDirection, toEnemy) <= CurrentAttack.ArcDegrees * 0.5f)
+            {
+                int before = enemy.CurrentHealth;
                 enemy.TakeDamage(CurrentAttack.Damage);
+                _worldSession?.RecordSwordHit(before - enemy.CurrentHealth);
+            }
         }
 
         void EndAttack()

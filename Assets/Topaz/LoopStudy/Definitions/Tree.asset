@@ -16,5 +16,5 @@ MonoBehaviour:
   yieldItem: {fileID: 11400000, guid: c17ed212cd21a4544a13bf0045eab6ad, type: 2}
   chopsRequired: 3
   yieldCount: 6
-  loggingExperience: 5
+  loggingExperiencePerChop: 1
   regrowthDays: 3

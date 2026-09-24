@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Topaz.LoopStudy
@@ -37,6 +38,11 @@ namespace Topaz.LoopStudy
         }
 
         readonly string _path;
+        readonly object _gate = new object();
+        Task _worker = Task.CompletedTask;
+        string _pendingJson;
+        Exception _backgroundError;
+        bool _working;
 
         public SaveRepository(string directory)
         {
@@ -44,9 +50,14 @@ namespace Topaz.LoopStudy
         }
 
         public string PathOnDisk => _path;
+        public Exception BackgroundError
+        {
+            get { lock (_gate) return _backgroundError; }
+        }
 
         public TopazSaveData Load()
         {
+            Flush();
             if (!File.Exists(_path)) return new TopazSaveData();
             try
             {
@@ -70,13 +81,75 @@ namespace Topaz.LoopStudy
 
         public void Save(TopazSaveData data)
         {
+            Flush();
+            WriteJson(Serialize(data));
+        }
+
+        public void QueueSave(TopazSaveData data)
+        {
+            string snapshot = Serialize(data); // JsonUtility runs on Unity's main thread.
+            lock (_gate)
+            {
+                if (_backgroundError != null)
+                    throw new IOException("Topaz background save failed.", _backgroundError);
+                _pendingJson = snapshot; // Coalesce rapid gameplay changes into the newest snapshot.
+                if (_working) return;
+                _working = true;
+                _worker = Task.Run(Drain);
+            }
+        }
+
+        public void Flush()
+        {
+            Task worker;
+            lock (_gate) worker = _worker;
+            worker.GetAwaiter().GetResult();
+            Exception error = BackgroundError;
+            if (error != null) throw new IOException("Topaz background save failed.", error);
+        }
+
+        void Drain()
+        {
+            while (true)
+            {
+                string snapshot;
+                lock (_gate)
+                {
+                    snapshot = _pendingJson;
+                    _pendingJson = null;
+                    if (snapshot == null)
+                    {
+                        _working = false;
+                        return;
+                    }
+                }
+                try { WriteJson(snapshot); }
+                catch (Exception error)
+                {
+                    lock (_gate)
+                    {
+                        _backgroundError = error;
+                        _pendingJson = null;
+                        _working = false;
+                    }
+                    return;
+                }
+            }
+        }
+
+        static string Serialize(TopazSaveData data)
+        {
             if (data == null || data.version != TopazSaveData.CurrentVersion)
                 throw new InvalidDataException("Cannot write an unsupported Topaz save version.");
+            return JsonUtility.ToJson(data, true);
+        }
 
+        void WriteJson(string json)
+        {
             string directory = Path.GetDirectoryName(_path);
             Directory.CreateDirectory(directory);
             string temporary = _path + ".tmp";
-            File.WriteAllText(temporary, JsonUtility.ToJson(data, true));
+            File.WriteAllText(temporary, json);
             if (File.Exists(_path)) File.Replace(temporary, _path, _path + ".bak");
             else File.Move(temporary, _path);
         }
@@ -87,13 +160,22 @@ namespace Topaz.LoopStudy
             TopazSaveData data = envelope != null && envelope.version == 1
                 ? MigrateV1(JsonUtility.FromJson<LegacySaveData>(json))
                 : JsonUtility.FromJson<TopazSaveData>(json);
+            if (data != null && envelope != null && envelope.version == 2)
+            {
+                data.version = TopazSaveData.CurrentVersion;
+                data.pickups = new List<PickupStateRecord>();
+            }
             if (data == null || data.version != TopazSaveData.CurrentVersion ||
                 data.day < 1 || data.backpackSlots == null || data.backpackSlots.Count > 16 ||
-                data.nodes == null || data.structures == null)
+                data.nodes == null || data.structures == null || data.pickups == null)
                 throw new InvalidDataException("Topaz save format or version is invalid.");
             foreach (StructureStateRecord structure in data.structures)
                 if (structure == null || structure.slots == null || structure.slots.Count > 12)
                     throw new InvalidDataException("Topaz structure slots are invalid.");
+            foreach (PickupStateRecord pickup in data.pickups)
+                if (pickup == null || string.IsNullOrEmpty(pickup.instanceId) ||
+                    string.IsNullOrEmpty(pickup.itemId) || pickup.count < 1)
+                    throw new InvalidDataException("Topaz pickup state is invalid.");
             return data;
         }
 

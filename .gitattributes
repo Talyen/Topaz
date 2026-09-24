@@ -9,5 +9,9 @@
 *.unity -whitespace
 *.asset -whitespace
 *.mat -whitespace
+*.prefab -whitespace
 *.meta -whitespace
 ProjectSettings/** -whitespace
+
+# Preserve downloaded KayKit license notices and source files verbatim.
+Assets/ThirdParty/KayKit/** -whitespace

@@ -78,6 +78,10 @@ namespace Topaz.Tests
 
             Assert.That(Health(combatant), Is.LessThan(startingHealth),
                 "A swing aimed at a nearby enemy should land during its active window.");
+            Component session = player.GetComponent("WorldSession");
+            int swordsExperience = (int)session.GetType().GetProperty("SwordsExperience").GetValue(session);
+            Assert.That(swordsExperience, Is.GreaterThan(0),
+                "A damaging sword hit should award Swords XP.");
         }
 
         [UnityTest]

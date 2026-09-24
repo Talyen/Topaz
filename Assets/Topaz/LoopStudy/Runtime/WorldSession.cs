@@ -26,6 +26,7 @@ namespace Topaz.LoopStudy
         [SerializeField] LoopHud hud;
         [SerializeField] GameObject chestPreview;
         [SerializeField] Renderer previewRenderer;
+        [SerializeField] GameObject pickupPrefab;
 
         const float InteractionRadius = 1.4f;
         const float PlacementStep = 0.75f;
@@ -58,6 +59,9 @@ namespace Topaz.LoopStudy
         public bool ChestHasItems => chest?.Inventory != null && chest.Inventory.Slots.Any(slot => slot.count > 0);
         public int LoggingExperience => _data?.loggingExperience ?? 0;
         public int LoggingLevel => 1 + LoggingExperience / 10;
+        public int SwordsExperience => _data?.swordsExperience ?? 0;
+        public int SwordsLevel => 1 + SwordsExperience / 10;
+        public int PickupCount => _data?.pickups.Count ?? 0;
         public bool PendingChest => _data != null && _data.pendingChest;
         public int ChestCost => chestRecipe != null ? chestRecipe.IngredientCount : 0;
         public bool CanCraftChest => _data != null && !_data.pendingChest && !ChestPlaced &&
@@ -77,7 +81,7 @@ namespace Topaz.LoopStudy
             _previewProperties = new MaterialPropertyBlock();
             if (controls == null || wood == null || tree == null || chest == null ||
                 chestRecipe == null || chestDefinition == null || home == null ||
-                movement == null || combat == null || hud == null)
+                movement == null || combat == null || hud == null || pickupPrefab == null)
             {
                 Debug.LogError("World session is missing a required reference.", this);
                 enabled = false;
@@ -137,6 +141,16 @@ namespace Topaz.LoopStudy
                 record.definitionId == chestDefinition.StableId);
             chest.Bind(placed);
             combat.EquipTool(_data.equippedTool, false);
+            foreach (PickupStateRecord pickup in _data.pickups)
+            {
+                ItemDefinition item = ResolveItem(pickup.itemId);
+                if (item == null)
+                {
+                    Debug.LogWarning($"[Topaz] Unknown saved pickup item: {pickup.itemId}", this);
+                    continue;
+                }
+                CreatePickup(pickup, item);
+            }
             if (chestPreview != null) chestPreview.SetActive(false);
             hud.Bind(this);
             Commit();
@@ -144,6 +158,13 @@ namespace Topaz.LoopStudy
 
         void Update()
         {
+            if (_savingEnabled && _repository?.BackgroundError != null)
+            {
+                _savingEnabled = false;
+                _saveProblem = "Saving failed; the existing save was left untouched.";
+                Debug.LogError($"[Topaz] {_saveProblem} {_repository.BackgroundError.Message}", this);
+                hud?.Refresh();
+            }
             if (_inventoryRequested && !_placing) hud.ToggleInventoryPanel();
             if (_cancelRequested)
             {
@@ -166,10 +187,30 @@ namespace Topaz.LoopStudy
 
         void OnApplicationPause(bool paused)
         {
-            if (paused) Commit();
+            if (paused)
+            {
+                Commit();
+                FlushSave();
+            }
         }
 
-        void OnApplicationQuit() => Commit();
+        void OnApplicationQuit()
+        {
+            Commit();
+            FlushSave();
+        }
+
+        void FlushSave()
+        {
+            if (!_savingEnabled || _repository == null) return;
+            try { _repository.Flush(); }
+            catch (Exception error)
+            {
+                _savingEnabled = false;
+                _saveProblem = "Saving failed; the existing save was left untouched.";
+                Debug.LogError($"[Topaz] {_saveProblem} {error.Message}", this);
+            }
+        }
 
         void OnPlacePerformed(InputAction.CallbackContext context) => _placeRequested = true;
         void OnCancelPerformed(InputAction.CallbackContext context) => _cancelRequested = true;
@@ -184,22 +225,58 @@ namespace Topaz.LoopStudy
             return state;
         }
 
-        public void CompleteHarvest(HarvestDefinition definition)
+        public void RecordLoggingChop(int experience)
         {
-            if (definition == null || definition.YieldItem == null) return;
-            int accepted = _backpack.Add(definition.YieldItem, definition.YieldCount);
-            if (accepted != definition.YieldCount)
-                throw new InvalidOperationException("Harvest capacity changed during completion.");
-            _data.loggingExperience += definition.LoggingExperience;
-            Commit();
-            hud.ShowStatus($"+{definition.YieldCount} Wood   +{definition.LoggingExperience} Logging XP");
+            if (experience <= 0) return;
+            _data.loggingExperience += experience;
+            hud.ShowStatus($"+{experience} Logging XP");
         }
 
-        public bool CanReceiveHarvest(HarvestDefinition definition)
+        public void RecordSwordHit(int damage)
         {
-            if (_backpack.SpaceFor(definition.YieldItem) >= definition.YieldCount) return true;
-            hud.ShowStatus("Backpack full. Store items before finishing this harvest.");
-            return false;
+            if (damage <= 0) return;
+            _data.swordsExperience += damage;
+            Commit();
+            hud.ShowStatus($"+{damage} Swords XP");
+        }
+
+        public void DropHarvest(HarvestDefinition definition, Vector3 position)
+        {
+            if (definition == null || definition.YieldItem == null) return;
+            var record = new PickupStateRecord
+            {
+                instanceId = Guid.NewGuid().ToString("N"),
+                itemId = definition.YieldItem.StableId,
+                count = definition.YieldCount,
+                x = position.x,
+                z = position.z
+            };
+            _data.pickups.Add(record);
+            CreatePickup(record, definition.YieldItem);
+            hud.ShowStatus($"{record.count} {definition.YieldItem.DisplayName} dropped. Walk near it to collect.");
+        }
+
+        public void TryCollect(WorldPickup pickup)
+        {
+            if (pickup == null || pickup.State == null || pickup.Item == null) return;
+            int accepted = _backpack.Add(pickup.Item, pickup.State.count);
+            if (accepted <= 0) return;
+            pickup.State.count -= accepted;
+            if (pickup.State.count == 0)
+            {
+                _data.pickups.Remove(pickup.State);
+                Destroy(pickup.gameObject);
+            }
+            Commit();
+            hud.ShowStatus($"+{accepted} {pickup.Item.DisplayName}");
+        }
+
+        void CreatePickup(PickupStateRecord record, ItemDefinition item)
+        {
+            GameObject instance = Instantiate(pickupPrefab);
+            instance.name = $"{item.DisplayName} Pickup";
+            WorldPickup pickup = instance.GetComponent<WorldPickup>();
+            pickup.Bind(this, record, item);
         }
 
         public bool TryInteract()
@@ -317,7 +394,7 @@ namespace Topaz.LoopStudy
             if (_data == null || _repository == null || !_savingEnabled) return;
             _data.playerX = transform.position.x;
             _data.playerZ = transform.position.z;
-            try { _repository.Save(_data); }
+            try { _repository.QueueSave(_data); }
             catch (Exception error)
             {
                 _savingEnabled = false;

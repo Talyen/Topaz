@@ -22,11 +22,11 @@ namespace Topaz.FeelStudy
         [SerializeField] float dodgeSeconds = 0.18f;
         [SerializeField] float dodgeCooldownSeconds = 0.65f;
         [SerializeField] float interactionRadius = 2.2f;
+        [SerializeField] Color normalBodyTint = new Color(0.24f, 0.76f, 0.84f);
+        [SerializeField] Color dodgeBodyTint = new Color(0.88f, 0.98f, 1f);
+        [SerializeField] Color hitBodyTint = new Color(1f, 0.30f, 0.25f);
 
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
-        static readonly Color NormalColor = new Color(0.24f, 0.76f, 0.84f);
-        static readonly Color DodgeColor = new Color(0.88f, 0.98f, 1f);
-        static readonly Color HitColor = new Color(1f, 0.30f, 0.25f);
 
         MaterialPropertyBlock _bodyProperties;
         CharacterController _controller;
@@ -142,7 +142,7 @@ namespace Topaz.FeelStudy
                 900f * deltaTime);
             aimMarker.position = transform.position + _aimDirection * 4.2f + Vector3.up * 0.08f;
 
-            Color tint = dodging ? DodgeColor : Time.time < _hitUntil ? HitColor : NormalColor;
+            Color tint = dodging ? dodgeBodyTint : Time.time < _hitUntil ? hitBodyTint : normalBodyTint;
             if (tint != _appliedColor)
             {
                 _bodyProperties.SetColor(BaseColor, tint);
