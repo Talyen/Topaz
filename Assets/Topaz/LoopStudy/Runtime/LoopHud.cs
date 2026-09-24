@@ -18,6 +18,7 @@ namespace Topaz.LoopStudy
         [SerializeField] GameObject craftPanel;
         [SerializeField] GameObject chestPanel;
         [SerializeField] GameObject inventoryPanel;
+        [SerializeField] GameObject visualOptionsPanel;
         [SerializeField] TMP_Text[] backpackSlotLabels;
         [SerializeField] TMP_Text[] chestSlotLabels;
         [SerializeField] UnityEngine.UI.Button craftButton;
@@ -32,7 +33,8 @@ namespace Topaz.LoopStudy
 
         public bool MenuOpen => (craftPanel != null && craftPanel.activeSelf) ||
             (chestPanel != null && chestPanel.activeSelf) ||
-            (inventoryPanel != null && inventoryPanel.activeSelf);
+            (inventoryPanel != null && inventoryPanel.activeSelf) ||
+            (visualOptionsPanel != null && visualOptionsPanel.activeSelf);
 
         void Awake() => ClosePanels();
 
@@ -140,6 +142,7 @@ namespace Topaz.LoopStudy
             if (craftPanel != null) craftPanel.SetActive(false);
             if (chestPanel != null) chestPanel.SetActive(false);
             if (inventoryPanel != null) inventoryPanel.SetActive(false);
+            if (visualOptionsPanel != null) visualOptionsPanel.SetActive(false);
             UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
         }
     }
