@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace Topaz.Tests
 {
@@ -87,6 +88,23 @@ namespace Topaz.Tests
             foreach (string asset in new[] { "Wood", "Tree", "StorageChest", "StorageChestRecipe", "AxeChop" })
                 Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(root + asset + ".asset"),
                     Is.Not.Null, asset);
+        }
+
+        [Test]
+        public void VisualStudyKeepsRuntimeDepthOfFieldAvailableInPlayers()
+        {
+            var stripping = GraphicsSettings.GetRenderPipelineSettings<URPShaderStrippingSetting>();
+            Assert.That(stripping, Is.Not.Null);
+            Assert.That(stripping.stripUnusedPostProcessingVariants, Is.False,
+                "The Visual Lab changes Volume profiles at runtime, including depth of field.");
+
+            var focus = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
+                "Assets/Topaz/VisualStudy/Profiles/Focus Preview.asset");
+            Assert.That(focus, Is.Not.Null);
+            Assert.That(focus.TryGet(out DepthOfField depth), Is.True);
+            Assert.That(depth.mode.value, Is.EqualTo(DepthOfFieldMode.Gaussian));
+            Assert.That(depth.gaussianStart.value, Is.EqualTo(25f));
+            Assert.That(depth.gaussianEnd.value, Is.EqualTo(32f));
         }
     }
 }

@@ -31,6 +31,17 @@ namespace Topaz.Editor
             if (renderer == null || new SerializedObject(renderer).FindProperty("postProcessData")
                 ?.objectReferenceValue == null)
                 throw new InvalidOperationException("URP renderer PostProcessData is missing.");
+            URPShaderStrippingSetting stripping =
+                GraphicsSettings.GetRenderPipelineSettings<URPShaderStrippingSetting>();
+            if (stripping == null) throw new InvalidOperationException("URP shader stripping settings are missing.");
+            // This review build changes Volume settings at runtime. Headless builds can
+            // otherwise classify Gaussian DoF as inactive and remove its shader resource.
+            stripping.stripUnusedPostProcessingVariants = false;
+            UnityEngine.Object globalSettings = AssetDatabase.LoadMainAssetAtPath(
+                "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset");
+            if (globalSettings == null)
+                throw new InvalidOperationException("URP global settings asset is missing.");
+            EditorUtility.SetDirty(globalSettings);
             EnsureFolder(ProfileFolder);
             AddBindings();
             VolumeProfile painterly = Profile("Painterly Clear");
@@ -82,12 +93,12 @@ namespace Topaz.Editor
             focusVolume.priority = 10f;
             focusVolume.weight = 1f;
             focusVolume.sharedProfile = focus;
-            focusVolume.enabled = false;
+            focusVolume.enabled = true;
 
             cameraData.renderPostProcessing = true;
             cameraData.volumeLayerMask = 1 << 0;
             cameraData.volumeTrigger = player.transform;
-            cameraData.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            cameraData.antialiasing = AntialiasingMode.TemporalAntiAliasing;
             cameraData.antialiasingQuality = AntialiasingQuality.Medium;
             camera.allowHDR = true;
 
@@ -101,15 +112,15 @@ namespace Topaz.Editor
             sun.color = new Color(.93f,.96f,1f);
             sun.intensity = 1.85f;
             sun.shadows = LightShadows.Soft;
-            sun.shadowStrength = .72f;
+            sun.shadowStrength = .90f;
             RenderSettings.sun = sun;
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(.34f,.36f,.40f);
             RenderSettings.fog = true;
             RenderSettings.fogMode = FogMode.Linear;
             RenderSettings.fogColor = new Color(.28f,.32f,.34f);
-            RenderSettings.fogStartDistance = 34f;
-            RenderSettings.fogEndDistance = 70f;
+            RenderSettings.fogStartDistance = 26f;
+            RenderSettings.fogEndDistance = 65f;
 
             AddLantern(root.transform);
 
@@ -119,7 +130,7 @@ namespace Topaz.Editor
             Light homeLight = homeLightObject.AddComponent<Light>();
             homeLight.type = LightType.Point;
             homeLight.color = new Color(1f,.73f,.48f);
-            homeLight.intensity = 8f;
+            homeLight.intensity = 10f;
             homeLight.range = 7.5f;
             homeLight.shadows = LightShadows.None;
 
@@ -174,19 +185,19 @@ namespace Topaz.Editor
             Tonemapping tone = Effect<Tonemapping>(profile);
             tone.mode.Override(TonemappingMode.Neutral);
             ColorAdjustments color = Effect<ColorAdjustments>(profile);
-            color.postExposure.Override(.12f);
-            color.contrast.Override(7f);
-            color.saturation.Override(7f);
+            color.postExposure.Override(0f);
+            color.contrast.Override(0f);
+            color.saturation.Override(10f);
             WhiteBalance balance = Effect<WhiteBalance>(profile);
-            balance.temperature.Override(-2f);
+            balance.temperature.Override(40f);
             Bloom bloom = Effect<Bloom>(profile);
-            bloom.threshold.Override(.95f);
-            bloom.intensity.Override(.28f);
+            bloom.threshold.Override(.70f);
+            bloom.intensity.Override(1f);
             bloom.scatter.Override(.65f);
             bloom.downscale.Override(BloomDownscaleMode.Quarter);
             bloom.highQualityFiltering.Override(false);
             Vignette vignette = Effect<Vignette>(profile);
-            vignette.intensity.Override(.08f);
+            vignette.intensity.Override(0f);
             vignette.smoothness.Override(.55f);
             Dirty(profile);
         }
@@ -194,9 +205,9 @@ namespace Topaz.Editor
         static void ConfigureHome(VolumeProfile profile)
         {
             WhiteBalance balance = Effect<WhiteBalance>(profile);
-            balance.temperature.Override(16f);
+            balance.temperature.Override(75f);
             ColorAdjustments color = Effect<ColorAdjustments>(profile);
-            color.postExposure.Override(.18f);
+            color.postExposure.Override(.06f);
             Dirty(profile);
         }
 
@@ -208,8 +219,8 @@ namespace Topaz.Editor
             if (profile.Has<Vignette>()) profile.Remove<Vignette>();
             DepthOfField depth = Effect<DepthOfField>(profile);
             depth.mode.Override(DepthOfFieldMode.Gaussian);
-            depth.gaussianStart.Override(23f);
-            depth.gaussianEnd.Override(36f);
+            depth.gaussianStart.Override(25f);
+            depth.gaussianEnd.Override(32f);
             depth.gaussianMaxRadius.Override(1.0f);
             Dirty(profile);
         }
@@ -316,7 +327,7 @@ namespace Topaz.Editor
             label.font = TMP_Settings.defaultFontAsset;
             label.fontSize = 23;
             label.color = Color.white;
-            label.text = "LOOK  Painterly  •  AA SMAA\nF5 look   F6 AA   F7 options";
+            label.text = "LOOK  Focus preview  •  AA TAA\nF5 look   F6 AA   F7 options";
             label.alignment = TextAlignmentOptions.Right;
             label.raycastTarget = false;
             return label;
