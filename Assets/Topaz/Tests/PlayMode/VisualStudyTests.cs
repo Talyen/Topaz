@@ -1,5 +1,6 @@
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -56,6 +57,34 @@ namespace Topaz.Tests
             yield return null;
             Assert.That(panel.gameObject.activeSelf, Is.False);
             Release(keyboard.f7Key);
+        }
+
+        [UnityTest]
+        public IEnumerator VisualPolishButtonsSwitchEffectsAndFocusControls()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject root = GameObject.Find("Visual Study");
+            Transform panel = GameObject.Find("Loop HUD").transform.Find("Visual Lab");
+            Component controller = root.GetComponent("VisualLookController");
+            Assert.That(panel.Find("Focus mode"), Is.Not.Null);
+            Assert.That(panel.Find("Ambient occlusion"), Is.Not.Null);
+            Assert.That(panel.Find("Ground detail"), Is.Not.Null);
+            Assert.That(root.transform.Find("Ground Details").GetComponentsInChildren<Component>(true)
+                .Count(component => component.GetType().Name == "DecalProjector"), Is.EqualTo(3));
+
+            panel.Find("Focus mode").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That((int)controller.GetType().GetProperty("CurrentFocusMode").GetValue(controller),
+                Is.EqualTo(1));
+            float aperture = (float)controller.GetType().GetMethod("GetSetting")
+                .Invoke(controller, new object[] { 8 });
+            Assert.That(aperture, Is.EqualTo(1.25f));
+
+            panel.Find("Ambient occlusion").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That((bool)controller.GetType().GetProperty("AmbientOcclusionEnabled")
+                .GetValue(controller), Is.False);
+            panel.Find("Ground detail").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That(root.transform.Find("Ground Details").gameObject.activeSelf, Is.False);
         }
     }
 }

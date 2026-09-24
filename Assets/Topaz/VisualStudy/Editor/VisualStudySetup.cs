@@ -21,6 +21,8 @@ namespace Topaz.Editor
         const string ProfileFolder = "Assets/Topaz/VisualStudy/Profiles";
         const string OrthographicDofShaderPath =
             "Assets/Topaz/VisualStudy/Shaders/OrthographicGaussianDepthOfField.shader";
+        const string OrthographicBokehShaderPath =
+            "Assets/Topaz/VisualStudy/Shaders/OrthographicBokehDepthOfField.shader";
         const string PostProcessDataPath =
             "Assets/Topaz/VisualStudy/OrthographicPostProcessData.asset";
 
@@ -41,8 +43,9 @@ namespace Topaz.Editor
             var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(
                 "Assets/Settings/PC_Renderer.asset");
             var shader = AssetDatabase.LoadAssetAtPath<Shader>(OrthographicDofShaderPath);
-            if (renderer == null || shader == null)
-                throw new InvalidOperationException("Topaz renderer or orthographic depth shader is missing.");
+            var bokehShader = AssetDatabase.LoadAssetAtPath<Shader>(OrthographicBokehShaderPath);
+            if (renderer == null || shader == null || bokehShader == null)
+                throw new InvalidOperationException("Topaz renderer or orthographic depth shaders are missing.");
 
             var data = AssetDatabase.LoadAssetAtPath<PostProcessData>(PostProcessDataPath);
             if (data == null)
@@ -56,6 +59,7 @@ namespace Topaz.Editor
             if (data.shaders == null)
                 throw new InvalidOperationException("URP PostProcessData shader resources are missing.");
             data.shaders.gaussianDepthOfFieldPS = shader;
+            data.shaders.bokehDepthOfFieldPS = bokehShader;
             renderer.postProcessData = data;
             EditorUtility.SetDirty(data);
             EditorUtility.SetDirty(renderer);
@@ -151,9 +155,11 @@ namespace Topaz.Editor
             cameraData.volumeTrigger = player.transform;
             cameraData.antialiasing = AntialiasingMode.TemporalAntiAliasing;
             cameraData.antialiasingQuality = AntialiasingQuality.Medium;
+            cameraData.dithering = true;
             camera.allowHDR = true;
 
             urp.msaaSampleCount = 1; // SMAA comparison stays independent of MSAA cost.
+            urp.hdrColorBufferPrecision = HDRColorBufferPrecision._64Bits;
             ConfigureShadows(urp);
 
             Light sun = GameObject.Find("Directional Light")?.GetComponent<Light>();
@@ -201,6 +207,7 @@ namespace Topaz.Editor
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
+            VisualPolishSetup.Configure();
             Debug.Log("[Topaz] URP visual study configured.");
         }
 
@@ -238,7 +245,7 @@ namespace Topaz.Editor
             color.contrast.Override(0f);
             color.saturation.Override(10f);
             WhiteBalance balance = Effect<WhiteBalance>(profile);
-            balance.temperature.Override(40f);
+            balance.temperature.Override(25f);
             Bloom bloom = Effect<Bloom>(profile);
             bloom.threshold.Override(.70f);
             bloom.intensity.Override(1f);
@@ -254,7 +261,7 @@ namespace Topaz.Editor
         static void ConfigureHome(VolumeProfile profile)
         {
             WhiteBalance balance = Effect<WhiteBalance>(profile);
-            balance.temperature.Override(75f);
+            balance.temperature.Override(60f);
             ColorAdjustments color = Effect<ColorAdjustments>(profile);
             color.postExposure.Override(.06f);
             Dirty(profile);
@@ -271,6 +278,9 @@ namespace Topaz.Editor
             depth.gaussianStart.Override(24f);
             depth.gaussianEnd.Override(30f);
             depth.gaussianMaxRadius.Override(1.0f);
+            depth.focusDistance.Override(22f);
+            depth.aperture.Override(1.25f);
+            depth.focalLength.Override(145f);
             Dirty(profile);
         }
 

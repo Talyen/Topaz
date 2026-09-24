@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.Build.Profile;
@@ -106,7 +107,17 @@ namespace Topaz.Tests
             Assert.That(depth.gaussianStart.value, Is.EqualTo(24f));
             Assert.That(depth.gaussianEnd.value, Is.EqualTo(30f));
 
+            var painterly = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
+                "Assets/Topaz/VisualStudy/Profiles/Painterly Clear.asset");
+            var home = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
+                "Assets/Topaz/VisualStudy/Profiles/Warm Home.asset");
+            Assert.That(painterly.TryGet(out WhiteBalance globalBalance), Is.True);
+            Assert.That(home.TryGet(out WhiteBalance homeBalance), Is.True);
+            Assert.That(globalBalance.temperature.value, Is.EqualTo(25f));
+            Assert.That(homeBalance.temperature.value, Is.EqualTo(60f));
+
             var urp = UniversalRenderPipeline.asset;
+            Assert.That(urp.hdrColorBufferPrecision, Is.EqualTo(HDRColorBufferPrecision._64Bits));
             Assert.That(urp.shadowDistance, Is.EqualTo(52f));
             Assert.That(urp.cascade2Split, Is.EqualTo(.45f));
 
@@ -118,6 +129,26 @@ namespace Topaz.Tests
             Assert.That(renderer.postProcessData.shaders.gaussianDepthOfFieldPS,
                 Is.SameAs(correctedShader));
             Assert.That(correctedShader.passCount, Is.EqualTo(5));
+
+            var bokehShader = AssetDatabase.LoadAssetAtPath<Shader>(
+                "Assets/Topaz/VisualStudy/Shaders/OrthographicBokehDepthOfField.shader");
+            Assert.That(renderer.postProcessData.shaders.bokehDepthOfFieldPS,
+                Is.SameAs(bokehShader));
+            Assert.That(bokehShader.passCount, Is.EqualTo(5));
+            Assert.That(renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Count(), Is.EqualTo(1));
+            Assert.That(renderer.rendererFeatures.OfType<DecalRendererFeature>().Count(), Is.EqualTo(1));
+            var ao = new SerializedObject(renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Single());
+            Assert.That(ao.FindProperty("m_Settings.Intensity").floatValue, Is.EqualTo(.85f));
+            var ground = AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Topaz/VisualStudy/Decals/Ground Wear.mat");
+            Assert.That(ground.GetTexture("Base_Map"), Is.Not.Null);
+
+            MethodInfo getLightmap = typeof(PlayerSettings).GetMethod(
+                "GetLightmapEncodingQualityForPlatform", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.That(getLightmap, Is.Not.Null);
+            foreach (BuildTarget target in new[] { BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows64 })
+                Assert.That(getLightmap.Invoke(null, new object[] { target }).ToString(),
+                    Is.EqualTo("High"), target.ToString());
         }
     }
 }

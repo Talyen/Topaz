@@ -29,6 +29,9 @@ namespace Topaz.VisualStudy
         [SerializeField] Volume painterlyVolume;
         [SerializeField] Volume homeVolume;
         [SerializeField] Volume focusVolume;
+        [SerializeField] ScriptableRendererFeature ambientOcclusionFeature;
+        [SerializeField] ScriptableRendererFeature groundDecalFeature;
+        [SerializeField] GameObject groundDetailRoot;
         [SerializeField] Light homeLight;
         [SerializeField] Light sun;
         [SerializeField] TMP_Text lookLabel;
@@ -46,12 +49,17 @@ namespace Topaz.VisualStudy
 
         public int CurrentLook => _settings.look;
         public int CurrentAa => _settings.antiAliasing;
+        public int CurrentFocusMode => _settings.focusMode;
+        public bool AmbientOcclusionEnabled => _settings.ambientOcclusion;
+        public bool GroundDetailEnabled => _settings.groundDetail;
         public string SettingsPath => _settingsPath;
 
         void Awake()
         {
             if (controls == null || cameraData == null || painterlyVolume == null ||
-                homeVolume == null || focusVolume == null || homeLight == null || sun == null ||
+                homeVolume == null || focusVolume == null || ambientOcclusionFeature == null ||
+                groundDecalFeature == null ||
+                groundDetailRoot == null || homeLight == null || sun == null ||
                 lookLabel == null || optionsMenu == null)
             {
                 Debug.LogError("Visual look study is missing a required reference.", this);
@@ -114,13 +122,55 @@ namespace Topaz.VisualStudy
 
         public void ToggleDepthOfField() => SetLook(_settings.look == 2 ? 1 : 2);
 
+        public void ToggleFocusMode()
+        {
+            _settings.focusMode = 1 - _settings.focusMode;
+            Apply();
+            if (_ready) optionsMenu.MarkUnsaved();
+        }
+
+        public void ToggleAmbientOcclusion()
+        {
+            _settings.ambientOcclusion = !_settings.ambientOcclusion;
+            Apply();
+            if (_ready) optionsMenu.MarkUnsaved();
+        }
+
+        public void ToggleGroundDetail()
+        {
+            _settings.groundDetail = !_settings.groundDetail;
+            Apply();
+            if (_ready) optionsMenu.MarkUnsaved();
+        }
+
+        public string GetSettingName(int index) => _settings.focusMode == 1 ? index switch
+        {
+            7 => "Bokeh focus distance", 8 => "Bokeh aperture", 9 => "Bokeh focal length",
+            _ => SettingNames[index]
+        } : SettingNames[index];
+
+        public float GetMinimum(int index) => _settings.focusMode == 1 ? index switch
+        {
+            7 => 10f, 8 => 1f, 9 => 35f, _ => Minimum[index]
+        } : Minimum[index];
+
+        public float GetMaximum(int index) => _settings.focusMode == 1 ? index switch
+        {
+            7 => 35f, 8 => 16f, 9 => 150f, _ => Maximum[index]
+        } : Maximum[index];
+
+        public bool UsesWholeNumbers(int index) => _settings.focusMode == 1 && (index == 7 || index == 9)
+            || _settings.focusMode == 0 && (index == 0 || index == 2 || index == 3 ||
+                index == 7 || index == 8 || index == 10 || index == 13);
+
         public float GetSetting(int index) => index switch
         {
             0 => _settings.temperature, 1 => _settings.exposure,
             2 => _settings.contrast, 3 => _settings.saturation,
             4 => _settings.bloomIntensity, 5 => _settings.bloomThreshold,
-            6 => _settings.vignette, 7 => _settings.depthStart,
-            8 => _settings.depthEnd, 9 => _settings.depthRadius,
+            6 => _settings.vignette, 7 => _settings.focusMode == 1 ? _settings.bokehFocusDistance : _settings.depthStart,
+            8 => _settings.focusMode == 1 ? _settings.bokehAperture : _settings.depthEnd,
+            9 => _settings.focusMode == 1 ? _settings.bokehFocalLength : _settings.depthRadius,
             10 => _settings.fogEnd, 11 => _settings.homeLight,
             12 => _settings.shadowStrength, 13 => _settings.homeWarmth,
             _ => 0f
@@ -129,7 +179,7 @@ namespace Topaz.VisualStudy
         public void SetSetting(int index, float value)
         {
             if (index < 0 || index >= SettingNames.Length) return;
-            value = Mathf.Clamp(value, Minimum[index], Maximum[index]);
+            value = Mathf.Clamp(value, GetMinimum(index), GetMaximum(index));
             switch (index)
             {
                 case 0: _settings.temperature = value; break;
@@ -139,23 +189,29 @@ namespace Topaz.VisualStudy
                 case 4: _settings.bloomIntensity = value; break;
                 case 5: _settings.bloomThreshold = value; break;
                 case 6: _settings.vignette = value; break;
-                case 7: _settings.depthStart = value; break;
-                case 8: _settings.depthEnd = value; break;
-                case 9: _settings.depthRadius = value; break;
+                case 7: if (_settings.focusMode == 1) _settings.bokehFocusDistance = value;
+                    else _settings.depthStart = value; break;
+                case 8: if (_settings.focusMode == 1) _settings.bokehAperture = value;
+                    else _settings.depthEnd = value; break;
+                case 9: if (_settings.focusMode == 1) _settings.bokehFocalLength = value;
+                    else _settings.depthRadius = value; break;
                 case 10: _settings.fogEnd = value; break;
                 case 11: _settings.homeLight = value; break;
                 case 12: _settings.shadowStrength = value; break;
                 case 13: _settings.homeWarmth = value; break;
             }
-            if (index == 7 && _settings.depthEnd <= _settings.depthStart)
+            if (_settings.focusMode == 0 && index == 7 && _settings.depthEnd <= _settings.depthStart)
                 _settings.depthEnd = Mathf.Min(Maximum[8], _settings.depthStart + 1f);
-            if (index == 8 && _settings.depthEnd <= _settings.depthStart)
+            if (_settings.focusMode == 0 && index == 8 && _settings.depthEnd <= _settings.depthStart)
                 _settings.depthStart = Mathf.Max(Minimum[7], _settings.depthEnd - 1f);
             Apply();
         }
 
         public string FormatSetting(int index) => index switch
         {
+            7 or 8 or 9 when _settings.focusMode == 1 && (index == 7 || index == 9)
+                => GetSetting(index).ToString("0"),
+            7 or 8 or 9 when _settings.focusMode == 1 => GetSetting(index).ToString("0.00"),
             0 or 2 or 3 or 7 or 8 or 10 or 13 => GetSetting(index).ToString("0"),
             _ => GetSetting(index).ToString("0.00")
         };
@@ -182,12 +238,14 @@ namespace Topaz.VisualStudy
             if (!File.Exists(SettingsPath)) return;
             try
             {
-                VisualStudySettings loaded = JsonUtility.FromJson<VisualStudySettings>(
-                    File.ReadAllText(SettingsPath));
-                if (loaded == null || loaded.version != VisualStudySettings.CurrentVersion) return;
+                var loaded = new VisualStudySettings();
+                JsonUtility.FromJsonOverwrite(File.ReadAllText(SettingsPath), loaded);
+                if (loaded.version < 1 || loaded.version > VisualStudySettings.CurrentVersion) return;
+                loaded.version = VisualStudySettings.CurrentVersion;
                 _settings = loaded;
                 _settings.look = Mathf.Clamp(_settings.look, 0, 2);
                 _settings.antiAliasing = Mathf.Clamp(_settings.antiAliasing, 0, 3);
+                _settings.focusMode = Mathf.Clamp(_settings.focusMode, 0, 1);
                 for (int i = 0; i < SettingNames.Length; i++)
                     SetSetting(i, GetSetting(i));
             }
@@ -203,6 +261,9 @@ namespace Topaz.VisualStudy
             painterlyVolume.enabled = _settings.look != 0;
             homeVolume.enabled = _settings.look != 0;
             focusVolume.enabled = _settings.look == 2;
+            ambientOcclusionFeature.SetActive(_settings.ambientOcclusion);
+            groundDecalFeature.SetActive(_settings.groundDetail);
+            groundDetailRoot.SetActive(_settings.groundDetail);
             cameraData.antialiasing = _settings.antiAliasing switch
             {
                 1 => AntialiasingMode.FastApproximateAntialiasing,
@@ -220,9 +281,14 @@ namespace Topaz.VisualStudy
             Get<Bloom>(_baseProfile).threshold.Override(_settings.bloomThreshold);
             Get<Vignette>(_baseProfile).intensity.Override(_settings.vignette);
             DepthOfField depth = Get<DepthOfField>(_focusProfile);
+            depth.mode.Override(_settings.focusMode == 1
+                ? DepthOfFieldMode.Bokeh : DepthOfFieldMode.Gaussian);
             depth.gaussianStart.Override(_settings.depthStart);
             depth.gaussianEnd.Override(Mathf.Max(_settings.depthStart + 1f, _settings.depthEnd));
             depth.gaussianMaxRadius.Override(_settings.depthRadius);
+            depth.focusDistance.Override(_settings.bokehFocusDistance);
+            depth.aperture.Override(_settings.bokehAperture);
+            depth.focalLength.Override(_settings.bokehFocalLength);
             RenderSettings.fogEndDistance = _settings.fogEnd;
             homeLight.intensity = _settings.homeLight;
             sun.shadowStrength = _settings.shadowStrength;
@@ -239,7 +305,8 @@ namespace Topaz.VisualStudy
         void UpdateLabel()
         {
             string name = _settings.look == 0 ? "Lighting only" :
-                _settings.look == 1 ? "Painterly" : "Focus preview";
+                _settings.look == 1 ? "Painterly" :
+                _settings.focusMode == 1 ? "Bokeh preview" : "Focus preview";
             string aa = _settings.antiAliasing switch
             {
                 1 => "FXAA", 2 => "SMAA", 3 => "TAA", _ => "Off"

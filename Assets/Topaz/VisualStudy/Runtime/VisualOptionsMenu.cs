@@ -12,6 +12,9 @@ namespace Topaz.VisualStudy
         [SerializeField] UnityEngine.UI.Button lookButton;
         [SerializeField] UnityEngine.UI.Button aaButton;
         [SerializeField] UnityEngine.UI.Button depthButton;
+        [SerializeField] UnityEngine.UI.Button focusModeButton;
+        [SerializeField] UnityEngine.UI.Button ambientOcclusionButton;
+        [SerializeField] UnityEngine.UI.Button groundDetailButton;
         [SerializeField] UnityEngine.UI.Button resetButton;
         [SerializeField] UnityEngine.UI.Button saveButton;
         [SerializeField] UnityEngine.UI.Button copyButton;
@@ -20,6 +23,7 @@ namespace Topaz.VisualStudy
         [SerializeField] Topaz.LoopStudy.LoopHud loopHud;
 
         VisualLookController _controller;
+        bool _refreshing;
 
         public bool IsOpen => panel != null && panel.activeSelf;
 
@@ -31,6 +35,7 @@ namespace Topaz.VisualStudy
                 int index = i;
                 sliders[i].onValueChanged.AddListener(value =>
                 {
+                    if (_refreshing) return;
                     _controller.SetSetting(index, value);
                     SetStatus("Unsaved changes");
                 });
@@ -38,6 +43,9 @@ namespace Topaz.VisualStudy
             lookButton.onClick.AddListener(() => _controller.SetLook((_controller.CurrentLook + 1) % 3));
             aaButton.onClick.AddListener(() => _controller.SetAa((_controller.CurrentAa + 1) % 4));
             depthButton.onClick.AddListener(_controller.ToggleDepthOfField);
+            focusModeButton.onClick.AddListener(_controller.ToggleFocusMode);
+            ambientOcclusionButton.onClick.AddListener(_controller.ToggleAmbientOcclusion);
+            groundDetailButton.onClick.AddListener(_controller.ToggleGroundDetail);
             resetButton.onClick.AddListener(() =>
             {
                 _controller.ResetSelection();
@@ -83,11 +91,18 @@ namespace Topaz.VisualStudy
         public void Refresh()
         {
             if (_controller == null) return;
+            _refreshing = true;
             for (int i = 0; i < sliders.Length; i++)
             {
+                sliders[i].minValue = _controller.GetMinimum(i);
+                sliders[i].maxValue = _controller.GetMaximum(i);
+                sliders[i].wholeNumbers = _controller.UsesWholeNumbers(i);
                 sliders[i].SetValueWithoutNotify(_controller.GetSetting(i));
                 values[i].text = _controller.FormatSetting(i);
+                TMP_Text name = sliders[i].transform.parent.Find("Name")?.GetComponent<TMP_Text>();
+                if (name != null) name.text = _controller.GetSettingName(i);
             }
+            _refreshing = false;
             SetButton(lookButton, _controller.CurrentLook switch
             {
                 0 => "Look: Lighting only", 1 => "Look: Painterly", _ => "Look: Focus preview"
@@ -98,6 +113,12 @@ namespace Topaz.VisualStudy
             });
             SetButton(depthButton, _controller.CurrentLook == 2
                 ? "Depth of field: On" : "Depth of field: Off");
+            SetButton(focusModeButton, _controller.CurrentFocusMode == 1
+                ? "Focus mode: Bokeh" : "Focus mode: Gaussian");
+            SetButton(ambientOcclusionButton, _controller.AmbientOcclusionEnabled
+                ? "Ambient occlusion: On" : "Ambient occlusion: Off");
+            SetButton(groundDetailButton, _controller.GroundDetailEnabled
+                ? "Ground detail: On" : "Ground detail: Off");
         }
 
         void SetStatus(string message) => status.text = message;

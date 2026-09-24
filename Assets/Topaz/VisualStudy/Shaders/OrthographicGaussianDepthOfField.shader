@@ -1,3 +1,6 @@
+// Adapts Unity URP's GaussianDepthOfField CoC pass for orthographic cameras.
+// Unity Technologies ApS; Unity Companion License:
+// https://unity.com/legal/licenses/unity-companion-license
 Shader "Hidden/Topaz/OrthographicGaussianDepthOfField"
 {
     HLSLINCLUDE
