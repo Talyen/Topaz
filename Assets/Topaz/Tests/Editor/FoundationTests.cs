@@ -103,8 +103,12 @@ namespace Topaz.Tests
             Assert.That(focus, Is.Not.Null);
             Assert.That(focus.TryGet(out DepthOfField depth), Is.True);
             Assert.That(depth.mode.value, Is.EqualTo(DepthOfFieldMode.Gaussian));
-            Assert.That(depth.gaussianStart.value, Is.EqualTo(25f));
-            Assert.That(depth.gaussianEnd.value, Is.EqualTo(32f));
+            Assert.That(depth.gaussianStart.value, Is.EqualTo(24f));
+            Assert.That(depth.gaussianEnd.value, Is.EqualTo(30f));
+
+            var urp = UniversalRenderPipeline.asset;
+            Assert.That(urp.shadowDistance, Is.EqualTo(60f));
+            Assert.That(urp.cascade2Split, Is.EqualTo(.45f));
         }
     }
 }

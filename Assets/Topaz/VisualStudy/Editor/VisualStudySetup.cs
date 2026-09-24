@@ -20,6 +20,26 @@ namespace Topaz.Editor
         const string ControlsPath = "Assets/Topaz/Input/TopazControls.inputactions";
         const string ProfileFolder = "Assets/Topaz/VisualStudy/Profiles";
 
+        [MenuItem("Topaz/Apply Focus And Shadow Defaults")]
+        public static void ApplyFocusAndShadowDefaults()
+        {
+            UniversalRenderPipelineAsset urp = UniversalRenderPipeline.asset;
+            if (urp == null) throw new InvalidOperationException("Topaz URP asset is missing.");
+            ConfigureShadows(urp);
+            ConfigureFocus(Profile("Focus Preview"));
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Topaz] Focus and shadow defaults updated.");
+        }
+
+        static void ConfigureShadows(UniversalRenderPipelineAsset urp)
+        {
+            // Keep the last-cascade fade beyond the ground visible at maximum zoom.
+            urp.shadowDistance = 60f;
+            urp.shadowCascadeCount = 2;
+            urp.cascade2Split = .45f;
+            EditorUtility.SetDirty(urp);
+        }
+
         [MenuItem("Topaz/Build Visual Study")]
         public static void Configure()
         {
@@ -103,9 +123,7 @@ namespace Topaz.Editor
             camera.allowHDR = true;
 
             urp.msaaSampleCount = 1; // SMAA comparison stays independent of MSAA cost.
-            urp.shadowDistance = 32f;
-            urp.shadowCascadeCount = 2;
-            EditorUtility.SetDirty(urp);
+            ConfigureShadows(urp);
 
             Light sun = GameObject.Find("Directional Light")?.GetComponent<Light>();
             if (sun == null) throw new InvalidOperationException("Main directional light is missing.");
@@ -219,8 +237,8 @@ namespace Topaz.Editor
             if (profile.Has<Vignette>()) profile.Remove<Vignette>();
             DepthOfField depth = Effect<DepthOfField>(profile);
             depth.mode.Override(DepthOfFieldMode.Gaussian);
-            depth.gaussianStart.Override(25f);
-            depth.gaussianEnd.Override(32f);
+            depth.gaussianStart.Override(24f);
+            depth.gaussianEnd.Override(30f);
             depth.gaussianMaxRadius.Override(1.0f);
             Dirty(profile);
         }

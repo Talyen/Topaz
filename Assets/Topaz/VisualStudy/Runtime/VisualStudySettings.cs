@@ -17,8 +17,8 @@ namespace Topaz.VisualStudy
         public float bloomIntensity = 1f;
         public float bloomThreshold = .70f;
         public float vignette = 0f;
-        public float depthStart = 25f;
-        public float depthEnd = 32f;
+        public float depthStart = 24f;
+        public float depthEnd = 30f;
         public float depthRadius = 1f;
         public float fogEnd = 65f;
         public float homeLight = 10f;
