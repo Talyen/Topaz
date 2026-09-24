@@ -22,6 +22,8 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
 3. Add packages through Unity's Package Manager API or `unity pipeline install`, not by hand-editing `Packages/manifest.json`.
 4. Keep every asset with its `.meta` file. Do not commit `Library`, `Temp`, logs, builds, reports, or machine-specific settings.
 5. Before importing any free placeholder asset, follow `docs/ASSET_SOURCING.md`, verify that its exact terms allow public source redistribution, and record source, license, attribution, and files in `docs/THIRD_PARTY_ASSETS.md`. Ordinary Unity Asset Store downloads do not qualify.
+   For KayKit art, an absent decision or `keep` in `AssetReview/decisions.json` permits use in new environments. `maybe` and `archive` do not. Follow `docs/ASSET_REVIEW.md`; archived FBX files live outside Unity's `Assets` folder.
+   Do not assign or change review decisions on the owner's behalf.
 6. Run `./scripts/verify.sh` for project changes and `./scripts/build.sh windows` when Windows build compatibility is affected. Inspect console/build errors and `git diff --check`.
 7. During early feel prototypes, play the Mac build on a 60 Hz display and fix obvious jitter or hitches. Formal scenario capture and CPU/GPU/memory comparisons begin when a representative gameplay slice exists. See `docs/PERFORMANCE.md`.
 

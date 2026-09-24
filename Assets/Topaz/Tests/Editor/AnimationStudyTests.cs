@@ -23,7 +23,7 @@ namespace Topaz.Tests.Editor
         public void CharacterControllerHasLocomotionBlend(string character)
         {
             var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(
-                $"Assets/Topaz/AnimationStudy/Controllers/{character}.controller");
+                $"Assets/Topaz/Characters/Animation/Controllers/{character}.controller");
             Assert.That(controller, Is.Not.Null);
             Assert.That(controller.layers[0].stateMachine.defaultState.name, Is.EqualTo("Locomotion"));
             Assert.That(controller.layers[0].stateMachine.defaultState.motion, Is.TypeOf<BlendTree>());
@@ -33,7 +33,7 @@ namespace Topaz.Tests.Editor
         public void PlayerBlendsMovementRelativeToAim()
         {
             var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(
-                "Assets/Topaz/AnimationStudy/Controllers/Player.controller");
+                "Assets/Topaz/Characters/Animation/Controllers/Player.controller");
             var tree = controller.layers[0].stateMachine.defaultState.motion as BlendTree;
             Assert.That(tree, Is.Not.Null);
             Assert.That(tree.blendType, Is.EqualTo(BlendTreeType.SimpleDirectional2D));
@@ -44,6 +44,17 @@ namespace Topaz.Tests.Editor
             Assert.That(tree.children.First(c => c.position == Vector2.left).motion.name, Is.EqualTo("Strafe Left"));
             Assert.That(tree.children.First(c => c.position == Vector2.right).motion.name, Is.EqualTo("Strafe Right"));
             Assert.That(tree.children.First(c => c.position == Vector2.down).motion.name, Is.EqualTo("Backpedal"));
+        }
+
+        [Test]
+        public void PlayerHasJumpPose()
+        {
+            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(
+                "Assets/Topaz/Characters/Animation/Controllers/Player.controller");
+            var jump = controller.layers[0].stateMachine.states
+                .Select(child => child.state).FirstOrDefault(state => state.name == "Jump");
+            Assert.That(jump, Is.Not.Null);
+            Assert.That(jump.motion, Is.Not.Null);
         }
     }
 }

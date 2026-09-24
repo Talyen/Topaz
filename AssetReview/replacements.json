@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "replacements": [
+    {
+      "oldGuid": "022c6d7116e0d4b9298be1d60659f7ae",
+      "newPath": "Assets/ThirdParty/KayKit/Forest/Models/Rock_3_D_Color1.fbx"
+    },
+    {
+      "oldGuid": "0faa9483f764d429fa3e17045aa5a920",
+      "newPath": "Assets/ThirdParty/KayKit/Forest/Models/Tree_4_C_Color1.fbx"
+    },
+    {
+      "oldGuid": "12a390b4c64ec479b9040f154dd115a5",
+      "newPath": "Assets/ThirdParty/KayKit/Forest/Models/Tree_4_B_Color1.fbx"
+    },
+    {
+      "oldGuid": "40a0a9e403fea4557b2b6e70aeb237ed",
+      "newPath": "Assets/ThirdParty/KayKit/Forest/Models/Rock_3_C_Color1.fbx"
+    },
+    {
+      "oldGuid": "c73bd7795fd42414b9912a3379e682a4",
+      "newPath": "Assets/ThirdParty/KayKit/Forest/Models/Tree_4_A_Color1.fbx"
+    },
+    {
+      "oldGuid": "f6c7acffa1c8e4e09956f825c1694d5f",
+      "newPath": "Assets/ThirdParty/KayKit/Forest/Models/Rock_3_B_Color1.fbx"
+    }
+  ]
+}

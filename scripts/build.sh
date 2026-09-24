@@ -6,11 +6,11 @@ platform="${1:-mac}"
 
 case "$platform" in
   mac)
-    profile="macOS"
+    profile="$project_root/Assets/Topaz/Build/Profiles/macOS.asset"
     output="$project_root/Builds/Topaz.app"
     ;;
   windows)
-    profile="Windows"
+    profile="$project_root/Assets/Topaz/Build/Profiles/Windows.asset"
     output="$project_root/Builds/Topaz.exe"
     ;;
   *)

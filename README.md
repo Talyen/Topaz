@@ -1,8 +1,8 @@
 # Topaz
 
-Topaz is an early-stage, single-player action RPG and survival crafting game in a hand-authored world. The current Mac build contains [movement and camera](docs/FEEL_STUDY.md), [one-enemy combat](docs/COMBAT_STUDY.md), and a [small gathering and homestead loop](docs/WORLD_LOOP_STUDY.md).
+Topaz is an early-stage, single-player action RPG and survival crafting game in a hand-authored world. The current Mac build contains [movement and camera](docs/studies/FEEL_STUDY.md), [one-enemy combat](docs/studies/COMBAT_STUDY.md), and a [small gathering and homestead loop](docs/studies/WORLD_LOOP_STUDY.md).
 
-The standalone player opens at a title menu. Press **Esc** to pause or open Options during play; [display and camera controls](docs/MENUS_AND_DISPLAY.md) and the [Visual Lab](docs/VISUAL_STUDY.md) are available there.
+The standalone player opens at a title menu. Press **Esc** to pause or open Options during play; [display and camera controls](docs/MENUS_AND_DISPLAY.md) and the [Visual Lab](docs/studies/VISUAL_STUDY.md) are available there.
 
 ## Project brief
 

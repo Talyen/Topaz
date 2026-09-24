@@ -125,7 +125,7 @@ namespace Topaz.Tests
             Teleport(player, new Vector3(-8f, 0f, 0f));
             yield return new WaitForSeconds(0.1f);
 
-            Press(keyboard.spaceKey);
+            Press(keyboard.leftShiftKey);
             yield return new WaitForSeconds(0.05f);
             bool invulnerable = (bool)movement.GetType()
                 .GetProperty("IsInvulnerable", BindingFlags.Public | BindingFlags.Instance)
@@ -135,7 +135,7 @@ namespace Topaz.Tests
                 .Invoke(vitality, new object[] { 1 });
             Assert.That(damaged, Is.False);
             Assert.That(Health(vitality), Is.EqualTo(3));
-            Release(keyboard.spaceKey);
+            Release(keyboard.leftShiftKey);
         }
 
         [UnityTest]

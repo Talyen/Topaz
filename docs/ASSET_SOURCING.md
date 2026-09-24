@@ -1,6 +1,6 @@
 # Finding 3D art for Topaz
 
-Research checked on **2026-09-23**. This is a sourcing shortlist, not an import record or a final art direction. KayKit free packs were subsequently imported; see the [KayKit art study](KAYKIT_ART_STUDY.md) and [third-party asset register](THIRD_PARTY_ASSETS.md) for the exact files and licenses. The project is public and may become a commercial game, so an asset must permit **commercial use and public redistribution of the actual source files committed to this repository**. Keep imported art under its own license; [Topaz's rights notice](../RIGHTS.md) does not turn third-party art into Topaz-owned art.
+Research checked on **2026-09-23**. This is a sourcing shortlist, not an import record or a final art direction. KayKit free packs were subsequently imported; see the [KayKit art study](studies/KAYKIT_ART_STUDY.md) and [third-party asset register](THIRD_PARTY_ASSETS.md) for the exact files and licenses. The project is public and may become a commercial game, so an asset must permit **commercial use and public redistribution of the actual source files committed to this repository**. Keep imported art under its own license; [Topaz's rights notice](../RIGHTS.md) does not turn third-party art into Topaz-owned art.
 
 ## Where to start
 

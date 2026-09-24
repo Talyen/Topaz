@@ -104,7 +104,32 @@ namespace Topaz.Tests
                 Is.EqualTo(0));
             Assert.That(panel.Find("Save selection"), Is.Null);
             Assert.That(panel.Find("Copy values"), Is.Null);
-            Assert.That(root.transform.Find("Ground Details").gameObject.activeSelf, Is.False);
+            Assert.That(root.transform.Find("Ground Details"), Is.Null);
+            Assert.That(GameObject.Find("Loop HUD").transform.Find("Context"), Is.Null);
+        }
+
+        [UnityTest]
+        public IEnumerator NightKeepsAReadableKeyLightAndRestFadeRecovers()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            Component controller = GameObject.Find("Visual Study").GetComponent("VisualLookController");
+            Light sun = GameObject.Find("Directional Light").GetComponent<Light>();
+            Assert.That(controller, Is.Not.Null);
+            Assert.That(sun, Is.Not.Null);
+            var setHours = controller.GetType().GetMethod("SetWorldHours");
+            var setFade = controller.GetType().GetMethod("SetRestFade");
+            setHours.Invoke(controller, new object[] { 12d });
+            float noonIntensity = sun.intensity;
+            setHours.Invoke(controller, new object[] { 23d });
+            Assert.That(sun.intensity, Is.GreaterThan(.5f).And.LessThan(noonIntensity));
+            Assert.That(RenderSettings.ambientSkyColor.b,
+                Is.GreaterThan(RenderSettings.ambientSkyColor.r));
+
+            setFade.Invoke(controller, new object[] { 1f });
+            Assert.That(sun.intensity, Is.Zero);
+            setFade.Invoke(controller, new object[] { 0f });
+            Assert.That(sun.intensity, Is.GreaterThan(.5f));
         }
 
         [UnityTest]
@@ -124,9 +149,9 @@ namespace Topaz.Tests
             Assert.That(GameObject.Find("Effects Comparison Sparks"), Is.Not.Null);
             Component menus = GameObject.Find("Loop HUD").GetComponent("GameMenus");
             menus.GetType().GetMethod("Continue").Invoke(menus, null);
-            Press(keyboard.spaceKey);
+            Press(keyboard.leftShiftKey);
             yield return null;
-            Release(keyboard.spaceKey);
+            Release(keyboard.leftShiftKey);
             Assert.That(particles.particleCount, Is.GreaterThan(0),
                 "A dodge should emit dust without enabling any visual study toggle.");
         }

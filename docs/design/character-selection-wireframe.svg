@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">Choose Your Look screen wireframe</title>
+  <desc id="description">A dark iron menu on the left lists six appearance choices. A large live character preview fills the right side, with Create Character and Back below.</desc>
+  <defs>
+    <linearGradient id="world" x2="1" y2="1"><stop stop-color="#342f25"/><stop offset="1" stop-color="#60573d"/></linearGradient>
+    <linearGradient id="iron" x2="0" y2="1"><stop stop-color="#211f1b"/><stop offset="1" stop-color="#11120f"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#world)"/>
+  <path d="M0 535 Q430 420 1200 550 V675 H0" fill="#353d2c" opacity=".65"/>
+  <rect x="34" y="33" width="425" height="609" rx="8" fill="url(#iron)" stroke="#a57a47" stroke-width="2"/>
+  <text x="68" y="91" fill="#c99a59" font-family="Georgia,serif" font-size="29" letter-spacing="5">TOPAZ</text>
+  <text x="68" y="141" fill="#f1e7d4" font-family="Georgia,serif" font-size="33">Choose Your Look</text>
+  <text x="68" y="168" fill="#bfb5a2" font-family="Arial,sans-serif" font-size="16">Appearance only. Every look plays the same.</text>
+  <line x1="68" x2="425" y1="190" y2="190" stroke="#997446"/>
+  <g fill="#e6dac5" font-family="Arial,sans-serif" font-size="22">
+    <rect x="64" y="208" width="366" height="48" rx="4" fill="#574329" stroke="#d4a365"/>
+    <text x="83" y="239">Rogue</text>
+    <text x="83" y="294">Hooded Rogue</text>
+    <text x="83" y="348">Knight</text>
+    <text x="83" y="402">Ranger</text>
+    <text x="83" y="456">Mage</text>
+    <text x="83" y="510">Barbarian</text>
+  </g>
+  <line x1="68" x2="425" y1="533" y2="533" stroke="#997446"/>
+  <rect x="68" y="550" width="240" height="55" rx="5" fill="#986a36" stroke="#e0b877"/>
+  <text x="82" y="585" fill="#fff4df" font-family="Georgia,serif" font-size="22">Create Character</text>
+  <text x="343" y="584" fill="#e6dac5" font-family="Arial,sans-serif" font-size="21">Back</text>
+  <rect x="492" y="35" width="673" height="566" rx="8" fill="#171a16" fill-opacity=".38" stroke="#d1a666" stroke-dasharray="8 8"/>
+  <text x="523" y="73" fill="#f1e7d4" font-family="Arial,sans-serif" font-size="17">LIVE MODEL PREVIEW · GAME LIGHTING · PLAY CAMERA ANGLE</text>
+  <ellipse cx="829" cy="536" rx="163" ry="26" fill="#171713" opacity=".5"/>
+  <circle cx="829" cy="185" r="48" fill="#b6a17a"/>
+  <path d="M742 250 Q829 213 916 250 L934 423 Q829 460 724 423 Z" fill="#907756" stroke="#d0b68c" stroke-width="3"/>
+  <path d="M739 263 L687 408 M919 263 L971 408 M775 424 L757 514 M883 424 L901 514" fill="none" stroke="#9f8969" stroke-width="28" stroke-linecap="round"/>
+  <text x="771" y="582" fill="#efe1c7" font-family="Arial,sans-serif" font-size="17">Selected look: Rogue</text>
+  <text x="1007" y="582" fill="#e5d0ae" font-family="Arial,sans-serif" font-size="16">↻ Rotate</text>
+  <text x="493" y="638" fill="#f1e7d4" font-family="Arial,sans-serif" font-size="15">Layout wireframe: model silhouette is a placeholder, not game art.</text>
+</svg>

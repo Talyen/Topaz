@@ -10,6 +10,30 @@ namespace Topaz.Tests
     public sealed class MovementInputTests : InputTestFixture
     {
         [UnityTest]
+        public IEnumerator SpaceJumpsOnceAndReturnsToGround()
+        {
+            Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return new WaitForSeconds(0.1f);
+
+            GameObject player = GameObject.Find("Player");
+            Animator animator = player.GetComponentInChildren<Animator>();
+            float groundY = player.transform.position.y;
+            Component movement = player.GetComponent("FeelStudyPlayer");
+            Assert.That((bool)movement.GetType().GetProperty("IsAirborne").GetValue(movement), Is.False);
+            Press(keyboard.spaceKey);
+            yield return new WaitForSeconds(0.12f);
+            Assert.That(player.transform.position.y, Is.GreaterThan(groundY + 0.2f));
+            Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"), Is.True);
+            yield return new WaitForSeconds(0.6f);
+            Assert.That(player.transform.position.y, Is.LessThan(groundY + 0.1f));
+            yield return new WaitForSeconds(0.25f);
+            Assert.That(player.transform.position.y, Is.LessThan(groundY + 0.1f),
+                "Holding Space must not trigger a second jump on landing.");
+            Release(keyboard.spaceKey);
+        }
+
+        [UnityTest]
         public IEnumerator HoldingWMovesTheCharacterTowardScreenTop()
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();

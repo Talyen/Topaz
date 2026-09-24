@@ -54,7 +54,7 @@ namespace Topaz.Tests
                 {
                     object activeRepository = sessionType.GetField("_repository",
                         BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
-                    repositoryType.GetMethod("Flush").Invoke(activeRepository, null);
+                    activeRepository.GetType().GetMethod("Flush").Invoke(activeRepository, null);
                 }
             }
             yield return SceneManager.LoadSceneAsync("Bootstrap");
@@ -137,13 +137,25 @@ namespace Topaz.Tests
             while (!guardianTransform.gameObject.activeSelf && Time.realtimeSinceStartup < readyDeadline)
                 yield return null;
             Assert.That(guardianTransform.gameObject.activeSelf, Is.True);
+            Transform cache = GameObject.Find("Guarded Supply Cache").transform;
+            Teleport(player, cache.position);
+            yield return null;
+            object[] cue = { null, null };
+            Assert.That((bool)session.GetType().GetMethod("TryGetInteraction")
+                .Invoke(session, cue), Is.False,
+                "The locked supply cache must not offer an action chip.");
             GameObject guardian = guardianTransform.gameObject;
             Component combatant = guardian.GetComponent("EnemyCombatant");
             combatant.GetType().GetMethod("TakeDamage").Invoke(combatant, new object[] { 99 });
             yield return null;
 
             int beforeWood = (int)session.GetType().GetProperty("WoodCount").GetValue(session);
-            Teleport(player, GameObject.Find("Guarded Supply Cache").transform.position);
+            Teleport(player, cache.position);
+            yield return null;
+            cue = new object[] { null, null };
+            Assert.That((bool)session.GetType().GetMethod("TryGetInteraction")
+                .Invoke(session, cue), Is.True);
+            Assert.That(cue[1], Is.EqualTo("Open cache"));
             Interact(session);
             Assert.That((int)session.GetType().GetProperty("WoodCount").GetValue(session),
                 Is.EqualTo(beforeWood + 3));
@@ -160,8 +172,8 @@ namespace Topaz.Tests
             Assert.That((bool)session.GetType().GetProperty("ExpeditionCacheClaimed").GetValue(session), Is.True);
             Assert.That((int)session.GetType().GetProperty("WoodCount").GetValue(session),
                 Is.EqualTo(beforeWood + 3));
-            Transform cache = GameObject.Find("Guarded Supply Cache").transform;
-            Assert.That(cache.GetChild(0).gameObject.activeSelf, Is.False,
+            Transform reenteredCache = GameObject.Find("Guarded Supply Cache").transform;
+            Assert.That(reenteredCache.GetChild(0).gameObject.activeSelf, Is.False,
                 "The claimed cache must stay empty on reentry.");
             Teleport(player, GameObject.Find("Return Trail Marker").transform.position);
             Interact(session);

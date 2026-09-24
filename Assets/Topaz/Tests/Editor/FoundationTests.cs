@@ -19,15 +19,15 @@ namespace Topaz.Tests
             var enabled = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
             Assert.That(enabled.Select(scene => scene.path), Is.EqualTo(new[]
             {
-                "Assets/Scenes/Bootstrap.unity", "Assets/Scenes/Expedition.unity"
+                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Expedition.unity"
             }));
         }
 
         [Test]
         public void DesktopProfilesAndUrpAreConfigured()
         {
-            Assert.That(AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/macOS.asset"), Is.Not.Null);
-            Assert.That(AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Settings/Build Profiles/Windows.asset"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Topaz/Build/Profiles/macOS.asset"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Topaz/Build/Profiles/Windows.asset"), Is.Not.Null);
             Assert.That(GraphicsSettings.currentRenderPipeline, Is.Not.Null);
         }
 
@@ -53,17 +53,20 @@ namespace Topaz.Tests
         public void FeelStudyHasKeyboardMouseAndGamepadActions()
         {
             var controls = AssetDatabase.LoadAssetAtPath<InputActionAsset>(
-                "Assets/Topaz/Input/TopazControls.inputactions");
+                "Assets/Topaz/Core/Input/TopazControls.inputactions");
             Assert.That(controls, Is.Not.Null);
 
             InputActionMap player = controls.FindActionMap("Player", true);
-            string[] required = { "Move", "AimPointer", "AimStick", "Dodge", "Interact", "ZoomWheel", "ZoomIn", "ZoomOut" };
+            string[] required = { "Move", "AimPointer", "AimStick", "Dodge", "Jump", "Interact", "ZoomWheel", "ZoomIn", "ZoomOut" };
             foreach (string name in required)
                 Assert.That(player.FindAction(name), Is.Not.Null, name);
 
             Assert.That(player.FindAction("Move").bindings.Any(binding => binding.path == "<Keyboard>/w"), Is.True);
             Assert.That(player.FindAction("Move").bindings.Any(binding => binding.path == "<Gamepad>/leftStick"), Is.True);
             Assert.That(player.FindAction("Dodge").bindings.Any(binding => binding.path == "<Gamepad>/buttonEast"), Is.True);
+            Assert.That(player.FindAction("Dodge").bindings.Any(binding => binding.path == "<Keyboard>/leftShift"), Is.True);
+            Assert.That(player.FindAction("Jump").bindings.Any(binding => binding.path == "<Keyboard>/space"), Is.True);
+            Assert.That(player.FindAction("Jump").bindings.Any(binding => binding.path == "<Gamepad>/buttonSouth"), Is.True);
             Assert.That(player.FindAction("Interact").bindings.Any(binding => binding.path == "<Gamepad>/buttonWest"), Is.True);
             Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Mouse>/leftButton"), Is.True);
             Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Gamepad>/rightTrigger"), Is.True);
@@ -71,27 +74,30 @@ namespace Topaz.Tests
             Assert.That(player.FindAction("CycleTool").bindings.Any(binding => binding.path == "<Gamepad>/buttonNorth"), Is.True);
             Assert.That(player.FindAction("Place").bindings.Any(binding => binding.path == "<Gamepad>/buttonSouth"), Is.True);
             Assert.That(player.FindAction("Cancel").bindings.Any(binding => binding.path == "<Keyboard>/escape"), Is.True);
-            Assert.That(player.FindAction("Inventory").bindings.Any(binding => binding.path == "<Keyboard>/i"), Is.True);
+            Assert.That(player.FindAction("Inventory").bindings.Any(binding => binding.path == "<Keyboard>/b"), Is.True);
         }
 
         [Test]
         public void CombatStudyHasAuthoredDefinitionsAndBakedNavigation()
         {
             Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Topaz/CombatStudy/Definitions/PracticeSword.asset"), Is.Not.Null);
+                "Assets/Topaz/Gameplay/Combat/Definitions/PracticeSword.asset"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Topaz/CombatStudy/Definitions/PracticeEnemy.asset"), Is.Not.Null);
+                "Assets/Topaz/Gameplay/Combat/Definitions/PracticeEnemy.asset"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<NavMeshData>(
-                "Assets/Topaz/CombatStudy/Navigation/PracticeNavMesh.asset"), Is.Not.Null);
+                "Assets/Topaz/World/Home/Navigation/PracticeNavMesh.asset"), Is.Not.Null);
         }
 
         [Test]
         public void WorldLoopHasStableDefinitionAssets()
         {
-            string root = "Assets/Topaz/LoopStudy/Definitions/";
+            string root = "Assets/Topaz/Gameplay/WorldLoop/Definitions/";
             foreach (string asset in new[] { "Wood", "Tree", "StorageChest", "StorageChestRecipe", "AxeChop" })
                 Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(root + asset + ".asset"),
                     Is.Not.Null, asset);
+            var tree = AssetDatabase.LoadAssetAtPath<ScriptableObject>(root + "Tree.asset");
+            Assert.That(new SerializedObject(tree).FindProperty("requiredToolId").stringValue,
+                Is.EqualTo("axe"));
         }
 
         [Test]
@@ -103,7 +109,7 @@ namespace Topaz.Tests
                 "The Visual Lab changes Volume profiles at runtime, including depth of field.");
 
             var focus = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
-                "Assets/Topaz/VisualStudy/Profiles/Focus Preview.asset");
+                "Assets/Topaz/Presentation/Graphics/Profiles/Focus Preview.asset");
             Assert.That(focus, Is.Not.Null);
             Assert.That(focus.TryGet(out DepthOfField depth), Is.True);
             Assert.That(depth.mode.value, Is.EqualTo(DepthOfFieldMode.Gaussian));
@@ -116,9 +122,9 @@ namespace Topaz.Tests
             Assert.That(depth.bladeCount.value, Is.EqualTo(6));
 
             var painterly = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
-                "Assets/Topaz/VisualStudy/Profiles/Painterly Clear.asset");
+                "Assets/Topaz/Presentation/Graphics/Profiles/Painterly Clear.asset");
             var home = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
-                "Assets/Topaz/VisualStudy/Profiles/Warm Home.asset");
+                "Assets/Topaz/Presentation/Graphics/Profiles/Warm Home.asset");
             Assert.That(painterly.TryGet(out WhiteBalance globalBalance), Is.True);
             Assert.That(home.TryGet(out WhiteBalance homeBalance), Is.True);
             Assert.That(globalBalance.temperature.value, Is.EqualTo(25f));
@@ -130,26 +136,24 @@ namespace Topaz.Tests
             Assert.That(urp.cascade2Split, Is.EqualTo(.45f));
 
             var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(
-                "Assets/Settings/PC_Renderer.asset");
+                "Assets/Topaz/Presentation/Rendering/Settings/PC_Renderer.asset");
             var correctedShader = AssetDatabase.LoadAssetAtPath<Shader>(
-                "Assets/Topaz/VisualStudy/Shaders/OrthographicGaussianDepthOfField.shader");
+                "Assets/Topaz/Presentation/Graphics/Shaders/OrthographicGaussianDepthOfField.shader");
             Assert.That(renderer.postProcessData, Is.Not.Null);
             Assert.That(renderer.postProcessData.shaders.gaussianDepthOfFieldPS,
                 Is.SameAs(correctedShader));
             Assert.That(correctedShader.passCount, Is.EqualTo(5));
 
             var bokehShader = AssetDatabase.LoadAssetAtPath<Shader>(
-                "Assets/Topaz/VisualStudy/Shaders/OrthographicBokehDepthOfField.shader");
+                "Assets/Topaz/Presentation/Graphics/Shaders/OrthographicBokehDepthOfField.shader");
             Assert.That(renderer.postProcessData.shaders.bokehDepthOfFieldPS,
                 Is.SameAs(bokehShader));
             Assert.That(bokehShader.passCount, Is.EqualTo(5));
             Assert.That(renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Count(), Is.EqualTo(1));
-            Assert.That(renderer.rendererFeatures.OfType<DecalRendererFeature>().Count(), Is.EqualTo(1));
+            Assert.That(renderer.rendererFeatures.OfType<DecalRendererFeature>(), Is.Empty);
             var ao = new SerializedObject(renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Single());
             Assert.That(ao.FindProperty("m_Settings.Intensity").floatValue, Is.EqualTo(.85f));
-            var ground = AssetDatabase.LoadAssetAtPath<Material>(
-                "Assets/Topaz/VisualStudy/Decals/Ground Wear.mat");
-            Assert.That(ground.GetTexture("Base_Map"), Is.Not.Null);
+            Assert.That(AssetDatabase.IsValidFolder("Assets/Topaz/Presentation/Graphics/Decals"), Is.False);
 
             MethodInfo getLightmap = typeof(PlayerSettings).GetMethod(
                 "GetLightmapEncodingQualityForPlatform", BindingFlags.Static | BindingFlags.NonPublic);
