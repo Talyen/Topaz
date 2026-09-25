@@ -1,5 +1,7 @@
 # One-sword, one-enemy combat study
 
+Historical study: the home practice enemy described below was removed in the Home → Graveyard pass. The current authored enemy and loot rules are in [Graveyard study](GRAVEYARD_STUDY.md); this note records the original combat prototype.
+
 This small extension to the movement graybox tests combat timing. It is not an item, talent, death, or save system.
 
 - **Sword:** Left mouse button or gamepad right trigger starts a fixed-direction swing toward the current aim. The cyan ground arc shows its reach. Movement slows during windup and the active strike. A dodge can cancel recovery, but cannot cancel windup or the strike.

@@ -16,7 +16,7 @@ Status: first playable implementation built; owner review of the Mac transition 
 - Defeat does not drop or remove inventory, equipped gear, experience, gold, or earned progression. Collected loot, claimed caches, structures, harvested resources, and completed world events remain changed. There is no corpse run or recoverable currency pile.
 - Already spent consumables and ammunition remain spent. Defeat does not roll back actions taken since the last Campfire.
 - Recovery advances the authoritative World clock by exactly **eight in-game hours**, the same amount as resting. Apply the same elapsed-time consequences, such as tree regrowth and future weather schedule advancement, without replaying skipped hours visually. Time does not advance during the fade or scene load in addition to that jump.
-- Ordinary enemies reset to their authored spawn or patrol state, including health and combat state, when the player recovers. Enemy resets must not reset persistent World rewards or state. Story bosses marked as permanently defeated remain defeated after their completion is recorded; an encounter that should repeat needs an explicit authored rule.
+- Authored Skeletons retain their World-owned defeat deadline when the player recovers. Each returns 24 in-game hours after defeat once its spawn is out of view and away from the player. Recovery's eight-hour clock jump counts toward the deadline but never revives a Skeleton early. Future story bosses need an explicit persistent completion rule.
 - Using defeat as a shortcut back to the Campfire is acceptable. A voluntary return or Campfire teleport can be added with the later world map and fast travel feature.
 
 ## State and integration boundaries
@@ -27,18 +27,18 @@ Status: first playable implementation built; owner review of the Mac transition 
 | Visit | Last activated Campfire ID and discovered travel Campfire IDs for one Character in one World. A first Visit starts at the home fire. The current region and position continue to belong to the Visit. |
 | World | World clock, rewards, bosses, resources, and other shared persistent changes. The authored Campfires exist in this World, while each Character discovers them independently. |
 | Character | Health and harmful effects in play, carried inventory, equipment, skills, XP, and gold. Recovery restores health and clears effects without replacing the Character record. |
-| Recovery coordinator | Runs a single transition, advances the clock once, moves to the safe arrival point, resets ordinary encounters, updates the Visit, and commits the resulting state. It must ignore additional hits while recovery is running. |
+| Recovery coordinator | Runs a single transition, advances the clock once, moves to the safe arrival point, preserves enemy deadlines, updates the Visit, and commits the resulting state. It must ignore additional hits while recovery is running. |
 
 Travel discovery is a Character's knowledge of a particular World, so discovered Campfire IDs belong to the Visit. A newly created Character does not inherit another Character's discovered travel network merely because they enter the same World. The return point also belongs to the Visit.
 
-`PlayerVitality` now sends defeat to `WorldSession`, which runs the covered move, clock jump, enemy reset, and save. The home and first clearing have authored Campfires. The existing versioned profile and atomic write pattern preserve Character, World, and Visit changes; recovery never reloads a previous save. Saved return IDs that no longer match current authored content fall back to the home fire. The first clearing's guardian is a repeatable encounter whose one-time cache stays claimed; future story bosses need their own persistent completion flag and explicit reset policy.
+`PlayerVitality` sends defeat to `WorldSession`, which runs the covered move, clock jump, and save. Home, Graveyard, and Crypt have authored Campfires. The existing versioned profile and atomic write pattern preserve Character, World, and Visit changes; recovery never reloads a previous save. Saved return IDs that no longer match current authored content fall back to the home fire. The Graveyard Guardian follows the 24-hour Skeleton return rule; its cache refills independently after 72 World hours.
 
 ## Acceptance checks for implementation
 
 1. First defeat in a fresh World recovers at its home Campfire with full health, cleared harmful effects, and the World clock advanced exactly eight hours.
 2. Entering a second Campfire's visible activation area automatically unlocks it and makes it the return point. Walking past outside the area does neither. Re-entering home changes the return point back.
 3. Defeat after gathering, gaining XP, spending a consumable, claiming a cache, or spending gold preserves each resulting state. Save and reload after recovery preserve the same Character, World, and Visit records.
-4. Ordinary enemies start again at their authored spawn or patrol state. A permanently defeated story boss and its claimed reward stay completed. Repeated recovery does not duplicate one-time rewards.
+4. A defeated Skeleton stays down through an eight-hour recovery and returns only when its 24-hour World-clock deadline and out-of-view condition are met. Repeated recovery does not duplicate loot.
 5. Defeat in another loaded region covers the load with the fade and arrives at a safe Campfire position. A missing saved Campfire falls back to home without losing unrelated progress.
 6. Recovery applies the same eight-hour world-time effects as rest exactly once. It neither advances clock time during the covered load nor replays intermediate day/night or weather transitions.
 7. In a Mac build on a 60 Hz display, the transition reads as defeat and recovery without feeling instant or interrupting control for longer than needed. Run project verification, the Windows compatibility build, and `git diff --check` before handoff.

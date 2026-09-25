@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
@@ -38,6 +39,8 @@ namespace Topaz.Tests
                 .GetComponent<LineRenderer>();
             Assert.That(warning.enabled, Is.True);
             Assert.That(warning.positionCount, Is.EqualTo(2));
+            Assert.That(warning.GetPosition(0).y, Is.GreaterThan(.12f),
+                "The directional tell must render above the crypt floor.");
             int before = Get<int>(player.GetComponent("PlayerVitality"), "CurrentHealth");
             yield return new WaitForSeconds(1.5f);
             Assert.That(Get<int>(player.GetComponent("PlayerVitality"), "CurrentHealth"),
@@ -50,7 +53,7 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator RogueCrossbowWaitsForBackpackSpaceAndDropsOncePerWorld()
+        public IEnumerator RogueCrossbowWaitsForBackpackSpaceAndPersistsAcrossReload()
         {
             string directory = Path.Combine(Path.GetTempPath(),
                 "TopazCryptCrossbow-" + Guid.NewGuid().ToString("N"));
@@ -78,7 +81,7 @@ namespace Topaz.Tests
                 rogue.GetComponent("EnemyCombatant").GetType().GetMethod("TakeDamage")
                     .Invoke(rogue.GetComponent("EnemyCombatant"), new object[] { 999 });
                 yield return null;
-                Assert.That(Get<bool>(session, "CryptRogueCrossbowAwarded"), Is.True);
+                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(2));
                 Assert.That(Get<bool>(session, "CrossbowsDiscovered"), Is.False);
                 var slots = ((IEnumerable)Get<object>(session, "BackpackSlots"))
                     .Cast<object>().ToArray();
@@ -91,7 +94,7 @@ namespace Topaz.Tests
                 Assert.That(pickup, Is.Not.Null);
                 session.GetType().GetMethod("TryCollect").Invoke(session,
                     new object[] { pickup.GetComponent("WorldPickup") });
-                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(1));
+                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(2));
                 session.GetType().GetMethod("Commit").Invoke(session, null);
                 session.GetType().GetMethod("FlushCurrent").Invoke(session, null);
 
@@ -99,7 +102,7 @@ namespace Topaz.Tests
                 player = GameObject.Find("Player");
                 session = player.GetComponent("WorldSession");
                 yield return WaitForRegion(session, "dungeon.home-crypt");
-                Assert.That(Get<bool>(session, "CryptRogueCrossbowAwarded"), Is.True);
+                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(2));
                 pickup = GameObject.Find("Skeleton Crossbow Pickup");
                 Assert.That(pickup, Is.Not.Null);
                 slots = ((IEnumerable)Get<object>(session, "BackpackSlots"))
@@ -109,7 +112,7 @@ namespace Topaz.Tests
                 session.GetType().GetMethod("TryCollect").Invoke(session,
                     new object[] { pickup.GetComponent("WorldPickup") });
                 Assert.That(Get<bool>(session, "CrossbowsDiscovered"), Is.True);
-                Assert.That(Get<int>(session, "PickupCount"), Is.Zero);
+                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(1));
                 Assert.That((bool)session.GetType().GetMethod("TryEquipFromBackpack")
                     .Invoke(session, new object[] { 0 }), Is.False,
                     "A full backpack must not discard the displaced shield.");
@@ -164,7 +167,7 @@ namespace Topaz.Tests
 
             Teleport(player, GameObject.Find("Return Door").transform.position);
             Interact(session);
-            yield return WaitForRegion(session, "home");
+            yield return WaitForRegion(session, "expedition.clearing");
             yield return WaitForCryptUnload();
             yield return EnterCrypt(player, session);
             Assert.That(Get<bool>(session, "CryptShortcutOpen"), Is.True);
@@ -173,7 +176,7 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator MageDropsOnePersistentStaffAndRevealFollowsPickup()
+        public IEnumerator MageDropsPersistentStaffAndRevealFollowsPickup()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
@@ -216,14 +219,14 @@ namespace Topaz.Tests
 
             Teleport(player, GameObject.Find("Return Door").transform.position);
             Interact(session);
-            yield return WaitForRegion(session, "home");
+            yield return WaitForRegion(session, "expedition.clearing");
             yield return WaitForCryptUnload();
             yield return EnterCrypt(player, session);
             Assert.That(Get<bool>(session, "CryptMageDefeated"), Is.True);
             Assert.That(Get<bool>(session, "StaffDiscovered"), Is.True);
             Assert.That(GameObject.Find("Crypt Staff Pickup"), Is.Null);
-            Assert.That(GameObject.Find("Home Crypt").transform.Find("Crypt Mage").gameObject.activeSelf,
-                Is.False);
+            Assert.That(Get<bool>(GameObject.Find("Home Crypt").transform.Find("Crypt Mage")
+                .GetComponent("EnemyCombatant"), "IsDown"), Is.True);
             yield return ReturnHome(player, session);
         }
 
@@ -259,7 +262,7 @@ namespace Topaz.Tests
                     slot.GetType().GetField("count").SetValue(slot, 20);
                 }
                 session.GetType().GetMethod("TryCollect").Invoke(session, new[] { pickup });
-                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(1));
+                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(2));
                 Assert.That(Get<bool>(session, "StaffDiscovered"), Is.False);
                 session.GetType().GetMethod("Commit").Invoke(session, null);
                 session.GetType().GetMethod("FlushCurrent").Invoke(session, null);
@@ -270,7 +273,7 @@ namespace Topaz.Tests
                 session = GameObject.Find("Player").GetComponent("WorldSession");
                 Assert.That(Get<bool>(session, "CryptMageDefeated"), Is.True);
                 Assert.That(GameObject.Find("Crypt Staff Pickup"), Is.Not.Null);
-                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(1));
+                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(2));
                 object freeSlot = ((IEnumerable)Get<object>(session, "BackpackSlots"))
                     .Cast<object>().First();
                 freeSlot.GetType().GetField("itemId").SetValue(freeSlot, null);
@@ -278,7 +281,7 @@ namespace Topaz.Tests
                 session.GetType().GetMethod("TryCollect").Invoke(session,
                     new object[] { GameObject.Find("Crypt Staff Pickup").GetComponent("WorldPickup") });
                 Assert.That(Get<bool>(session, "StaffDiscovered"), Is.True);
-                Assert.That(Get<int>(session, "PickupCount"), Is.Zero);
+                Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(1));
             }
             finally
             {
@@ -287,6 +290,79 @@ namespace Topaz.Tests
             }
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             Directory.Delete(directory, true);
+        }
+
+        [UnityTest]
+        public IEnumerator MageReturnsAfterWorldDayAndDropsAnotherStaff()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject player = GameObject.Find("Player");
+            Component session = player.GetComponent("WorldSession");
+            yield return EnterCrypt(player, session);
+            Component mage = GameObject.Find("Home Crypt").transform.Find("Crypt Mage")
+                .GetComponent("EnemyCombatant");
+            float deadline = Time.realtimeSinceStartup + 5f;
+            while (!mage.gameObject.activeSelf && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            mage.GetType().GetMethod("TakeDamage").Invoke(mage, new object[] { 999 });
+            yield return null;
+            Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(2));
+            Assert.That(Get<bool>(mage, "IsDown"), Is.True);
+
+            object data = session.GetType().GetField("_data",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
+            FieldInfo clock = data.GetType().GetField("worldHours");
+            clock.SetValue(data, (double)clock.GetValue(data) + 24.1d);
+            deadline = Time.realtimeSinceStartup + 5f;
+            while (Get<bool>(mage, "IsDown") && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(Get<bool>(mage, "IsDown"), Is.False);
+            Assert.That(Get<bool>(session, "CryptMageDefeated"), Is.False);
+            mage.GetType().GetMethod("TakeDamage").Invoke(mage, new object[] { 999 });
+            yield return null;
+            Assert.That(Get<int>(session, "PickupCount"), Is.EqualTo(4),
+                "Both defeats must leave a Bone Fragment and a Staff.");
+            yield return ReturnHome(player, session);
+        }
+
+        [UnityTest]
+        public IEnumerator CryptCacheRefillsAfterSeventyTwoHoursAndNeedsBackpackSpace()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject player = GameObject.Find("Player");
+            Component session = player.GetComponent("WorldSession");
+            yield return EnterCrypt(player, session);
+            var slots = ((IEnumerable)Get<object>(session, "BackpackSlots"))
+                .Cast<object>().ToArray();
+            foreach (object slot in slots)
+            {
+                slot.GetType().GetField("itemId").SetValue(slot, "material.wood");
+                slot.GetType().GetField("count").SetValue(slot, 20);
+            }
+            MethodInfo claim = session.GetType().GetMethod("TryClaimCryptCache",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That((bool)claim.Invoke(session, null), Is.False);
+            Assert.That(Get<bool>(session, "CryptCacheClaimed"), Is.False);
+            foreach (object slot in slots.Take(2))
+            {
+                slot.GetType().GetField("itemId").SetValue(slot, null);
+                slot.GetType().GetField("count").SetValue(slot, 0);
+            }
+            Assert.That((bool)claim.Invoke(session, null), Is.True);
+            Assert.That(Get<bool>(session, "CryptCacheClaimed"), Is.True);
+            Assert.That((bool)claim.Invoke(session, null), Is.False);
+
+            object data = session.GetType().GetField("_data",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
+            FieldInfo clock = data.GetType().GetField("worldHours");
+            clock.SetValue(data, (double)clock.GetValue(data) + 72.1d);
+            Assert.That(Get<bool>(session, "CryptCacheClaimed"), Is.False);
+            Assert.That((bool)claim.Invoke(session, null), Is.True);
+            Assert.That(Get<int>(session, "StoneCount"), Is.EqualTo(4));
+            Assert.That(Get<int>(session, "IronCount"), Is.EqualTo(2));
+            yield return ReturnHome(player, session);
         }
 
         [UnityTest]
@@ -313,6 +389,10 @@ namespace Topaz.Tests
             Component playerSpell = player.GetComponent("GroundSpellAbility");
             Assert.That((bool)playerSpell.GetType().GetMethod("Begin").Invoke(playerSpell,
                 new object[] { minion.position, false, 2, 0f }), Is.True);
+            LineRenderer spellRim = player.transform.Find("Spell Warning Rim")
+                .GetComponent<LineRenderer>();
+            Assert.That(spellRim.GetPosition(0).y, Is.GreaterThan(.12f),
+                "The ground spell warning must render above the crypt floor.");
             yield return new WaitForSeconds(1f);
             Assert.That(Get<int>(minionCombat, "CurrentHealth"), Is.EqualTo(enemyBefore - 2));
             Assert.That(Get<int>(playerVitality, "CurrentHealth"), Is.EqualTo(playerBefore));
@@ -371,14 +451,31 @@ namespace Topaz.Tests
             Assert.That(GameObject.Find("Return Door"), Is.Not.Null);
             Teleport(player, GameObject.Find("Return Door").transform.position);
             Interact(session);
-            yield return WaitForRegion(session, "home");
+            yield return WaitForRegion(session, "expedition.clearing");
             yield return WaitForCryptUnload();
+            yield return new WaitForSeconds(1.6f);
+            session.GetType().GetMethod("RequestTrailCrossing").Invoke(session,
+                new object[] { "home" });
+            yield return WaitForRegion(session, "home");
         }
 
         static IEnumerator EnterCrypt(GameObject player, Component session)
         {
-            Teleport(player, GameObject.Find("Home Crypt Entrance").transform.position);
             float deadline = Time.realtimeSinceStartup + 10f;
+            while (!Get<bool>(session, "HasActivePair") &&
+                   Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(Get<bool>(session, "HasActivePair"), Is.True);
+            if (Get<string>(session, "CurrentRegionId") == "home")
+            {
+                yield return new WaitForSeconds(1.6f);
+                session.GetType().GetMethod("RequestTrailCrossing").Invoke(session,
+                    new object[] { "expedition.clearing" });
+                yield return WaitForRegion(session, "expedition.clearing");
+            }
+            while (GameObject.Find("Graveyard Crypt Entrance") == null &&
+                   Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(GameObject.Find("Graveyard Crypt Entrance"), Is.Not.Null);
+            Teleport(player, GameObject.Find("Graveyard Crypt Entrance").transform.position);
             object[] cue = { null, null };
             bool ready = false;
             while (Time.realtimeSinceStartup < deadline)
@@ -419,6 +516,10 @@ namespace Topaz.Tests
                    Time.realtimeSinceStartup < deadline)
                 yield return null;
             Assert.That(Get<string>(session, "CurrentRegionId"), Is.EqualTo(region));
+            while (Get<bool>(session, "BlockMovement") &&
+                   Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(Get<bool>(session, "BlockMovement"), Is.False);
         }
 
         static void Teleport(GameObject player, Vector3 position)

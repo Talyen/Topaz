@@ -17,17 +17,16 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
 
-            GameObject enemy = GameObject.Find("Enemy");
             GameObject player = GameObject.Find("Player");
-            Assert.That(enemy, Is.Not.Null);
             Assert.That(player, Is.Not.Null);
-            Assert.That(enemy.GetComponent<NavMeshAgent>().isOnNavMesh, Is.True);
-
             Component vitality = player.GetComponent("PlayerVitality");
             Assert.That(vitality, Is.Not.Null);
             bool damaged = (bool)vitality.GetType().GetMethod("TryTakeDamage").Invoke(vitality, new object[] { 1 });
             Assert.That(damaged, Is.False, "The player starts in the safe homestead.");
             Assert.That(Health(vitality), Is.EqualTo(6));
+            yield return TopazTestTravel.EnterGraveyard(player);
+            Assert.That(GameObject.Find("Scout A").GetComponent<NavMeshAgent>().isOnNavMesh,
+                Is.True);
         }
 
         [UnityTest]
@@ -36,12 +35,13 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
 
-            GameObject enemy = GameObject.Find("Enemy");
             GameObject player = GameObject.Find("Player");
+            yield return TopazTestTravel.EnterGraveyard(player);
+            GameObject enemy = GameObject.Find("Scout A");
             Assert.That(enemy, Is.Not.Null);
             Assert.That(player, Is.Not.Null);
             NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
-            Teleport(player, new Vector3(8f, 0f, 1.5f));
+            Teleport(player, enemy.transform.position + Vector3.right * 3f);
             yield return new WaitForSeconds(0.45f);
 
             Assert.That(agent.isOnNavMesh, Is.True);
@@ -56,8 +56,9 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
 
-            GameObject enemy = GameObject.Find("Enemy");
             GameObject player = GameObject.Find("Player");
+            yield return TopazTestTravel.EnterGraveyard(player);
+            GameObject enemy = GameObject.Find("Scout A");
             Assert.That(enemy, Is.Not.Null);
             Assert.That(player, Is.Not.Null);
             Component combatant = enemy.GetComponent("EnemyCombatant");
@@ -106,7 +107,8 @@ namespace Topaz.Tests
             Assert.That((bool)session.GetType().GetMethod("TryEquipFromBackpack")
                 .Invoke(session, new object[] { axeIndex }), Is.True);
 
-            GameObject enemy = GameObject.Find("Enemy");
+            yield return TopazTestTravel.EnterGraveyard(player);
+            GameObject enemy = GameObject.Find("Scout A");
             Component combatant = enemy.GetComponent("EnemyCombatant");
             int before = Health(combatant);
             Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right,
@@ -149,14 +151,15 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
 
-            GameObject enemy = GameObject.Find("Enemy");
             GameObject player = GameObject.Find("Player");
+            yield return TopazTestTravel.EnterGraveyard(player);
+            GameObject enemy = GameObject.Find("Scout A");
             Component vitality = player.GetComponent("PlayerVitality");
             Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
             Teleport(player, enemy.transform.position - screenRight * 1.35f);
             yield return new WaitForSeconds(0.12f);
 
-            LineRenderer tell = GameObject.Find("Enemy Attack Tell").GetComponent<LineRenderer>();
+            LineRenderer tell = GameObject.Find("Scout A Tell").GetComponent<LineRenderer>();
             Animator animator = enemy.GetComponentInChildren<Animator>();
             Assert.That(animator, Is.Not.Null);
             Assert.That(tell.enabled, Is.True, "The red arc must appear before the strike.");

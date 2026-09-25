@@ -11,6 +11,7 @@ namespace Topaz.CombatStudy
         WorldSession _session;
         AudioSource _audio;
         CrossbowAttackDefinition _attack;
+        bool _staminaEnhanced;
         float _releaseAt;
         float _reloadAt;
         float _reloadStarted;
@@ -69,6 +70,7 @@ namespace Topaz.CombatStudy
                 bonusRange: _session.TalentAmount(SkillIds.Crossbows,
                     "crossbows.long-sight"));
             if (_attack.FireClip != null) _audio?.PlayOneShot(_attack.FireClip);
+            _staminaEnhanced = _session.TryExert(25f);
             _reloadStarted = Time.time;
             _reloadAt = Time.time + ReloadDuration();
             _readyCuePending = true;
@@ -78,7 +80,8 @@ namespace Topaz.CombatStudy
             _attack.RecoverySeconds *
             (1f - (_session.SkillLevel(SkillIds.Crossbows) - 1) *
                 _session.SkillHandling(SkillIds.Crossbows)) -
-            _session.TalentAmount(SkillIds.Crossbows, "crossbows.quick-reload"));
+            _session.TalentAmount(SkillIds.Crossbows, "crossbows.quick-reload")) *
+            (_staminaEnhanced ? SurvivalRules.RecoveryMultiplier : 1f);
 
         Vector3 AssistedDirection(Vector3 raw)
         {
@@ -120,6 +123,7 @@ namespace Topaz.CombatStudy
             _aiming = false;
             _reloadAt = 0f;
             _readyCuePending = false;
+            _staminaEnhanced = false;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Topaz.Editor
         public static void ApplyExpedition()
         {
             Scene scene = EditorSceneManager.OpenScene(
-                "Assets/Topaz/World/Scenes/Expedition.unity", OpenSceneMode.Single);
+                "Assets/Topaz/World/Scenes/Graveyard.unity", OpenSceneMode.Single);
             ExpeditionSceneBootstrap context =
                 UnityEngine.Object.FindFirstObjectByType<ExpeditionSceneBootstrap>();
             if (context == null) throw new InvalidOperationException("Expedition context is missing.");

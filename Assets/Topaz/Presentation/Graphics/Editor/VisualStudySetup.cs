@@ -418,6 +418,9 @@ namespace Topaz.Editor
             Ref(menu, "status", status);
             Ref(menu, "loopHud", hud);
             Ref(hud, "visualOptionsPanel", panel.gameObject);
+            if (canvas.GetComponent<Topaz.Audio.TopazAudioSettings>() == null)
+                canvas.gameObject.AddComponent<Topaz.Audio.TopazAudioSettings>();
+            AudioOptionsSetup.AddToPanel(panel, menu);
             panel.gameObject.SetActive(false);
             return menu;
         }

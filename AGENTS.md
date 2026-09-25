@@ -15,7 +15,7 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
 
 ## Agent workflow
 
-1. Inspect `git status`, relevant scenes, settings, and current package versions. Preserve unrelated edits.
+1. Inspect `git status`, relevant scenes, settings, and current package versions. Outstanding changes are a valid starting point: agents are encouraged to build on them, including changes in the same files, when they help the task. Read the existing diff first and preserve its work; do not overwrite or delete outstanding changes.
    For substantial features, check whether a supported Unity core feature or official package already provides the capability; document why a custom layer is necessary.
    Start with the task map in `docs/UNITY_REFERENCE_GUIDE.md` for versioned Unity 6.6 and installed-package documentation.
 2. Prefer the connected Editor through `unity` / Unity MCP to modify scenes, prefabs, settings, and assets. Configure locally with `unity mcp configure codex --local --project-path "$PWD" --yes`; its absolute-path config is ignored.

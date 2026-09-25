@@ -149,23 +149,27 @@ namespace Topaz.Tests
             Set(builds, "_position", new Vector3(3f, 0f, 3f));
             Invoke(builds, "ConfirmPlacement");
             IList structures = (IList)Field(Field(session, "_data"), "structures");
-            Assert.That(structures.Count, Is.EqualTo(1));
+            Assert.That(structures.Cast<object>().Count(value =>
+                (string)Field(value, "definitionId") == "structure.blacksmith_anvil"), Is.EqualTo(1));
             Assert.That((int)Property(session, "StoneCount"), Is.Zero);
             Assert.That((int)Property(session, "IronCount"), Is.Zero);
 
             object wood = Invoke(session, "Item", "material.wood");
             Assert.That((int)Invoke(pack, "Add", wood, 320), Is.EqualTo(320));
             Assert.That((bool)Invoke(session, "BeginHomeEdit"), Is.True);
-            Set(builds, "_selected", structures[0]);
+            Set(builds, "_selected", structures.Cast<object>().First(value =>
+                (string)Field(value, "definitionId") == "structure.blacksmith_anvil"));
             Invoke(builds, "RemoveSelected");
-            Assert.That(structures.Count, Is.Zero);
+            Assert.That(structures.Cast<object>().Any(value =>
+                (string)Field(value, "definitionId") == "structure.blacksmith_anvil"), Is.False);
             Assert.That((int)Property(session, "PickupCount"), Is.EqualTo(2),
                 "A full backpack leaves both material refunds in the World.");
             Invoke(session, "FlushCurrent");
             object repository = Field(session, "_repository");
             object profile = Invoke(repository, "Load");
             object world = Invoke(profile, "World", Property(session, "ActiveWorldId"));
-            Assert.That(((IList)Field(world, "structures")).Count, Is.Zero);
+            Assert.That(((IList)Field(world, "structures")).Cast<object>().Any(value =>
+                (string)Field(value, "definitionId") == "structure.blacksmith_anvil"), Is.False);
             Assert.That(((IList)Field(world, "pickups")).Count, Is.EqualTo(2));
         }
 
@@ -194,17 +198,20 @@ namespace Topaz.Tests
             Assert.That((bool)Invoke(session, "BeginHomeBuild", "structure.stone_path"), Is.True);
             Invoke(builds, "Cancel");
             Assert.That((int)Property(session, "StoneCount"), Is.EqualTo(1));
-            Assert.That(structures.Count, Is.EqualTo(1));
+            Assert.That(structures.Cast<object>().Count(value =>
+                (string)Field(value, "definitionId") == "structure.stone_path"), Is.Zero);
 
             Assert.That((bool)Invoke(session, "BeginHomeBuild", "structure.stone_path"), Is.True);
             Set(builds, "_position", new Vector3(3f, 0f, 3f));
             Invoke(builds, "ConfirmPlacement");
-            Assert.That(structures.Count, Is.EqualTo(2));
+            Assert.That(structures.Cast<object>().Count(value =>
+                (string)Field(value, "definitionId") == "structure.stone_path"), Is.EqualTo(1));
             Assert.That((int)Property(session, "StoneCount"), Is.Zero);
             Invoke(session, "FlushCurrent");
             object profile = Invoke(Field(session, "_repository"), "Load");
             object world = Invoke(profile, "World", Property(session, "ActiveWorldId"));
-            Assert.That(((IList)Field(world, "structures")).Count, Is.EqualTo(2));
+            Assert.That(((IList)Field(world, "structures")).Cast<object>().Count(value =>
+                (string)Field(value, "definitionId") == "structure.stone_path"), Is.EqualTo(1));
         }
 
         static void Teleport(GameObject player, Vector3 position)

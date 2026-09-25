@@ -24,7 +24,8 @@ namespace Topaz.LoopStudy
 
         public string StableObjectId => stableObjectId;
         public string RequiredToolId => definition != null ? definition.RequiredToolId : null;
-        public bool IsAvailable => _state != null && _state.readyAtWorldHours == 0d;
+        public bool IsAvailable => _state != null && _state.readyAtWorldHours == 0d &&
+            !(_session?.HomeBlocksResource(transform.position, .43f) ?? false);
         public int ChopsRemaining => _state == null || definition == null ? 0 :
             Mathf.Max(0, definition.ChopsRequired - _state.chops);
 

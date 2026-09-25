@@ -19,7 +19,7 @@ namespace Topaz.Editor
         {
             Material glass = EnsureGlass();
             TuneScene("Bootstrap", glass);
-            TuneScene("Expedition", glass);
+            TuneScene("Graveyard", glass);
             TuneScene("Crypt", glass);
             if (AssetDatabase.LoadAssetAtPath<Cubemap>(CookiePath) != null)
                 AssetDatabase.DeleteAsset(CookiePath);

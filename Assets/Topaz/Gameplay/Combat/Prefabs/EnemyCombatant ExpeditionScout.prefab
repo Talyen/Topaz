@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 315902899278297349}
   - component: {fileID: 4482333289075585580}
   - component: {fileID: 5924064127891942461}
+  - component: {fileID: 8930770002417281330}
   m_Layer: 0
   m_Name: EnemyCombatant ExpeditionScout
   m_TagString: Untagged
@@ -99,9 +100,24 @@ MonoBehaviour:
   bodyCollider: {fileID: 4482333289075585580}
   telegraph: {fileID: 0}
   keepVisualOnDefeat: 1
-  respawns: 0
+  spawnId: 
+  lootRole: 0
   normalBodyTint: {r: 0.87, g: 0.36, b: 0.31, a: 1}
   rangedPositions: []
+--- !u!114 &8930770002417281330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3499040133342436916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414aedab0718b4e6db76264750561bf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.VisualStudy.GroundContactShadow
+  material: {fileID: 2100000, guid: 33c9ed2926d9b40db96c9b287ec51730, type: 2}
+  radius: 0.48
 --- !u!1 &7825258458820537334
 GameObject:
   m_ObjectHideFlags: 0

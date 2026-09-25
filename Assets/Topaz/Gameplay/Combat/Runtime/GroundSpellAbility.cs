@@ -1,5 +1,6 @@
 using Topaz.LoopStudy;
 using UnityEngine;
+using Topaz.Audio;
 
 namespace Topaz.CombatStudy
 {
@@ -43,9 +44,14 @@ namespace Topaz.CombatStudy
         {
             _rim = CreateLine("Spell Warning Rim", ringMaterial, .12f);
             _rune = CreateLine("Spell Rune", runeMaterial, .055f);
-            _audio = gameObject.AddComponent<AudioSource>();
+            var audioObject = new GameObject("Spell Audio", typeof(AudioSource));
+            audioObject.transform.SetParent(transform, false);
+            _audio = audioObject.GetComponent<AudioSource>();
             _audio.spatialBlend = GetComponent<PlayerCombat>() == null ? .7f : 0f;
             _audio.maxDistance = 22f;
+            audioObject.AddComponent<AudioLowPassFilter>().cutoffFrequency = 3000f;
+            audioObject.AddComponent<TopazAudioOutput>()
+                .Configure(TopazAudioOutput.Category.Effects, .45f);
             var burst = new GameObject("Spell Impact", typeof(ParticleSystem));
             burst.transform.SetParent(transform, false);
             _burst = burst.GetComponent<ParticleSystem>();
@@ -93,7 +99,7 @@ namespace Topaz.CombatStudy
         {
             if (!CanCast || damage < 1) return false;
             _center = center;
-            _center.y = .085f;
+            _center.y = Topaz.VisualStudy.GroundSurface.Height(_center) + .17f;
             _hostile = hostile;
             _damage = damage;
             _radius = definition.Radius + Mathf.Max(0f, bonusRadius);

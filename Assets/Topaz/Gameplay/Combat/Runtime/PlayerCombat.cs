@@ -49,6 +49,7 @@ namespace Topaz.CombatStudy
         float _dodgeBonusEnds;
         bool _dodgeStrike;
         bool _hitDuringStrike;
+        bool _staminaEnhanced;
         HarvestTree _harvestTarget;
         MiningRock _miningTarget;
         Tool? _restoreToolAfterHarvest;
@@ -93,7 +94,8 @@ namespace Topaz.CombatStudy
                 scale *= 1f - (_worldSession?.SkillHandling(StrikeSkill) ?? 0f) * (level - 1);
             else if (phase == Phase.Recovery)
                 scale *= 1f - (_worldSession?.SkillHandling(StrikeSkill) ?? 0f) * (level - 1);
-            return scale;
+            return phase == Phase.Recovery && _staminaEnhanced
+                ? scale * SurvivalRules.RecoveryMultiplier : scale;
         }
         public float AttackAnimationSeconds => IsCrossbowAiming ? _crossbow.AimSeconds :
             IsCrossbowReloading ? _crossbow.ReloadSeconds :
@@ -386,6 +388,9 @@ namespace Topaz.CombatStudy
         {
             _strikeTool = _equippedTool;
             _strikeWeapon = _strikeTool == Tool.Sword ? _worldSession?.CurrentWeapon : null;
+            float staminaCost = _strikeTool == Tool.Sword
+                ? _strikeWeapon?.Skill == WeaponSkill.Axes ? 30f : 25f : 20f;
+            _staminaEnhanced = _worldSession?.TryExert(staminaCost) == true;
             _dodgeStrike = StrikeSkill == SkillIds.Swords &&
                 _worldSession?.HasTalent(SkillIds.Swords, "swords.dodge-strike") == true &&
                 Time.time >= _dodgeBonusStarts && Time.time <= _dodgeBonusEnds;
@@ -494,6 +499,7 @@ namespace Topaz.CombatStudy
         void EndAttack()
         {
             _phase = Phase.Ready;
+            _staminaEnhanced = false;
             swingArc.enabled = false;
             if (swordPivot != null) swordPivot.gameObject.SetActive(false);
             if (axePivot != null) axePivot.gameObject.SetActive(false);
@@ -509,7 +515,8 @@ namespace Topaz.CombatStudy
         void DrawArc()
         {
             const int segments = 14;
-            Vector3 center = transform.position + Vector3.up * 0.07f;
+            Vector3 center = transform.position;
+            center.y = Topaz.VisualStudy.GroundSurface.Height(center) + .16f;
             swingArc.positionCount = segments + 3;
             swingArc.SetPosition(0, center);
             for (int i = 0; i <= segments; i++)

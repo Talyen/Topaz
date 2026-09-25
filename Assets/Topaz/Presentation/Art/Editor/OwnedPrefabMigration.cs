@@ -17,7 +17,7 @@ namespace Topaz.Art.Editor
     public static class OwnedPrefabMigration
     {
         public static readonly string[] ScenePaths = {
-            "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Expedition.unity",
+            "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Graveyard.unity",
             "Assets/Topaz/World/Scenes/Crypt.unity" };
         const string ManifestPath = "Assets/Topaz/Presentation/Art/Editor/PrefabSources.json";
         [Serializable] public sealed class Sources { public Entry[] entries; }

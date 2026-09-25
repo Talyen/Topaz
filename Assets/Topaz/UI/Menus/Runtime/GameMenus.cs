@@ -113,8 +113,10 @@ namespace Topaz.Menus
                 _inventoryFromPause = false;
                 SetState(ScreenState.Pause);
             }
-            bool shouldPause = _state != ScreenState.Game || visualLab.IsOpen || _inventoryFromPause;
-            float target = Application.isEditor ? 1f : shouldPause ? 0f : 1f;
+            bool travelPause = loopHud.TravelOpen || session.IsFastTraveling;
+            bool shouldPause = _state != ScreenState.Game || visualLab.IsOpen ||
+                _inventoryFromPause || travelPause;
+            float target = travelPause || (!Application.isEditor && shouldPause) ? 0f : 1f;
             if (Time.timeScale != target) Time.timeScale = target;
         }
 

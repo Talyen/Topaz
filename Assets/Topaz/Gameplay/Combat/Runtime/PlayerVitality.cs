@@ -13,8 +13,10 @@ namespace Topaz.CombatStudy
         [SerializeField, Min(1)] int maximumHealth = 6;
 
         CharacterController _controller;
+        WorldSession _session;
         bool _wasAtHome;
         float _protectedUntil;
+        bool _preserveHealthOnHomeArrival;
 
         public int CurrentHealth { get; private set; }
         public int MaximumHealth => maximumHealth;
@@ -23,15 +25,18 @@ namespace Topaz.CombatStudy
         void Awake()
         {
             _controller = GetComponent<CharacterController>();
+            _session = GetComponent<WorldSession>();
             CurrentHealth = maximumHealth;
             LastDamageTime = -1000f;
-            _wasAtHome = safeZone != null && safeZone.Contains(transform.position);
+            _wasAtHome = _session?.IsAtHome == true;
         }
 
         void Update()
         {
-            bool atHome = safeZone != null && safeZone.Contains(transform.position);
-            if (atHome && !_wasAtHome) CurrentHealth = maximumHealth;
+            bool atHome = _session?.IsAtHome == true;
+            if (atHome && !_wasAtHome && !_preserveHealthOnHomeArrival)
+                CurrentHealth = maximumHealth;
+            if (atHome) _preserveHealthOnHomeArrival = false;
             _wasAtHome = atHome;
         }
 
@@ -49,8 +54,10 @@ namespace Topaz.CombatStudy
             EnemyCombatant attacker, bool staggerAttackerOnBlock)
         {
             if (amount <= 0 || CurrentHealth == 0 || Time.time < _protectedUntil ||
+                (_session?.IsFastTraveling == true || _session?.IsTravelMenuOpen == true ||
+                 _session?.IsResting == true) ||
                 movement == null || movement.IsInvulnerable ||
-                (safeZone != null && safeZone.Contains(transform.position))) return false;
+                _session?.IsAtHome == true) return false;
 
             PlayerCombat combat = GetComponent<PlayerCombat>();
             if (attacker != null && combat != null && combat.TryBlock(attackerPosition))
@@ -82,9 +89,17 @@ namespace Topaz.CombatStudy
         {
             GetComponent<PlayerCombat>()?.ClearTemporaryProgression();
             CurrentHealth = maximumHealth;
-            _wasAtHome = safeZone != null && safeZone.Contains(transform.position);
+            _wasAtHome = _session?.IsAtHome == true;
             _protectedUntil = Time.time + 1f;
         }
+
+        public void RestoreHealthAfterRest()
+        {
+            CurrentHealth = maximumHealth;
+            _protectedUntil = Time.time + 1f;
+        }
+
+        public void PreserveHealthOnHomeArrival() => _preserveHealthOnHomeArrival = true;
 
         void ReturnHome()
         {

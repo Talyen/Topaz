@@ -6198,6 +6198,7 @@ GameObject:
   - component: {fileID: 966522014}
   - component: {fileID: 966522013}
   - component: {fileID: 966522012}
+  - component: {fileID: 966522015}
   m_Layer: 0
   m_Name: Home Crypt
   m_TagString: Untagged
@@ -6368,6 +6369,20 @@ Transform:
   - {fileID: 1034772750}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &966522015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966522011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d956a7cb438d54da18dec0935825bd54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.Audio.TopazAudioOutput
+  category: 1
+  baseVolume: 0.14
 --- !u!1001 &969621343
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7389,6 +7404,14 @@ PrefabInstance:
     - target: {fileID: 5087456492124195155, guid: 011b851ce2a0d4012aa63c329408f58f, type: 3}
       propertyPath: m_Name
       value: Ossuary Warrior
+      objectReference: {fileID: 0}
+    - target: {fileID: 8614026551056657124, guid: 011b851ce2a0d4012aa63c329408f58f, type: 3}
+      propertyPath: spawnId
+      value: crypt.ossuary-warrior
+      objectReference: {fileID: 0}
+    - target: {fileID: 8614026551056657124, guid: 011b851ce2a0d4012aa63c329408f58f, type: 3}
+      propertyPath: lootRole
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8614026551056657124, guid: 011b851ce2a0d4012aa63c329408f58f, type: 3}
       propertyPath: telegraph
@@ -9909,6 +9932,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 966522014}
     m_Modifications:
     - target: {fileID: 5527499459732476959, guid: c7b9a805fe075408fa904ae6e293b017, type: 3}
+      propertyPath: spawnId
+      value: crypt.hall-minion
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527499459732476959, guid: c7b9a805fe075408fa904ae6e293b017, type: 3}
       propertyPath: telegraph
       value: 
       objectReference: {fileID: 257158740}
@@ -11365,6 +11392,14 @@ PrefabInstance:
       value: Hall Warrior
       objectReference: {fileID: 0}
     - target: {fileID: 8614026551056657124, guid: 011b851ce2a0d4012aa63c329408f58f, type: 3}
+      propertyPath: spawnId
+      value: crypt.hall-warrior
+      objectReference: {fileID: 0}
+    - target: {fileID: 8614026551056657124, guid: 011b851ce2a0d4012aa63c329408f58f, type: 3}
+      propertyPath: lootRole
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8614026551056657124, guid: 011b851ce2a0d4012aa63c329408f58f, type: 3}
       propertyPath: telegraph
       value: 
       objectReference: {fileID: 1752233106}
@@ -11421,6 +11456,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 966522014}
     m_Modifications:
+    - target: {fileID: 5527499459732476959, guid: c7b9a805fe075408fa904ae6e293b017, type: 3}
+      propertyPath: spawnId
+      value: crypt.gallery-minion-a
+      objectReference: {fileID: 0}
     - target: {fileID: 5527499459732476959, guid: c7b9a805fe075408fa904ae6e293b017, type: 3}
       propertyPath: telegraph
       value: 
@@ -11527,6 +11566,14 @@ PrefabInstance:
       value: Crypt Mage
       objectReference: {fileID: 0}
     - target: {fileID: 4500435422563277952, guid: cac8f67c727794df2bdbc0647d1b434d, type: 3}
+      propertyPath: spawnId
+      value: crypt.mage
+      objectReference: {fileID: 0}
+    - target: {fileID: 4500435422563277952, guid: cac8f67c727794df2bdbc0647d1b434d, type: 3}
+      propertyPath: lootRole
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4500435422563277952, guid: cac8f67c727794df2bdbc0647d1b434d, type: 3}
       propertyPath: telegraph
       value: 
       objectReference: {fileID: 344359628}
@@ -11543,6 +11590,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 966522014}
     m_Modifications:
+    - target: {fileID: 150578583665062541, guid: 7ad5c1246248c46189d0c705c90bc3f8, type: 3}
+      propertyPath: spawnId
+      value: crypt.gallery-rogue
+      objectReference: {fileID: 0}
+    - target: {fileID: 150578583665062541, guid: 7ad5c1246248c46189d0c705c90bc3f8, type: 3}
+      propertyPath: lootRole
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 150578583665062541, guid: 7ad5c1246248c46189d0c705c90bc3f8, type: 3}
       propertyPath: telegraph
       value: 

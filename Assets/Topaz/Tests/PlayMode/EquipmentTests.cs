@@ -59,10 +59,11 @@ namespace Topaz.Tests
             Component session = player.GetComponent("WorldSession");
             Component vitality = player.GetComponent("PlayerVitality");
             Component movement = player.GetComponent("FeelStudyPlayer");
-            Component enemy = GameObject.Find("Enemy").GetComponent("EnemyCombatant");
+            yield return TopazTestTravel.EnterGraveyard(player);
+            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
             Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right,
                 Vector3.up).normalized;
-            Teleport(player, GameObject.Find("Enemy").transform.position - screenRight * 1.35f);
+            Teleport(player, GameObject.Find("Scout A").transform.position - screenRight * 1.35f);
             Set(mouse.rightButton, 1f);
             yield return new WaitForSeconds(.18f);
             Vector3 aim = (Vector3)Property(movement, "AimDirection");

@@ -52,7 +52,7 @@ This map comes from the current `GameMenus`, `CharacterWorldMenu`, `LoopHud`, Jo
 | Travel/rest/recovery | Enter/leave expedition, rest, discover campfire, recover after defeat | Fade and short status indicate transition; save/region failure may return home. |
 | Pause | Resume, Backpack, Options, Main Menu, Quit | Escape resumes; closing Backpack opened here returns to Pause. |
 | Options | Display mode, window size, Graphics, UI Scale, Back | Same surface from title and Pause, but Back returns to its source. Settings apply immediately and persist locally. |
-| Graphics | Camera zoom, anti-aliasing, depth of field, Bloom, ambient occlusion, reset | Back restores Options focus; errors report failed preference writes. |
+| Graphics and Audio | Tab between camera/graphics settings and Master, Music, Ambient, Sound Effects, and Mute in Background | Changes save immediately; reset affects the active tab; Back restores Options focus. |
 
 ## Review and acceptance method
 

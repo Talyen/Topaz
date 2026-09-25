@@ -16,7 +16,7 @@ Example: `1. **Recoverable death** — Make defeat meaningful without erasing th
 
 The ordered feature backlog. The first item is the default choice for the next new piece of work.
 
-1. **Enemy variety and loot** — Give expeditions distinct threats and rewards so choosing a weapon and taking a risk matter. [Crypt Rogue and Crossbow first slice](studies/HOME_CRYPT_STUDY.md) is in Mac review; broader variety remains.
+1. **Enemy variety and loot** — Give Graveyard and crypt encounters distinct threats and repeatable rewards so choosing a weapon and taking a risk matter. The [Skeleton loot and Graveyard slice](studies/GRAVEYARD_STUDY.md) is in Mac review; broader variety remains.
 2. **UI design system** — Establish a consistent visual language and reusable patterns for menus, HUDs, inventories, prompts, and controls.
 3. **Asset approval and exclusion system** — Track which candidate assets are approved for Topaz or ruled out, with a short reason for each decision.
 4. **Characters and worlds** — Let players create appearance-only Characters and enter any fresh or existing World. See [the data model](CHARACTERS_AND_WORLDS.md) and [selection plan](plans/CHARACTER_SELECTION_PLAN.md).
@@ -26,12 +26,12 @@ The ordered feature backlog. The first item is the default choice for the next n
 8. **Deeper use-based progression** — Grow skills through play and make deliberate talent choices without fixed classes. [First playable design](plans/PROGRESSION_PLAN.md) is in Mac review.
 9. **Recoverable death** — Make defeat meaningful without erasing the player's world or long-term progress.
 10. **Home-area dungeon entrance and first dungeon** — Add a visible entrance near the homestead leading to an authored challenge space with a clear reset rule and worthwhile rewards. [First crypt slice](studies/HOME_CRYPT_STUDY.md) is in Mac review.
-11. **Broader homestead building** — Let the player place and use more structures within designated home plots.
+11. **Broader homestead building** — Let the player shape and use a safe Home that expands from its campfire. [First playable design](plans/HOMESTEAD_BUILDING_PLAN.md) is in implementation review.
 12. **Day and night cycle** — Move through readable times of day that change the world's ambience without forcing expedition timers.
 13. **Weather** — Add weather states that make the world feel alive while preserving visibility and combat readability.
 14. **Expanded authored regions** — Travel through multiple connected outdoor areas whose important changes persist.
-15. **Campfire travel** — Discover campfires and use them as understandable travel points between visited areas.
-16. **Gentle survival needs** — Add low-pressure needs that make preparation and returning home valuable.
+15. **Campfire travel** — Discover campfires and use them as understandable travel points between visited areas. The [first playable design](plans/CAMPFIRE_TRAVEL_PLAN.md) is in Mac review.
+16. **Gentle survival needs** — Add low-pressure needs that make preparation and returning home valuable. The [stamina, food, and rest first slice](plans/GENTLE_SURVIVAL_PLAN.md) is in Mac review.
 
 ## Ideas
 

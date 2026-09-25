@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace Topaz.CombatStudy
 {
+    public enum SkeletonLootRole { Minion, Warrior, Rogue, Mage }
+
     /// <summary>One NavMesh-driven practice enemy with an aimed, avoidable attack tell.</summary>
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyCombatant : MonoBehaviour
@@ -17,7 +20,8 @@ namespace Topaz.CombatStudy
         [SerializeField] Collider bodyCollider;
         [SerializeField] LineRenderer telegraph;
         [SerializeField] bool keepVisualOnDefeat;
-        [SerializeField] bool respawns = true;
+        [SerializeField] string spawnId;
+        [SerializeField] SkeletonLootRole lootRole;
         [SerializeField] Color normalBodyTint = new Color(0.87f, 0.36f, 0.31f);
         [SerializeField] Transform[] rangedPositions;
 
@@ -47,6 +51,9 @@ namespace Topaz.CombatStudy
         AudioSource _rangedAudio;
 
         public int CurrentHealth { get; private set; }
+        public string SpawnId => spawnId;
+        public SkeletonLootRole LootRole => lootRole;
+        public event Action<EnemyCombatant> Defeated;
         public int SourceLevel => definition != null ? definition.SourceLevel : 1;
         public int MaximumHealth => definition != null ? definition.Health : 0;
         public bool IsAlive => CurrentHealth > 0;
@@ -102,7 +109,6 @@ namespace Topaz.CombatStudy
         {
             if (_state == State.Down)
             {
-                if (respawns && Time.time >= _phaseEnd) Respawn();
                 return;
             }
             while (_bleedUntil > 0f && Time.time >= _nextBleedTick &&
@@ -121,7 +127,7 @@ namespace Topaz.CombatStudy
             }
 
             if (!_agent.isOnNavMesh) return;
-            if (safeZone.Contains(target.transform.position))
+            if (target.GetComponent<Topaz.LoopStudy.WorldSession>()?.IsAtHome == true)
             {
                 ReturnToSpawn();
                 return;
@@ -331,7 +337,7 @@ namespace Topaz.CombatStudy
                 _castingGroundSpell = false;
                 return; // The shared spell resolves its own radius and damage.
             }
-            if (safeZone.Contains(target.transform.position)) return;
+            if (target.GetComponent<Topaz.LoopStudy.WorldSession>()?.IsAtHome == true) return;
 
             if (definition.CrossbowAttack != null)
             {
@@ -374,36 +380,26 @@ namespace Topaz.CombatStudy
             }
         }
 
-        void Fall()
+        void Fall(bool notify = true)
         {
             _groundSpell?.Cancel();
             _castingGroundSpell = false;
             _bleedUntil = 0f;
             _state = State.Down;
-            _phaseEnd = respawns ? Time.time + 3f : float.PositiveInfinity;
+            _phaseEnd = float.PositiveInfinity;
             telegraph.enabled = false;
             if (_agent.isOnNavMesh) _agent.ResetPath();
             _agent.enabled = false;
             if (!keepVisualOnDefeat) visualRoot.gameObject.SetActive(false);
             if (bodyCollider != null) bodyCollider.enabled = false;
+            if (notify) Defeated?.Invoke(this);
         }
 
-        void Respawn()
+        public void SetDefeatedForPersistence()
         {
-            _bleedUntil = 0f;
-            if (!NavMesh.SamplePosition(_spawnPosition, out NavMeshHit hit, 2f, NavMesh.AllAreas))
-            {
-                _phaseEnd = Time.time + 1f;
-                return;
-            }
-            _agent.enabled = true;
-            if (!_agent.Warp(hit.position)) Debug.LogWarning("Practice enemy could not return to its NavMesh.", this);
-            visualRoot.gameObject.SetActive(true);
-            if (bodyCollider != null) bodyCollider.enabled = true;
-            CurrentHealth = definition.Health;
-            _state = State.Idle;
-            _rangedRepositioning = false;
-            SetColor(normalBodyTint);
+            if (_state == State.Down) return;
+            CurrentHealth = 0;
+            Fall(false);
         }
 
         public void ResetForRecovery()
@@ -443,7 +439,8 @@ namespace Topaz.CombatStudy
         {
             if (definition.CrossbowAttack != null)
             {
-                Vector3 lineStart = transform.position + Vector3.up * .09f;
+                Vector3 lineStart = transform.position;
+                lineStart.y = Topaz.VisualStudy.GroundSurface.Height(lineStart) + .18f;
                 telegraph.positionCount = 2;
                 telegraph.SetPosition(0, lineStart);
                 float length = definition.CrossbowAttack.Range;
@@ -460,7 +457,8 @@ namespace Topaz.CombatStudy
                 return;
             }
             const int segments = 14;
-            Vector3 center = transform.position + Vector3.up * 0.09f;
+            Vector3 center = transform.position;
+            center.y = Topaz.VisualStudy.GroundSurface.Height(center) + .18f;
             telegraph.positionCount = segments + 3;
             telegraph.SetPosition(0, center);
             for (int i = 0; i <= segments; i++)

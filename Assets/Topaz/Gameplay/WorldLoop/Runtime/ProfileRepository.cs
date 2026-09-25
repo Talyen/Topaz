@@ -140,6 +140,10 @@ namespace Topaz.LoopStudy
             if (data.version == 5) data.MigrateFromVersion5();
             if (data.version == 6) data.MigrateFromVersion6();
             if (data.version == 7) data.MigrateFromVersion7();
+            if (data.version == 8) data.MigrateFromVersion8();
+            if (data.version == 9) data.MigrateFromVersion9();
+            if (data.version == 10) data.MigrateFromVersion10();
+            if (data.version == 11) data.MigrateFromVersion11();
             data.Validate();
             return data;
         }

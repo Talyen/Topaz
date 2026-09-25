@@ -41,20 +41,20 @@ namespace Topaz.VisualStudy
 
         // Stylized key light stays above the horizon so the fixed camera retains readable forms.
         static readonly TimeKey[] TimeKeys = {
-            new TimeKey(0f, .45f, new Color(.62f, .75f, 1f),
-                new Color(.16f, .18f, .24f), new Color(.10f, .13f, .19f), 0f, 1.12f, .55f, 45f, -30f),
-            new TimeKey(4f, .45f, new Color(.72f, .80f, 1f),
-                new Color(.16f, .18f, .24f), new Color(.11f, .14f, .20f), 0f, 1.08f, .55f, 30f, -60f),
+            new TimeKey(0f, .18f, new Color(.62f, .75f, 1f),
+                new Color(.045f, .055f, .08f), new Color(.012f, .018f, .03f), 0f, 1.12f, .55f, 45f, -30f),
+            new TimeKey(4f, .18f, new Color(.72f, .80f, 1f),
+                new Color(.045f, .055f, .08f), new Color(.015f, .021f, .034f), 0f, 1.08f, .55f, 30f, -60f),
             new TimeKey(7f, 1.35f, new Color(1f, .79f, .60f),
                 new Color(.30f, .33f, .38f), new Color(.26f, .29f, .33f), 0f, 1f, .8f, 42f, -40f),
             new TimeKey(12f, 1.85f, new Color(.93f, .96f, 1f),
                 new Color(.34f, .36f, .40f), new Color(.28f, .32f, .34f), 0f, 1f, 1f, 50f, -30f),
-            new TimeKey(19f, .72f, new Color(1f, .69f, .43f),
-                new Color(.22f, .23f, .28f), new Color(.16f, .17f, .22f), -.04f, 1.04f, .8f, 28f, 45f),
-            new TimeKey(22f, .45f, new Color(.62f, .75f, 1f),
-                new Color(.16f, .18f, .24f), new Color(.10f, .13f, .19f), 0f, 1.12f, .55f, 45f, -30f),
-            new TimeKey(24f, .45f, new Color(.62f, .75f, 1f),
-                new Color(.16f, .18f, .24f), new Color(.10f, .13f, .19f), 0f, 1.12f, .55f, 45f, -30f)
+            new TimeKey(19f, .38f, new Color(1f, .69f, .43f),
+                new Color(.10f, .11f, .14f), new Color(.04f, .045f, .065f), -.04f, 1.04f, .8f, 28f, 45f),
+            new TimeKey(22f, .18f, new Color(.62f, .75f, 1f),
+                new Color(.045f, .055f, .08f), new Color(.012f, .018f, .03f), 0f, 1.12f, .55f, 45f, -30f),
+            new TimeKey(24f, .18f, new Color(.62f, .75f, 1f),
+                new Color(.045f, .055f, .08f), new Color(.012f, .018f, .03f), 0f, 1.12f, .55f, 45f, -30f)
         };
 
         public static readonly string[] SettingNames = {
@@ -395,6 +395,8 @@ namespace Topaz.VisualStudy
 
         void ApplyTimeOfDay()
         {
+            // Scene replacement can destroy lights before WorldSession.OnDisable resets its fade.
+            if (sun == null || homeLight == null) return;
             float hour = (float)WorldClock.HourOfDay(_worldHours);
             int next = 1;
             while (next < TimeKeys.Length - 1 && hour > TimeKeys[next].hour) next++;
@@ -413,10 +415,16 @@ namespace Topaz.VisualStudy
             RenderSettings.ambientEquatorColor = ambient * .36f;
             RenderSettings.ambientGroundColor = ambient * .16f;
             Color fog = Color.Lerp(a.fog, b.fog, blend);
+            float sunlight = Mathf.Lerp(a.sunlight, b.sunlight, blend);
+            float night = Mathf.InverseLerp(1.1f, .18f, sunlight);
+            RenderSettings.fog = !_interior;
+            RenderSettings.fogMode = FogMode.Linear;
             RenderSettings.fogColor = Color.Lerp(fog,
                 fog * new Color(.78f, .87f, 1f), _cloudiness) * visible;
-            RenderSettings.fogEndDistance = Mathf.Max(45f,
-                _settings.fogEnd - _rain * 8f);
+            RenderSettings.fogStartDistance = Mathf.Lerp(26f, 12f, night);
+            RenderSettings.fogEndDistance = Mathf.Max(28f,
+                Mathf.Lerp(_settings.fogEnd, Mathf.Min(_settings.fogEnd, 34f), night) -
+                _rain * 8f);
 
             sun.color = Color.Lerp(a.sunlightColor, b.sunlightColor, blend);
             sun.intensity = Mathf.Lerp(a.sunlight, b.sunlight, blend) *

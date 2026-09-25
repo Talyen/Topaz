@@ -1,4 +1,5 @@
 using Topaz.LoopStudy;
+using Topaz.Audio;
 using UnityEngine;
 
 namespace Topaz.VisualStudy
@@ -12,6 +13,7 @@ namespace Topaz.VisualStudy
         Transform _follow;
         ParticleSystem _rainParticles;
         AudioSource _rainAudio;
+        TopazAudioOutput _rainOutput;
         Material _rainMaterial;
         Texture2D _rainTexture;
         AudioClip _rainClip;
@@ -72,7 +74,7 @@ namespace Topaz.VisualStudy
                 var emission = _rainParticles.emission;
                 emission.rateOverTime = RainRate * _rain;
             }
-            if (_rainAudio != null) _rainAudio.volume = .18f * _rain;
+            if (_rainOutput != null) _rainOutput.SetBaseVolume(.18f * _rain);
         }
 
         void CreateRain()
@@ -135,17 +137,17 @@ namespace Topaz.VisualStudy
             const int sampleRate = 22050;
             float[] samples = new float[sampleRate * 4];
             uint state = 0x6d2b79f5u;
-            float low = 0f;
-            float drop = 0f;
+            float fast = 0f;
+            float slow = 0f;
             for (int i = 0; i < samples.Length; i++)
             {
                 state = state * 1664525u + 1013904223u;
                 float noise = ((state >> 8) / 16777216f) * 2f - 1f;
-                low = low * .94f + noise * .06f;
-                if (state % 1801u == 0u) drop = .32f;
-                drop *= .992f;
-                samples[i] = Mathf.Clamp((noise - low) * .19f + low * .38f +
-                    drop * noise, -.8f, .8f);
+                fast = fast * .78f + noise * .22f;
+                slow = slow * .985f + noise * .015f;
+                // A filtered wash avoids the white-noise hiss and sharp random clicks.
+                samples[i] = Mathf.Clamp((fast - slow) * .58f + slow * .35f,
+                    -.8f, .8f);
             }
             for (int i = 0; i < 256; i++)
             {
@@ -162,6 +164,8 @@ namespace Topaz.VisualStudy
             _rainAudio.playOnAwake = false;
             _rainAudio.spatialBlend = 0f;
             _rainAudio.volume = 0f;
+            _rainOutput = gameObject.AddComponent<TopazAudioOutput>();
+            _rainOutput.Configure(TopazAudioOutput.Category.Ambience, 0f);
             _rainAudio.Play();
         }
 

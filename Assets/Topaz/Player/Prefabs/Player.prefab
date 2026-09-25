@@ -55,6 +55,8 @@ GameObject:
   - component: {fileID: 8653699473294737069}
   - component: {fileID: 1220639459746671905}
   - component: {fileID: 3262880875002303756}
+  - component: {fileID: 2766158656093454215}
+  - component: {fileID: 1895181172665394949}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -188,6 +190,8 @@ MonoBehaviour:
   wood: {fileID: 11400000, guid: c17ed212cd21a4544a13bf0045eab6ad, type: 2}
   stone: {fileID: 11400000, guid: 2f55f70509dbe4d868d9ecee9764515e, type: 2}
   iron: {fileID: 11400000, guid: 6c01024ce9fc14dc48490284a1016abd, type: 2}
+  boneFragments: {fileID: 0}
+  bonePickupVisual: {fileID: 0}
   pickaxeItem: {fileID: 11400000, guid: 83c03130d5036481e99f0aafffc9d446, type: 2}
   skillDefinitions:
   - {fileID: 11400000, guid: e08e4c1b418434a81b96a239d1c512d7, type: 2}
@@ -216,6 +220,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4ce365e11031f45ea9910a43b5d2183d, type: 2}
   - {fileID: 11400000, guid: f3b859f2adc6849d79fe71681004b825, type: 2}
   - {fileID: 11400000, guid: 344b9628b6d0e4640ac499ffe34c24aa, type: 2}
+  - {fileID: 11400000, guid: a2d519c2f3a74134b0ae509b3eb1492d, type: 2}
+  - {fileID: 11400000, guid: 629cef0df2a4409cb72c0331765932b4, type: 2}
+  - {fileID: 11400000, guid: ff62c9811ad448aa9c7574b48952f86a, type: 2}
   gearRack: {fileID: 0}
   tree: {fileID: 0}
   chestRecipe: {fileID: 11400000, guid: 084d917e0f651434fb93fd2b8c8b7185, type: 2}
@@ -234,10 +241,8 @@ MonoBehaviour:
   pickupPrefab: {fileID: 1191300971426884202, guid: 307df9afe4c7d441ea4d978cffbfdb70, type: 3}
   menus: {fileID: 0}
   homeGate: {fileID: 0}
-  homeCryptGate: {fileID: 0}
   cryptStaff: {fileID: 11400000, guid: f3b859f2adc6849d79fe71681004b825, type: 2}
   cryptCrossbow: {fileID: 11400000, guid: 344b9628b6d0e4640ac499ffe34c24aa, type: 2}
-  cryptStaffMaterial: {fileID: 2100000, guid: 3a6f3606a77904050ad38cbd7e155e4d, type: 2}
   look: {fileID: 0}
   appearance: {fileID: 348311054935640413}
   lantern: {fileID: 5846628658843369769}
@@ -429,6 +434,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3a582709bfc64ec88579657ad4c022f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.CrossbowPlayerAbility
+--- !u!114 &2766158656093454215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3296667426067686336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414aedab0718b4e6db76264750561bf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.VisualStudy.GroundContactShadow
+  material: {fileID: 2100000, guid: 33c9ed2926d9b40db96c9b287ec51730, type: 2}
+  radius: 0.48
+--- !u!114 &1895181172665394949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3296667426067686336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d956a7cb438d54da18dec0935825bd54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.Audio.TopazAudioOutput
+  category: 2
+  baseVolume: 0.45
 --- !u!1 &3545406464055855018
 GameObject:
   m_ObjectHideFlags: 0

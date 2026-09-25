@@ -193,13 +193,14 @@ namespace Topaz.Tests
                 object repository = Activator.CreateInstance(RepositoryType, directory);
                 object loaded = Invoke(repository, "Load");
                 object visit = Invoke(loaded, "Visit", "rogue", "world");
-                Assert.That((int)Get(loaded, "version"), Is.EqualTo(8));
+                Assert.That((int)Get(loaded, "version"), Is.EqualTo(12));
                 Assert.That((string)Get(visit, "lastCampfireId"), Is.EqualTo("campfire.home"));
                 Assert.That(Slots(visit, "discoveredCampfireIds").Count, Is.EqualTo(1));
-                Assert.That((float)Get(visit, "playerX"), Is.EqualTo(100f),
-                    "Migration must not discard the saved expedition location.");
+                Assert.That((float)Get(visit, "playerX"), Is.EqualTo(0f));
+                Assert.That((float)Get(visit, "playerZ"), Is.EqualTo(-28f),
+                    "Migration must retain the saved point in the moved Graveyard.");
                 Invoke(repository, "Save", loaded);
-                Assert.That((int)Get(Invoke(repository, "Load"), "version"), Is.EqualTo(8));
+                Assert.That((int)Get(Invoke(repository, "Load"), "version"), Is.EqualTo(12));
             });
         }
 
@@ -325,7 +326,7 @@ namespace Topaz.Tests
                 File.WriteAllText(Path.Combine(directory, "topaz-collection.json"), old);
                 object repository = Activator.CreateInstance(RepositoryType, directory);
                 object loaded = Invoke(repository, "Load");
-                Assert.That((int)Get(loaded, "version"), Is.EqualTo(8));
+                Assert.That((int)Get(loaded, "version"), Is.EqualTo(12));
                 object character = Slots(loaded, "characters")[0];
                 Assert.That((int)Get(character, "loggingExperience"), Is.EqualTo(7));
                 Assert.That((string)Get(Get(character, "equipment"), "offhandId"),
@@ -349,13 +350,13 @@ namespace Topaz.Tests
                 object repository = Activator.CreateInstance(RepositoryType, directory);
                 Invoke(repository, "Save", profile);
                 string path = Path.Combine(directory, "topaz-collection.json");
-                string old = File.ReadAllText(path).Replace("\"version\": 8", "\"version\": 3")
+                string old = File.ReadAllText(path).Replace("\"version\": 12", "\"version\": 3")
                     .Replace("\"axesExperience\": 0,", "");
                 File.WriteAllText(path, old);
 
                 object loaded = Invoke(repository, "Load");
                 object restored = Slots(loaded, "characters")[0];
-                Assert.That((int)Get(loaded, "version"), Is.EqualTo(8));
+                Assert.That((int)Get(loaded, "version"), Is.EqualTo(12));
                 Assert.That((int)Get(restored, "axesExperience"), Is.Zero);
                 Assert.That((int)Get(restored, "swordsExperience"), Is.EqualTo(7));
                 Assert.That((string)Get(Get(restored, "equipment"), "weaponId"),
@@ -379,13 +380,13 @@ namespace Topaz.Tests
                 object repository = Activator.CreateInstance(RepositoryType, directory);
                 Invoke(repository, "Save", profile);
                 string path = Path.Combine(directory, "topaz-collection.json");
-                string old = File.ReadAllText(path).Replace("\"version\": 8", "\"version\": 4")
+                string old = File.ReadAllText(path).Replace("\"version\": 12", "\"version\": 4")
                     .Replace("\"miningExperience\": 0,", "")
                     .Replace("\"selectedTool\": \"sword\",", "");
                 File.WriteAllText(path, old);
                 object loaded = Invoke(repository, "Load");
                 object restored = Slots(loaded, "characters")[0];
-                Assert.That((int)Get(loaded, "version"), Is.EqualTo(8));
+                Assert.That((int)Get(loaded, "version"), Is.EqualTo(12));
                 Assert.That((int)Get(restored, "miningExperience"), Is.Zero);
                 Assert.That((string)Get(restored, "selectedTool"), Is.EqualTo("sword"));
                 Assert.That((string)Get(restored, "pickaxeId"),
@@ -426,13 +427,13 @@ namespace Topaz.Tests
                 Invoke(repository, "Save", profile);
                 string path = Path.Combine(directory, "topaz-collection.json");
                 File.WriteAllText(path, File.ReadAllText(path)
-                    .Replace("\"version\": 8", "\"version\": 5"));
+                    .Replace("\"version\": 12", "\"version\": 5"));
 
                 object loaded = Invoke(repository, "Load");
                 object restored = Slots(loaded, "characters")[0];
                 object logging = Invoke(restored, "Skill", "logging");
                 object swords = Invoke(restored, "Skill", "swords");
-                Assert.That((int)Get(loaded, "version"), Is.EqualTo(8));
+                Assert.That((int)Get(loaded, "version"), Is.EqualTo(12));
                 Assert.That((int)Get(logging, "experienceCenti"), Is.EqualTo(1600));
                 Assert.That((int)logging.GetType().GetProperty("Level").GetValue(logging),
                     Is.EqualTo(2));
@@ -461,11 +462,11 @@ namespace Topaz.Tests
                 Invoke(repository, "Save", profile);
                 string path = Path.Combine(directory, "topaz-collection.json");
                 File.WriteAllText(path, File.ReadAllText(path)
-                    .Replace("\"version\": 8", "\"version\": 6"));
+                    .Replace("\"version\": 12", "\"version\": 6"));
 
                 object loaded = Invoke(repository, "Load");
                 object restored = Slots(loaded, "characters")[0];
-                Assert.That((int)Get(loaded, "version"), Is.EqualTo(8));
+                Assert.That((int)Get(loaded, "version"), Is.EqualTo(12));
                 Assert.That(Invoke(restored, "Skill", "staff"), Is.Not.Null);
                 Assert.That((int)Get(Invoke(restored, "Skill", "swords"), "experienceCenti"),
                     Is.EqualTo(2200));
@@ -494,12 +495,12 @@ namespace Topaz.Tests
                 Invoke(repository, "Save", profile);
                 string path = Path.Combine(directory, "topaz-collection.json");
                 File.WriteAllText(path, File.ReadAllText(path)
-                    .Replace("\"version\": 8", "\"version\": 7"));
+                    .Replace("\"version\": 12", "\"version\": 7"));
 
                 object loaded = Invoke(repository, "Load");
                 object restored = Slots(loaded, "characters")[0];
                 object restoredWorld = Slots(loaded, "worlds")[0];
-                Assert.That((int)Get(loaded, "version"), Is.EqualTo(8));
+                Assert.That((int)Get(loaded, "version"), Is.EqualTo(12));
                 Assert.That(Get(Invoke(restored, "Skill", "crossbows"),
                     "experienceCenti"), Is.EqualTo(0));
                 Assert.That(Get(Invoke(restored, "Skill", "swords"),
@@ -539,6 +540,92 @@ namespace Topaz.Tests
                 Assert.That(Get(Slots(savedRogue, "backpackSlots")[0], "itemId"),
                     Is.EqualTo("gear.crypt.crossbow"));
                 Assert.That(Slots(savedKnight, "backpackSlots").Count, Is.Zero);
+            });
+        }
+
+        [Test]
+        public void VersionEightClearingSaveMovesIntoGraveyardWithoutLosingGroundLoot()
+        {
+            WithDirectory(directory =>
+            {
+                object profile = Activator.CreateInstance(ProfileType);
+                object character = Invoke(profile, "CreateCharacter", "rogue");
+                object world = Invoke(profile, "CreateWorld");
+                object visit = Invoke(profile, "GetOrCreateVisit", Id(character), Id(world));
+                Set(profile, "lastCharacterId", Id(character));
+                Set(profile, "lastWorldId", Id(world));
+                Set(visit, "regionId", "expedition.clearing");
+                Set(visit, "playerX", 104f);
+                Set(visit, "playerZ", -10f);
+                Set(world, "expeditionCacheClaimed", true);
+                Set(world, "cryptCacheClaimed", true);
+                Type pickupType = Type.GetType(
+                    "Topaz.LoopStudy.PickupStateRecord, Assembly-CSharp", true);
+                object pickup = Activator.CreateInstance(pickupType);
+                Set(pickup, "instanceId", "old-drop");
+                Set(pickup, "itemId", "material.wood");
+                Set(pickup, "regionId", "expedition.clearing");
+                Set(pickup, "count", 1);
+                Set(pickup, "x", 103f);
+                Set(pickup, "z", 4f);
+                Slots(world, "pickups").Add(pickup);
+                object repository = Activator.CreateInstance(RepositoryType, directory);
+                Invoke(repository, "Save", profile);
+                string path = Path.Combine(directory, "topaz-collection.json");
+                File.WriteAllText(path, File.ReadAllText(path)
+                    .Replace("\"version\": 12", "\"version\": 8"));
+
+                object migrated = Invoke(repository, "Load");
+                object savedVisit = Slots(migrated, "visits")[0];
+                object savedWorld = Slots(migrated, "worlds")[0];
+                object savedPickup = Slots(savedWorld, "pickups")[0];
+                Assert.That(Get(savedVisit, "playerX"), Is.EqualTo(-4f));
+                Assert.That(Get(savedVisit, "playerZ"), Is.EqualTo(-28f));
+                Assert.That(Get(savedPickup, "x"), Is.EqualTo(-3f));
+                Assert.That(Get(savedPickup, "z"), Is.EqualTo(-42f));
+                Assert.That(Get(savedWorld, "graveyardCacheReadyAt"), Is.EqualTo(0d));
+                Assert.That(Get(savedWorld, "cryptCacheReadyAt"), Is.EqualTo(0d));
+            });
+        }
+
+        [Test]
+        public void VersionTenGraveyardLocationsMoveWithTheAuthoredScene()
+        {
+            WithDirectory(directory =>
+            {
+                object profile = Activator.CreateInstance(ProfileType);
+                object character = Invoke(profile, "CreateCharacter", "rogue");
+                object world = Invoke(profile, "CreateWorld");
+                object visit = Invoke(profile, "GetOrCreateVisit", Id(character), Id(world));
+                Set(visit, "regionId", "expedition.clearing");
+                Set(visit, "playerX", 2f);
+                Set(visit, "playerZ", -9f);
+                Type pickupType = Type.GetType(
+                    "Topaz.LoopStudy.PickupStateRecord, Assembly-CSharp", true);
+                object pickup = Activator.CreateInstance(pickupType);
+                Set(pickup, "instanceId", "edge-drop");
+                Set(pickup, "itemId", "material.wood");
+                Set(pickup, "regionId", "expedition.clearing");
+                Set(pickup, "count", 1);
+                Set(pickup, "x", 3f);
+                Set(pickup, "z", -30f);
+                Slots(world, "pickups").Add(pickup);
+                object repository = Activator.CreateInstance(RepositoryType, directory);
+                Invoke(repository, "Save", profile);
+                string path = Path.Combine(directory, "topaz-collection.json");
+                File.WriteAllText(path, File.ReadAllText(path)
+                    .Replace("\"version\": 12", "\"version\": 10"));
+
+                object migrated = Invoke(repository, "Load");
+                object savedVisit = Slots(migrated, "visits")[0];
+                object savedPickup = Slots(Slots(migrated, "worlds")[0], "pickups")[0];
+                Assert.That(Get(savedVisit, "playerX"), Is.EqualTo(2f));
+                Assert.That(Get(savedVisit, "playerZ"), Is.EqualTo(-19f));
+                Assert.That(Get(savedPickup, "x"), Is.EqualTo(3f));
+                Assert.That(Get(savedPickup, "z"), Is.EqualTo(-40f));
+                Invoke(repository, "Save", migrated);
+                Assert.That(Get(Slots(Invoke(repository, "Load"), "visits")[0], "playerZ"),
+                    Is.EqualTo(-19f), "Saving the migration must not shift it twice.");
             });
         }
 

@@ -37,7 +37,7 @@ namespace Topaz.LoopStudy
     [Serializable]
     public sealed class TopazProfileData
     {
-        public const int CurrentVersion = 8;
+        public const int CurrentVersion = 12;
         public int version = CurrentVersion;
         public List<TopazCharacterData> characters = new List<TopazCharacterData>();
         public List<TopazWorldData> worlds = new List<TopazWorldData>();
@@ -156,6 +156,18 @@ namespace Topaz.LoopStudy
                 playerX = old.playerX,
                 playerZ = old.playerZ
             });
+            if (old.regionId == TopazSaveData.ExpeditionRegion)
+            {
+                TopazVisitData graveyardVisit = profile.visits[profile.visits.Count - 1];
+                RelocateGraveyardPoint(ref graveyardVisit.playerX, ref graveyardVisit.playerZ);
+                ShiftGraveyardPoint(ref graveyardVisit.playerZ);
+                foreach (PickupStateRecord pickup in world.pickups)
+                    if (pickup != null && pickup.regionId == TopazSaveData.ExpeditionRegion)
+                    {
+                        RelocateGraveyardPoint(ref pickup.x, ref pickup.z);
+                        ShiftGraveyardPoint(ref pickup.z);
+                    }
+            }
             profile.lastCharacterId = character.id;
             profile.lastWorldId = world.id;
             profile.Validate();
@@ -179,6 +191,13 @@ namespace Topaz.LoopStudy
                     character.discoveredSkillIds == null ||
                     character.discoveredSkillIds.Any(string.IsNullOrEmpty) ||
                     character.discoveredSkillIds.Distinct().Count() != character.discoveredSkillIds.Count ||
+                    float.IsNaN(character.stamina) || float.IsInfinity(character.stamina) ||
+                    character.stamina < 0f || character.stamina > SurvivalRules.RestedStamina ||
+                    !ValidDeadline(character.restedHours) ||
+                    !ValidDeadline(character.foodHours) ||
+                    character.foodTier < 0 || character.foodTier > 2 ||
+                    (character.foodHours == 0d && character.foodTier != 0) ||
+                    (character.foodHours > 0d && character.foodTier == 0) ||
                     character.pickaxeId == string.Empty ||
                     (character.selectedTool != "sword" && character.selectedTool != "axe" &&
                      character.selectedTool != "pickaxe"))
@@ -206,16 +225,33 @@ namespace Topaz.LoopStudy
                 if (world == null || string.IsNullOrEmpty(world.id) || !worldIds.Add(world.id) ||
                     string.IsNullOrEmpty(world.label) || world.nodes == null ||
                     world.structures == null || world.pickups == null ||
+                    world.enemyRespawns == null ||
                     world.claimedGearIds == null ||
+                    world.campfireTier < 1 || world.campfireTier > 3 ||
                     double.IsNaN(world.worldHours) || double.IsInfinity(world.worldHours) ||
-                    world.worldHours < WorldClock.StartingHour)
+                    world.worldHours < WorldClock.StartingHour ||
+                    !ValidDeadline(world.graveyardCacheReadyAt) ||
+                    !ValidDeadline(world.cryptCacheReadyAt))
                     throw new ArgumentException("World record is invalid.");
+                var spawnIds = new HashSet<string>();
+                foreach (EnemyRespawnRecord enemy in world.enemyRespawns)
+                    if (enemy == null || string.IsNullOrEmpty(enemy.spawnId) ||
+                        !spawnIds.Add(enemy.spawnId) || !ValidDeadline(enemy.readyAtWorldHours) ||
+                        enemy.readyAtWorldHours <= 0)
+                        throw new ArgumentException("World enemy respawn is invalid.");
                 if (world.claimedGearIds.Any(string.IsNullOrEmpty) ||
                     world.claimedGearIds.Distinct().Count() != world.claimedGearIds.Count)
                     throw new ArgumentException("World gear claims are invalid.");
+                var structureIds = new HashSet<string>();
                 foreach (StructureStateRecord structure in world.structures)
                 {
-                    if (structure == null || structure.slots == null || structure.slots.Count > 12)
+                    if (structure == null || string.IsNullOrEmpty(structure.instanceId) ||
+                        !structureIds.Add(structure.instanceId) ||
+                        string.IsNullOrEmpty(structure.definitionId) ||
+                        float.IsNaN(structure.x) || float.IsInfinity(structure.x) ||
+                        float.IsNaN(structure.z) || float.IsInfinity(structure.z) ||
+                        structure.quarterTurns < 0 || structure.quarterTurns > 3 ||
+                        structure.slots == null || structure.slots.Count > 12)
                         throw new ArgumentException("World storage is invalid.");
                     ValidateItems(structure.slots);
                 }
@@ -346,9 +382,92 @@ namespace Topaz.LoopStudy
                 if (character == null) throw new ArgumentException("Character record is invalid.");
                 character.EnsureSkills();
             }
+            version = 8;
+            MigrateFromVersion8();
+        }
+
+        public void MigrateFromVersion8()
+        {
+            if (version != 8 || worlds == null || visits == null)
+                throw new ArgumentException("Character and World collection cannot be migrated.");
+            foreach (TopazWorldData world in worlds)
+            {
+                if (world == null) throw new ArgumentException("World record is invalid.");
+                world.enemyRespawns = new List<EnemyRespawnRecord>();
+                world.graveyardCacheReadyAt = 0;
+                world.cryptCacheReadyAt = 0;
+                foreach (PickupStateRecord pickup in world.pickups)
+                    if (pickup != null && pickup.regionId == TopazSaveData.ExpeditionRegion)
+                        RelocateGraveyardPoint(ref pickup.x, ref pickup.z);
+            }
+            foreach (TopazVisitData visit in visits)
+                if (visit != null && visit.regionId == TopazSaveData.ExpeditionRegion)
+                    RelocateGraveyardPoint(ref visit.playerX, ref visit.playerZ);
+            version = 9;
+            MigrateFromVersion9();
+        }
+
+        public void MigrateFromVersion9()
+        {
+            if (version != 9 || worlds == null)
+                throw new ArgumentException("Character and World collection cannot be migrated.");
+            foreach (TopazWorldData world in worlds)
+            {
+                if (world == null) throw new ArgumentException("World record is invalid.");
+                world.campfireTier = 1;
+                world.starterBedrollInitialized = false;
+            }
+            version = 10;
+            MigrateFromVersion10();
+        }
+
+        public void MigrateFromVersion10()
+        {
+            if (version != 10 || worlds == null || visits == null)
+                throw new ArgumentException("Character and World collection cannot be migrated.");
+            foreach (TopazWorldData world in worlds)
+            {
+                if (world == null || world.pickups == null)
+                    throw new ArgumentException("World record is invalid.");
+                foreach (PickupStateRecord pickup in world.pickups)
+                    if (pickup != null && pickup.regionId == TopazSaveData.ExpeditionRegion)
+                        ShiftGraveyardPoint(ref pickup.z);
+            }
+            foreach (TopazVisitData visit in visits)
+                if (visit != null && visit.regionId == TopazSaveData.ExpeditionRegion)
+                    ShiftGraveyardPoint(ref visit.playerZ);
+            version = 11;
+            MigrateFromVersion11();
+        }
+
+        public void MigrateFromVersion11()
+        {
+            if (version != 11 || characters == null)
+                throw new ArgumentException("Character and World collection cannot be migrated.");
+            foreach (TopazCharacterData character in characters)
+            {
+                if (character == null) throw new ArgumentException("Character record is invalid.");
+                character.stamina = SurvivalRules.BaseStamina;
+                character.restedHours = 0d;
+                character.foodHours = 0d;
+                character.foodTier = 0;
+            }
             version = CurrentVersion;
             Validate();
         }
+
+        // Versions 9-10 use the Graveyard at z=-28; version 11 moves it to z=-38.
+        // The older clearing at (100, 0, 0) first maps into the version 10 layout.
+        static void RelocateGraveyardPoint(ref float x, ref float z)
+        {
+            x = 100f - x;
+            z = -28f - z;
+        }
+
+        static void ShiftGraveyardPoint(ref float z) => z -= 10f;
+
+        static bool ValidDeadline(double value) =>
+            !double.IsNaN(value) && !double.IsInfinity(value) && value >= 0;
 
         static void ValidateItems(List<ItemStackRecord> slots)
         {
@@ -377,6 +496,10 @@ namespace Topaz.LoopStudy
         public EquipmentState equipment = new EquipmentState();
         public bool lanternOn; // Missing in older collections, so the lantern starts off.
         public bool pendingChest;
+        public float stamina = SurvivalRules.BaseStamina;
+        public double restedHours;
+        public double foodHours;
+        public int foodTier;
         public List<ItemStackRecord> backpackSlots = new List<ItemStackRecord>();
 
         public SkillProgressRecord Skill(string id) => skills?.Find(value => value.skillId == id);
@@ -413,6 +536,18 @@ namespace Topaz.LoopStudy
         public bool cryptCacheClaimed;
         public bool cryptMageDefeated;
         public bool cryptRogueCrossbowAwarded;
+        public List<EnemyRespawnRecord> enemyRespawns = new List<EnemyRespawnRecord>();
+        public double graveyardCacheReadyAt;
+        public double cryptCacheReadyAt;
+        public int campfireTier = 1;
+        public bool starterBedrollInitialized;
+    }
+
+    [Serializable]
+    public sealed class EnemyRespawnRecord
+    {
+        public string spawnId;
+        public double readyAtWorldHours;
     }
 
     [Serializable]

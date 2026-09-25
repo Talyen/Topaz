@@ -13,15 +13,15 @@
   },
   "worldloop": {
     "paths": ["Assets/Topaz/Gameplay/WorldLoop/"],
-    "tests": {"PlayMode": ["ProfilePersistenceTests", "WorldLoopTests", "EquipmentTests", "MiningAndHomeTests", "ProgressionPlayTests"], "EditMode": ["ProgressionRulesTests"]},
-    "docs": ["docs/ARCHITECTURE.md", "docs/studies/WORLD_LOOP_STUDY.md", "docs/studies/MINING_AND_HOME_BUILDING_STUDY.md", "docs/plans/EQUIPMENT_SYSTEM_PLAN.md", "docs/plans/PROGRESSION_PLAN.md"],
+    "tests": {"PlayMode": ["ProfilePersistenceTests", "WorldLoopTests", "EquipmentTests", "MiningAndHomeTests", "ProgressionPlayTests", "CampfireTravelTests", "SurvivalPlayTests"], "EditMode": ["ProgressionRulesTests", "SurvivalRulesTests"]},
+    "docs": ["docs/ARCHITECTURE.md", "docs/studies/WORLD_LOOP_STUDY.md", "docs/studies/MINING_AND_HOME_BUILDING_STUDY.md", "docs/plans/EQUIPMENT_SYSTEM_PLAN.md", "docs/plans/PROGRESSION_PLAN.md", "docs/plans/CAMPFIRE_TRAVEL_PLAN.md", "docs/plans/GENTLE_SURVIVAL_PLAN.md"],
     "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
   },
   "expedition": {
     "paths": ["Assets/Topaz/World/Expedition/"],
     "tests": {"PlayMode": ["ExpeditionTests"]},
-    "docs": ["docs/studies/EXPEDITION_STUDY.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Expedition.unity"]
+    "docs": ["docs/studies/GRAVEYARD_STUDY.md"],
+    "scenes": ["Assets/Topaz/World/Scenes/Graveyard.unity"]
   },
   "crypt": {
     "paths": ["Assets/Topaz/World/Crypt/"],
@@ -31,7 +31,7 @@
   },
   "ui": {
     "paths": ["Assets/Topaz/UI/"],
-    "tests": {"PlayMode": ["MenuTests", "ProgressionPlayTests"]},
+    "tests": {"PlayMode": ["MenuTests", "ProgressionPlayTests", "CampfireTravelTests", "SurvivalPlayTests"]},
     "docs": ["docs/UI_DESIGN_SYSTEM.md"],
     "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
   },

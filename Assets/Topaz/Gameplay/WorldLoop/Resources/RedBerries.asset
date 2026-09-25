@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bec085f9fa1be44a4a030220b9cce3a4, type: 3}
+  m_Name: RedBerries
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.ItemDefinition
+  stableId: food.red-berries
+  displayName: Red Berries
+  maxStack: 20
+  journalIcon: {fileID: 4465079765116156566, guid: ac1fa31e918734e7784724b90c2f3629, type: 3}
+  equipmentSlot: 0
+  weapon: {fileID: 0}
+  attack: 0
+  attackSpeed: 0
+  armor: 0
+  moveSpeed: 0
+  dodge: 0
+  logging: 0

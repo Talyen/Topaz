@@ -16,7 +16,8 @@ namespace Topaz.LoopStudy
         NodeStateRecord _state;
 
         public string StableObjectId => stableObjectId;
-        public bool IsAvailable => _state != null && _state.readyAtWorldHours == 0d;
+        public bool IsAvailable => _state != null && _state.readyAtWorldHours == 0d &&
+            !(_session?.HomeBlocksResource(transform.position, .75f) ?? false);
         public int StrikesRemaining => _state == null ? 0 :
             Mathf.Max(0, (definition != null ? definition.WorkRequired : 2) - _state.chops);
 

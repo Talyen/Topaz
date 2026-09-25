@@ -120,3 +120,7 @@ InitTestScene*.unity*
 
 # Owner-supplied original KayKit downloads (duplicate formats and samples).
 /LocalSourceArchives/
+
+# Sonniss GDC source audio is licensed for project use but not public raw redistribution.
+# Keep local Unity audition imports and their generated metadata out of the public repo.
+/Assets/ThirdParty/Sonniss/

@@ -165,8 +165,10 @@ namespace Topaz.FeelStudy
                 LastDodgeFacing = ClassifyDodge(_dodgeDirection, _aimDirection);
                 _dodgeUntil = Time.time + dodgeSeconds;
                 _dodgeVisualUntil = Time.time + DodgeVisualSeconds;
+                bool enhancedDodge = _worldSession?.TryExert(25f) == true;
                 _nextDodgeAt = _dodgeUntil + Mathf.Max(0.35f,
-                    dodgeCooldownSeconds - 0.08f * (_worldSession?.Stats.Dodge ?? 0));
+                    (dodgeCooldownSeconds - 0.08f * (_worldSession?.Stats.Dodge ?? 0)) *
+                    (enhancedDodge ? SurvivalRules.RecoveryMultiplier : 1f));
                 _combat?.OnDodgeStarted();
             }
             _dodgeRequested = false;
@@ -174,7 +176,11 @@ namespace Topaz.FeelStudy
             if (_jumpRequested && Grounded && _verticalVelocity <= 0f && !IsDodging &&
                 (_combat == null || !_combat.IsAttackLocked) &&
                 (_worldSession == null || (!_worldSession.BlockMovement && !_worldSession.IsPlacing)))
-                _verticalVelocity = Mathf.Sqrt(2f * 24f * jumpHeight);
+            {
+                bool enhancedJump = _worldSession?.TryExert(15f) == true;
+                _verticalVelocity = Mathf.Sqrt(2f * 24f * jumpHeight *
+                    (enhancedJump ? SurvivalRules.JumpHeightMultiplier : 1f));
+            }
             _jumpRequested = false;
 
             bool dodging = IsDodging;

@@ -89,7 +89,7 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator GraphicsMenuUsesDropdownsAndTogglesWithoutSliders()
+        public IEnumerator GraphicsTabUsesDropdownsAndAudioTabOwnsSliders()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
@@ -101,7 +101,8 @@ namespace Topaz.Tests
             Assert.That(panel.Find("Bloom"), Is.Not.Null);
             Assert.That(panel.Find("Ambient Occlusion"), Is.Not.Null);
             Assert.That(panel.GetComponentsInChildren<UnityEngine.UI.Slider>(true).Length,
-                Is.EqualTo(0));
+                Is.EqualTo(4));
+            Assert.That(panel.Find("Master Volume").gameObject.activeSelf, Is.False);
             Assert.That(panel.Find("Save selection"), Is.Null);
             Assert.That(panel.Find("Copy values"), Is.Null);
             Assert.That(root.transform.Find("Ground Details"), Is.Null);
@@ -122,12 +123,19 @@ namespace Topaz.Tests
             var setInterior = controller.GetType().GetMethod("SetInterior");
             setHours.Invoke(controller, new object[] { 12d });
             float noonIntensity = sun.intensity;
+            float noonAmbient = RenderSettings.ambientSkyColor.r;
+            float noonFogEnd = RenderSettings.fogEndDistance;
             setHours.Invoke(controller, new object[] { 23d });
             float nightIntensity = sun.intensity;
-            Assert.That(nightIntensity, Is.GreaterThan(.3f).And.LessThan(noonIntensity * .4f));
+            Assert.That(nightIntensity, Is.GreaterThan(.1f).And.LessThan(noonIntensity * .2f));
             Assert.That(RenderSettings.ambientSkyColor.b,
                 Is.GreaterThan(RenderSettings.ambientSkyColor.r));
-            Assert.That(RenderSettings.ambientSkyColor.r, Is.LessThan(.2f));
+            Assert.That(RenderSettings.ambientSkyColor.r, Is.LessThan(noonAmbient * .3f));
+            Assert.That(RenderSettings.fog, Is.True);
+            Assert.That(RenderSettings.fogMode, Is.EqualTo(FogMode.Linear));
+            Assert.That(RenderSettings.fogStartDistance, Is.LessThan(16f));
+            Assert.That(RenderSettings.fogEndDistance,
+                Is.LessThan(38f).And.LessThan(noonFogEnd));
             setInterior.Invoke(controller, new object[] { true });
             Assert.That(sun.intensity, Is.LessThan(nightIntensity));
             setInterior.Invoke(controller, new object[] { false });

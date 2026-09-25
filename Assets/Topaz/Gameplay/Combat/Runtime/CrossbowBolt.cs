@@ -77,7 +77,8 @@ namespace Topaz.CombatStudy
                         _playerOwner.RecordWeaponHit(WeaponSkill.Crossbows, dealt,
                             enemy.SourceLevel);
                     if (dealt > 0 && _attack.ImpactClip != null)
-                        AudioSource.PlayClipAtPoint(_attack.ImpactClip, hit.point, .35f);
+                        AudioSource.PlayClipAtPoint(_attack.ImpactClip, hit.point,
+                            .35f * (Topaz.Audio.TopazAudioSettings.Instance?.EffectsGain ?? 1f));
                     if (!_pierced && dealt > 0 && _pierceEnabled && Pierces(UnityEngine.Random.value))
                     {
                         _pierced = true;

@@ -12,7 +12,7 @@ This is a small, authored systems study in the Bootstrap scene. The [day and nig
 
 Exploration shows one nearby interaction chip instead of a permanent controls HUD. Day, Wood, skills, and equipment remain available through the backpack and related menus. The combat study sword and enemy remain available.
 
-The [first expedition clearing](EXPEDITION_STUDY.md) adds a player-chosen trip through two scouts and a wide-sweep guardian. Its one-time Wood cache feeds this same chest recipe, inventory, and save.
+The [Graveyard](GRAVEYARD_STUDY.md) adds a walk-through trail, two scouts, and a wide-sweep guardian. Its Wood cache refills after 72 World hours and feeds this same chest recipe, inventory, and save.
 The [mining and home building slice](MINING_AND_HOME_BUILDING_STUDY.md) adds Stone, Iron, and repeatable home builds alongside this original study.
 
 ## Data boundaries

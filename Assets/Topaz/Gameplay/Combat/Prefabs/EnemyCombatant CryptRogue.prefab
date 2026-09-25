@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6603030608167017806}
   - component: {fileID: 5999937219929856729}
   - component: {fileID: 150578583665062541}
+  - component: {fileID: 2369813030848888157}
   m_Layer: 0
   m_Name: EnemyCombatant CryptRogue
   m_TagString: Untagged
@@ -197,11 +198,26 @@ MonoBehaviour:
   bodyCollider: {fileID: 6603030608167017806}
   telegraph: {fileID: 0}
   keepVisualOnDefeat: 1
-  respawns: 0
+  spawnId: 
+  lootRole: 0
   normalBodyTint: {r: 0.87, g: 0.36, b: 0.31, a: 1}
   rangedPositions:
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &2369813030848888157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5479087659343046126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d956a7cb438d54da18dec0935825bd54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.Audio.TopazAudioOutput
+  category: 2
+  baseVolume: 0.4
 --- !u!1 &9073892031769881420
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Campfire travel menu wireframe</title>
+  <desc id="desc">A minimal Travel panel with a close X and three campfire-icon rows: Home disabled, Graveyard focused, and Crypt.</desc>
+  <rect width="1280" height="720" fill="#353535"/>
+  <rect x="352" y="103" width="576" height="514" rx="8" fill="#171312" stroke="#efc784" stroke-width="2"/>
+  <text x="402" y="178" fill="#fff1d8" font-family="Arial, sans-serif" font-size="40" font-weight="700">Travel</text>
+  <rect x="840" y="129" width="58" height="58" rx="4" fill="#31251e"/>
+  <text x="869" y="171" fill="#fff1d8" font-family="Arial, sans-serif" font-size="42" text-anchor="middle">×</text>
+  <rect x="407" y="225" width="466" height="82" rx="4" fill="#31251e" opacity=".58"/>
+  <path d="M450 278 l-9 -15 4 -13 8 8 4 -19 7 13 4 -6 7 17 -10 15 z M438 287 l38 9 M476 287 l-38 9" fill="none" stroke="#877765" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="497" y="279" fill="#877765" font-family="Arial, sans-serif" font-size="31">Home</text>
+  <rect x="407" y="328" width="466" height="82" rx="4" fill="#31251e" stroke="#efc784" stroke-width="3"/>
+  <rect x="407" y="328" width="8" height="82" fill="#efc784"/>
+  <path d="M450 381 l-9 -15 4 -13 8 8 4 -19 7 13 4 -6 7 17 -10 15 z M438 390 l38 9 M476 390 l-38 9" fill="none" stroke="#efc784" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="497" y="382" fill="#fff1d8" font-family="Arial, sans-serif" font-size="31">Graveyard</text>
+  <rect x="407" y="431" width="466" height="82" rx="4" fill="#31251e"/>
+  <path d="M450 484 l-9 -15 4 -13 8 8 4 -19 7 13 4 -6 7 17 -10 15 z M438 493 l38 9 M476 493 l-38 9" fill="none" stroke="#efc784" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="497" y="485" fill="#fff1d8" font-family="Arial, sans-serif" font-size="31">Crypt</text>
+</svg>

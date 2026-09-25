@@ -13,6 +13,7 @@ namespace Topaz.Expedition
         [SerializeField] NavMeshSurface surface;
         [SerializeField] Transform arrival;
         [SerializeField] Transform departure;
+        [SerializeField] Transform cryptEntrance;
         [SerializeField] Transform supplyCache;
         [SerializeField] GameObject cacheVisual;
         [SerializeField] Campfire campfire;
@@ -21,17 +22,21 @@ namespace Topaz.Expedition
 
         bool _bound;
         bool _enemiesReady;
+        WorldSession _session;
 
         public Transform Arrival => arrival;
         public Transform Departure => departure;
+        public Transform CryptEntrance => cryptEntrance;
         public Transform SupplyCache => supplyCache;
         public Campfire Campfire => campfire;
-        public bool CacheUnlocked => _enemiesReady && guardian != null && !guardian.IsAlive;
+        public bool CacheUnlocked => _enemiesReady;
 
-        public void Bind(PlayerVitality player, SafeZone home, bool cacheClaimed)
+        public void Bind(WorldSession session, PlayerVitality player, SafeZone home,
+            bool cacheClaimed)
         {
             if (_bound) return;
-            if (surface == null || arrival == null || departure == null || supplyCache == null ||
+            if (session == null || surface == null || arrival == null || departure == null ||
+                cryptEntrance == null || supplyCache == null ||
                 cacheVisual == null || campfire == null || enemies == null || guardian == null ||
                 player == null || home == null)
             {
@@ -40,7 +45,8 @@ namespace Topaz.Expedition
             }
 
             _bound = true;
-            cacheVisual.SetActive(!cacheClaimed);
+            _session = session;
+            SetCacheStocked(!cacheClaimed);
             foreach (EnemyCombatant enemy in enemies)
             {
                 if (enemy == null) continue;
@@ -49,7 +55,7 @@ namespace Topaz.Expedition
             StartCoroutine(ActivateEnemies());
         }
 
-        public void HideClaimedCache() => cacheVisual.SetActive(false);
+        public void SetCacheStocked(bool stocked) => cacheVisual.SetActive(true);
 
         IEnumerator ActivateEnemies()
         {
@@ -62,7 +68,11 @@ namespace Topaz.Expedition
                 if (ready)
                 {
                     foreach (EnemyCombatant enemy in enemies)
-                        if (enemy != null) enemy.gameObject.SetActive(true);
+                        if (enemy != null)
+                        {
+                            enemy.gameObject.SetActive(true);
+                            _session.RegisterEnemy(enemy);
+                        }
                     _enemiesReady = true;
                     yield break;
                 }

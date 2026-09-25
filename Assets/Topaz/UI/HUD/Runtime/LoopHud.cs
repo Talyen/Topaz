@@ -1,4 +1,5 @@
 using TMPro;
+using Topaz.UI;
 using UnityEngine;
 
 namespace Topaz.LoopStudy
@@ -9,6 +10,7 @@ namespace Topaz.LoopStudy
         [SerializeField] TMP_Text statusLabel;
         [SerializeField] TMP_Text crossbowReloadLabel;
         [SerializeField] TMP_Text craftDescription;
+        [SerializeField] Sprite homeJournalBackground;
         [SerializeField] TMP_Text chestDescription;
         [SerializeField] GameObject craftPanel;
         [SerializeField] GameObject chestPanel;
@@ -49,13 +51,23 @@ namespace Topaz.LoopStudy
         int _selectedChestPackSlot = -1;
         int _selectedChestSlot = -1;
         bool _listenersBound;
+        HomeJournalView _homeJournal;
+        CampfireTravelView _travelView;
+        StatusJournalView _statusJournal;
+        UnityEngine.UI.Button _eatButton;
+        GameObject _staminaMeter;
+        UnityEngine.UI.Image _staminaFill;
+
+        public bool TravelOpen => _travelView != null && _travelView.IsOpen;
 
         public bool MenuOpen => (craftPanel != null && craftPanel.activeSelf) ||
             (chestPanel != null && chestPanel.activeSelf) ||
             (inventoryPanel != null && inventoryPanel.activeSelf) ||
             (visualOptionsPanel != null && visualOptionsPanel.activeSelf) ||
             (equipmentView != null && (equipmentView.IsOpen || equipmentView.IsRackOpen)) ||
-            (skillsView != null && skillsView.IsOpen);
+            (skillsView != null && skillsView.IsOpen) ||
+            (_homeJournal != null && _homeJournal.IsOpen) ||
+            (_statusJournal != null && _statusJournal.IsOpen) || TravelOpen;
 
         void Awake()
         {
@@ -125,6 +137,28 @@ namespace Topaz.LoopStudy
             }
             equipmentView?.Bind(session, this);
             skillsView?.Bind(session, this);
+            if (_homeJournal == null)
+            {
+                _homeJournal = gameObject.GetComponent<HomeJournalView>();
+                if (_homeJournal == null) _homeJournal = gameObject.AddComponent<HomeJournalView>();
+            }
+            _homeJournal.Bind(session, this, skillsTabButton,
+                craftDescription != null ? craftDescription.font : null,
+                homeJournalBackground);
+            if (_travelView == null)
+            {
+                _travelView = GetComponent<CampfireTravelView>();
+                if (_travelView == null) _travelView = gameObject.AddComponent<CampfireTravelView>();
+            }
+            _travelView.Bind(session, statusLabel != null ? statusLabel.font : null,
+                homeJournalBackground);
+            if (_statusJournal == null)
+                _statusJournal = GetComponent<StatusJournalView>() ??
+                    gameObject.AddComponent<StatusJournalView>();
+            _statusJournal.Bind(session, this, skillsTabButton,
+                statusLabel != null ? statusLabel.font : null, homeJournalBackground);
+            CreateEatButton();
+            CreateStaminaMeter();
             Refresh();
         }
 
@@ -151,6 +185,7 @@ namespace Topaz.LoopStudy
             RefreshSelectedItem();
             equipmentView?.Refresh();
             skillsView?.Refresh();
+            _homeJournal?.Refresh();
             Set(lanternButtonLabel, _session.LanternOn ? "Lantern  •  On" : "Lantern  •  Off");
             UpdateSlots(chestSlotLabels, _session.ChestSlots);
             UpdateSlots(chestBackpackLabels, _session.BackpackSlots);
@@ -186,6 +221,79 @@ namespace Topaz.LoopStudy
                     _session.CrossbowReloadProgress < 1f
                     ? $"Crossbow reload  {Mathf.RoundToInt(_session.CrossbowReloadProgress * 100f)}%"
                     : "");
+            if (_staminaMeter != null)
+            {
+                _staminaMeter.SetActive(_session.StaminaCueVisible && !MenuOpen);
+                if (_staminaFill != null)
+                    _staminaFill.fillAmount = Mathf.Clamp01(
+                        _session.Stamina / _session.MaximumStamina);
+            }
+        }
+
+        void CreateEatButton()
+        {
+            if (_eatButton != null || selectedItemDetail == null) return;
+            var source = selectedItemDetail.rectTransform;
+            var obj = new GameObject("Eat Selected Food", typeof(RectTransform),
+                typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.Button));
+            obj.transform.SetParent(source.parent, false);
+            var rect = (RectTransform)obj.transform;
+            rect.anchorMin = source.anchorMin;
+            rect.anchorMax = source.anchorMax;
+            rect.anchoredPosition = source.anchoredPosition + new Vector2(0f, -85f);
+            rect.sizeDelta = new Vector2(190f, 60f);
+            obj.GetComponent<UnityEngine.UI.Image>().color =
+                new Color32(83, 53, 35, 245);
+            _eatButton = obj.GetComponent<UnityEngine.UI.Button>();
+            var label = new GameObject("Eat Label", typeof(RectTransform),
+                typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>();
+            label.transform.SetParent(obj.transform, false);
+            var textRect = (RectTransform)label.transform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = textRect.offsetMax = Vector2.zero;
+            label.text = "Eat";
+            label.font = selectedItemDetail.font;
+            label.fontSize = 28f;
+            label.color = Color.white;
+            label.alignment = TextAlignmentOptions.Center;
+            label.raycastTarget = false;
+            var outline = obj.AddComponent<UnityEngine.UI.Outline>();
+            outline.effectColor = new Color32(239, 199, 132, 255);
+            outline.enabled = false;
+            obj.AddComponent<TopazFocusIndicator>();
+            _eatButton.onClick.AddListener(() =>
+            {
+                if (_session.TryEat(_selectedBackpackSlot)) Refresh();
+            });
+            _eatButton.gameObject.SetActive(false);
+        }
+
+        void CreateStaminaMeter()
+        {
+            if (_staminaMeter != null) return;
+            _staminaMeter = new GameObject("Contextual Stamina", typeof(RectTransform),
+                typeof(UnityEngine.UI.Image));
+            _staminaMeter.transform.SetParent(transform, false);
+            var rect = (RectTransform)_staminaMeter.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(.5f, 0f);
+            rect.anchoredPosition = new Vector2(0f, 92f);
+            rect.sizeDelta = new Vector2(200f, 15f);
+            _staminaMeter.GetComponent<UnityEngine.UI.Image>().color =
+                new Color32(23, 19, 18, 220);
+            var fill = new GameObject("Fill", typeof(RectTransform),
+                typeof(UnityEngine.UI.Image));
+            fill.transform.SetParent(_staminaMeter.transform, false);
+            var fillRect = (RectTransform)fill.transform;
+            fillRect.anchorMin = new Vector2(0f, 0f);
+            fillRect.anchorMax = new Vector2(1f, 1f);
+            fillRect.offsetMin = new Vector2(3f, 3f);
+            fillRect.offsetMax = new Vector2(-3f, -3f);
+            _staminaFill = fill.GetComponent<UnityEngine.UI.Image>();
+            _staminaFill.color = new Color32(239, 199, 132, 255);
+            _staminaFill.type = UnityEngine.UI.Image.Type.Filled;
+            _staminaFill.fillMethod = UnityEngine.UI.Image.FillMethod.Horizontal;
+            _staminaMeter.SetActive(false);
         }
 
         static void Set(TMP_Text label, string value)
@@ -253,6 +361,14 @@ namespace Topaz.LoopStudy
             if (selectedItemName == null || selectedItemDetail == null ||
                 _session?.BackpackSlots == null) return;
             var slots = _session.BackpackSlots;
+            if (_eatButton != null)
+                _eatButton.gameObject.SetActive(_selectedBackpackSlot >= 0 &&
+                    _selectedBackpackSlot < slots.Count &&
+                    (slots[_selectedBackpackSlot].itemId == SurvivalRules.BerriesId ||
+                     slots[_selectedBackpackSlot].itemId == SurvivalRules.StewId));
+            if (_eatButton != null && _eatButton.gameObject.activeSelf)
+                _eatButton.interactable = _session.CanEat(
+                    slots[_selectedBackpackSlot].itemId);
             if (_selectedBackpackSlot == -1)
             {
                 Set(selectedItemName, "Lantern");
@@ -346,11 +462,21 @@ namespace Topaz.LoopStudy
             if (visualOptionsPanel != null) visualOptionsPanel.SetActive(false);
             equipmentView?.Hide();
             skillsView?.Hide();
+            _homeJournal?.Hide();
+            _statusJournal?.Hide();
+            _travelView?.Hide();
             UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
         }
 
         public void ShowGearRackPanel() => equipmentView?.ShowRack();
         public void ShowEquipmentPanel() => equipmentView?.Show();
         public void ShowSkillsPanel() => skillsView?.Show();
+        public void ShowSmithingPanel() => _homeJournal?.ShowSmithing();
+        public void ShowCampfirePanel() => _homeJournal?.ShowCampfire();
+        public void ShowTravelPanel()
+        {
+            ClosePanels();
+            _travelView?.Show();
+        }
     }
 }

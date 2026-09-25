@@ -52,6 +52,7 @@ These tokens are the starting language for later screen reviews; the Journal's l
 - Character/World selection, delete confirmation, Pause, and Graphics use the same warm palette. Deletion retains Cancel as initial focus and states separately what removing a Character or World loses. Pause still returns to the invoking layer, including Backpack opened from Pause.
 - All current Journal pages retain `JournalBackground.png`. Backpack, Equipment, Skills, Workbench, Storage Chest, and Gear Rack use ink-on-paper choice surfaces, darker leather actions/tabs, and a shared hollow focus-frame sprite. Occupied backpack slots show available item art. Equipment slots stay on the left page; detailed skill progress appears on Skills rather than repeating under Equipment. Existing appearance portraits are framed as illustrations. A generated transparent-cutout preview changed character identity and was not used. A talent with an available choice reads **READY**, not **LOCKED**.
 - UI Scale is a local 100%/125%/150% preference available from title and Pause. Title and Options reflow vertically; the Character/World picker and Graphics panel fit within the screen; large illustrated Journal frames fit inside the canvas while functional text grows where it fits. The denser Equipment, Storage, and Workbench pages cap text enlargement at 125% to avoid overlap; continue reviewing those pages with the owner at the largest setting.
+- The Options detail panel has Graphics and Audio tabs. Audio offers Master, Music, Ambient, and Sound Effects sliders plus Mute in Background. Values apply and save immediately. Graphics opens first; switching to Audio moves focus to Master, and Back returns to the invoking Options menu. Reset applies to the current tab. The Music preference is ready for a music source when one is authored; the current build has no background music.
 - Exploration remains clear. The contextual action chip and temporary vitality cue inherit the warm dark surface and ivory/brass text; brief status messages and persistent save failures keep their different lifetimes.
 
 The visual implementation is an owner-review build, not a final sign-off for every screen. Record future screen-specific feedback here as it is decided.
@@ -83,6 +84,7 @@ The visual implementation is an owner-review build, not a final sign-off for eve
 | Near an interactable | Chip anchored to that object | Current binding and short verb |
 | Combat or recent damage | Temporary, compact vitality cue | Player health only while relevant |
 | Backpack | Deliberately opened inventory | Items, quantities, capacity, selected item details |
+| Status Effects | Deliberately opened Journal page | Active effect icons, names, descriptions, and remaining World time; empty state when none |
 | Crafting / storage | Deliberately opened workspace | Actions, costs, available items, resulting state |
 | Pause | Quiet overlay over frozen world | Resume, inventory, options, main menu, quit |
 | Options | Clear settings surface | Current settings and immediate feedback |

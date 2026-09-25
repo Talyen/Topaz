@@ -112,12 +112,14 @@ namespace Topaz.Tests
             controller.enabled = false;
             player.transform.position = homePosition + Vector3.right * 30f;
             controller.enabled = true;
+            SetField(Field(session, "_data"), "regionId", "expedition.clearing");
             Assert.That((bool)Property(session, "IsAtHome"), Is.False);
             Assert.That((bool)Call(session, "TrySetTalentActive", "swords", "swords.flow", false),
                 Is.False);
             controller.enabled = false;
             player.transform.position = homePosition;
             controller.enabled = true;
+            SetField(Field(session, "_data"), "regionId", "home");
             Assert.That((bool)Property(session, "IsAtHome"), Is.True);
             Assert.That((bool)Call(session, "TrySetTalentActive", "swords", "swords.flow", false),
                 Is.True);
@@ -131,8 +133,10 @@ namespace Topaz.Tests
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
-            Component session = GameObject.Find("Player").GetComponent("WorldSession");
-            Component enemy = GameObject.Find("Enemy").GetComponent("EnemyCombatant");
+            GameObject player = GameObject.Find("Player");
+            Component session = player.GetComponent("WorldSession");
+            yield return TopazTestTravel.EnterGraveyard(player);
+            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
             int before = (int)Property(enemy, "CurrentHealth");
             Call(enemy, "ApplyBleed", 1, 2f, 1.5f);
             yield return new WaitForSeconds(1.6f);
@@ -148,10 +152,11 @@ namespace Topaz.Tests
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component combat = player.GetComponent("PlayerCombat");
-            Component enemy = GameObject.Find("Enemy").GetComponent("EnemyCombatant");
             Call(session, "RecordSkillCompletion", "axes", 10, 1);
             Assert.That((bool)Call(session, "TryLearnTalent", "axes", "axes.bleed"), Is.True);
-            Vector3 home = player.transform.position;
+            yield return TopazTestTravel.EnterGraveyard(player);
+            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
+            Vector3 safePosition = player.transform.position;
             Teleport(player, enemy.transform.position + Vector3.back * 1.3f);
             EquipAxeForTest(session, combat, enemy);
             int before = (int)Property(enemy, "CurrentHealth");
@@ -160,7 +165,7 @@ namespace Topaz.Tests
             int earned = (int)Call(session, "SkillExperienceCenti", "axes");
             Assert.That(afterHit, Is.LessThan(before));
             Assert.That(earned, Is.GreaterThan(1000));
-            Teleport(player, home);
+            Teleport(player, safePosition);
             yield return new WaitForSeconds(1.6f);
             Assert.That((int)Property(enemy, "CurrentHealth"), Is.EqualTo(afterHit - 1));
             Assert.That((int)Call(session, "SkillExperienceCenti", "axes"), Is.EqualTo(earned));
@@ -175,9 +180,10 @@ namespace Topaz.Tests
             Component session = player.GetComponent("WorldSession");
             Component combat = player.GetComponent("PlayerCombat");
             Component vitality = player.GetComponent("PlayerVitality");
-            Component enemy = GameObject.Find("Enemy").GetComponent("EnemyCombatant");
             Call(session, "RecordSkillCompletion", "axes", 10, 1);
             Assert.That((bool)Call(session, "TryLearnTalent", "axes", "axes.rage"), Is.True);
+            yield return TopazTestTravel.EnterGraveyard(player);
+            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
             Teleport(player, enemy.transform.position + Vector3.back * 1.3f);
             EquipAxeForTest(session, combat, enemy);
             Assert.That((bool)Call(vitality, "TryTakeDirectedDamage", 4,

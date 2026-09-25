@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Annotated Topaz homestead building design: three campfire stages, modular rooms, and protected travel routes">
+  <defs>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#a8987b" stroke-width="1" opacity=".18"/></pattern>
+    <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#090806" flood-opacity=".45"/></filter>
+  </defs>
+  <rect width="1200" height="800" fill="#171312"/>
+  <text x="62" y="67" fill="#efc784" font-family="Georgia,serif" font-size="40">A home shaped around the fire</text>
+  <text x="62" y="98" fill="#e0c6a3" font-family="Arial,sans-serif" font-size="17">Annotated design plate · top-down layout concept · not an in-game screenshot</text>
+
+  <g filter="url(#shadow)">
+    <rect x="55" y="130" width="765" height="610" rx="16" fill="#283126" stroke="#786f54" stroke-width="3"/>
+    <rect x="55" y="130" width="765" height="610" rx="16" fill="url(#grid)"/>
+  </g>
+  <path d="M90 244 Q260 218 390 170 Q580 135 774 201 L789 674 Q639 718 484 700 Q256 746 91 675 Z" fill="none" stroke="#93a477" stroke-width="3" stroke-dasharray="10 8"/>
+  <text x="85" y="160" fill="#cad7b1" font-family="Arial,sans-serif" font-size="15">Stage 3: the authored Home area opens</text>
+
+  <circle cx="432" cy="432" r="248" fill="#e2b565" opacity=".06" stroke="#d5ad72" stroke-width="3" stroke-dasharray="7 8"/>
+  <circle cx="432" cy="432" r="151" fill="#f0cc8d" opacity=".08" stroke="#f0cc8d" stroke-width="3"/>
+  <text x="529" y="309" fill="#ffedcf" font-family="Arial,sans-serif" font-size="14">Stage 1 · 5.5 m</text>
+  <text x="626" y="395" fill="#e6cc9d" font-family="Arial,sans-serif" font-size="14">Stage 2 · ~9 m</text>
+
+  <g transform="translate(432 432)">
+    <circle r="31" fill="#554337" stroke="#e9c283" stroke-width="5"/>
+    <path d="M-13 13 Q-23 -9 -3 -23 Q-1 -12 7 -9 Q13 -27 19 -11 Q28 5 13 18 Q0 25 -13 13Z" fill="#f5a44b"/>
+    <path d="M-3 15 Q-9 1 3 -10 Q5 -1 11 3 Q15 15 4 18Z" fill="#ffe29c"/>
+  </g>
+  <text x="392" y="484" fill="#fff1d8" font-family="Arial,sans-serif" font-size="16" font-weight="bold">Campfire</text>
+
+  <g transform="translate(188 253)">
+    <rect width="187" height="135" rx="4" fill="#9a8b71" stroke="#eed2a0" stroke-width="4"/>
+    <path d="M63 0V135 M124 0V135 M0 45H187 M0 90H187" stroke="#655548" stroke-width="4"/>
+    <path d="M73 135h40" stroke="#dba767" stroke-width="13"/>
+    <rect x="18" y="23" width="51" height="34" rx="4" fill="#bd7756"/>
+    <rect x="137" y="87" width="35" height="28" rx="3" fill="#62482f"/>
+    <text x="16" y="-13" fill="#fff1d8" font-family="Arial,sans-serif" font-size="16">Flexible first room</text>
+  </g>
+  <g transform="translate(548 512)">
+    <rect x="0" y="0" width="145" height="95" rx="4" fill="#9a8b71" stroke="#eed2a0" stroke-width="4"/>
+    <rect x="0" y="95" width="96" height="58" rx="4" fill="#9a8b71" stroke="#eed2a0" stroke-width="4"/>
+    <path d="M48 0V153 M96 0V153 M0 48H145 M0 95H145" stroke="#655548" stroke-width="3"/>
+    <path d="M42 153h40" stroke="#dba767" stroke-width="11"/>
+    <text x="-4" y="-14" fill="#fff1d8" font-family="Arial,sans-serif" font-size="16">An odd second footprint</text>
+  </g>
+
+  <g fill="#cfb889" stroke="#423527" stroke-width="3">
+    <rect x="395" y="574" width="42" height="30" rx="5"/>
+    <rect x="281" y="465" width="36" height="31" rx="5"/>
+    <rect x="650" y="276" width="45" height="32" rx="5"/>
+  </g>
+  <text x="278" y="518" fill="#fff1d8" font-family="Arial,sans-serif" font-size="14">chest</text>
+  <text x="385" y="624" fill="#fff1d8" font-family="Arial,sans-serif" font-size="14">anvil</text>
+  <text x="650" y="327" fill="#fff1d8" font-family="Arial,sans-serif" font-size="14">outdoor Bed</text>
+
+  <path d="M430 704 L430 739" stroke="#9dc6d4" stroke-width="17" stroke-linecap="round"/>
+  <text x="448" y="720" fill="#d8f0f4" font-family="Arial,sans-serif" font-size="15">Keep travel route clear</text>
+  <path d="M81 446H55" stroke="#9dc6d4" stroke-width="17" stroke-linecap="round"/>
+  <text x="90" y="458" fill="#d8f0f4" font-family="Arial,sans-serif" font-size="15">Crypt entrance stays open</text>
+
+  <rect x="850" y="130" width="300" height="610" rx="16" fill="#26201c" stroke="#73604a" stroke-width="2"/>
+  <text x="881" y="178" fill="#efc784" font-family="Georgia,serif" font-size="29">Build flow</text>
+  <g font-family="Arial,sans-serif" font-size="18" fill="#fff1d8">
+    <text x="882" y="226">1  Backpack → Home tab</text>
+    <text x="882" y="274">2  Pick a known recipe</text>
+    <text x="882" y="322">3  Ghost + snap + rotate</text>
+    <text x="882" y="370">4  Confirm spends materials</text>
+    <text x="882" y="418">5  Move or reclaim freely</text>
+  </g>
+  <path d="M881 451H1119" stroke="#655346" stroke-width="2"/>
+  <text x="881" y="487" fill="#efc784" font-family="Georgia,serif" font-size="25">What changes by stage</text>
+  <g font-family="Arial,sans-serif" font-size="16" fill="#e0c6a3">
+    <text x="882" y="528">Stage 1 · starter circle</text>
+    <text x="882" y="558">Stage 2 · 9 Wood + 6 Stone</text>
+    <text x="882" y="588">Stage 3 · 24 Wood + 24 Stone</text>
+    <text x="963" y="611">+ 8 Iron</text>
+    <text x="882" y="661">Outline shown only while building.</text>
+    <text x="882" y="690">The Home remains enemy-free.</text>
+  </g>
+</svg>

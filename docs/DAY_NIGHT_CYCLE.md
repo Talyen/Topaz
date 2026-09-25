@@ -1,12 +1,12 @@
 # Day and night cycle design
 
-Status: implemented in the first Mac review build; dusk and night sun, ambient fill, and fog were lowered in the lantern lighting pass. Visual values remain prototype targets.
+Status: implemented for Mac review. Dusk and night now use darker sun and ambient fill plus Unity linear fog that closes the outdoor view from roughly 12 to 34 world units at night. Local light intensities stay at their authored values. Visual values remain prototype targets.
 
 ## Player experience
 
 - Time advances continuously during active play through a medium-length cycle. Start tuning at **45 minutes of active play per full day**. Menus and scene loading pause the clock. Closing the game does not advance it.
 - Dawn, daylight, dusk, and night change the outdoor lighting and ambience. Night is moody but always readable: the player, enemies, attack tells, paths, pickups, and interactions remain identifiable without a carried light.
-- Time of day creates no enemy, combat, or expedition deadline rules in this first version. The player returns from expeditions by choice. Tree regrowth is the one gameplay rule tied to elapsed world time.
+- The first day/night pass had no enemy deadline. The later [Graveyard and loot slice](studies/GRAVEYARD_STUDY.md) uses elapsed World time for 24-hour Skeleton returns and 72-hour cache refills. The player returns from the Graveyard by choice.
 - The environment communicates time. Do not add a clock, day counter, or time-of-day HUD. The existing home bedroll can be used at any time and advances the clock by **eight in-game hours**, which is **15 minutes of cycle time** at the 45-minute starting speed. Resting is a time skip, so it should use a short visual transition rather than animating eight hours of light movement.
 - Keep indoor or authored dungeon lighting locally controlled when those spaces arrive, while the same world clock continues advancing during active play.
 
@@ -28,7 +28,7 @@ Begin a new game, and migrate existing saves, at 08:00. These phase boundaries a
 Unity 6.6 and URP provide [real-time lights](https://docs.unity3d.com/6000.6/Documentation/Manual/LightModes-introduction.html), [environment lighting](https://docs.unity3d.com/6000.6/Documentation/Manual/LightingOverview.html), and [Volumes](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/volumes-landing-page.html). They do not supply Topaz's rest, pause, region, and save rules. Use those native rendering features and a small Topaz-specific clock, without adding a package or custom renderer feature.
 
 - Keep one authoritative world clock outside the individual outdoor scenes. Outdoor presentation reads that clock through authored color and intensity curves for the existing directional light, ambient fill, fog, and restrained URP color adjustments. Favor one main shadow-casting directional light until a representative build shows a need for more.
-- Compose the time-of-day look with the current `VisualLookController`, which already owns the home light, shadow strength, fog distance, and runtime Volume profiles. Graphics preferences remain preferences; the cycle supplies a time-dependent baseline.
+- Compose the time-of-day look with the current `VisualLookController`, which owns the home light, shadow strength, Unity linear fog, and runtime Volume profiles. Graphics preferences remain preferences; the cycle supplies a time-dependent baseline. The shorter night fog range limits distant visibility without dimming the lantern, campfires, or other local lights. Indoor scenes disable outdoor fog.
 - The Bootstrap scene owns the current main directional light and global Volume. The Expedition scene loads additively; its lighting must follow the same clock and should not reset or create a competing sun during travel. Treat interiors as scene-authored overrides later.
 - Use an explicit gameplay-active condition for clock advancement. The current `GameMenus` pauses `Time.timeScale` for main menus in standalone builds, but crafting, chest, and ordinary inventory panels need coverage too; Editor play mode currently leaves time scale at 1. Pause during additive loading and on application pause. Keep frame-rate independent clock and lighting updates.
 - Save monotonic elapsed world time through a versioned save migration, deriving time of day and the cycle count from it. Persist clock changes on rest, travel, pause, quit, and periodically during uninterrupted play. Do not use wall-clock time while the game is closed.

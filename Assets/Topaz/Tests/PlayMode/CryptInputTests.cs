@@ -18,8 +18,7 @@ namespace Topaz.Tests
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            Teleport(player, GameObject.Find("Home Crypt Entrance").transform.position);
-            session.GetType().GetMethod("TryInteract").Invoke(session, null);
+            yield return TopazTestTravel.EnterCrypt(player);
             float deadline = Time.realtimeSinceStartup + 10f;
             while (GameObject.Find("Gallery Rogue") == null &&
                    Time.realtimeSinceStartup < deadline) yield return null;
@@ -89,8 +88,7 @@ namespace Topaz.Tests
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            Teleport(player, GameObject.Find("Home Crypt Entrance").transform.position);
-            session.GetType().GetMethod("TryInteract").Invoke(session, null);
+            yield return TopazTestTravel.EnterCrypt(player);
             float deadline = Time.realtimeSinceStartup + 10f;
             while (GameObject.Find("Gallery Rogue") == null &&
                    Time.realtimeSinceStartup < deadline) yield return null;
@@ -148,8 +146,7 @@ namespace Topaz.Tests
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            Teleport(player, GameObject.Find("Home Crypt Entrance").transform.position);
-            session.GetType().GetMethod("TryInteract").Invoke(session, null);
+            yield return TopazTestTravel.EnterCrypt(player);
             float deadline = Time.realtimeSinceStartup + 10f;
             while ((string)session.GetType().GetProperty("CurrentRegionId").GetValue(session) !=
                    "dungeon.home-crypt" && Time.realtimeSinceStartup < deadline)

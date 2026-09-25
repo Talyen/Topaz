@@ -44,6 +44,14 @@ namespace Topaz.Tests
             Assert.That(light.transform.localPosition.x, Is.EqualTo(0f).Within(.001f));
             Assert.That(light.transform.localPosition.z, Is.EqualTo(0f).Within(.001f));
             Assert.That(light.range, Is.EqualTo(8.5f).Within(.001f));
+            Transform carried = player.GetComponentsInChildren<Transform>(true)
+                .FirstOrDefault(candidate => candidate.name == "Carried Lantern");
+            Assert.That(carried, Is.Not.Null);
+            Renderer lanternBody = carried.GetComponentsInChildren<Renderer>(true)
+                .FirstOrDefault(candidate => candidate.name == "Visual");
+            Assert.That(lanternBody, Is.Not.Null);
+            Assert.That(Vector3.Distance(lanternBody.bounds.center, carried.position),
+                Is.LessThan(.3f), "The lantern mesh should hang at its mount, not beside the player.");
             Assert.That(light.color.r, Is.GreaterThan(light.color.g));
             Assert.That(light.color.g, Is.GreaterThan(light.color.b));
             Assert.That(GameObject.Find("KayKit Lantern").GetComponentsInChildren<Renderer>(true)

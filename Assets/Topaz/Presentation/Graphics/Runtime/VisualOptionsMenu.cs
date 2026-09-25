@@ -1,5 +1,6 @@
 using TMPro;
 using Topaz.Menus;
+using Topaz.Audio;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,10 +19,21 @@ namespace Topaz.VisualStudy
         [SerializeField] Button closeButton;
         [SerializeField] TMP_Text status;
         [SerializeField] Topaz.LoopStudy.LoopHud loopHud;
+        [SerializeField] Button graphicsTabButton;
+        [SerializeField] Button audioTabButton;
+        [SerializeField] GameObject[] graphicsRows;
+        [SerializeField] GameObject[] audioRows;
+        [SerializeField] Slider masterSlider;
+        [SerializeField] Slider musicSlider;
+        [SerializeField] Slider ambienceSlider;
+        [SerializeField] Slider effectsSlider;
+        [SerializeField] Toggle muteInBackgroundToggle;
 
         VisualLookController _controller;
+        TopazAudioSettings _audio;
         GameMenus _menus;
         bool _bound;
+        bool _audioTab;
 
         public bool IsOpen => panel != null && panel.activeSelf;
 
@@ -30,10 +42,16 @@ namespace Topaz.VisualStudy
             if (_bound) return;
             _controller = controller;
             _menus = GetComponent<GameMenus>();
+            _audio = GetComponent<TopazAudioSettings>();
             if (panel == null || cameraZoomDropdown == null || antiAliasingDropdown == null ||
                 depthOfFieldDropdown == null || bloomToggle == null ||
                 ambientOcclusionToggle == null || resetButton == null || closeButton == null ||
-                status == null || loopHud == null || _menus == null)
+                status == null || loopHud == null || _menus == null || _audio == null ||
+                graphicsTabButton == null || audioTabButton == null ||
+                graphicsRows == null || graphicsRows.Length != 5 ||
+                audioRows == null || audioRows.Length != 5 ||
+                masterSlider == null || musicSlider == null || ambienceSlider == null ||
+                effectsSlider == null || muteInBackgroundToggle == null)
             {
                 Debug.LogError("Graphics menu is missing a required reference.", this);
                 enabled = false;
@@ -50,7 +68,15 @@ namespace Topaz.VisualStudy
             ambientOcclusionToggle.onValueChanged.AddListener(OnAmbientOcclusionChanged);
             resetButton.onClick.AddListener(ResetToDefaults);
             closeButton.onClick.AddListener(Close);
+            graphicsTabButton.onClick.AddListener(OpenGraphicsTab);
+            audioTabButton.onClick.AddListener(OpenAudioTab);
+            masterSlider.onValueChanged.AddListener(OnMasterChanged);
+            musicSlider.onValueChanged.AddListener(OnMusicChanged);
+            ambienceSlider.onValueChanged.AddListener(OnAmbienceChanged);
+            effectsSlider.onValueChanged.AddListener(OnEffectsChanged);
+            muteInBackgroundToggle.onValueChanged.AddListener(OnMuteInBackgroundChanged);
             _bound = true;
+            ShowTab(false);
             Refresh();
         }
 
@@ -64,6 +90,13 @@ namespace Topaz.VisualStudy
             ambientOcclusionToggle.onValueChanged.RemoveListener(OnAmbientOcclusionChanged);
             resetButton.onClick.RemoveListener(ResetToDefaults);
             closeButton.onClick.RemoveListener(Close);
+            graphicsTabButton.onClick.RemoveListener(OpenGraphicsTab);
+            audioTabButton.onClick.RemoveListener(OpenAudioTab);
+            masterSlider.onValueChanged.RemoveListener(OnMasterChanged);
+            musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
+            ambienceSlider.onValueChanged.RemoveListener(OnAmbienceChanged);
+            effectsSlider.onValueChanged.RemoveListener(OnEffectsChanged);
+            muteInBackgroundToggle.onValueChanged.RemoveListener(OnMuteInBackgroundChanged);
         }
 
         static void SetOptions(TMP_Dropdown dropdown, params string[] labels)
@@ -80,6 +113,48 @@ namespace Topaz.VisualStudy
         void OnBloomChanged(bool value) => Change(() => _controller.SetBloom(value));
         void OnAmbientOcclusionChanged(bool value) =>
             Change(() => _controller.SetAmbientOcclusion(value));
+
+        void OnMasterChanged(float value) => ChangeAudio(() => _audio.SetMaster(value));
+        void OnMusicChanged(float value) => ChangeAudio(() => _audio.SetMusic(value));
+        void OnAmbienceChanged(float value) => ChangeAudio(() => _audio.SetAmbience(value));
+        void OnEffectsChanged(float value) => ChangeAudio(() => _audio.SetEffects(value));
+        void OnMuteInBackgroundChanged(bool value) =>
+            ChangeAudio(() => _audio.SetMuteInBackground(value));
+
+        void ChangeAudio(System.Action apply)
+        {
+            apply();
+            SetStatus("Audio settings saved automatically.");
+        }
+
+        void OpenGraphicsTab()
+        {
+            ShowTab(false);
+            UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(
+                cameraZoomDropdown.gameObject);
+        }
+
+        void OpenAudioTab()
+        {
+            ShowTab(true);
+            UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(
+                masterSlider.gameObject);
+        }
+
+        void ShowTab(bool audio)
+        {
+            _audioTab = audio;
+            foreach (GameObject row in graphicsRows) row.SetActive(!audio);
+            foreach (GameObject row in audioRows) row.SetActive(audio);
+            graphicsTabButton.GetComponent<Image>().color = audio
+                ? new Color32(49, 37, 30, 255) : new Color32(239, 199, 132, 255);
+            audioTabButton.GetComponent<Image>().color = audio
+                ? new Color32(239, 199, 132, 255) : new Color32(49, 37, 30, 255);
+            graphicsTabButton.GetComponentInChildren<TMP_Text>().color = audio
+                ? new Color32(255, 241, 216, 255) : new Color32(23, 19, 18, 255);
+            audioTabButton.GetComponentInChildren<TMP_Text>().color = audio
+                ? new Color32(23, 19, 18, 255) : new Color32(255, 241, 216, 255);
+        }
 
         void Change(System.Action apply)
         {
@@ -101,6 +176,13 @@ namespace Topaz.VisualStudy
         {
             try
             {
+                if (_audioTab)
+                {
+                    _audio.ResetDefaults();
+                    Refresh();
+                    SetStatus("Audio defaults restored and saved.");
+                    return;
+                }
                 _controller.ResetSelection();
                 _menus.SetCameraZoomIndex(1);
                 _controller.SaveSelection();
@@ -123,9 +205,10 @@ namespace Topaz.VisualStudy
             {
                 _menus?.OnVisualLabOpening();
                 panel.transform.SetAsLastSibling();
+                ShowTab(false);
                 Refresh();
                 UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(
-                    cameraZoomDropdown.gameObject);
+                    graphicsTabButton.gameObject);
             }
             else _menus?.OnVisualLabClosed();
         }
@@ -146,6 +229,11 @@ namespace Topaz.VisualStudy
             depthOfFieldDropdown.SetValueWithoutNotify(_controller.CurrentDepthMode);
             bloomToggle.SetIsOnWithoutNotify(_controller.BloomEnabled);
             ambientOcclusionToggle.SetIsOnWithoutNotify(_controller.AmbientOcclusionEnabled);
+            masterSlider.SetValueWithoutNotify(_audio.Master);
+            musicSlider.SetValueWithoutNotify(_audio.Music);
+            ambienceSlider.SetValueWithoutNotify(_audio.Ambience);
+            effectsSlider.SetValueWithoutNotify(_audio.Effects);
+            muteInBackgroundToggle.SetIsOnWithoutNotify(_audio.MuteInBackground);
         }
 
         void SetStatus(string message)

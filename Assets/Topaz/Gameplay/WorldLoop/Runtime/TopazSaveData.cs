@@ -51,6 +51,7 @@ namespace Topaz.LoopStudy
         public string definitionId;
         public float x;
         public float z;
+        public int quarterTurns;
         public List<ItemStackRecord> slots = new List<ItemStackRecord>();
     }
 

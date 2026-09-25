@@ -25,6 +25,8 @@ namespace Topaz.LoopStudy
         [SerializeField] ItemDefinition wood;
         [SerializeField] ItemDefinition stone;
         [SerializeField] ItemDefinition iron;
+        [SerializeField] ItemDefinition boneFragments;
+        [SerializeField] GameObject bonePickupVisual;
         [SerializeField] ItemDefinition pickaxeItem;
         [SerializeField] SkillDefinition[] skillDefinitions;
         [SerializeField] MiningRock[] rocks;
@@ -48,7 +50,6 @@ namespace Topaz.LoopStudy
         [SerializeField] GameObject pickupPrefab;
         [SerializeField] GameMenus menus;
         [SerializeField] Transform homeGate;
-        [SerializeField] Transform homeCryptGate;
         [SerializeField] ItemDefinition cryptStaff;
         [SerializeField] ItemDefinition cryptCrossbow;
         [SerializeField] VisualLookController look;
@@ -58,10 +59,10 @@ namespace Topaz.LoopStudy
         const float InteractionRadius = 1.4f;
         const float PlacementStep = 0.75f;
         const int ExpeditionWoodReward = 3;
-        const string ExpeditionSceneName = "Expedition";
+        const string ExpeditionSceneName = "Graveyard";
         const string CryptSceneName = "Crypt";
-        const string CryptStaffPickupId = "pickup.crypt.staff";
-        const string CryptCrossbowPickupId = "pickup.crypt.crossbow";
+        const double EnemyReturnHours = 24d;
+        const double CacheRefillHours = 72d;
         public const int BackpackCapacity = 16;
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         static readonly Color ValidColor = new Color(0.36f, 0.95f, 0.57f);
@@ -77,6 +78,7 @@ namespace Topaz.LoopStudy
         InputAction _placeAction;
         InputAction _cancelAction;
         InputAction _inventoryAction;
+        InputAction _rotateBuildAction;
         MaterialPropertyBlock _previewProperties;
         Vector3 _previewPosition;
         float _placementReadyAt;
@@ -87,9 +89,11 @@ namespace Topaz.LoopStudy
         bool _savingEnabled = true;
         string _saveProblem;
         bool _traveling;
+        bool _fastTraveling;
         bool _resting;
         bool _recovering;
         bool _applicationPaused;
+        float _lastExertionAt = -1000f;
         bool _clockWasActive;
         float _activeSecondsSinceSave;
         ExpeditionSceneBootstrap _expedition;
@@ -100,6 +104,16 @@ namespace Topaz.LoopStudy
         string _regionWeatherOverride;
         string _regionWeatherId;
         readonly List<GameObject> _spawnedPickups = new List<GameObject>();
+        readonly List<ForagePlant> _foragePlants = new List<ForagePlant>();
+        readonly List<RestSpot> _restSpots = new List<RestSpot>();
+        readonly List<EnemyCombatant> _boundEnemies = new List<EnemyCombatant>();
+        float _nextEnemyCheck;
+        float _trailReadyAt;
+        StorageChest _openChest;
+        CampfireTravelCatalog _travelCatalog;
+        ItemDefinition _berries;
+        ItemDefinition _mushrooms;
+        ItemDefinition _stew;
 
         public IReadOnlyList<TopazCharacterData> Characters => _profile?.characters;
         public IReadOnlyList<TopazWorldData> Worlds => _profile?.worlds;
@@ -121,25 +135,59 @@ namespace Topaz.LoopStudy
         public string CurrentRegionId => _data?.regionId ?? TopazSaveData.HomeRegion;
         public string ReturnCampfireId => _visit?.lastCampfireId ?? Campfire.HomeId;
         public IReadOnlyList<string> DiscoveredCampfireIds => _visit?.discoveredCampfireIds;
+        public bool IsFastTraveling => _fastTraveling;
+        public bool IsTravelMenuOpen => hud != null && hud.TravelOpen;
+        public string CurrentCampfireId => NearbyCampfire()?.StableId;
+        public IReadOnlyList<CampfireTravelCatalog.Destination> TravelDestinations =>
+            _visit == null || _travelCatalog == null
+                ? Array.Empty<CampfireTravelCatalog.Destination>()
+                : _travelCatalog.Destinations.Where(value =>
+                    _visit.discoveredCampfireIds.Contains(value.stableId)).ToArray();
         public bool IsRecovering => _recovering;
-        public bool ExpeditionCacheClaimed => _data != null && _data.expeditionCacheClaimed;
+        public bool IsResting => _resting;
+        public bool ExpeditionCacheClaimed => _world != null &&
+            _world.graveyardCacheReadyAt > WorldHours;
         public bool CryptShortcutOpen => _world?.cryptShortcutOpen == true;
-        public bool CryptCacheClaimed => _world?.cryptCacheClaimed == true;
-        public bool CryptMageDefeated => _world?.cryptMageDefeated == true;
+        public bool CryptCacheClaimed => _world != null &&
+            _world.cryptCacheReadyAt > WorldHours;
+        public bool CryptMageDefeated => _world?.enemyRespawns?.Any(value =>
+            value.spawnId == "crypt.mage") == true;
         public bool CryptRogueCrossbowAwarded => _world?.cryptRogueCrossbowAwarded == true;
         public bool StaffDiscovered => _character?.discoveredSkillIds?.Contains(SkillIds.Staff) == true;
         public bool CrossbowsDiscovered =>
             _character?.discoveredSkillIds?.Contains(SkillIds.Crossbows) == true;
         public int WoodCount => _data == null ? 0 : CountWood();
+        public int HomeWoodCount => CountHomeMaterial(wood);
         public IReadOnlyList<ItemStackRecord> BackpackSlots => _backpack?.Slots;
+        public float Stamina => _character?.stamina ?? SurvivalRules.BaseStamina;
+        public float MaximumStamina => SurvivalRules.Maximum(_character);
+        public bool StaminaCueVisible => _character != null &&
+            Time.time < _lastExertionAt + 3f;
+        public double RestedHoursRemaining => _character?.restedHours ?? 0d;
+        public double FoodHoursRemaining => _character?.foodHours ?? 0d;
+        public int FoodTier => _character?.foodTier ?? 0;
+        public int MushroomsAtFire
+        {
+            get
+            {
+                Campfire fire = NearbyCampfire();
+                if (fire == null || _backpack == null) return 0;
+                StorageChest nearby = homeBuilds.NearestChest(fire.transform.position, 2.2f);
+                return _backpack.Count(SurvivalRules.MushroomsId) +
+                    (nearby?.Inventory?.Count(SurvivalRules.MushroomsId) ?? 0);
+            }
+        }
         public EquipmentState Equipped => _character?.equipment;
         public EquipmentStats Stats => _character?.equipment.Total(ResolveItem) ?? default;
         public WeaponDefinition CurrentWeapon => ResolveItem(Equipped?.weaponId)?.Weapon;
         public bool HasWeapon => !string.IsNullOrEmpty(Equipped?.weaponId);
-        public bool HasAxe => Equipped?.toolId == EquipmentState.Axe;
+        public bool HasAxe => Equipped != null &&
+            (Equipped.toolId == EquipmentState.Axe ||
+             Equipped.toolId == HomeForgeCatalog.Axe);
         public bool HasPickaxe => _character != null && pickaxeItem != null &&
             _character.pickaxeId == pickaxeItem.StableId;
         public ItemDefinition StoneItem => stone;
+        public ItemDefinition WoodItem => wood;
         public ItemDefinition IronItem => iron;
         public int StoneCount => CountHomeMaterial(stone);
         public int IronCount => CountHomeMaterial(iron);
@@ -150,13 +198,16 @@ namespace Topaz.LoopStudy
             CurrentWeapon?.TwoHanded != true;
         public IReadOnlyList<string> RackItems => new[] { EquipmentState.SwiftGloves,
             EquipmentState.AgileBody, EquipmentState.AgileBoots, EquipmentState.TwoHandedAxe };
-        public IReadOnlyList<ItemStackRecord> ChestSlots => chest?.Inventory?.Slots;
+        StorageChest CurrentChest => _openChest != null && _openChest.IsPlaced ? _openChest : chest;
+        public IReadOnlyList<ItemStackRecord> ChestSlots => CurrentChest?.Inventory?.Slots;
         public bool BackpackHasItems => _backpack != null && _backpack.Slots.Any(slot => slot.count > 0);
-        public bool ChestHasItems => chest?.Inventory != null && chest.Inventory.Slots.Any(slot => slot.count > 0);
+        public bool ChestHasItems => CurrentChest?.Inventory != null &&
+            CurrentChest.Inventory.Slots.Any(slot => slot.count > 0);
         public bool BackpackHasMaterials => _backpack != null &&
             _backpack.Slots.Any(slot => slot.count > 0 && ResolveMaterial(slot.itemId) != null);
-        public bool ChestHasMaterials => chest?.Inventory != null &&
-            chest.Inventory.Slots.Any(slot => slot.count > 0 && ResolveMaterial(slot.itemId) != null);
+        public bool ChestHasMaterials => CurrentChest?.Inventory != null &&
+            CurrentChest.Inventory.Slots.Any(slot => slot.count > 0 &&
+                ResolveMaterial(slot.itemId) != null);
         public int LoggingExperience => SkillExperience(SkillIds.Logging);
         public int LoggingLevel => SkillLevel(SkillIds.Logging);
         public int SwordsExperience => SkillExperience(SkillIds.Swords);
@@ -166,8 +217,7 @@ namespace Topaz.LoopStudy
         public int ShieldExperience => SkillExperience(SkillIds.Shield);
         public int ShieldLevel => SkillLevel(SkillIds.Shield);
         public IReadOnlyList<SkillDefinition> SkillDefinitions => skillDefinitions;
-        public bool IsAtHome => _data != null && _data.regionId == TopazSaveData.HomeRegion &&
-            home != null && home.Contains(transform.position);
+        public bool IsAtHome => _data != null && _data.regionId == TopazSaveData.HomeRegion;
         public int PickupCount => _data?.pickups.Count ?? 0;
         public bool PendingChest => _data != null && _data.pendingChest;
         public int ChestCost => chestRecipe != null ? chestRecipe.IngredientCount : 0;
@@ -177,11 +227,12 @@ namespace Topaz.LoopStudy
         public bool IsCrossbowEquipped => CurrentWeapon?.Skill == WeaponSkill.Crossbows;
         public float CrossbowReloadProgress => combat?.CrossbowReloadProgress ?? 1f;
         public bool LanternOn => _character != null && _character.lanternOn;
-        public bool ChestPlaced => chest != null && chest.IsPlaced;
-        public int ChestWood => chest?.Inventory?.Count(wood.StableId) ?? 0;
-        public int ChestStone => chest?.Inventory?.Count(stone.StableId) ?? 0;
-        public int ChestIron => chest?.Inventory?.Count(iron.StableId) ?? 0;
-        public int ChestCapacity => chest?.SlotCapacity ?? 0;
+        public bool ChestPlaced => homeBuilds != null &&
+            homeBuilds.Chests.Any(value => value != null && value.IsPlaced);
+        public int ChestWood => CurrentChest?.Inventory?.Count(wood.StableId) ?? 0;
+        public int ChestStone => CurrentChest?.Inventory?.Count(stone.StableId) ?? 0;
+        public int ChestIron => CurrentChest?.Inventory?.Count(iron.StableId) ?? 0;
+        public int ChestCapacity => CurrentChest?.SlotCapacity ?? 0;
         public bool IsPlacing => _placing;
         public bool MenuOpen => (hud != null && hud.MenuOpen) || (menus != null && menus.BlockGameplay);
         public bool BlockMovement => MenuOpen || _traveling || _resting || _recovering;
@@ -191,8 +242,14 @@ namespace Topaz.LoopStudy
 
         void Awake()
         {
+            _travelCatalog = Resources.Load<CampfireTravelCatalog>("CampfireTravelCatalog");
+            _berries = Resources.Load<ItemDefinition>("RedBerries");
+            _mushrooms = Resources.Load<ItemDefinition>("Mushrooms");
+            _stew = Resources.Load<ItemDefinition>("MushroomStew");
             _previewProperties = new MaterialPropertyBlock();
             if (controls == null || wood == null || stone == null || iron == null ||
+                boneFragments == null || bonePickupVisual == null ||
+                _berries == null || _mushrooms == null || _stew == null ||
                 pickaxeItem == null || skillDefinitions == null ||
                 skillDefinitions.Length != SkillIds.All.Length ||
                 skillDefinitions.Any(definition => definition == null) ||
@@ -201,10 +258,10 @@ namespace Topaz.LoopStudy
                 chestRecipe == null || chestDefinition == null || home == null ||
                 homeCampfire == null || homeCampfire.StableId != Campfire.HomeId ||
                 movement == null || combat == null || hud == null || pickupPrefab == null ||
-                menus == null || homeGate == null || homeCryptGate == null ||
+                menus == null || homeGate == null ||
                 cryptStaff == null || cryptCrossbow == null || look == null ||
                 appearance == null || lantern == null || equipmentItems == null ||
-                equipmentItems.Length != 13 ||
+                equipmentItems.Length < 13 ||
                 gearRack == null)
             {
                 Debug.LogError("World session is missing a required reference.", this);
@@ -242,6 +299,7 @@ namespace Topaz.LoopStudy
             _placeAction = map.FindAction("Place", true);
             _cancelAction = map.FindAction("Cancel", true);
             _inventoryAction = map.FindAction("Inventory", true);
+            _rotateBuildAction = map.FindAction("RotateBuild", true);
         }
 
         void OnEnable()
@@ -249,6 +307,7 @@ namespace Topaz.LoopStudy
             if (_placeAction != null) _placeAction.performed += OnPlacePerformed;
             if (_cancelAction != null) _cancelAction.performed += OnCancelPerformed;
             if (_inventoryAction != null) _inventoryAction.performed += OnInventoryPerformed;
+            if (_rotateBuildAction != null) _rotateBuildAction.performed += OnRotateBuildPerformed;
         }
 
         void OnDisable()
@@ -256,9 +315,14 @@ namespace Topaz.LoopStudy
             if (_placeAction != null) _placeAction.performed -= OnPlacePerformed;
             if (_cancelAction != null) _cancelAction.performed -= OnCancelPerformed;
             if (_inventoryAction != null) _inventoryAction.performed -= OnInventoryPerformed;
+            if (_rotateBuildAction != null) _rotateBuildAction.performed -= OnRotateBuildPerformed;
             if (_resting || _recovering) look?.SetRestFade(0f);
+            foreach (EnemyCombatant enemy in _boundEnemies)
+                if (enemy != null) enemy.Defeated -= OnEnemyDefeated;
+            _boundEnemies.Clear();
             _resting = false;
             _recovering = false;
+            _fastTraveling = false;
         }
 
         public void EnterEditorTestPair()
@@ -332,6 +396,7 @@ namespace Topaz.LoopStudy
 
             StopAllCoroutines();
             _traveling = true;
+            ClearBoundEnemies();
             Scene oldExpedition = SceneManager.GetSceneByName(ExpeditionSceneName);
             if (oldExpedition.isLoaded) yield return SceneManager.UnloadSceneAsync(oldExpedition);
             _expedition = null;
@@ -364,6 +429,7 @@ namespace Topaz.LoopStudy
         void BindPair(TopazCharacterData character, TopazWorldData world, TopazVisitData visit)
         {
             _character = character;
+            _lastExertionAt = -1000f;
             _character.EnsureSkills();
             UnlockMasteredTalents();
             combat.ClearTemporaryProgression();
@@ -406,11 +472,10 @@ namespace Topaz.LoopStudy
             Teleport(restoreAway ? home.transform.position :
                 new Vector3(visit.playerX, 0f, visit.playerZ));
             BindGatherables(SceneManager.GetSceneByName("Bootstrap"));
-            homeBuilds.Bind(this, world.structures);
+            homeBuilds.Bind(this, world);
+            RefreshGatherables();
             combat.SetManualTool(character.selectedTool);
-            StructureStateRecord placed = world.structures.FirstOrDefault(record =>
-                record.definitionId == chestDefinition.StableId);
-            chest.Bind(placed);
+            _openChest = homeBuilds.Chests.FirstOrDefault();
             if (!appearance.Apply(character.appearanceId))
                 appearance.Apply(CharacterLooks.Rogue);
             lantern.SetLit(character.lanternOn);
@@ -518,7 +583,12 @@ namespace Topaz.LoopStudy
             }
 
             _clockWasActive = true;
+            double before = _data.worldHours;
             _data.worldHours = WorldClock.Advance(_data.worldHours, Time.deltaTime);
+            SurvivalRules.Advance(_character, _data.worldHours - before);
+            if (Time.time >= _lastExertionAt + SurvivalRules.RegenerationDelay)
+                SurvivalRules.Refill(_character, Time.deltaTime);
+            TickEnemyReturns();
             look.SetWorldHours(_data.worldHours);
             UpdateWeather(false);
             _weatherPresentation?.Tick(Time.deltaTime);
@@ -645,6 +715,7 @@ namespace Topaz.LoopStudy
         void OnPlacePerformed(InputAction.CallbackContext context) => _placeRequested = true;
         void OnCancelPerformed(InputAction.CallbackContext context) => _cancelRequested = true;
         void OnInventoryPerformed(InputAction.CallbackContext context) => _inventoryRequested = true;
+        void OnRotateBuildPerformed(InputAction.CallbackContext context) => homeBuilds?.Rotate();
 
         public NodeStateRecord GetOrCreateNodeState(string objectId)
         {
@@ -873,11 +944,21 @@ namespace Topaz.LoopStudy
                     node.Bind(this);
                 foreach (MiningRock node in root.GetComponentsInChildren<MiningRock>(true))
                     node.Bind(this);
+                foreach (ForagePlant node in root.GetComponentsInChildren<ForagePlant>(true))
+                {
+                    node.Bind(this);
+                    if (!_foragePlants.Contains(node)) _foragePlants.Add(node);
+                }
+                foreach (RestSpot bed in root.GetComponentsInChildren<RestSpot>(true))
+                    if (!_restSpots.Contains(bed)) _restSpots.Add(bed);
             }
         }
 
         void RefreshGatherables()
         {
+            foreach (ForagePlant node in FindObjectsByType<ForagePlant>(
+                FindObjectsInactive.Include))
+                node.RefreshForTime();
             foreach (HarvestTree node in
                      FindObjectsByType<HarvestTree>())
                 node.RefreshForTime();
@@ -901,6 +982,96 @@ namespace Topaz.LoopStudy
             _data.pickups.Add(record);
             CreatePickup(record, item);
             hud.ShowStatus($"{record.count} {item.DisplayName} dropped.");
+        }
+
+        public void RegisterEnemy(EnemyCombatant enemy)
+        {
+            if (enemy == null || _world == null) return;
+            if (string.IsNullOrEmpty(enemy.SpawnId))
+            {
+                Debug.LogError($"[Topaz/Combat] {enemy.name} has no stable spawn ID.", enemy);
+                return;
+            }
+            if (_boundEnemies.Contains(enemy)) return;
+            if (_boundEnemies.Any(other => other != null && other.SpawnId == enemy.SpawnId))
+            {
+                Debug.LogError($"[Topaz/Combat] Duplicate spawn ID {enemy.SpawnId}.", enemy);
+                return;
+            }
+            _boundEnemies.Add(enemy);
+            enemy.Defeated += OnEnemyDefeated;
+            EnemyRespawnRecord pending = _world.enemyRespawns.Find(value =>
+                value.spawnId == enemy.SpawnId);
+            if (pending != null) enemy.SetDefeatedForPersistence();
+        }
+
+        void ClearBoundEnemies()
+        {
+            foreach (EnemyCombatant enemy in _boundEnemies)
+                if (enemy != null) enemy.Defeated -= OnEnemyDefeated;
+            _boundEnemies.Clear();
+        }
+
+        void OnEnemyDefeated(EnemyCombatant enemy)
+        {
+            if (_world == null || _data == null || enemy == null ||
+                string.IsNullOrEmpty(enemy.SpawnId)) return;
+            EnemyRespawnRecord pending = _world.enemyRespawns.Find(value =>
+                value.spawnId == enemy.SpawnId);
+            if (pending == null)
+            {
+                pending = new EnemyRespawnRecord { spawnId = enemy.SpawnId };
+                _world.enemyRespawns.Add(pending);
+            }
+            pending.readyAtWorldHours = WorldHours + EnemyReturnHours;
+            Vector3 position = enemy.transform.position;
+            DropItem(boneFragments, 1, position + Vector3.left * .35f);
+            ItemDefinition extra = null;
+            switch (enemy.LootRole)
+            {
+                case SkeletonLootRole.Warrior:
+                    extra = ResolveItem(UnityEngine.Random.value < .5f
+                        ? EquipmentState.Sword : EquipmentState.Shield);
+                    break;
+                case SkeletonLootRole.Rogue:
+                    extra = cryptCrossbow;
+                    break;
+                case SkeletonLootRole.Mage:
+                    extra = cryptStaff;
+                    break;
+            }
+            if (extra != null) DropItem(extra, 1, position + Vector3.right * .35f);
+            if (enemy.LootRole == SkeletonLootRole.Mage) _crypt?.SetMageAlive(false);
+            Commit();
+        }
+
+        void TickEnemyReturns()
+        {
+            if (_world == null || Time.unscaledTime < _nextEnemyCheck) return;
+            _nextEnemyCheck = Time.unscaledTime + 1f;
+            Camera camera = Camera.main;
+            foreach (EnemyCombatant enemy in _boundEnemies)
+            {
+                if (enemy == null || !enemy.IsDown) continue;
+                EnemyRespawnRecord pending = _world.enemyRespawns.Find(value =>
+                    value.spawnId == enemy.SpawnId);
+                if (pending == null || WorldHours < pending.readyAtWorldHours ||
+                    !SpawnOutOfView(enemy.transform.position, camera)) continue;
+                enemy.ResetForRecovery();
+                if (enemy.IsDown) continue;
+                _world.enemyRespawns.Remove(pending);
+                if (enemy.LootRole == SkeletonLootRole.Mage) _crypt?.SetMageAlive(true);
+                Commit();
+            }
+        }
+
+        bool SpawnOutOfView(Vector3 position, Camera camera)
+        {
+            if ((position - transform.position).sqrMagnitude < 12f * 12f) return false;
+            if (camera == null) return true;
+            Vector3 viewport = camera.WorldToViewportPoint(position + Vector3.up);
+            return viewport.z <= 0f || viewport.x < -.1f || viewport.x > 1.1f ||
+                viewport.y < -.1f || viewport.y > 1.1f;
         }
 
         public void TryCollect(WorldPickup pickup)
@@ -928,6 +1099,8 @@ namespace Topaz.LoopStudy
             pickup.Bind(this, record, item);
             if (item == cryptStaff || item == cryptCrossbow)
                 pickup.OverrideVisual(item.Weapon?.HeldModel);
+            else if (item == boneFragments)
+                pickup.OverrideVisual(bonePickupVisual);
             instance.SetActive(string.IsNullOrEmpty(record.regionId) ||
                 record.regionId == _data.regionId);
         }
@@ -961,6 +1134,9 @@ namespace Topaz.LoopStudy
                 case InteractionKind.ReturnHome:
                     StartCoroutine(ReturnHome());
                     return true;
+                case InteractionKind.ReturnFromCrypt:
+                    StartCoroutine(ReturnFromCrypt());
+                    return true;
                 case InteractionKind.SupplyCache:
                     TryClaimExpeditionCache();
                     return true;
@@ -987,7 +1163,17 @@ namespace Topaz.LoopStudy
                     StartCoroutine(Rest());
                     return true;
                 case InteractionKind.Chest:
+                    _openChest = homeBuilds.NearestChest(transform.position, InteractionRadius);
                     hud.ShowChestPanel();
+                    return true;
+                case InteractionKind.CampfireUpgrade:
+                    hud.ShowCampfirePanel();
+                    return true;
+                case InteractionKind.CampfireTravel:
+                    hud.ShowTravelPanel();
+                    return true;
+                case InteractionKind.Anvil:
+                    hud.ShowSmithingPanel();
                     return true;
                 case InteractionKind.GearRack:
                     hud.ShowGearRackPanel();
@@ -998,6 +1184,9 @@ namespace Topaz.LoopStudy
                     return true;
                 case InteractionKind.Mine:
                     combat.TryStartMining(candidate.miningTarget);
+                    return true;
+                case InteractionKind.Forage:
+                    candidate.forageTarget.TryForage();
                     return true;
                 default:
                     if (_data.regionId == TopazSaveData.ExpeditionRegion &&
@@ -1011,8 +1200,9 @@ namespace Topaz.LoopStudy
             }
         }
 
-        enum InteractionKind { None, ReturnHome, SupplyCache, Travel, EnterCrypt,
-            CryptLever, CryptCache, Chest, Workbench, Rest, Harvest, Mine, GearRack }
+        enum InteractionKind { None, ReturnHome, ReturnFromCrypt, SupplyCache, Travel,
+            EnterCrypt, CryptLever, CryptCache, Chest, Workbench, Rest, Harvest, Mine,
+            GearRack, CampfireUpgrade, CampfireTravel, Anvil, Forage }
 
         struct InteractionCandidate
         {
@@ -1021,15 +1211,18 @@ namespace Topaz.LoopStudy
             public string verb;
             public HarvestTree harvestTarget;
             public MiningRock miningTarget;
+            public ForagePlant forageTarget;
 
             public InteractionCandidate(InteractionKind kind, Transform anchor, string verb,
-                HarvestTree harvestTarget = null, MiningRock miningTarget = null)
+                HarvestTree harvestTarget = null, MiningRock miningTarget = null,
+                ForagePlant forageTarget = null)
             {
                 this.kind = kind;
                 this.anchor = anchor;
                 this.verb = verb;
                 this.harvestTarget = harvestTarget;
                 this.miningTarget = miningTarget;
+                this.forageTarget = forageTarget;
             }
         }
 
@@ -1052,41 +1245,54 @@ namespace Topaz.LoopStudy
             if (_data == null) return default;
             float nearest = InteractionRadius * InteractionRadius;
             InteractionCandidate choice = default;
+            foreach (ForagePlant plant in _foragePlants)
+                if (plant != null && plant.IsAvailable &&
+                    IsNodeInCurrentRegion(plant.gameObject))
+                    Consider(ref choice, ref nearest, InteractionKind.Forage,
+                        plant.transform, plant.Mushrooms ? "Gather mushrooms" :
+                            "Pick red berries", forageTarget: plant);
+            foreach (RestSpot bed in _restSpots)
+                if (bed != null && IsNodeInCurrentRegion(bed.gameObject))
+                    Consider(ref choice, ref nearest, InteractionKind.Rest,
+                        bed.transform, "Rest");
             if (_data.regionId == TopazSaveData.ExpeditionRegion && _expedition != null)
             {
-                Consider(ref choice, ref nearest, InteractionKind.ReturnHome,
-                    _expedition.Departure, "Return home");
-                if (CanClaimExpeditionCache)
-                    Consider(ref choice, ref nearest, InteractionKind.SupplyCache,
-                        _expedition.SupplyCache, "Open cache");
+                ConsiderCampfire(ref choice, ref nearest, _expedition.Campfire);
+                Consider(ref choice, ref nearest, InteractionKind.SupplyCache,
+                    _expedition.SupplyCache, ExpeditionCacheClaimed ? "Inspect cache" : "Open cache");
+                Consider(ref choice, ref nearest, InteractionKind.EnterCrypt,
+                    _expedition.CryptEntrance, "Enter crypt");
                 return choice;
             }
             if (_data.regionId == TopazSaveData.CryptRegion && _crypt != null)
             {
-                Consider(ref choice, ref nearest, InteractionKind.ReturnHome,
-                    _crypt.Departure, "Return home");
+                ConsiderCampfire(ref choice, ref nearest, _crypt.Campfire);
+                Consider(ref choice, ref nearest, InteractionKind.ReturnFromCrypt,
+                    _crypt.Departure, "Exit crypt");
                 if (!_world.cryptShortcutOpen)
                     Consider(ref choice, ref nearest, InteractionKind.CryptLever,
                         _crypt.Lever, "Open shortcut");
-                if (!_world.cryptCacheClaimed)
-                    Consider(ref choice, ref nearest, InteractionKind.CryptCache,
-                        _crypt.MaterialCache, "Open cache");
+                Consider(ref choice, ref nearest, InteractionKind.CryptCache,
+                    _crypt.MaterialCache, CryptCacheClaimed ? "Inspect cache" : "Open cache");
                 return choice;
             }
             if (_data.regionId != TopazSaveData.HomeRegion) return default;
-            Consider(ref choice, ref nearest, InteractionKind.Travel, homeGate, "Travel");
-            Consider(ref choice, ref nearest, InteractionKind.EnterCrypt,
-                homeCryptGate, "Enter crypt");
-            if (chest != null && chest.IsPlaced)
+            StorageChest nearestChest = homeBuilds.NearestChest(transform.position,
+                InteractionRadius);
+            if (nearestChest != null)
                 Consider(ref choice, ref nearest, InteractionKind.Chest,
-                    chest.transform, "Open chest");
+                    nearestChest.transform, "Open chest");
             if (workbench != null)
             {
                 Consider(ref choice, ref nearest, InteractionKind.Workbench, workbench,
                     ChestPlaced ? "Inspect" : PendingChest ? "Place chest" : "Craft");
             }
             Consider(ref choice, ref nearest, InteractionKind.GearRack, gearRack, "Inspect gear");
-            Consider(ref choice, ref nearest, InteractionKind.Rest, restPoint, "Rest");
+            Consider(ref choice, ref nearest, InteractionKind.Rest,
+                homeBuilds.NearestRest(transform.position, InteractionRadius), "Rest");
+            ConsiderCampfire(ref choice, ref nearest, homeCampfire);
+            Consider(ref choice, ref nearest, InteractionKind.Anvil,
+                homeBuilds.NearestAnvil(transform.position, InteractionRadius), "Forge gear");
             if (includeGatherables && tree != null && tree.IsAvailable &&
                 combat.HasHarvestTool(tree.RequiredToolId) && combat.CanStartHarvest)
                 Consider(ref choice, ref nearest, InteractionKind.Harvest,
@@ -1099,20 +1305,144 @@ namespace Topaz.LoopStudy
             return choice;
         }
 
-        bool CanClaimExpeditionCache => _expedition != null &&
-            !_data.expeditionCacheClaimed && _expedition.CacheUnlocked &&
-            _backpack.SpaceFor(wood) >= ExpeditionWoodReward;
-
         void Consider(ref InteractionCandidate choice, ref float nearest,
             InteractionKind kind, Transform target, string verb, HarvestTree harvestTarget = null,
-            MiningRock miningTarget = null)
+            MiningRock miningTarget = null, ForagePlant forageTarget = null)
         {
             if (target == null) return;
             float distance = DistanceSquared(target);
             if (distance >= nearest) return;
             nearest = distance;
             Transform anchor = target.Find("Interaction Anchor") ?? target;
-            choice = new InteractionCandidate(kind, anchor, verb, harvestTarget, miningTarget);
+            choice = new InteractionCandidate(kind, anchor, verb, harvestTarget,
+                miningTarget, forageTarget);
+        }
+
+        void ConsiderCampfire(ref InteractionCandidate choice, ref float nearest, Campfire fire)
+        {
+            if (fire != null && fire.Contains(transform.position))
+                Consider(ref choice, ref nearest, InteractionKind.CampfireTravel,
+                    fire.transform, "Travel / Cook");
+        }
+
+        Campfire NearbyCampfire()
+        {
+            if (_data == null) return null;
+            Campfire fire = _data.regionId == TopazSaveData.HomeRegion ? homeCampfire :
+                _data.regionId == TopazSaveData.CryptRegion ? _crypt?.Campfire :
+                _expedition?.Campfire;
+            return fire != null && fire.Contains(transform.position) ? fire : null;
+        }
+
+        public bool TryFastTravel(string destinationId)
+        {
+            Campfire source = NearbyCampfire();
+            CampfireTravelCatalog.Destination destination = _travelCatalog?.Find(destinationId);
+            if (source == null || destination == null || _visit == null ||
+                !_visit.discoveredCampfireIds.Contains(destinationId) ||
+                source.StableId == destinationId || _traveling || _resting || _recovering ||
+                hud == null || !hud.TravelOpen) return false;
+            Commit();
+            StartCoroutine(FastTravel(destination));
+            return true;
+        }
+
+        IEnumerator FastTravel(CampfireTravelCatalog.Destination destination)
+        {
+            _traveling = true;
+            _fastTraveling = true;
+            hud.ClosePanels();
+            combat.CancelActiveAttack();
+            yield return FadeTrail(true);
+
+            Scene targetScene = SceneManager.GetSceneByName(destination.sceneName);
+            bool loadedForTravel = !targetScene.isLoaded;
+            if (loadedForTravel)
+            {
+                AsyncOperation load = null;
+                try { load = SceneManager.LoadSceneAsync(destination.sceneName,
+                    LoadSceneMode.Additive); }
+                catch (Exception error) { Debug.LogError($"Campfire travel load failed: {error}", this); }
+                if (load != null) yield return load;
+                targetScene = SceneManager.GetSceneByName(destination.sceneName);
+            }
+
+            Campfire target = FindCampfire(targetScene, destination.stableId);
+            ExpeditionSceneBootstrap expeditionTarget = destination.regionId ==
+                TopazSaveData.ExpeditionRegion
+                    ? FindInScene<ExpeditionSceneBootstrap>(targetScene) : null;
+            CryptSceneBootstrap cryptTarget = destination.regionId ==
+                TopazSaveData.CryptRegion ? FindInScene<CryptSceneBootstrap>(targetScene) : null;
+            bool supported = destination.regionId == TopazSaveData.HomeRegion ||
+                (destination.regionId == TopazSaveData.ExpeditionRegion &&
+                 expeditionTarget != null) ||
+                (destination.regionId == TopazSaveData.CryptRegion && cryptTarget != null);
+            if (target == null || target.RegionId != destination.regionId ||
+                !target.HasArrival || !supported)
+            {
+                if (loadedForTravel && targetScene.isLoaded)
+                    yield return SceneManager.UnloadSceneAsync(targetScene);
+                yield return FadeTrail(false);
+                _traveling = _fastTraveling = false;
+                hud.ShowStatus("That destination is unavailable.");
+                yield break;
+            }
+
+            ClearBoundEnemies();
+            PlayerVitality vitality = GetComponent<PlayerVitality>();
+            if (destination.regionId == TopazSaveData.ExpeditionRegion)
+            {
+                _expedition = expeditionTarget;
+                _expedition.Bind(this, vitality, home, ExpeditionCacheClaimed);
+                BindGatherables(targetScene);
+            }
+            else if (destination.regionId == TopazSaveData.CryptRegion)
+            {
+                _crypt = cryptTarget;
+                _crypt.Bind(this, vitality, home);
+            }
+
+            if (destination.regionId == TopazSaveData.HomeRegion)
+                vitality?.PreserveHealthOnHomeArrival();
+            Teleport(target.ArrivalPosition);
+            _data.regionId = destination.regionId;
+            _visit.lastCampfireId = destination.stableId;
+            look.SetInterior(destination.regionId == TopazSaveData.CryptRegion);
+            RefreshPickupVisibility();
+            UpdateWeather(false);
+
+            foreach (string sceneName in new[] { ExpeditionSceneName, CryptSceneName })
+            {
+                if (sceneName == destination.sceneName) continue;
+                Scene other = SceneManager.GetSceneByName(sceneName);
+                if (other.isLoaded) yield return SceneManager.UnloadSceneAsync(other);
+            }
+            if (destination.regionId != TopazSaveData.ExpeditionRegion) _expedition = null;
+            if (destination.regionId != TopazSaveData.CryptRegion) _crypt = null;
+            _traveling = false;
+            Commit();
+            yield return FadeTrail(false);
+            _fastTraveling = false;
+        }
+
+        Campfire FindCampfire(Scene scene, string stableId)
+        {
+            if (!scene.isLoaded) return null;
+            foreach (GameObject root in scene.GetRootGameObjects())
+            foreach (Campfire fire in root.GetComponentsInChildren<Campfire>(true))
+                if (fire.StableId == stableId) return fire;
+            return null;
+        }
+
+        T FindInScene<T>(Scene scene) where T : Component
+        {
+            if (!scene.isLoaded) return null;
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                T result = root.GetComponentInChildren<T>(true);
+                if (result != null) return result;
+            }
+            return null;
         }
 
         void CheckCampfire()
@@ -1161,6 +1491,10 @@ namespace Topaz.LoopStudy
             look.SetRestFade(1f);
 
             string targetId = _visit.lastCampfireId;
+            string targetRegion = targetId == Campfire.CryptId ? TopazSaveData.CryptRegion :
+                targetId == Campfire.ClearingId ? TopazSaveData.ExpeditionRegion :
+                TopazSaveData.HomeRegion;
+            if (targetRegion != _data.regionId) ClearBoundEnemies();
             if (targetId == Campfire.ClearingId && _expedition == null)
             {
                 _traveling = true;
@@ -1174,7 +1508,7 @@ namespace Topaz.LoopStudy
                 _expedition = FindAnyObjectByType<ExpeditionSceneBootstrap>();
                 if (_expedition != null)
                 {
-                    _expedition.Bind(vitality, home, _data.expeditionCacheClaimed);
+                    _expedition.Bind(this, vitality, home, ExpeditionCacheClaimed);
                     BindGatherables(SceneManager.GetSceneByName(ExpeditionSceneName));
                 }
             }
@@ -1229,14 +1563,11 @@ namespace Topaz.LoopStudy
             RefreshPickupVisibility();
             look.SetInterior(_data.regionId == TopazSaveData.CryptRegion);
 
-            foreach (EnemyCombatant enemy in FindObjectsByType<EnemyCombatant>())
-                if (enemy != null && enemy.isActiveAndEnabled &&
-                    !(_world.cryptMageDefeated && _crypt != null && enemy == _crypt.Mage))
-                    enemy.ResetForRecovery();
-            if (_world.cryptMageDefeated && _crypt != null)
-                _crypt.SetMageDefeated(true);
+            // Defeat advances eight World hours; enemy deadlines remain authoritative.
             vitality.RestoreAfterRecovery();
             _data.worldHours += WorldClock.RestHours;
+            SurvivalRules.Advance(_character, WorldClock.RestHours);
+            _character.stamina = SurvivalRules.Maximum(_character);
             RefreshGatherables();
             look.SetWorldHours(_data.worldHours);
             UpdateWeather(true);
@@ -1255,10 +1586,10 @@ namespace Topaz.LoopStudy
 
         bool TryClaimExpeditionCache()
         {
-            if (_expedition == null || _data.expeditionCacheClaimed) return false;
-            if (!_expedition.CacheUnlocked)
+            if (_expedition == null) return false;
+            if (ExpeditionCacheClaimed)
             {
-                hud.ShowStatus("Defeat the guardian before taking the supplies.");
+                hud.ShowStatus("The Graveyard cache is empty for now.");
                 return false;
             }
             if (_backpack.SpaceFor(wood) < ExpeditionWoodReward)
@@ -1268,16 +1599,21 @@ namespace Topaz.LoopStudy
             }
 
             _backpack.Add(wood, ExpeditionWoodReward);
-            _data.expeditionCacheClaimed = true;
-            _expedition.HideClaimedCache();
+            _world.graveyardCacheReadyAt = WorldHours + CacheRefillHours;
+            _expedition.SetCacheStocked(false);
             Commit();
-            hud.ShowStatus("Guarded supplies collected: +3 Wood.");
+            hud.ShowStatus("Graveyard supplies collected: +3 Wood.");
             return true;
         }
 
         bool TryClaimCryptCache()
         {
-            if (_crypt == null || _world.cryptCacheClaimed) return false;
+            if (_crypt == null) return false;
+            if (CryptCacheClaimed)
+            {
+                hud.ShowStatus("The crypt cache is empty for now.");
+                return false;
+            }
             var trial = new InventorySlots(_backpack.Slots.Select(slot => new ItemStackRecord {
                 itemId = slot.itemId, count = slot.count }).ToList(), BackpackCapacity);
             if (trial.Add(stone, 2) != 2 || trial.Add(iron, 1) != 1)
@@ -1287,52 +1623,11 @@ namespace Topaz.LoopStudy
             }
             _backpack.Add(stone, 2);
             _backpack.Add(iron, 1);
-            _world.cryptCacheClaimed = true;
-            _crypt.SetCacheClaimed(true);
+            _world.cryptCacheReadyAt = WorldHours + CacheRefillHours;
+            _crypt.SetCacheStocked(false);
             Commit();
             hud.ShowStatus("2 Stone and 1 Iron collected.");
             return true;
-        }
-
-        public void RecordCryptMageDefeat(Vector3 position)
-        {
-            if (_world == null || _world.cryptMageDefeated) return;
-            _world.cryptMageDefeated = true;
-            if (!_data.pickups.Any(value => value.instanceId == CryptStaffPickupId))
-            {
-                var pickup = new PickupStateRecord {
-                    instanceId = CryptStaffPickupId,
-                    itemId = cryptStaff.StableId,
-                    regionId = TopazSaveData.CryptRegion,
-                    count = 1,
-                    x = position.x,
-                    z = position.z
-                };
-                _data.pickups.Add(pickup);
-                CreatePickup(pickup, cryptStaff);
-            }
-            _crypt?.SetMageDefeated(true);
-            Commit();
-        }
-
-        public void RecordCryptRogueDefeat(Vector3 position)
-        {
-            if (_world == null || _world.cryptRogueCrossbowAwarded) return;
-            _world.cryptRogueCrossbowAwarded = true;
-            if (!_data.pickups.Any(value => value.instanceId == CryptCrossbowPickupId))
-            {
-                var pickup = new PickupStateRecord {
-                    instanceId = CryptCrossbowPickupId,
-                    itemId = cryptCrossbow.StableId,
-                    regionId = TopazSaveData.CryptRegion,
-                    count = 1,
-                    x = position.x,
-                    z = position.z
-                };
-                _data.pickups.Add(pickup);
-                CreatePickup(pickup, cryptCrossbow);
-            }
-            Commit();
         }
 
         IEnumerator EnterExpedition(bool restoring)
@@ -1341,6 +1636,7 @@ namespace Topaz.LoopStudy
             if (!restoring) Commit();
             _traveling = true;
             hud.ClosePanels();
+            if (!restoring) yield return FadeTrail(true);
             Scene scene = SceneManager.GetSceneByName(ExpeditionSceneName);
             if (!scene.isLoaded)
             {
@@ -1355,32 +1651,38 @@ namespace Topaz.LoopStudy
 
             _expedition = FindAnyObjectByType<ExpeditionSceneBootstrap>();
             if (_expedition == null || _expedition.Arrival == null ||
-                _expedition.Departure == null || _expedition.SupplyCache == null ||
+                _expedition.Departure == null || _expedition.CryptEntrance == null ||
+                _expedition.SupplyCache == null ||
                 _expedition.Campfire == null)
             {
                 RestoreHomeAfterTravelFailure();
                 yield break;
             }
-            _expedition.Bind(GetComponent<PlayerVitality>(), home, _data.expeditionCacheClaimed);
+            _expedition.Bind(this, GetComponent<PlayerVitality>(), home,
+                ExpeditionCacheClaimed);
             BindGatherables(SceneManager.GetSceneByName(ExpeditionSceneName));
             Teleport(restoring ? new Vector3(_data.playerX, 0f, _data.playerZ) :
                 _expedition.Arrival.position);
             _data.regionId = TopazSaveData.ExpeditionRegion;
             look.SetInterior(false);
             RefreshPickupVisibility();
-            if (!restoring) AdvanceTravelTime();
             UpdateWeather(false);
+            if (!restoring) yield return FadeTrail(false);
+            _trailReadyAt = Time.time + 1.5f;
             _traveling = false;
             Commit();
-            hud.ShowStatus(restoring ? "Expedition resumed." : "Expedition clearing entered.");
+            hud.ShowStatus(restoring ? "Graveyard resumed." : "Graveyard entered.");
         }
 
         IEnumerator EnterCrypt(bool restoring)
         {
+            if (!restoring && (_data.regionId != TopazSaveData.ExpeditionRegion ||
+                               _expedition == null)) yield break;
             combat.ClearTemporaryProgression();
             if (!restoring) Commit();
             _traveling = true;
             hud.ClosePanels();
+            if (!restoring) yield return FadeTrail(true);
             Scene scene = SceneManager.GetSceneByName(CryptSceneName);
             if (!scene.isLoaded)
             {
@@ -1401,18 +1703,22 @@ namespace Topaz.LoopStudy
                 RestoreHomeAfterTravelFailure();
                 yield break;
             }
+            if (!restoring) ClearBoundEnemies();
             _crypt.Bind(this, GetComponent<PlayerVitality>(), home);
             Vector3 arrival = restoring
                 ? new Vector3(_data.playerX, 0f, _data.playerZ)
                 : _crypt.Arrival.position;
-            if (restoring && !_world.cryptMageDefeated && _crypt.InMageArena(arrival))
+            if (restoring && !CryptMageDefeated && _crypt.InMageArena(arrival))
                 arrival = _crypt.Campfire.ArrivalPosition;
             Teleport(arrival);
             _data.regionId = TopazSaveData.CryptRegion;
             look.SetInterior(true);
             RefreshPickupVisibility();
-            if (!restoring) AdvanceTravelTime();
+            Scene graveyard = SceneManager.GetSceneByName(ExpeditionSceneName);
+            if (graveyard.isLoaded) yield return SceneManager.UnloadSceneAsync(graveyard);
+            _expedition = null;
             UpdateWeather(false);
+            if (!restoring) yield return FadeTrail(false);
             _traveling = false;
             Commit();
             hud.ShowStatus(restoring ? "Crypt resumed." : "Crypt entered.");
@@ -1420,28 +1726,78 @@ namespace Topaz.LoopStudy
 
         IEnumerator ReturnHome()
         {
+            if (_data.regionId != TopazSaveData.ExpeditionRegion) yield break;
             combat.ClearTemporaryProgression();
             Commit();
             _traveling = true;
-            bool fromCrypt = _data.regionId == TopazSaveData.CryptRegion;
-            Teleport((fromCrypt ? homeCryptGate : homeGate).position + Vector3.forward * 1.7f);
+            yield return FadeTrail(true);
+            Teleport(homeGate.position + Vector3.forward * 1.7f);
             _data.regionId = TopazSaveData.HomeRegion;
             look.SetInterior(false);
-            Scene scene = SceneManager.GetSceneByName(fromCrypt ? CryptSceneName : ExpeditionSceneName);
+            Scene scene = SceneManager.GetSceneByName(ExpeditionSceneName);
+            ClearBoundEnemies();
             _expedition = null;
-            _crypt = null;
             if (scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
             RefreshPickupVisibility();
-            AdvanceTravelTime();
             UpdateWeather(false);
+            yield return FadeTrail(false);
+            _trailReadyAt = Time.time + 1.5f;
             _traveling = false;
             Commit();
             hud.ShowStatus("Returned home with your supplies.");
         }
 
+        IEnumerator ReturnFromCrypt()
+        {
+            if (_data.regionId != TopazSaveData.CryptRegion) yield break;
+            combat.ClearTemporaryProgression();
+            Commit();
+            _traveling = true;
+            yield return FadeTrail(true);
+            Scene scene = SceneManager.GetSceneByName(ExpeditionSceneName);
+            if (!scene.isLoaded)
+            {
+                AsyncOperation load = SceneManager.LoadSceneAsync(ExpeditionSceneName,
+                    LoadSceneMode.Additive);
+                if (load == null)
+                {
+                    look.SetRestFade(0f);
+                    _traveling = false;
+                    hud.ShowStatus("The Graveyard could not be loaded.");
+                    yield break;
+                }
+                yield return load;
+            }
+            _expedition = FindAnyObjectByType<ExpeditionSceneBootstrap>();
+            if (_expedition == null || _expedition.CryptEntrance == null)
+            {
+                look.SetRestFade(0f);
+                _traveling = false;
+                hud.ShowStatus("The Graveyard entrance is unavailable.");
+                yield break;
+            }
+            ClearBoundEnemies();
+            _expedition.Bind(this, GetComponent<PlayerVitality>(), home,
+                ExpeditionCacheClaimed);
+            BindGatherables(scene);
+            Teleport(_expedition.CryptEntrance.position + Vector3.back * 1.7f);
+            _data.regionId = TopazSaveData.ExpeditionRegion;
+            look.SetInterior(false);
+            Scene cryptScene = SceneManager.GetSceneByName(CryptSceneName);
+            if (cryptScene.isLoaded) yield return SceneManager.UnloadSceneAsync(cryptScene);
+            _crypt = null;
+            RefreshPickupVisibility();
+            UpdateWeather(false);
+            yield return FadeTrail(false);
+            _traveling = false;
+            Commit();
+            hud.ShowStatus("Returned to the Graveyard.");
+        }
+
         void RestoreHomeAfterTravelFailure()
         {
-            Debug.LogError("Expedition clearing could not be loaded; returning home.", this);
+            Debug.LogError("Graveyard could not be loaded; returning home.", this);
+            ClearBoundEnemies();
             _expedition = null;
             _crypt = null;
             Teleport(home.transform.position);
@@ -1450,7 +1806,31 @@ namespace Topaz.LoopStudy
             _traveling = false;
             RefreshPickupVisibility();
             Commit();
-            hud.ShowStatus("Expedition is unavailable; you returned home.");
+            hud.ShowStatus("Graveyard is unavailable; you returned home.");
+        }
+
+        IEnumerator FadeTrail(bool toBlack)
+        {
+            const float seconds = .34f;
+            for (float elapsed = 0f; elapsed < seconds; elapsed += Time.unscaledDeltaTime)
+            {
+                float amount = Mathf.Clamp01(elapsed / seconds);
+                look.SetRestFade(toBlack ? amount : 1f - amount);
+                yield return null;
+            }
+            look.SetRestFade(toBlack ? 1f : 0f);
+        }
+
+        public void RequestTrailCrossing(string destinationRegion)
+        {
+            if (_data == null || _traveling || _resting || _recovering || MenuOpen ||
+                Time.time < _trailReadyAt) return;
+            if (_data.regionId == TopazSaveData.HomeRegion &&
+                destinationRegion == TopazSaveData.ExpeditionRegion)
+                StartCoroutine(EnterExpedition(false));
+            else if (_data.regionId == TopazSaveData.ExpeditionRegion &&
+                     destinationRegion == TopazSaveData.HomeRegion)
+                StartCoroutine(ReturnHome());
         }
 
         void Teleport(Vector3 position)
@@ -1463,17 +1843,9 @@ namespace Topaz.LoopStudy
             movement.ResetMotion();
         }
 
-        void AdvanceTravelTime()
-        {
-            // The short authored route is a half-hour of world time in either direction.
-            _data.worldHours += .5d;
-            RefreshGatherables();
-            look.SetWorldHours(_data.worldHours);
-        }
-
         public bool TryCraftChest()
         {
-            if (_data.pendingChest || chest.IsPlaced || chestRecipe.Ingredient == null ||
+            if (_data.pendingChest || ChestPlaced || chestRecipe.Ingredient == null ||
                 chestRecipe.Result != chestDefinition ||
                 CountWood() < chestRecipe.IngredientCount)
             {
@@ -1492,8 +1864,8 @@ namespace Topaz.LoopStudy
 
         public void DepositAllItems()
         {
-            if (!chest.IsPlaced) return;
-            int deposited = _backpack.TransferAllTo(chest.Inventory, ResolveMaterial);
+            if (!CurrentChest.IsPlaced) return;
+            int deposited = _backpack.TransferAllTo(CurrentChest.Inventory, ResolveMaterial);
             if (deposited == 0) return;
             Commit();
             hud.ShowStatus($"Stored {deposited} items.");
@@ -1501,8 +1873,8 @@ namespace Topaz.LoopStudy
 
         public void WithdrawAllItems()
         {
-            if (!chest.IsPlaced) return;
-            int withdrawn = chest.Inventory.TransferAllTo(_backpack, ResolveMaterial);
+            if (!CurrentChest.IsPlaced) return;
+            int withdrawn = CurrentChest.Inventory.TransferAllTo(_backpack, ResolveMaterial);
             if (withdrawn == 0) return;
             Commit();
             hud.ShowStatus($"Took {withdrawn} items.");
@@ -1527,14 +1899,55 @@ namespace Topaz.LoopStudy
         }
 
         public bool BeginHomeBuild(string id) => homeBuilds.BeginPlacement(id);
+        public bool HomeBlocksResource(Vector3 position, float radius) =>
+            _data != null && _data.regionId == TopazSaveData.HomeRegion &&
+            homeBuilds != null && homeBuilds.BlocksResource(position, radius);
+        public void RefreshHomeGatherables() => RefreshGatherables();
         public bool BeginHomeEdit() => homeBuilds.BeginEdit();
+        public bool BeginHomeMove() => homeBuilds.BeginMove();
+        public void RotateHomeBuild() => homeBuilds.Rotate();
+        public int HomeCampfireTier => homeBuilds.CampfireTier;
+        public bool UpgradeHomeCampfire() => homeBuilds.UpgradeCampfire();
+        public bool CanUpgradeHomeCampfire => IsAtHome && HomeCampfireTier < 3 &&
+            HomeWoodCount >= (HomeCampfireTier == 1 ? 9 : 24) &&
+            StoneCount >= (HomeCampfireTier == 1 ? 6 : 24) &&
+            IronCount >= (HomeCampfireTier == 1 ? 0 : 8);
+        public bool CanForge(HomeForgeCatalog.Recipe recipe)
+        {
+            ItemDefinition item = ResolveItem(recipe.ItemId);
+            return IsAtHome && _backpack != null && item != null &&
+                homeBuilds.NearestAnvil(transform.position, InteractionRadius) != null &&
+                _backpack.SpaceFor(item) >= 1 &&
+                HomeWoodCount >= recipe.Wood && StoneCount >= recipe.Stone &&
+                IronCount >= recipe.Iron;
+        }
+
+        public bool TryForge(HomeForgeCatalog.Recipe recipe)
+        {
+            if (!CanForge(recipe) || !TrySpendHomeMaterials(recipe.Wood,
+                recipe.Stone, recipe.Iron))
+            {
+                hud.ShowStatus("Need materials, backpack space, and a nearby Anvil.");
+                return false;
+            }
+            ItemDefinition item = ResolveItem(recipe.ItemId);
+            _backpack.Add(item, 1);
+            Commit();
+            hud.ShowStatus(recipe.Label + " crafted.");
+            return true;
+        }
         public void CloseHomeMenus() => hud.ClosePanels();
         public void ShowHomeStatus(string message) => hud.ShowStatus(message);
 
         public bool TrySpendHomeMaterials(int stoneCount, int ironCount)
+            => TrySpendHomeMaterials(0, stoneCount, ironCount);
+
+        public bool TrySpendHomeMaterials(int woodCount, int stoneCount, int ironCount)
         {
-            if (_backpack == null || StoneCount < stoneCount || IronCount < ironCount)
+            if (_backpack == null || CountHomeMaterial(wood) < woodCount ||
+                StoneCount < stoneCount || IronCount < ironCount)
                 return false;
+            Spend(wood, woodCount);
             Spend(stone, stoneCount);
             Spend(iron, ironCount);
             return true;
@@ -1544,8 +1957,12 @@ namespace Topaz.LoopStudy
         {
             if (item == null || count <= 0) return;
             int remaining = count - _backpack.Remove(item.StableId, count);
-            if (remaining > 0 && chest.IsPlaced)
-                chest.Inventory.Remove(item.StableId, remaining);
+            foreach (StorageChest candidate in AllHomeChests())
+            {
+                if (remaining <= 0) break;
+                if (candidate != null && candidate.IsPlaced)
+                    remaining -= candidate.Inventory.Remove(item.StableId, remaining);
+            }
         }
 
         public void RefundHomeMaterial(ItemDefinition item, int count, Vector3 position)
@@ -1557,7 +1974,38 @@ namespace Topaz.LoopStudy
 
         int CountHomeMaterial(ItemDefinition item) => item == null || _backpack == null ? 0 :
             _backpack.Count(item.StableId) +
-            (chest != null && chest.IsPlaced ? chest.Inventory.Count(item.StableId) : 0);
+            AllHomeChests()
+                .Sum(value => value.Inventory.Count(item.StableId));
+
+        IEnumerable<StorageChest> AllHomeChests()
+        {
+            var bound = homeBuilds.Chests.Where(value => value != null && value.IsPlaced)
+                .ToList();
+            if (chest != null && chest.IsPlaced && !bound.Contains(chest)) bound.Add(chest);
+            return bound;
+        }
+
+        public void DropHomeItem(string id, int count, Vector3 position)
+        {
+            ItemDefinition item = ResolveItem(id);
+            if (count <= 0 || string.IsNullOrEmpty(id)) return;
+            if (item != null) { DropItem(item, count, position); return; }
+            // Preserve unknown future item IDs even when their art is unavailable here.
+            _data.pickups.Add(new PickupStateRecord
+            {
+                instanceId = Guid.NewGuid().ToString("N"),
+                itemId = id,
+                regionId = TopazSaveData.HomeRegion,
+                count = count,
+                x = position.x,
+                z = position.z
+            });
+        }
+
+        public void OnChestRemoved(StorageChest removed)
+        {
+            if (_openChest == removed) _openChest = homeBuilds.Chests.FirstOrDefault();
+        }
 
         public void ToggleLantern()
         {
@@ -1595,7 +2043,7 @@ namespace Topaz.LoopStudy
 
         void EnterPlacement()
         {
-            if (!PendingChest || chest.IsPlaced || !home.Contains(transform.position)) return;
+            if (!PendingChest || ChestPlaced || !IsAtHome) return;
             _placing = true;
             _placeRequested = false;
             _placementReadyAt = Time.time + 0.15f;
@@ -1640,7 +2088,8 @@ namespace Topaz.LoopStudy
             _data.pendingChest = false;
             _placing = false;
             chestPreview.SetActive(false);
-            chest.Bind(placed);
+            homeBuilds.RegisterLegacyChest(placed);
+            _openChest = chest;
             Commit();
             hud.ShowStatus("Storage chest placed.");
         }
@@ -1656,12 +2105,13 @@ namespace Topaz.LoopStudy
                 return false;
             if (restPoint != null && (_previewPosition - restPoint.position).sqrMagnitude < 1.1f * 1.1f)
                 return false;
-            return !chest.IsPlaced;
+            return !ChestPlaced;
         }
 
         IEnumerator Rest()
         {
             _resting = true;
+            combat.CancelActiveAttack();
             const float fadeSeconds = .3f;
             for (float elapsed = 0f; elapsed < fadeSeconds; elapsed += Time.unscaledDeltaTime)
             {
@@ -1670,6 +2120,10 @@ namespace Topaz.LoopStudy
             }
             look.SetRestFade(1f);
             _data.worldHours += WorldClock.RestHours;
+            SurvivalRules.Advance(_character, WorldClock.RestHours);
+            SurvivalRules.Rest(_character);
+            GetComponent<PlayerVitality>()?.RestoreHealthAfterRest();
+            ResetLocalAreaAfterRest();
             RefreshGatherables();
             look.SetWorldHours(_data.worldHours);
             UpdateWeather(true);
@@ -1683,13 +2137,96 @@ namespace Topaz.LoopStudy
             _resting = false;
         }
 
+        public bool TryExert(float cost)
+        {
+            if (_character == null) return false;
+            _lastExertionAt = Time.time;
+            return SurvivalRules.Spend(_character, cost);
+        }
+
+        public bool TryCollectForage(bool mushrooms)
+        {
+            ItemDefinition item = mushrooms ? _mushrooms : _berries;
+            if (_backpack == null || item == null || _backpack.SpaceFor(item) < 1)
+            {
+                hud?.ShowStatus("Make space in the backpack first.");
+                return false;
+            }
+            _backpack.Add(item, 1);
+            hud?.ShowStatus(mushrooms ? "Mushrooms gathered." : "Red Berries picked.");
+            return true;
+        }
+
+        public bool CanEat(string itemId) =>
+            _backpack != null && _backpack.Count(itemId) > 0 &&
+            SurvivalRules.CanEat(_character,
+                itemId == SurvivalRules.StewId ? 2 :
+                itemId == SurvivalRules.BerriesId ? 1 : 0);
+
+        public bool TryEat(int slotIndex)
+        {
+            if (_backpack == null || slotIndex < 0 || slotIndex >= _backpack.Capacity)
+                return false;
+            ItemStackRecord slot = _backpack.Slots[slotIndex];
+            int tier = slot.itemId == SurvivalRules.StewId ? 2 :
+                slot.itemId == SurvivalRules.BerriesId ? 1 : 0;
+            if (slot.count < 1 || !SurvivalRules.CanEat(_character, tier)) return false;
+            _backpack.Remove(slot.itemId, 1);
+            SurvivalRules.Eat(_character, tier);
+            Commit();
+            return true;
+        }
+
+        public bool TryCookStew()
+        {
+            Campfire fire = NearbyCampfire();
+            if (fire == null || _backpack == null || _stew == null ||
+                MushroomsAtFire < 1) return false;
+            StorageChest nearby = homeBuilds.NearestChest(fire.transform.position, 2.2f);
+            var trial = new InventorySlots(_backpack.Slots.Select(slot =>
+                new ItemStackRecord { itemId = slot.itemId, count = slot.count }).ToList(),
+                BackpackCapacity);
+            bool fromBackpack = trial.Count(SurvivalRules.MushroomsId) > 0;
+            if (fromBackpack) trial.Remove(SurvivalRules.MushroomsId, 1);
+            if (trial.SpaceFor(_stew) < 1)
+            {
+                hud?.ShowStatus("Make space in the backpack first.");
+                return false;
+            }
+            if (fromBackpack) _backpack.Remove(SurvivalRules.MushroomsId, 1);
+            else nearby.Inventory.Remove(SurvivalRules.MushroomsId, 1);
+            _backpack.Add(_stew, 1);
+            Commit();
+            hud?.ShowStatus("Mushroom Stew cooked.");
+            return true;
+        }
+
+        void ResetLocalAreaAfterRest()
+        {
+            foreach (CrossbowBolt bolt in FindObjectsByType<CrossbowBolt>())
+                if (bolt != null) Destroy(bolt.gameObject);
+            foreach (EnemyCombatant enemy in _boundEnemies)
+            {
+                if (enemy == null) continue;
+                EnemyRespawnRecord pending = _world.enemyRespawns.Find(value =>
+                    value.spawnId == enemy.SpawnId);
+                if (pending != null && pending.readyAtWorldHours > WorldHours) continue;
+                enemy.ResetForRecovery();
+                if (pending != null && !enemy.IsDown) _world.enemyRespawns.Remove(pending);
+            }
+        }
+
         ItemDefinition ResolveItem(string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
             if (id == wood.StableId) return wood;
             if (id == stone.StableId) return stone;
             if (id == iron.StableId) return iron;
+            if (id == boneFragments.StableId) return boneFragments;
             if (id == pickaxeItem.StableId) return pickaxeItem;
+            if (id == SurvivalRules.BerriesId) return _berries;
+            if (id == SurvivalRules.MushroomsId) return _mushrooms;
+            if (id == SurvivalRules.StewId) return _stew;
             foreach (ItemDefinition item in equipmentItems)
                 if (item != null && item.StableId == id) return item;
             return null;
@@ -1781,9 +2318,9 @@ namespace Topaz.LoopStudy
 
         public bool TryTransferGear(bool toChest, int index)
         {
-            if (_backpack == null || chest?.Inventory == null) return false;
-            InventorySlots source = toChest ? _backpack : chest.Inventory;
-            InventorySlots destination = toChest ? chest.Inventory : _backpack;
+            if (_backpack == null || CurrentChest?.Inventory == null) return false;
+            InventorySlots source = toChest ? _backpack : CurrentChest.Inventory;
+            InventorySlots destination = toChest ? CurrentChest.Inventory : _backpack;
             if (index < 0 || index >= source.Capacity) return false;
             ItemStackRecord stack = source.Slots[index];
             ItemDefinition item = stack.count == 1 ? ResolveItem(stack.itemId) : null;

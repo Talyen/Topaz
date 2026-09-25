@@ -14,12 +14,12 @@ namespace Topaz.Tests
     public sealed class FoundationTests
     {
         [Test]
-        public void HomesteadExpeditionAndCryptAreEnabledBuildScenes()
+        public void HomesteadGraveyardAndCryptAreEnabledBuildScenes()
         {
             var enabled = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
             Assert.That(enabled.Select(scene => scene.path).ToArray(), Is.EqualTo(new[]
             {
-                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Expedition.unity",
+                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Graveyard.unity",
                 "Assets/Topaz/World/Scenes/Crypt.unity"
             }));
         }

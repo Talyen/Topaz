@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -192,10 +193,12 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
             GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
-            Component harvest = tree.GetComponent("HarvestTree");
             Component session = player.GetComponent("WorldSession");
-            GameObject enemy = GameObject.Find("Enemy");
+            yield return TopazTestTravel.EnterGraveyard(player);
+            GameObject tree = GameObject.Find("Graveyard").GetComponentsInChildren<MonoBehaviour>()
+                .First(value => value.GetType().Name == "HarvestTree").gameObject;
+            Component harvest = tree.GetComponent("HarvestTree");
+            GameObject enemy = GameObject.Find("Scout A");
             enemy.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
             enemy.transform.position = player.transform.position + Vector3.back;
@@ -386,8 +389,9 @@ namespace Topaz.Tests
                 .GetValue(characters[0]), Is.False);
             var structures = (System.Collections.IList)worlds[0].GetType().GetField("structures")
                 .GetValue(worlds[0]);
-            Assert.That(structures.Count, Is.EqualTo(1));
-            object placed = structures[0];
+            object placed = structures.Cast<object>().Single(value =>
+                (string)value.GetType().GetField("definitionId").GetValue(value) ==
+                "structure.storage_chest");
             Assert.That((string)placed.GetType().GetField("instanceId").GetValue(placed), Is.Not.Empty);
             var slots = (System.Collections.IList)placed.GetType().GetField("slots").GetValue(placed);
             Assert.That(slots.Count, Is.EqualTo(12));
