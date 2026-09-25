@@ -96,6 +96,159 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
+        public IEnumerator UiScaleCyclesThroughThreeSizesAndKeepsOptionsFocus()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject hud = GameObject.Find("Loop HUD");
+            Component menus = hud.GetComponent("GameMenus");
+            menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
+            hud.transform.Find("Desktop Menus/Title Screen/Title Composition/Options")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            var scaleButton = hud.transform.Find(
+                "Desktop Menus/Options Screen/Options Composition/UI Scale: 100%")
+                .GetComponent<UnityEngine.UI.Button>();
+            var scaler = hud.GetComponent<UnityEngine.UI.CanvasScaler>();
+            Assert.That(scaler.referenceResolution.x, Is.EqualTo(1920f).Within(.1f));
+
+            scaleButton.onClick.Invoke();
+            Assert.That((int)menus.GetType().GetProperty("CurrentUiScaleIndex")
+                .GetValue(menus), Is.EqualTo(1));
+            Assert.That(scaler.referenceResolution.x, Is.EqualTo(1536f).Within(.1f));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(scaleButton.gameObject));
+
+            scaleButton.onClick.Invoke();
+            Assert.That(scaler.referenceResolution.x, Is.EqualTo(1280f).Within(.1f));
+            scaleButton.onClick.Invoke();
+            Assert.That(scaler.referenceResolution.x, Is.EqualTo(1920f).Within(.1f));
+        }
+
+        [UnityTest]
+        public IEnumerator LargeUiScaleKeepsTheJournalInsideTheCanvas()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject hud = GameObject.Find("Loop HUD");
+            Component menus = hud.GetComponent("GameMenus");
+            menus.GetType().GetMethod("SetUiScaleIndex").Invoke(menus, new object[] { 2 });
+            Component inventory = hud.GetComponent("LoopHud");
+            inventory.GetType().GetMethod("ToggleInventoryPanel").Invoke(inventory, null);
+            yield return null;
+            yield return null;
+
+            RectTransform canvas = hud.GetComponent<RectTransform>();
+            RectTransform book = hud.transform.Find("Backpack/Open Journal")
+                .GetComponent<RectTransform>();
+            Assert.That(book.GetComponent("TopazJournalFit"), Is.Not.Null);
+            Assert.That(book.localScale.x, Is.LessThan(.8f),
+                $"Canvas {canvas.rect.size}, book scale {book.localScale.x}");
+            GameObject focused = EventSystem.current.currentSelectedGameObject;
+            Assert.That(focused, Is.Not.Null);
+            Assert.That(focused.transform.Find("Focus Frame")
+                ?.GetComponent<UnityEngine.UI.Image>().enabled, Is.True,
+                "The selected Journal control needs a visible focus frame.");
+            var corners = new Vector3[4];
+            book.GetWorldCorners(corners);
+            foreach (Vector3 world in corners)
+            {
+                Vector3 local = canvas.InverseTransformPoint(world);
+                Assert.That(local.x, Is.InRange(canvas.rect.xMin - 1f, canvas.rect.xMax + 1f));
+                Assert.That(local.y, Is.InRange(canvas.rect.yMin - 1f, canvas.rect.yMax + 1f));
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator LargeUiScaleKeepsTitleAndOptionsControlsReachable()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject hud = GameObject.Find("Loop HUD");
+            Component menus = hud.GetComponent("GameMenus");
+            menus.GetType().GetMethod("SetUiScaleIndex").Invoke(menus, new object[] { 2 });
+            menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
+            yield return null;
+            yield return null;
+            RectTransform canvas = hud.GetComponent<RectTransform>();
+            AssertInside(canvas, hud.transform.Find(
+                "Desktop Menus/Title Screen/Title Composition/Quit").GetComponent<RectTransform>());
+
+            hud.transform.Find("Desktop Menus/Title Screen/Title Composition/Options")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            yield return null;
+            yield return null;
+            AssertInside(canvas, hud.transform.Find(
+                "Desktop Menus/Options Screen/Options Composition/Back").GetComponent<RectTransform>());
+            Assert.That(hud.transform.Find("Desktop Menus/Options Screen/Options Composition")
+                .GetComponent("TopazResponsiveOptions"), Is.Not.Null);
+        }
+
+        [UnityTest]
+        public IEnumerator EquipmentSlotsStayOnTheirJournalPageAtLargeScale()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject hud = GameObject.Find("Loop HUD");
+            hud.GetComponent("GameMenus").GetType().GetMethod("SetUiScaleIndex")
+                .Invoke(hud.GetComponent("GameMenus"), new object[] { 2 });
+            Component inventory = hud.GetComponent("LoopHud");
+            inventory.GetType().GetMethod("ShowEquipmentPanel").Invoke(inventory, null);
+            yield return null;
+            yield return null;
+            RectTransform book = hud.transform.Find("Equipment/Open Journal")
+                .GetComponent<RectTransform>();
+            RectTransform weapon = book.Find("Gear Weapon").GetComponent<RectTransform>();
+            var corners = new Vector3[4];
+            weapon.GetWorldCorners(corners);
+            foreach (Vector3 world in corners)
+                Assert.That(book.InverseTransformPoint(world).x, Is.LessThanOrEqualTo(0f),
+                    "Equipment choices should not overlap the journal spine.");
+            Assert.That(book.Find("Skills").gameObject.activeSelf, Is.False,
+                "Detailed skill progress belongs on the Skills page.");
+        }
+
+        [UnityTest]
+        public IEnumerator LargeUiScaleKeepsGraphicsAndCharacterSelectionVisible()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject hud = GameObject.Find("Loop HUD");
+            Component menus = hud.GetComponent("GameMenus");
+            menus.GetType().GetMethod("SetUiScaleIndex").Invoke(menus, new object[] { 2 });
+            menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
+            hud.transform.Find("Desktop Menus/Title Screen/Title Composition/Options")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            hud.GetComponent("VisualOptionsMenu").GetType().GetMethod("Toggle")
+                .Invoke(hud.GetComponent("VisualOptionsMenu"), null);
+            yield return null;
+            yield return null;
+            RectTransform canvas = hud.GetComponent<RectTransform>();
+            AssertInside(canvas, hud.transform.Find("Graphics").GetComponent<RectTransform>());
+
+            hud.GetComponent("VisualOptionsMenu").GetType().GetMethod("Close")
+                .Invoke(hud.GetComponent("VisualOptionsMenu"), null);
+            menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
+            hud.transform.Find("Desktop Menus/Title Screen/Title Composition/Play")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            yield return null;
+            yield return null;
+            AssertInside(canvas, hud.transform.Find(
+                "Desktop Menus/Character Selection/Iron Selection Card")
+                .GetComponent<RectTransform>());
+        }
+
+        static void AssertInside(RectTransform canvas, RectTransform target)
+        {
+            var corners = new Vector3[4];
+            target.GetWorldCorners(corners);
+            foreach (Vector3 world in corners)
+            {
+                Vector3 local = canvas.InverseTransformPoint(world);
+                Assert.That(local.x, Is.InRange(canvas.rect.xMin - 1f, canvas.rect.xMax + 1f));
+                Assert.That(local.y, Is.InRange(canvas.rect.yMin - 1f, canvas.rect.yMax + 1f));
+            }
+        }
+
+        [UnityTest]
         public IEnumerator BackpackOpenedFromPauseReturnsToPauseWhenClosed()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
@@ -135,6 +288,70 @@ namespace Topaz.Tests
                 Is.True);
             Set(gamepad.buttonSouth, 0f);
             menus.GetType().GetMethod("Continue").Invoke(menus, null);
+        }
+
+        [UnityTest]
+        public IEnumerator CharacterDeletionRequiresConfirmationAndClearsContinuePair()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject hud = GameObject.Find("Loop HUD");
+            Component menus = hud.GetComponent("GameMenus");
+            Component session = GameObject.Find("Player").GetComponent("WorldSession");
+            menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
+            hud.transform.Find("Desktop Menus/Title Screen/Title Composition/Play")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Transform selection = hud.transform.Find("Desktop Menus/Character Selection");
+            Transform row = selection.Find(
+                "Iron Selection Card/Characters/Character List/Viewport/Content").GetChild(0);
+            int worldsBefore = ((System.Collections.IList)session.GetType()
+                .GetProperty("Worlds").GetValue(session)).Count;
+            row.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That(selection.Find("Delete Confirmation").gameObject.activeSelf, Is.True);
+            Assert.That(((System.Collections.IList)session.GetType()
+                .GetProperty("Characters").GetValue(session)).Count, Is.EqualTo(1));
+            selection.Find("Delete Confirmation/Confirmation Card/Cancel")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That(((System.Collections.IList)session.GetType()
+                .GetProperty("Characters").GetValue(session)).Count, Is.EqualTo(1));
+            row.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            selection.Find("Delete Confirmation/Confirmation Card/Delete")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That(((System.Collections.IList)session.GetType()
+                .GetProperty("Characters").GetValue(session)).Count, Is.Zero);
+            Assert.That(((System.Collections.IList)session.GetType()
+                .GetProperty("Worlds").GetValue(session)).Count, Is.EqualTo(worldsBefore));
+            Assert.That((bool)session.GetType().GetProperty("HasActivePair")
+                .GetValue(session), Is.False);
+            Assert.That((bool)session.GetType().GetProperty("HasLastPair")
+                .GetValue(session), Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator WorldDeletionRequiresConfirmationAndKeepsCharacter()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject hud = GameObject.Find("Loop HUD");
+            Component menus = hud.GetComponent("GameMenus");
+            Component session = GameObject.Find("Player").GetComponent("WorldSession");
+            menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
+            hud.transform.Find("Desktop Menus/Title Screen/Title Composition/Play")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Transform selection = hud.transform.Find("Desktop Menus/Character Selection");
+            selection.Find("Iron Selection Card/Characters/Character List/Viewport/Content")
+                .GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Transform row = selection.Find(
+                "Iron Selection Card/Worlds/World List/Viewport/Content").GetChild(0);
+            row.GetChild(1).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That(((System.Collections.IList)session.GetType()
+                .GetProperty("Worlds").GetValue(session)).Count, Is.EqualTo(1));
+            selection.Find("Delete Confirmation/Confirmation Card/Delete")
+                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That(((System.Collections.IList)session.GetType()
+                .GetProperty("Worlds").GetValue(session)).Count, Is.Zero);
+            Assert.That(((System.Collections.IList)session.GetType()
+                .GetProperty("Characters").GetValue(session)).Count, Is.EqualTo(1));
         }
 
         [UnityTest]
@@ -187,10 +404,10 @@ namespace Topaz.Tests
                 .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             yield return null;
             selection.Find("Characters/Character List/Viewport/Content").GetChild(0)
-                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                .GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             yield return null;
             selection.Find("Worlds/World List/Viewport/Content").GetChild(0)
-                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                .GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             selection.Find("Worlds/Enter World").GetComponent<UnityEngine.UI.Button>()
                 .onClick.Invoke();
             float deadline = Time.realtimeSinceStartup + 5f;
@@ -213,10 +430,10 @@ namespace Topaz.Tests
                 .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             yield return null;
             selection.Find("Characters/Character List/Viewport/Content").GetChild(1)
-                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                .GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             yield return null;
             selection.Find("Worlds/World List/Viewport/Content").GetChild(0)
-                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                .GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             selection.Find("Worlds/Enter World").GetComponent<UnityEngine.UI.Button>()
                 .onClick.Invoke();
             deadline = Time.realtimeSinceStartup + 5f;

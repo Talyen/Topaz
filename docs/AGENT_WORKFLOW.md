@@ -1,0 +1,23 @@
+# Agent workflow for Topaz
+
+Keep routine tool output small and retain complete evidence under ignored `TestResults/`.
+
+## Start and find the right slice
+
+Run `./scripts/doctor.sh` to see the pinned Unity version, key packages, connected Editor count, dirty path count, and the latest full gate and Windows build results independently. A recorded pass is `current` only when tracked and untracked, non-ignored project inputs have the same content fingerprint as the run; older records without a fingerprint show unknown freshness. Inspect `git status` before editing and preserve unrelated work. Use `python3 scripts/topaz-tools.py context combat` (or another area from `scripts/agent-areas.json`) for a bounded list of dirty code, tests, scenes, and current docs. Follow the task map in [UNITY_REFERENCE_GUIDE.md](UNITY_REFERENCE_GUIDE.md) and the [feature status index](FEATURE_STATUS.md). Read the current note before older plans. Update that note and the status index when behavior ships.
+
+## Iterate and hand off
+
+For a narrow change, run `./scripts/verify.sh --quick --area worldloop`, `./scripts/verify.sh --quick --changed`, or an explicit `--mode PlayMode --filter ProfilePersistenceTests`. The area map prints the selected test classes before execution. Changed Unity inputs outside the map cause both full test suites to run; changes to shared scenes can select several areas. `--quick` without a selection checks both suites and skips the Mac build. Python tool tests, asset metadata, and asset review checks run in every mode. A filter that matches no tests fails, so it cannot give a false green result. Run `./scripts/verify.sh` before handoff: it runs both full suites, the Mac build, and `git diff --check`. Run `./scripts/build.sh windows` when Windows compatibility may have changed. Do not rerun an unchanged full gate without a concrete reason. A run that sees project inputs change during verification fails instead of recording a reusable pass.
+
+The scripts print test totals, at most ten failing tests with the first useful source line, and paths to complete JUnit reports and command logs. Each invocation writes to its own directory under `TestResults/runs/`, so evidence remains separate. Use `python3 scripts/topaz-tools.py triage latest` for a compact failure list. A command that fails before producing a report prints relevant log lines. Report the exact commands, pass/fail status, and any untested platform or visual boundary in the handoff. Name new tests for player-visible behavior or an exact invariant; keep a fixture local to its test area unless multiple suites truly share it.
+
+For measurable output costs, set `TOPAZ_AGENT_TASK` to a short task ID before running verification. `python3 scripts/topaz-tools.py metrics --task "$TOPAZ_AGENT_TASK"` reports Unity step duration, stored log bytes, and failure-to-pass cycles. For noisy one-off shell commands, `python3 scripts/topaz-tools.py observe --task "$TOPAZ_AGENT_TASK" --max-bytes 3000 --read-path path/to/file -- command args` saves complete output under ignored `TestResults/observed/`, prints a capped excerpt, and records output bytes. Annotate actual file reads with `--read-path` to find repeated reads. This opt-in wrapper cannot measure tool calls made outside it; do not treat its output totals as total agent token use.
+
+## Connected Editor diagnostics
+
+When the Editor is connected, `topaz_scene_inventory` returns a bounded list of object paths, components, missing scripts, and stable Editor IDs from the active/open scene or a prefab. Filter by path and set `max` for a narrow answer. `topaz_asset_references` finds direct users of one asset in a selected folder; `topaz_missing_references` inspects an open scene or prefab for missing scripts and object references. These commands do not open or save scenes. `topaz_console_summary` groups warnings and errors, returning a `nextCursor`; pass that as `since` on the next call to see only new messages. Full Editor logs remain available when needed. Use `unity command ... --caller plugin --skill unity-cli --project-path "$PWD"` for these commands, after checking their available arguments with `unity command --query topaz_`.
+
+New diagnostics should identify the Topaz subsystem and the affected object or stable ID, for example `[Topaz/WorldLoop] Save failed for world <id>`. Avoid per-frame success logging. Use the console summary to spot repeated messages before opening full logs.
+
+For UI and visual changes, supply a labeled Mac build screenshot or short capture with the handoff. Keep captures outside Git; a visual should show the relevant state and display settings. Do not infer Windows frame targets from the Mac screenshot or Editor Play mode.

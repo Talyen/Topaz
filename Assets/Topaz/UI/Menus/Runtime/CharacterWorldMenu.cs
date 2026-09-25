@@ -44,6 +44,13 @@ namespace Topaz.Menus
         string _selectedLookId = CharacterLooks.Rogue;
         bool _newWorld;
         bool _entering;
+        GameObject _confirmation;
+        TMP_Text _confirmationText;
+        Button _confirmDeleteButton;
+        Button _cancelDeleteButton;
+        Button _returnFocus;
+        string _pendingDeleteId;
+        bool _deleteCharacter;
         void Awake()
         {
             if (menus == null || session == null || stage == null || root == null ||
@@ -62,6 +69,7 @@ namespace Topaz.Menus
             charactersBackButton.onClick.AddListener(Back);
             looksBackButton.onClick.AddListener(Back);
             worldsBackButton.onClick.AddListener(Back);
+            BuildConfirmation();
             root.SetActive(false);
         }
 
@@ -72,18 +80,25 @@ namespace Topaz.Menus
             _selectedWorldId = null;
             _newWorld = false;
             _entering = false;
+            CloseConfirmation();
             root.SetActive(true);
             ShowCharacters();
         }
 
         public void Close()
         {
+            CloseConfirmation();
             root.SetActive(false);
         }
 
         public void Back()
         {
             if (_entering) return;
+            if (_confirmation.activeSelf)
+            {
+                CloseConfirmation();
+                return;
+            }
             if (_page == Page.Characters) menus.ShowTitle();
             else if (_page == Page.Looks) ShowCharacters();
             else if (_draftAppearanceId != null) ShowLooks();
@@ -101,13 +116,14 @@ namespace Topaz.Menus
                 for (int i = 0; i < characters.Count; i++)
                 {
                     TopazCharacterData character = characters[i];
-                    Button button = AddChoice(characterList, character.label,
-                        () => ChooseCharacter(character.id));
+                    Button button = AddDeletableChoice(characterList, character.label,
+                        () => ChooseCharacter(character.id),
+                        delete => AskDelete(character.id, character.label, true, delete));
                     ScrollOnSelect(button, characterScroll, i, characters.Count);
                 }
             }
             Focus(characterList.childCount > 0
-                ? characterList.GetChild(0).GetComponent<Button>() : newCharacterButton);
+                ? characterList.GetChild(0).GetChild(0).GetComponent<Button>() : newCharacterButton);
         }
 
         void ChooseCharacter(string id)
@@ -177,8 +193,9 @@ namespace Topaz.Menus
                     TopazWorldData world = worlds[i];
                     int day = 1 + (int)Math.Floor((world.worldHours - WorldClock.StartingHour) /
                         WorldClock.HoursPerDay);
-                    Button button = AddChoice(worldList, world.label + "  ·  Day " + day,
-                        () => ChooseWorld(world.id));
+                    Button button = AddDeletableChoice(worldList,
+                        world.label + "  ·  Day " + day, () => ChooseWorld(world.id),
+                        delete => AskDelete(world.id, world.label, false, delete));
                     button.gameObject.AddComponent<MenuChoiceFocus>().SetAction(
                         () => ChooseWorld(world.id));
                     ScrollOnSelect(button, worldScroll, i, worlds.Count);
@@ -186,7 +203,7 @@ namespace Topaz.Menus
             }
             ChooseNewWorld();
             Focus(worldList.childCount > 0
-                ? worldList.GetChild(0).GetComponent<Button>() : newWorldButton);
+                ? worldList.GetChild(0).GetChild(0).GetComponent<Button>() : newWorldButton);
         }
 
         void ChooseWorld(string id)
@@ -236,6 +253,119 @@ namespace Topaz.Menus
             if (errorLabel != null) errorLabel.text = session.SaveProblem ?? "";
         }
 
+        Button AddDeletableChoice(Transform parent, string label,
+            UnityEngine.Events.UnityAction choose, Action<Button> delete)
+        {
+            var row = new GameObject(label + " Row", typeof(RectTransform),
+                typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+            row.transform.SetParent(parent, false);
+            row.GetComponent<LayoutElement>().preferredHeight = 67f;
+            var group = row.GetComponent<HorizontalLayoutGroup>();
+            group.spacing = 10f;
+            group.childControlWidth = true;
+            group.childControlHeight = true;
+            group.childForceExpandWidth = false;
+            group.childForceExpandHeight = false;
+            Button choice = AddChoice(row.transform, label, choose);
+            choice.GetComponent<LayoutElement>().flexibleWidth = 1f;
+            Button deleteButton = AddChoice(row.transform, "Delete", null);
+            deleteButton.GetComponent<LayoutElement>().preferredWidth = 135f;
+            deleteButton.GetComponentInChildren<TMP_Text>().color = new Color(1f, .58f, .52f);
+            deleteButton.onClick.AddListener(() => delete(deleteButton));
+            return choice;
+        }
+
+        void BuildConfirmation()
+        {
+            _confirmation = new GameObject("Delete Confirmation", typeof(RectTransform),
+                typeof(Image));
+            _confirmation.transform.SetParent(root.transform, false);
+            var overlay = _confirmation.GetComponent<RectTransform>();
+            overlay.anchorMin = Vector2.zero;
+            overlay.anchorMax = Vector2.one;
+            overlay.offsetMin = overlay.offsetMax = Vector2.zero;
+            _confirmation.GetComponent<Image>().color = new Color(0f, 0f, 0f, .82f);
+
+            var panel = new GameObject("Confirmation Card", typeof(RectTransform),
+                typeof(Image));
+            panel.transform.SetParent(overlay, false);
+            var rect = panel.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
+            rect.pivot = new Vector2(.5f, .5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(760f, 340f);
+            panel.GetComponent<Image>().color = new Color32(41, 33, 29, 255);
+
+            _confirmationText = Instantiate(worldChoiceLabel, panel.transform);
+            _confirmationText.name = "Confirmation Message";
+            _confirmationText.alignment = TextAlignmentOptions.Center;
+            _confirmationText.fontSize = 30f;
+            _confirmationText.textWrappingMode = TextWrappingModes.Normal;
+            _confirmationText.rectTransform.anchorMin =
+                _confirmationText.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            _confirmationText.rectTransform.pivot = new Vector2(.5f, .5f);
+            _confirmationText.rectTransform.anchoredPosition = new Vector2(0f, 55f);
+            _confirmationText.rectTransform.sizeDelta = new Vector2(690f, 180f);
+            _confirmDeleteButton = ConfirmationButton(panel.transform, "Delete", -165f);
+            _cancelDeleteButton = ConfirmationButton(panel.transform, "Cancel", 165f);
+            _confirmDeleteButton.onClick.AddListener(ConfirmDelete);
+            _cancelDeleteButton.onClick.AddListener(CloseConfirmation);
+            _confirmation.SetActive(false);
+        }
+
+        Button ConfirmationButton(Transform parent, string label, float x)
+        {
+            Button button = AddChoice(parent, label, null);
+            var rect = button.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
+            rect.anchoredPosition = new Vector2(x, -105f);
+            rect.sizeDelta = new Vector2(280f, 70f);
+            return button;
+        }
+
+        void AskDelete(string id, string label, bool character, Button returnFocus)
+        {
+            if (_entering) return;
+            _pendingDeleteId = id;
+            _deleteCharacter = character;
+            _returnFocus = returnFocus;
+            _confirmationText.text = character
+                ? $"Delete Character \"{label}\"?\nTheir progress and visits in every World will be lost."
+                : $"Delete World \"{label}\"?\nIts progress and every Character's visits there will be lost.";
+            charactersPage.SetActive(false);
+            looksPage.SetActive(false);
+            worldsPage.SetActive(false);
+            _confirmation.SetActive(true);
+            Focus(_cancelDeleteButton);
+        }
+
+        void ConfirmDelete()
+        {
+            if (string.IsNullOrEmpty(_pendingDeleteId)) return;
+            bool character = _deleteCharacter;
+            bool success = character ? session.DeleteCharacter(_pendingDeleteId) :
+                session.DeleteWorld(_pendingDeleteId);
+            CloseConfirmation();
+            if (success)
+            {
+                if (character) ShowCharacters();
+                else ShowWorlds();
+            }
+            else errorLabel.text = session.SaveProblem ?? "Could not delete this selection.";
+        }
+
+        void CloseConfirmation()
+        {
+            if (_confirmation == null || !_confirmation.activeSelf) return;
+            _confirmation.SetActive(false);
+            _pendingDeleteId = null;
+            charactersPage.SetActive(_page == Page.Characters);
+            looksPage.SetActive(_page == Page.Looks);
+            worldsPage.SetActive(_page == Page.Worlds);
+            Focus(_returnFocus);
+            _returnFocus = null;
+        }
+
         Button AddChoice(Transform parent, string label, UnityEngine.Events.UnityAction action)
         {
             GameObject instance = Instantiate(buttonPrefab, parent);
@@ -247,7 +377,7 @@ namespace Topaz.Menus
             var layout = instance.GetComponent<LayoutElement>();
             if (layout == null) layout = instance.AddComponent<LayoutElement>();
             layout.preferredHeight = 67f;
-            button.onClick.AddListener(action);
+            if (action != null) button.onClick.AddListener(action);
             return button;
         }
 

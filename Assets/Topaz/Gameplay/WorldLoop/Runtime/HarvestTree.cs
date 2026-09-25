@@ -62,14 +62,19 @@ namespace Topaz.LoopStudy
             if (toTree.sqrMagnitude > range * range || toTree.sqrMagnitude < 0.001f ||
                 Vector3.Angle(direction, toTree) > arcDegrees * 0.5f) return false;
 
-            _state.chops++;
-            _session.RecordLoggingChop(definition.LoggingExperiencePerChop);
+            _state.chops += Mathf.Max(1, _session.Stats.Logging) +
+                Mathf.RoundToInt(_session.TalentAmount(SkillIds.Logging, "logging.deep-bite"));
             if (_state.chops >= definition.ChopsRequired)
             {
                 _state.chops = 0;
-                _state.readyAtWorldHours = _session.WorldHours +
-                    WorldClock.RegrowthHours(definition.RegrowthDays);
+                double regrowth = WorldClock.RegrowthHours(definition.RegrowthDays);
+                if (_session.HasTalent(SkillIds.Logging, "logging.stewardship"))
+                    regrowth = System.Math.Max(8d, regrowth -
+                        _session.TalentAmount(SkillIds.Logging, "logging.stewardship"));
+                _state.readyAtWorldHours = _session.WorldHours + regrowth;
                 _session.DropHarvest(definition, transform.position);
+                _session.RecordSkillCompletion(SkillIds.Logging,
+                    definition.CompletionExperience, definition.SourceLevel);
                 ApplyAvailability();
             }
             else

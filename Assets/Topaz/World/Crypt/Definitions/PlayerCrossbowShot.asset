@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6dac487cd47f47f0aedbecc26ac44fe, type: 3}
+  m_Name: PlayerCrossbowShot
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.CrossbowAttackDefinition
+  range: 7
+  boltSpeed: 14
+  windupSeconds: 0.28
+  recoverySeconds: 1.2
+  damage: 4
+  boltPrefab: {fileID: 8104081484704916613, guid: 78b694e3233a9412081715d58417cba7, type: 3}
+  fireClip: {fileID: 8300000, guid: 7650ac0a7ad9f48098c3aa6870bb5337, type: 3}
+  readyClip: {fileID: 8300000, guid: fdfc71c47809a48b5b0d1f76f34c03b3, type: 3}
+  impactClip: {fileID: 8300000, guid: 7f627c44c8bb845d68170938bde0ae74, type: 3}

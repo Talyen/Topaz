@@ -1,6 +1,6 @@
 # Defeat and Campfire recovery design
 
-Status: agreed gameplay rules; implementation and feel review remain. This is a design note, not a request to change gameplay code.
+Status: first playable implementation built; owner review of the Mac transition and Campfire feel remains. Future equipment, consumables, gold, status effects, story bosses, and world map travel must follow these rules when those systems arrive.
 
 ## Player experience
 
@@ -8,7 +8,7 @@ Status: agreed gameplay rules; implementation and feel review remain. This is a 
 - A Campfire activates automatically when the Character enters a clearly visible hearth area. No button press or rest is required. A brief flame response and compact confirmation make the new return point and travel unlock clear. Passing near the fire outside that area does nothing. Tune the area's size in a Mac build.
 - The most recently activated Campfire in the current Character–World Visit is the return point. Re-entering an already discovered Campfire changes the return point back to it. Arriving by future fast travel counts as a visit and also makes that Campfire the return point.
 - At zero health, the Character is defeated and later recovers at the Campfire. The presentation should imply collapse and recovery rather than literal death and resurrection. No defeat screen or input prompt is needed.
-- Proposed transition: stop control and combat actions, show a brief collapse or hit beat, fade out with a restrained ember or fire sound, move to the Campfire's safe arrival spot while the view is covered, then fade in and return control. Aim for roughly 1–2 seconds in ordinary cases; keep the screen covered through any scene load. Reuse the existing short rest fade where it fits, then tune the timing and sound in a Mac build.
+- First transition: stop control and combat actions, hold the existing hit reaction for 0.22 seconds, fade out, move to the Campfire's safe arrival spot while the view is covered, then fade in and return control. The first pass reuses the rest fade with 0.34 seconds on each side; scene loading may lengthen the covered interval. Tune the feel in a Mac build. Add a restrained fire cue when an approved sound is available.
 - The Character returns with full health and harmful effects cleared. Clear attack, dodge, projectile, and enemy targeting state that could cause an immediate repeat defeat. The safe arrival spot must be walkable and outside enemy reach; provide brief arrival protection if needed during the fade.
 
 ## Consequences and world state
@@ -31,7 +31,7 @@ Status: agreed gameplay rules; implementation and feel review remain. This is a 
 
 Travel discovery is a Character's knowledge of a particular World, so discovered Campfire IDs belong to the Visit. A newly created Character does not inherit another Character's discovered travel network merely because they enter the same World. The return point also belongs to the Visit.
 
-The current `PlayerVitality` and `WorldSession` contain a temporary practice defeat that returns to home and refills health. Replace that path when this feature is implemented. Use the existing versioned profile and atomic write pattern; never reload a previous save as the recovery mechanism. Validate saved Campfire IDs against current authored content and fall back to the home fire after content changes.
+`PlayerVitality` now sends defeat to `WorldSession`, which runs the covered move, clock jump, enemy reset, and save. The home and first clearing have authored Campfires. The existing versioned profile and atomic write pattern preserve Character, World, and Visit changes; recovery never reloads a previous save. Saved return IDs that no longer match current authored content fall back to the home fire. The first clearing's guardian is a repeatable encounter whose one-time cache stays claimed; future story bosses need their own persistent completion flag and explicit reset policy.
 
 ## Acceptance checks for implementation
 

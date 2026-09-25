@@ -14,12 +14,13 @@ namespace Topaz.Tests
     public sealed class FoundationTests
     {
         [Test]
-        public void HomesteadAndExpeditionAreEnabledBuildScenes()
+        public void HomesteadExpeditionAndCryptAreEnabledBuildScenes()
         {
             var enabled = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
-            Assert.That(enabled.Select(scene => scene.path), Is.EqualTo(new[]
+            Assert.That(enabled.Select(scene => scene.path).ToArray(), Is.EqualTo(new[]
             {
-                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Expedition.unity"
+                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Expedition.unity",
+                "Assets/Topaz/World/Scenes/Crypt.unity"
             }));
         }
 
@@ -70,8 +71,8 @@ namespace Topaz.Tests
             Assert.That(player.FindAction("Interact").bindings.Any(binding => binding.path == "<Gamepad>/buttonWest"), Is.True);
             Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Mouse>/leftButton"), Is.True);
             Assert.That(player.FindAction("Attack").bindings.Any(binding => binding.path == "<Gamepad>/rightTrigger"), Is.True);
-            Assert.That(player.FindAction("EquipAxe").bindings.Any(binding => binding.path == "<Keyboard>/2"), Is.True);
-            Assert.That(player.FindAction("CycleTool").bindings.Any(binding => binding.path == "<Gamepad>/buttonNorth"), Is.True);
+            Assert.That(player.FindAction("Block").bindings.Any(binding => binding.path == "<Mouse>/rightButton"), Is.True);
+            Assert.That(player.FindAction("Block").bindings.Any(binding => binding.path == "<Gamepad>/leftTrigger"), Is.True);
             Assert.That(player.FindAction("Place").bindings.Any(binding => binding.path == "<Gamepad>/buttonSouth"), Is.True);
             Assert.That(player.FindAction("Cancel").bindings.Any(binding => binding.path == "<Keyboard>/escape"), Is.True);
             Assert.That(player.FindAction("Inventory").bindings.Any(binding => binding.path == "<Keyboard>/b"), Is.True);

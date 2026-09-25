@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b86e2dd1f4b34b5eb136a55574a6bc18, type: 3}
+  m_Name: SwordWeapon
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.WeaponDefinition
+  stableId: weapon.sword.onehanded
+  attack: {fileID: 11400000, guid: c0560be8a186e4e4297bae86efab99b0, type: 2}
+  skill: 0
+  twoHanded: 0
+  attackClip: {fileID: 7400000, guid: b3a3a38a6debc4b279417c6b2c67fa6e, type: 2}
+  heldModel: {fileID: 919132149155446097, guid: d4b4bb8140b9e4016b1fbc91decb25e8, type: 3}
+  swingClip: {fileID: 8300000, guid: 6d49fd3e49cd94880a820dad85a8424f, type: 3}
+  impactClip: {fileID: 8300000, guid: 7f627c44c8bb845d68170938bde0ae74, type: 3}
+  staggerSeconds: 0

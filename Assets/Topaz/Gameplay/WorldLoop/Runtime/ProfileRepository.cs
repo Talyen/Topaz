@@ -133,6 +133,13 @@ namespace Topaz.LoopStudy
         {
             TopazProfileData data = JsonUtility.FromJson<TopazProfileData>(json);
             if (data == null) throw new InvalidDataException("Collection is empty.");
+            if (data.version == 1) data.MigrateFromVersion1();
+            if (data.version == 2) data.MigrateFromVersion2();
+            if (data.version == 3) data.MigrateFromVersion3();
+            if (data.version == 4) data.MigrateFromVersion4();
+            if (data.version == 5) data.MigrateFromVersion5();
+            if (data.version == 6) data.MigrateFromVersion6();
+            if (data.version == 7) data.MigrateFromVersion7();
             data.Validate();
             return data;
         }

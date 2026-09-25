@@ -4,6 +4,22 @@ Use this index when an older Unity tutorial conflicts with the project. It was c
 
 Start with [Topaz's feature policy](UNITY_FEATURE_POLICY.md), then the local study or architecture note for the feature. Use the matching Unity Manual, Scripting API, or package documentation below before copying code from a tutorial. The docs explain engine behavior; Topaz's files describe game rules and project decisions.
 
+## Task map
+
+Use this map to open only the relevant local code, tests, and guidance. [Feature status](FEATURE_STATUS.md) identifies the current note and remaining review for each slice. The executable area-to-test mapping is `scripts/agent-areas.json`; [agent workflow](AGENT_WORKFLOW.md) documents focused checks and Editor diagnostics.
+
+| Task | Code starting point | Focused tests | Local guidance |
+| --- | --- | --- | --- |
+| Movement, aim, camera | `Assets/Topaz/Player/Runtime` | `MovementInputTests` | [Feel study](studies/FEEL_STUDY.md) |
+| Combat, enemy navigation | `Assets/Topaz/Gameplay/Combat/Runtime` | `CombatStudyTests` | [Combat study](studies/COMBAT_STUDY.md), [weapon types](plans/WEAPON_TYPES_PLAN.md) |
+| Saves, inventory, world clock | `Assets/Topaz/Gameplay/WorldLoop/Runtime` | `ProfilePersistenceTests`, `WorldLoopTests`, `MiningAndHomeTests` | [Architecture](ARCHITECTURE.md), [world loop study](studies/WORLD_LOOP_STUDY.md), [mining and home building](studies/MINING_AND_HOME_BUILDING_STUDY.md) |
+| Skills and talents | `Assets/Topaz/Gameplay/WorldLoop/Runtime`, `Assets/Topaz/Gameplay/Combat/Runtime` | `ProgressionRulesTests`, `ProgressionPlayTests` | [Progression plan](plans/PROGRESSION_PLAN.md) |
+| Regions and travel | `Assets/Topaz/World/Expedition/Runtime` | `ExpeditionTests` | [Expedition study](studies/EXPEDITION_STUDY.md) |
+| Home crypt and Staff | `Assets/Topaz/World/Crypt`, `Assets/Topaz/Gameplay/Combat/Runtime` | `CryptTests`, `CryptInputTests` | [Home crypt study](studies/HOME_CRYPT_STUDY.md) |
+| Menus and HUD | `Assets/Topaz/UI` | `MenuTests` | [UI design system](UI_DESIGN_SYSTEM.md) |
+| Lighting, weather, effects | `Assets/Topaz/Presentation` | `VisualStudyTests`, `WeatherTests` | [Visual study](studies/VISUAL_STUDY.md), [day/night cycle](DAY_NIGHT_CYCLE.md) |
+| Build, assets, Editor tooling | `scripts`, `Assets/Topaz/Core/Editor` | `FoundationTests` | [Project structure](PROJECT_STRUCTURE.md), [agent workflow](AGENT_WORKFLOW.md) |
+
 ## Version and Editor workflow
 
 | When working on | Read | Why it matters here |

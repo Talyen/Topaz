@@ -119,17 +119,23 @@ namespace Topaz.Tests
             Assert.That(sun, Is.Not.Null);
             var setHours = controller.GetType().GetMethod("SetWorldHours");
             var setFade = controller.GetType().GetMethod("SetRestFade");
+            var setInterior = controller.GetType().GetMethod("SetInterior");
             setHours.Invoke(controller, new object[] { 12d });
             float noonIntensity = sun.intensity;
             setHours.Invoke(controller, new object[] { 23d });
-            Assert.That(sun.intensity, Is.GreaterThan(.5f).And.LessThan(noonIntensity));
+            float nightIntensity = sun.intensity;
+            Assert.That(nightIntensity, Is.GreaterThan(.3f).And.LessThan(noonIntensity * .4f));
             Assert.That(RenderSettings.ambientSkyColor.b,
                 Is.GreaterThan(RenderSettings.ambientSkyColor.r));
+            Assert.That(RenderSettings.ambientSkyColor.r, Is.LessThan(.2f));
+            setInterior.Invoke(controller, new object[] { true });
+            Assert.That(sun.intensity, Is.LessThan(nightIntensity));
+            setInterior.Invoke(controller, new object[] { false });
 
             setFade.Invoke(controller, new object[] { 1f });
             Assert.That(sun.intensity, Is.Zero);
             setFade.Invoke(controller, new object[] { 0f });
-            Assert.That(sun.intensity, Is.GreaterThan(.5f));
+            Assert.That(sun.intensity, Is.EqualTo(nightIntensity).Within(.001f));
         }
 
         [UnityTest]

@@ -41,6 +41,8 @@ namespace Topaz.AnimationStudy.Editor
             AnimationClip jump = Clip("Jump", "Rig_Medium_MovementBasic.fbx", "Jump_Full_Short", false);
             AnimationClip sword = Clip("Sword", "Rig_Medium_CombatMelee.fbx", "Melee_1H_Attack_Slice_Horizontal", false);
             AnimationClip axe = Clip("Axe", "Rig_Medium_CombatMelee.fbx", "Melee_1H_Attack_Chop", false);
+            AnimationClip combatAxe = Clip("Combat Axe", "Rig_Medium_CombatMelee.fbx",
+                "Melee_2H_Attack_Chop", false);
             AnimationClip hit = Clip("Hit", "Rig_Medium_General.fbx", "Hit_A", false);
             AnimationClip skeletonIdle = Clip("Skeleton Idle", "Rig_Medium_Special.fbx", "Skeletons_Idle", true);
             AnimationClip skeletonWalk = Clip("Skeleton Walk", "Rig_Medium_Special.fbx", "Skeletons_Walking", true);
@@ -51,7 +53,8 @@ namespace Topaz.AnimationStudy.Editor
                 ("DodgeForward", dodgeForward), ("DodgeBackward", dodgeBackward),
                 ("DodgeLeft", dodgeLeft), ("DodgeRight", dodgeRight),
                 ("Jump", jump),
-                ("Sword", sword), ("Axe", axe), ("Hit", hit));
+                ("Sword", sword), ("Axe", axe), ("CombatAxe", combatAxe),
+                ("Hit", hit));
             ConfigurePlayerDirectionalBlend(playerController, idle, run, strafeLeft, strafeRight, backpedal);
             AnimatorController enemyController = Controller("Skeleton", skeletonIdle, skeletonWalk,
                 ("Attack", skeletonAttack), ("Hit", hit), ("Death", skeletonDeath));
@@ -80,6 +83,9 @@ namespace Topaz.AnimationStudy.Editor
             GameObject axeVisual = AttachWeapon(hand, "Held Axe",
                 "Assets/ThirdParty/KayKit/RPGTools/Models/axe.fbx",
                 "Assets/Topaz/Presentation/Art/Materials/Tools.mat", 0.75f);
+            GameObject combatAxeVisual = AttachWeapon(hand, "Held Combat Axe",
+                "Assets/ThirdParty/KayKit/Adventurers/Models/axe_2handed.fbx",
+                "Assets/Topaz/Presentation/Art/Materials/Weapons.mat", 1.25f);
             HidePivotRenderers(facing.Find("Sword Pivot"));
             HidePivotRenderers(facing.Find("Axe Pivot"));
 
@@ -87,10 +93,10 @@ namespace Topaz.AnimationStudy.Editor
                 player.GetComponent<PlayerCombat>(), null, null,
                 new[] { dodgeForward, dodgeBackward, dodgeLeft, dodgeRight },
                 jump, sword, axe, hit, null,
-                swordVisual, axeVisual);
+                swordVisual, axeVisual, combatAxeVisual);
             Bind(skeleton.gameObject, enemyController, skeletonAvatar, null, null,
                 enemyComponent, enemy.GetComponent<NavMeshAgent>(),
-                null, null, null, null, hit, skeletonAttack, null, null);
+                null, null, null, null, hit, skeletonAttack, null, null, null);
             SetReference(enemyComponent, "keepVisualOnDefeat", true);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
@@ -108,13 +114,17 @@ namespace Topaz.AnimationStudy.Editor
             AnimationClip walk = Clip("Skeleton Walk", "Rig_Medium_Special.fbx", "Skeletons_Walking", true);
             AnimationClip hit = Clip("Hit", "Rig_Medium_General.fbx", "Hit_A", false);
             AnimationClip death = Clip("Skeleton Death", "Rig_Medium_Special.fbx", "Skeletons_Death", false);
-            AnimationClip attack = guardian
+            bool crossbow = modelPath.EndsWith("Skeleton_Rogue.fbx", StringComparison.Ordinal);
+            AnimationClip attack = crossbow
+                ? Clip("Skeleton Crossbow Shot", "Rig_Medium_CombatRanged.fbx",
+                    "Ranged_2H_Shoot", false) : guardian
                 ? Clip("Guardian Swing", "Rig_Medium_CombatMelee.fbx", "Melee_1H_Attack_Slice_Horizontal", false)
                 : Clip("Skeleton Attack", "Rig_Medium_CombatMelee.fbx", "Melee_Unarmed_Attack_Punch_A", false);
-            AnimatorController controller = Controller(guardian ? "Guardian" : "Skeleton",
+            AnimatorController controller = Controller(crossbow ? "Skeleton Crossbow" :
+                guardian ? "Guardian" : "Skeleton",
                 idle, walk, ("Attack", attack), ("Hit", hit), ("Death", death));
             Bind(model, controller, avatar, null, null, enemy, agent,
-                null, null, null, null, hit, attack, null, null);
+                null, null, null, null, hit, attack, null, null, null);
         }
 
         static GameObject AttachWeapon(Transform hand, string name, string modelPath,
@@ -188,7 +198,7 @@ namespace Topaz.AnimationStudy.Editor
                 UnityEngine.Object.DestroyImmediate(child.gameObject);
         }
 
-        static AnimationClip Clip(string name, string file, string sourceName, bool loop)
+        public static AnimationClip Clip(string name, string file, string sourceName, bool loop)
         {
             string path = $"{ClipPath}/{name}.anim";
             AnimationClip existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
@@ -292,7 +302,7 @@ namespace Topaz.AnimationStudy.Editor
             FeelStudyPlayer player, PlayerCombat combat, EnemyCombatant enemy, NavMeshAgent agent,
             AnimationClip[] dodges, AnimationClip jump, AnimationClip sword, AnimationClip axe,
             AnimationClip hit, AnimationClip enemyAttack,
-            GameObject swordVisual, GameObject axeVisual)
+            GameObject swordVisual, GameObject axeVisual, GameObject combatAxeVisual)
         {
             Animator[] animators = model.GetComponents<Animator>();
             Animator animator = animators.FirstOrDefault(a => PrefabUtility.GetCorrespondingObjectFromSource(a) != null)
@@ -321,6 +331,7 @@ namespace Topaz.AnimationStudy.Editor
             SetReference(driver, "enemyAttackClip", enemyAttack);
             SetReference(driver, "swordVisual", swordVisual);
             SetReference(driver, "axeVisual", axeVisual);
+            SetReference(driver, "combatAxeVisual", combatAxeVisual);
         }
 
         static void SetReference(UnityEngine.Object target, string name, UnityEngine.Object value)

@@ -7,6 +7,7 @@ namespace Topaz.CombatStudy
     public sealed class EnemyDefinition : ScriptableObject
     {
         [SerializeField] string stableId = "enemy.practice";
+        [SerializeField, Min(1)] int sourceLevel = 1;
         [SerializeField, Min(1)] int health = 3;
         [SerializeField, Min(0.1f)] float detectionRange = 9f;
         [SerializeField, Min(0.1f)] float travelSpeed = 3.1f;
@@ -15,8 +16,13 @@ namespace Topaz.CombatStudy
         [SerializeField, Min(0.01f)] float telegraphSeconds = 0.65f;
         [SerializeField, Min(0.01f)] float recoverySeconds = 0.9f;
         [SerializeField, Min(1)] int damage = 1;
+        [SerializeField] bool staggerImmune;
+        [SerializeField] bool shielded;
+        [SerializeField] GroundSpellDefinition groundSpell;
+        [SerializeField] CrossbowAttackDefinition crossbowAttack;
 
         public string StableId => stableId;
+        public int SourceLevel => sourceLevel;
         public int Health => health;
         public float DetectionRange => detectionRange;
         public float TravelSpeed => travelSpeed;
@@ -25,5 +31,9 @@ namespace Topaz.CombatStudy
         public float TelegraphSeconds => telegraphSeconds;
         public float RecoverySeconds => recoverySeconds;
         public int Damage => damage;
+        public bool StaggerImmune => staggerImmune;
+        public bool Shielded => shielded;
+        public GroundSpellDefinition GroundSpell => groundSpell;
+        public CrossbowAttackDefinition CrossbowAttack => crossbowAttack;
     }
 }

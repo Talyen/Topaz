@@ -9,6 +9,7 @@ namespace Topaz.LoopStudy
         public const int CurrentVersion = 5;
         public const string HomeRegion = "home";
         public const string ExpeditionRegion = "expedition.clearing";
+        public const string CryptRegion = "dungeon.home-crypt";
 
         public int version = CurrentVersion;
         public int day = 1; // Legacy rest counter retained for versions 1–4 migration.
@@ -58,6 +59,7 @@ namespace Topaz.LoopStudy
     {
         public string instanceId;
         public string itemId;
+        public string regionId; // Null retains the earlier cross-region pickup behavior.
         public int count;
         public float x;
         public float z;

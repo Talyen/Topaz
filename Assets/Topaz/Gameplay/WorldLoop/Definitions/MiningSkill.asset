@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a0977114d5ce4c5ebbca786a7e5cae0, type: 3}
+  m_Name: MiningSkill
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.SkillDefinition
+  stableId: mining
+  displayName: Mining
+  levelBenefit: Mining actions are 1.5% quicker per level. Gain +1 Stone at level 5 and +1 Iron at level 10.
+  handlingPerLevel: 0.015
+  benefitAtFive: 1
+  benefitAtTen: 1
+  talents:
+  - id: mining.quick-strike
+    label: Quick Strike
+    description: Mining actions are 10% quicker.
+    amount: 0.1
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: mining.heavy-pick
+    label: Heavy Pick
+    description: Each valid strike makes one extra unit of progress toward finishing a deposit.
+    amount: 1
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: mining.stone-lode
+    label: Stone Lode
+    description: A completed deposit drops one extra Stone.
+    amount: 1
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: mining.iron-seeker
+    label: Iron Seeker
+    description: A completed deposit drops one extra Iron.
+    amount: 1
+    durationSeconds: 0
+    intervalSeconds: 0

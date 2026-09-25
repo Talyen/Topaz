@@ -152,6 +152,7 @@ namespace Topaz.Editor
             AssetDatabase.SaveAssets();
             Debug.Log("[Topaz] Authored expedition clearing, guardian, reward cache, and travel gate are ready.");
             GroundArtSetup.ApplyExpedition();
+            GatheringAndHomeSetup.ApplyExpedition();
             InteractionCueSetup.ApplyHome();
             InteractionCueSetup.ApplyExpedition();
         }

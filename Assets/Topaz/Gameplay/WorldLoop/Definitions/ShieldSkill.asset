@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a0977114d5ce4c5ebbca786a7e5cae0, type: 3}
+  m_Name: ShieldSkill
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.SkillDefinition
+  stableId: shield
+  displayName: Shield
+  levelBenefit: Move one percentage point faster while guarding per level. Block recovery improves at levels 5 and 10.
+  handlingPerLevel: 0.01
+  benefitAtFive: 0.05
+  benefitAtTen: 0.05
+  talents:
+  - id: shield.quick-raise
+    label: Quick Raise
+    description: Shield raises in 0.10 seconds instead of 0.12 seconds.
+    amount: 0.02
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: shield.broad-guard
+    label: Broad Guard
+    description: Block angle increases from 120 to 130 degrees.
+    amount: 10
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: shield.mobile-guard
+    label: Mobile Guard
+    description: Move five percentage points faster while guarding.
+    amount: 0.05
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: shield.hold-line
+    label: Hold Line
+    description: A blocked enemy recovers 0.1 seconds later.
+    amount: 0.1
+    durationSeconds: 0
+    intervalSeconds: 0

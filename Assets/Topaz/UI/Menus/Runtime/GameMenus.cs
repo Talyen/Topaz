@@ -33,18 +33,23 @@ namespace Topaz.Menus
         [SerializeField] UnityEngine.UI.Button pauseQuitButton;
         [SerializeField] UnityEngine.UI.Button displayModeButton;
         [SerializeField] UnityEngine.UI.Button windowSizeButton;
+        [SerializeField] UnityEngine.UI.Button uiScaleButton;
         [SerializeField] UnityEngine.UI.Button visualLabButton;
         [SerializeField] UnityEngine.UI.Button optionsBackButton;
         [SerializeField] TMP_Text displayInfo;
         [SerializeField] TMP_Text titleStatus;
+        [SerializeField] TMP_Text continueDetail;
 
         static readonly int[] Widths = { 1280, 1600, 1920 };
         static readonly int[] Heights = { 720, 900, 1080 };
         static readonly float[] CameraSizes = { 5.8f, 7.2f, 9f };
+        static readonly float[] UiScales = { 1f, 1.25f, 1.5f };
+        static readonly Vector2 UiReferenceResolution = new Vector2(1920f, 1080f);
 
         ScreenState _state;
         int _windowIndex = 1;
         int _cameraIndex = 1;
+        int _uiScaleIndex;
         bool _borderless = true;
         bool _inventoryFromPause;
 
@@ -52,6 +57,7 @@ namespace Topaz.Menus
         public bool IsTitle => _state == ScreenState.Title;
         public bool IsPaused => _state == ScreenState.Pause;
         public int CurrentCameraZoomIndex => _cameraIndex;
+        public int CurrentUiScaleIndex => _uiScaleIndex;
 
         void Awake()
         {
@@ -74,12 +80,16 @@ namespace Topaz.Menus
             pauseQuitButton.onClick.AddListener(Quit);
             displayModeButton.onClick.AddListener(ToggleDisplayMode);
             windowSizeButton.onClick.AddListener(CycleWindowSize);
+            if (uiScaleButton != null) uiScaleButton.onClick.AddListener(CycleUiScale);
             visualLabButton.onClick.AddListener(() => visualLab.Toggle());
             optionsBackButton.onClick.AddListener(BackFromOptions);
         }
 
         void Start()
         {
+            _uiScaleIndex = Application.isEditor ? 0 : Mathf.Clamp(
+                PlayerPrefs.GetInt("Topaz.UiScalePreset", 0), 0, UiScales.Length - 1);
+            ApplyUiScale();
             bool editorTest = Application.isEditor || Array.Exists(Environment.GetCommandLineArgs(),
                 value => value.Equals("-runTests", StringComparison.OrdinalIgnoreCase));
             if (editorTest)
@@ -246,6 +256,25 @@ namespace Topaz.Menus
             UpdateLabels();
         }
 
+        void CycleUiScale() => SetUiScaleIndex((_uiScaleIndex + 1) % UiScales.Length);
+
+        public void SetUiScaleIndex(int index)
+        {
+            _uiScaleIndex = Mathf.Clamp(index, 0, UiScales.Length - 1);
+            ApplyUiScale();
+            SavePreferences();
+            UpdateLabels();
+            Select(uiScaleButton);
+        }
+
+        void ApplyUiScale()
+        {
+            var scaler = GetComponent<UnityEngine.UI.CanvasScaler>();
+            if (scaler == null) return;
+            scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = UiReferenceResolution / UiScales[_uiScaleIndex];
+        }
+
         public void SetCameraZoomIndex(int index)
         {
             _cameraIndex = Mathf.Clamp(index, 0, CameraSizes.Length - 1);
@@ -272,6 +301,7 @@ namespace Topaz.Menus
             PlayerPrefs.SetInt("Topaz.Borderless", _borderless ? 1 : 0);
             PlayerPrefs.SetInt("Topaz.WindowPreset", _windowIndex);
             PlayerPrefs.SetInt("Topaz.CameraPreset", _cameraIndex);
+            PlayerPrefs.SetInt("Topaz.UiScalePreset", _uiScaleIndex);
             PlayerPrefs.Save();
         }
 
@@ -279,10 +309,33 @@ namespace Topaz.Menus
         {
             SetButton(displayModeButton, _borderless ? "Display: Borderless native" : "Display: Windowed");
             SetButton(windowSizeButton, $"Window size: {Widths[_windowIndex]} × {Heights[_windowIndex]}");
+            if (uiScaleButton != null)
+                SetButton(uiScaleButton, $"UI Scale: {Mathf.RoundToInt(UiScales[_uiScaleIndex] * 100f)}%");
             displayInfo.text = _borderless
                 ? "Uses the display's native resolution."
                 : "Window size applies immediately.";
             continueButton.interactable = session.HasActivePair || session.HasLastPair;
+            if (continueDetail != null)
+            {
+                string characterName = null;
+                string worldName = null;
+                if (session.Characters != null)
+                    foreach (var character in session.Characters)
+                        if (character.id == session.LastCharacterId)
+                        {
+                            characterName = character.label;
+                            break;
+                        }
+                if (session.Worlds != null)
+                    foreach (var world in session.Worlds)
+                        if (world.id == session.LastWorldId)
+                        {
+                            worldName = world.label;
+                            break;
+                        }
+                continueDetail.text = characterName != null && worldName != null
+                    ? characterName + "  ·  " + worldName : "Last journey";
+            }
             playButton.interactable = session.SaveProblem == null;
             if (titleStatus != null) titleStatus.text = session.SaveProblem ?? "";
         }

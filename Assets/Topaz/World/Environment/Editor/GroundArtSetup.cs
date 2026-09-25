@@ -13,6 +13,8 @@ namespace Topaz.Editor
         const string FloorPath = "Assets/ThirdParty/KayKit/Dungeon/Models/floor_dirt_large.fbx";
         const string GrassAPath = "Assets/ThirdParty/KayKit/Forest/Models/Grass_1_A_Color1.fbx";
         const string GrassBPath = "Assets/ThirdParty/KayKit/Forest/Models/Grass_2_A_Color1.fbx";
+        const string HomeGrassAPath = "Assets/ThirdParty/KayKit/Forest/Models/Grass_1_C_Color1.fbx";
+        const string HomeGrassBPath = "Assets/ThirdParty/KayKit/Forest/Models/Grass_2_C_Color1.fbx";
         const string DungeonMaterialPath = "Assets/Topaz/Presentation/Art/Materials/Dungeon.mat";
         const string ForestMaterialPath = "Assets/Topaz/Presentation/Art/Materials/Forest.mat";
 
@@ -50,7 +52,8 @@ namespace Topaz.Editor
             Transform root = GameObject.Find("Feel Study")?.transform;
             if (root == null || root.Find("Navigation Geometry/Ground") == null)
                 throw new InvalidOperationException("Home collision ground is missing.");
-            Build(root, 32f, 32f, 8, 8, HomeGrass);
+            Build(root, 32f, 32f, 8, 8, HomeGrass.Concat(AdditionalHomeGrass()).ToArray(), true);
+            root.Find("Navigation Geometry/Ground").GetComponent<MeshRenderer>().enabled = false;
             EditorSceneManager.SaveScene(scene);
         }
 
@@ -61,12 +64,27 @@ namespace Topaz.Editor
             Transform art = root?.Find("KayKit Clearing Art");
             if (art == null || root.Find("Navigation Geometry/Ground") == null)
                 throw new InvalidOperationException("Clearing art or collision ground is missing.");
-            Build(art, 34f, 44f, 9, 11, ClearingGrass);
+            Build(art, 34f, 44f, 9, 11, ClearingGrass, false);
+            root.Find("Navigation Geometry/Ground").GetComponent<MeshRenderer>().enabled = false;
             EditorSceneManager.SaveScene(scene);
         }
 
+        static Vector2[] AdditionalHomeGrass()
+        {
+            // A repeatable loose ring leaves the whole 5.5 m homestead circle readable.
+            var positions = new Vector2[60];
+            for (int i = 0; i < positions.Length; i++)
+            {
+                float angle = i * 2.399963f;
+                float radius = Mathf.Sqrt(Mathf.Lerp(6.6f * 6.6f, 14.4f * 14.4f,
+                    (i + .5f) / positions.Length));
+                positions[i] = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+            }
+            return positions;
+        }
+
         static void Build(Transform parent, float width, float depth,
-            int columns, int rows, Vector2[] grassPositions)
+            int columns, int rows, Vector2[] grassPositions, bool home)
         {
             Transform prior = parent.Find("KayKit Ground Art");
             if (prior != null) UnityEngine.Object.DestroyImmediate(prior.gameObject);
@@ -78,8 +96,8 @@ namespace Topaz.Editor
             grass.SetParent(root, false);
 
             GameObject floorAsset = Load<GameObject>(FloorPath);
-            GameObject grassA = Load<GameObject>(GrassAPath);
-            GameObject grassB = Load<GameObject>(GrassBPath);
+            GameObject grassA = Load<GameObject>(home ? HomeGrassAPath : GrassAPath);
+            GameObject grassB = Load<GameObject>(home ? HomeGrassBPath : GrassBPath);
             Material dungeon = Load<Material>(DungeonMaterialPath);
             Material forest = Load<Material>(ForestMaterialPath);
             float tileWidth = width / columns;
@@ -104,7 +122,8 @@ namespace Topaz.Editor
                 clump.transform.localPosition = new Vector3(grassPositions[i].x, .025f,
                     grassPositions[i].y);
                 clump.transform.localRotation = Quaternion.Euler(0f, (i * 137) % 360, 0f);
-                clump.transform.localScale = Vector3.one * (.72f + .06f * (i % 4));
+                clump.transform.localScale = Vector3.one * (home
+                    ? 1.12f + .08f * (i % 4) : .72f + .06f * (i % 4));
             }
         }
 

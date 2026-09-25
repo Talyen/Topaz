@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efcda1d020924a75b75671032a26906, type: 3}
+  m_Name: CryptWarrior
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.EnemyDefinition
+  stableId: enemy.crypt.warrior
+  sourceLevel: 2
+  health: 10
+  detectionRange: 9
+  travelSpeed: 3
+  strikeRange: 2.15
+  strikeArcDegrees: 110
+  telegraphSeconds: 0.8
+  recoverySeconds: 1
+  damage: 3
+  staggerImmune: 0
+  shielded: 1
+  groundSpell: {fileID: 0}

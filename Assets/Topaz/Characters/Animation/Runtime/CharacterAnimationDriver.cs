@@ -12,7 +12,7 @@ namespace Topaz.AnimationStudy
         enum Pose
         {
             None, Locomotion, DodgeForward, DodgeBackward, DodgeLeft, DodgeRight,
-            Jump, Sword, Axe, Hit, Attack, Death
+            Jump, Sword, Axe, CombatAxe, Staff, Crossbow, CrossbowReload, Hit, Attack, Death
         }
 
         [SerializeField] FeelStudyPlayer player;
@@ -30,6 +30,11 @@ namespace Topaz.AnimationStudy
         [SerializeField] AnimationClip enemyAttackClip;
         [SerializeField] GameObject swordVisual;
         [SerializeField] GameObject axeVisual;
+        [SerializeField] GameObject pickaxeVisual;
+        [SerializeField] GameObject combatAxeVisual;
+        [SerializeField] GameObject staffVisual;
+        [SerializeField] GameObject crossbowVisual;
+        [SerializeField] GameObject shieldVisual;
 
         static readonly int Move = Animator.StringToHash("Move");
         static readonly int MoveX = Animator.StringToHash("MoveX");
@@ -40,7 +45,9 @@ namespace Topaz.AnimationStudy
         Pose _pose;
 
         public void ConfigurePlayerFrom(CharacterAnimationDriver source, FeelStudyPlayer mover,
-            PlayerCombat combat, GameObject sword, GameObject axe)
+            PlayerCombat combat, GameObject sword, GameObject axe, GameObject pickaxe,
+            GameObject combatAxe, GameObject staff, GameObject crossbow,
+            GameObject shield)
         {
             player = mover;
             playerCombat = combat;
@@ -56,6 +63,11 @@ namespace Topaz.AnimationStudy
             hitClip = source.hitClip;
             swordVisual = sword;
             axeVisual = axe;
+            pickaxeVisual = pickaxe;
+            combatAxeVisual = combatAxe;
+            staffVisual = staff;
+            crossbowVisual = crossbow;
+            shieldVisual = shield;
         }
 
         void Awake()
@@ -84,9 +96,21 @@ namespace Topaz.AnimationStudy
                 if (player.IsDodging)
                     ShowDodge();
                 else if (playerCombat != null && playerCombat.IsAttackLocked)
-                    Show(playerCombat.EquippedToolId == "axe" ? Pose.Axe : Pose.Sword,
-                        playerCombat.EquippedToolId == "axe" ? axeClip : swordClip,
+                {
+                    string tool = playerCombat.EquippedToolId;
+                    if (tool == "crossbow")
+                        Show(playerCombat.IsCrossbowAiming ? Pose.Crossbow : Pose.CrossbowReload,
+                            playerCombat.IsCrossbowAiming
+                                ? playerCombat.CurrentWeapon?.AttackClip
+                                : playerCombat.CurrentWeapon?.ReloadClip,
+                            playerCombat.AttackAnimationSeconds);
+                    else Show(tool == "axe" || tool == "pickaxe" ? Pose.Axe : tool == "combat-axe" ?
+                            Pose.CombatAxe : tool == "staff" ? Pose.Staff : Pose.Sword,
+                        tool == "axe" || tool == "pickaxe" ? axeClip :
+                            tool == "combat-axe" || tool == "staff" ?
+                            playerCombat.CurrentWeapon?.AttackClip : swordClip,
                         playerCombat.AttackAnimationSeconds);
+                }
                 else if (player.HasHitReaction)
                     Show(Pose.Hit, hitClip, player.HitReactionSeconds);
                 else if (player.IsDodgeVisualActive)
@@ -153,8 +177,27 @@ namespace Topaz.AnimationStudy
         {
             bool sword = player != null && playerCombat != null && playerCombat.EquippedToolId == "sword";
             bool axe = player != null && playerCombat != null && playerCombat.EquippedToolId == "axe";
+            bool pickaxe = player != null && playerCombat != null &&
+                playerCombat.EquippedToolId == "pickaxe";
+            bool combatAxe = player != null && playerCombat != null &&
+                playerCombat.EquippedToolId == "combat-axe";
+            bool staff = player != null && playerCombat != null &&
+                playerCombat.EquippedToolId == "staff";
+            bool crossbow = player != null && playerCombat != null &&
+                playerCombat.EquippedToolId == "crossbow";
             if (swordVisual != null && swordVisual.activeSelf != sword) swordVisual.SetActive(sword);
             if (axeVisual != null && axeVisual.activeSelf != axe) axeVisual.SetActive(axe);
+            if (pickaxeVisual != null && pickaxeVisual.activeSelf != pickaxe)
+                pickaxeVisual.SetActive(pickaxe);
+            if (combatAxeVisual != null && combatAxeVisual.activeSelf != combatAxe)
+                combatAxeVisual.SetActive(combatAxe);
+            if (staffVisual != null && staffVisual.activeSelf != staff)
+                staffVisual.SetActive(staff);
+            if (crossbowVisual != null && crossbowVisual.activeSelf != crossbow)
+                crossbowVisual.SetActive(crossbow);
+            bool shield = player != null && playerCombat != null && playerCombat.HasShield;
+            if (shieldVisual != null && shieldVisual.activeSelf != shield)
+                shieldVisual.SetActive(shield);
         }
 
         void Show(Pose pose, AnimationClip clip = null, float duration = 0f)

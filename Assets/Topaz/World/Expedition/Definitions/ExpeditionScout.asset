@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: ExpeditionScout
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.EnemyDefinition
   stableId: enemy.expedition.scout
-  health: 2
+  health: 10
   detectionRange: 9
   travelSpeed: 3.5
   strikeRange: 1.65
   strikeArcDegrees: 65
   telegraphSeconds: 0.45
   recoverySeconds: 0.75
-  damage: 1
+  damage: 4

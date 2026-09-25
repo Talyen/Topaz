@@ -1,6 +1,6 @@
 # Player-carried light: research and proposed plan
 
-Status: owner-selected direction, 2026-09-24. The player always has a hands-free lantern. It is an atmosphere and visibility feature with no gameplay-rule effect. It lights mostly around the player, with a soft reduction directly behind. The prop stays visible and dark when switched off. The lantern is toggled from its entry in the backpack journal, with no dedicated gameplay hotkey. Save/load behavior remains open.
+Status: first implementation complete, 2026-09-24; a low-light tuning pass centers a full 360-degree warm point light on the player. The player always has a hands-free lantern. It is an atmosphere and visibility feature with no gameplay-rule effect. The prop stays visible and dark when switched off. The lantern is toggled from its entry in the backpack journal, with no dedicated gameplay hotkey. Its on/off state belongs to the character and is saved; new and older characters start off. The Mac build remains the visual review surface for range, warmth, and prop placement.
 
 ## Existing Topaz constraints
 
@@ -31,11 +31,11 @@ Mount the existing KayKit lantern at the **side of the waist opposite the sword*
 
 The hips animation already moves the mounted prop. For a little secondary motion, put the model under a pivot at the socket and give it a **small, damped, angle-limited sway** on acceleration, turning, dodging, and landing. Return it gently toward rest. This can be a small Topaz-specific visual component updated after the Animator, or an authored additive animation if a clip gives a better look. It is visual only: no Rigidbody, joint, collider, or effect on the player's movement. Unity's official Animation Rigging package has damped transforms, but it is not installed and is more machinery than this one accessory requires. Consider it if later equipment needs a shared rigging workflow.
 
-Place the actual realtime Light on a **stable waist-height child of the player motion root**, offset near the lantern but not under the swinging model. This prevents every sway or attack animation from making the lit world wobble. The emissive wick and any tiny particles remain on the visible prop. Do not parent the Light to the camera. When off, disable the Light and emitter glow/particles while keeping the lantern mesh visible.
+Place the actual realtime Light on a **stable waist-height child of the player motion root**, centered on the player rather than under the swinging model. This prevents every sway or attack animation from making the lit world wobble. The emissive wick and any tiny particles remain on the visible prop. Do not parent the Light to the camera. When off, disable the Light and emitter glow/particles while keeping the lantern mesh visible. The model's glass uses its own neutral, nonemissive material so its green atlas color does not read as a second light.
 
-Use one warm, short-range point light with a **soft cubemap cookie** that attenuates the rear sector relative to the character's facing. Follow the current visual facing, including the temporary attack-locked direction, rather than raw movement. The cookie should make the rear *dimmer*, not create a hard blind wedge. This is a lighting shape, with no visibility, stealth, damage, or interaction rule. Compare the cookie against an otherwise identical plain point light in the Mac build; use a wide spot only if the masked point still looks wrong. Unity's point-light cookies use cubemaps. The mask shapes illumination but does not provide wall occlusion.
+Use one warm point light with **even 360-degree coverage**. The first centered range is 8.5 world units, with no cookie or facing-dependent falloff. This is a lighting shape, with no visibility, stealth, damage, or interaction rule. The light remains unshadowed, so nearby walls do not occlude it.
 
-Start without realtime shadows. If the light seems to pass through walls or needs more physical depth, compare an additional-light shadowed version against the unshadowed version in a representative scene and standalone build. Rendering Layers can exclude the player mesh from the carried light if self-lighting harms readability. Keep the existing ambient readability with the light off and avoid changing global night brightness to compensate for this feature.
+If the light seems to pass through walls or needs more physical depth, compare an additional-light shadowed version against the unshadowed version in a representative scene and standalone build. Rendering Layers can exclude the player mesh from the carried light if self-lighting harms readability. The darker dusk, night, and interior baselines should still preserve path and combat readability with the lantern off.
 
 ## Backpack interaction now; equipment menu later
 
@@ -45,15 +45,15 @@ Use the existing inventory-opening control and EventSystem navigation. Do not ad
 
 ## Proposed implementation sequence after the design choice
 
-1. Build a reversible lighting study in home and expedition scenes: waist lantern, plain point light, rear-attenuated cookie point light, and on/off. Check the owner-facing Mac build at normal and far zoom, day and night, while idle, turning, moving, dodging, attacking, jumping, and near walls. Tune the waist offset, sway, brightness, and rear gradient from captures and play feel.
+1. Build a reversible lighting study in home and expedition scenes: waist lantern, centered 360-degree point light, and on/off. Check the owner-facing Mac build at normal and far zoom, day and night, while idle, turning, moving, dodging, attacking, jumping, and near walls. Tune the waist offset, sway, brightness, and range from captures and play feel.
 2. Add the permanent Lantern entry to the existing backpack journal and wire its click/UI Submit to a small player-light component. Reuse the existing inventory-opening control and UI navigation. Show On/Off on the entry and in the details. Do not add a light hotkey or put the lantern in the transferable inventory stacks.
-3. Keep the on/off state through additive region travel. Decide whether it persists across saves; if saved, add it to versioned player state with migration/default behavior. Ensure travel does not duplicate the light. Keep the state API independent of the backpack UI so a future equipment menu can reuse it.
+3. Keep the on/off state through additive region travel and save/load in character state. Missing fields in older collections default to off. Ensure travel does not duplicate the light. Keep the state API independent of the backpack UI so a future equipment menu can reuse it.
 4. Add the visible waist prop, optional small emitter glow, and restrained particles. Keep the off state visible and dark. Review KayKit asset decisions and source records before placing the model; record any new asset and `.meta` file.
-5. Verify with `./scripts/verify.sh`, `./scripts/build.sh windows` if the rendering or input changes affect Windows, `git diff --check`, and Mac standalone play at 60 Hz. Profile GPU cost in a representative build if shadows, multiple lights, or cookies are selected; Windows performance claims require the designated Windows PC.
+5. Verify with `./scripts/verify.sh`, `./scripts/build.sh windows` if the rendering or input changes affect Windows, `git diff --check`, and Mac standalone play at 60 Hz. Profile GPU cost in a representative build if shadows or multiple lights are selected; Windows performance claims require the designated Windows PC.
 
-## Remaining decision for the owner
+## Default used for implementation
 
-Should the on/off choice be remembered after saving and loading? Recommended: yes, with a new game starting off so the existing day/night look is the default. Region travel should preserve the current state either way.
+The choice is remembered across save/load and region travel. New characters and collections written before the lantern was added start with it off, preserving the existing day/night look.
 
 ## Unity references
 

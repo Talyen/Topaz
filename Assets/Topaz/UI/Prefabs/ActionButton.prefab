@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16078432, g: 0.23529412, b: 0.24313726, a: 1}
+  m_Color: {r: 0.19215687, g: 0.14509805, b: 0.11764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
-  m_EffectColor: {r: 0.8784314, g: 0.6509804, b: 0.42352942, a: 1}
+  m_EffectColor: {r: 0.9372549, g: 0.78039217, b: 0.5176471, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 0
 --- !u!114 &6760539698354811948
@@ -174,6 +174,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.UI.TopazFocusIndicator
   focusOutline: {fileID: 7080315443208870514}
+  focusMarker: {fileID: 0}
+  focusBorders: []
+  useOutline: 1
 --- !u!1 &1928892333743078075
 GameObject:
   m_ObjectHideFlags: 0
@@ -249,7 +252,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.9529412, g: 0.92156863, b: 0.8666667, a: 1}
+  m_fontColor: {r: 1, g: 0.94509804, b: 0.84705883, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

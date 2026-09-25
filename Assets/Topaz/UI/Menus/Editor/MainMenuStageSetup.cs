@@ -108,6 +108,7 @@ namespace Topaz.Editor
             Ref(stage, "volumeTrigger", homeTrigger);
             Ref(stage, "actorAnchor", actorAnchor.transform);
             Ref(stage, "appearance", appearance);
+            WarmRefugeStageSetup.ApplyToStage(root.transform);
             return stage;
         }
 

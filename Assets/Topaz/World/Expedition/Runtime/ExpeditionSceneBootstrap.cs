@@ -1,5 +1,6 @@
 using System.Collections;
 using Topaz.CombatStudy;
+using Topaz.LoopStudy;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
@@ -14,6 +15,7 @@ namespace Topaz.Expedition
         [SerializeField] Transform departure;
         [SerializeField] Transform supplyCache;
         [SerializeField] GameObject cacheVisual;
+        [SerializeField] Campfire campfire;
         [SerializeField] EnemyCombatant[] enemies;
         [SerializeField] EnemyCombatant guardian;
 
@@ -23,13 +25,15 @@ namespace Topaz.Expedition
         public Transform Arrival => arrival;
         public Transform Departure => departure;
         public Transform SupplyCache => supplyCache;
+        public Campfire Campfire => campfire;
         public bool CacheUnlocked => _enemiesReady && guardian != null && !guardian.IsAlive;
 
         public void Bind(PlayerVitality player, SafeZone home, bool cacheClaimed)
         {
             if (_bound) return;
             if (surface == null || arrival == null || departure == null || supplyCache == null ||
-                cacheVisual == null || enemies == null || guardian == null || player == null || home == null)
+                cacheVisual == null || campfire == null || enemies == null || guardian == null ||
+                player == null || home == null)
             {
                 Debug.LogError("Expedition clearing is missing a required reference.", this);
                 return;

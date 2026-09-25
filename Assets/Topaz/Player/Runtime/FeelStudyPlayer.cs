@@ -58,6 +58,7 @@ namespace Topaz.FeelStudy
         bool _interactRequested;
 
         public Vector3 AimDirection => _aimDirection;
+        public bool UsingStickAim => _usingStickAim;
         public Vector3 AimPointOnGround { get; private set; }
         public bool IsDodging => Time.time < _dodgeUntil;
         public bool IsDodgeVisualActive => Time.time < _dodgeVisualUntil;
@@ -68,14 +69,14 @@ namespace Topaz.FeelStudy
         public bool HasHitReaction => Time.time < _hitUntil;
         public Vector3 PlanarVelocity { get; private set; }
         public float PlanarSpeed { get; private set; }
-        public float TravelSpeed => travelSpeed;
+        public float TravelSpeed => 5.25f + 0.25f * (_worldSession?.Stats.MoveSpeed ?? 1);
         public float DodgeSeconds => dodgeSeconds;
         public float DodgeVisualSeconds => Mathf.Max(0.36f, dodgeSeconds);
         public float HitReactionSeconds => 0.3f;
 
         // The controller can report no contact while its small downward step remains in skin width.
         bool Grounded => _controller.isGrounded || Physics.Raycast(
-            transform.position + Vector3.up * 0.2f, Vector3.down, 0.25f,
+            transform.position + Vector3.up * 0.2f, Vector3.down, 0.29f,
             Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
 
         public void ShowHit() => _hitUntil = Time.time + HitReactionSeconds;
@@ -161,7 +162,8 @@ namespace Topaz.FeelStudy
                 LastDodgeFacing = ClassifyDodge(_dodgeDirection, _aimDirection);
                 _dodgeUntil = Time.time + dodgeSeconds;
                 _dodgeVisualUntil = Time.time + DodgeVisualSeconds;
-                _nextDodgeAt = _dodgeUntil + dodgeCooldownSeconds;
+                _nextDodgeAt = _dodgeUntil + Mathf.Max(0.35f,
+                    dodgeCooldownSeconds - 0.08f * (_worldSession?.Stats.Dodge ?? 0));
                 _combat?.OnDodgeStarted();
             }
             _dodgeRequested = false;
@@ -173,9 +175,10 @@ namespace Topaz.FeelStudy
             _jumpRequested = false;
 
             bool dodging = IsDodging;
-            float movementMultiplier = _combat != null ? _combat.MovementMultiplier : 1f;
+            float movementMultiplier = _combat != null
+                ? _combat.MovementMultiplier * _combat.GuardMovementMultiplier : 1f;
             Vector3 horizontal = dodging ? _dodgeDirection * dodgeSpeed :
-                moveDirection * travelSpeed * movementMultiplier;
+                moveDirection * TravelSpeed * movementMultiplier;
             if (Grounded && _verticalVelocity <= 0f)
                 _verticalVelocity = -1f;
             else

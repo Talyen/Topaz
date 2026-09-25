@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a0977114d5ce4c5ebbca786a7e5cae0, type: 3}
+  m_Name: CrossbowsSkill
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.SkillDefinition
+  stableId: crossbows
+  displayName: Crossbows
+  levelBenefit: Reload 1% quicker per level. +1 bolt damage at levels 5 and 10.
+  handlingPerLevel: 0.01
+  benefitAtFive: 1
+  benefitAtTen: 1
+  talents:
+  - id: crossbows.pierce
+    label: Pierce
+    description: A damaging bolt has a 20% chance to pass through and hit one more enemy in line.
+    amount: 0.2
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: crossbows.quick-reload
+    label: Quick Reload
+    description: Reload 0.18 seconds sooner.
+    amount: 0.18
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: crossbows.quick-aim
+    label: Quick Aim
+    description: Release a bolt 0.07 seconds sooner.
+    amount: 0.07
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: crossbows.long-sight
+    label: Long Sight
+    description: Bolts travel one meter farther.
+    amount: 1
+    durationSeconds: 0
+    intervalSeconds: 0

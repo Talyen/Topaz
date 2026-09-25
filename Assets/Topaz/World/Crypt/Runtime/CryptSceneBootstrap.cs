@@ -1,0 +1,117 @@
+using System.Collections;
+using Topaz.CombatStudy;
+using Topaz.LoopStudy;
+using Unity.AI.Navigation;
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace Topaz.Crypt
+{
+    /// <summary>References and persistent switches for the authored home crypt.</summary>
+    public sealed class CryptSceneBootstrap : MonoBehaviour
+    {
+        [SerializeField] NavMeshSurface surface;
+        [SerializeField] Transform arrival;
+        [SerializeField] Transform departure;
+        [SerializeField] Transform lever;
+        [SerializeField] GameObject shortcutBarrier;
+        [SerializeField] Transform materialCache;
+        [SerializeField] GameObject cacheVisual;
+        [SerializeField] Campfire campfire;
+        [SerializeField] SafeZone campfireSafeZone;
+        [SerializeField] EnemyCombatant[] ordinaryEnemies;
+        [SerializeField] EnemyCombatant mage;
+        [SerializeField] EnemyCombatant rogue;
+        [SerializeField] Light ritualLight;
+
+        WorldSession _session;
+        bool _bound;
+        bool _mageRecorded;
+        bool _rogueRecorded;
+
+        public Transform Arrival => arrival;
+        public Transform Departure => departure;
+        public Transform Lever => lever;
+        public Transform MaterialCache => materialCache;
+        public Campfire Campfire => campfire;
+        public EnemyCombatant Mage => mage;
+        public EnemyCombatant Rogue => rogue;
+
+        public bool InMageArena(Vector3 position) => mage != null &&
+            Vector3.Distance(new Vector3(position.x, 0f, position.z),
+                new Vector3(mage.transform.position.x, 0f, mage.transform.position.z)) < 7f;
+
+        public void Bind(WorldSession session, PlayerVitality player, SafeZone home)
+        {
+            if (_bound) return;
+            if (session == null || player == null || home == null || surface == null ||
+                arrival == null || departure == null || lever == null ||
+                shortcutBarrier == null || materialCache == null || cacheVisual == null ||
+                campfire == null || campfireSafeZone == null || mage == null ||
+                rogue == null || ritualLight == null ||
+                ordinaryEnemies == null)
+            {
+                Debug.LogError("Crypt scene is missing a required reference.", this);
+                return;
+            }
+            _bound = true;
+            _session = session;
+            SetShortcutOpen(session.CryptShortcutOpen);
+            SetCacheClaimed(session.CryptCacheClaimed);
+            _mageRecorded = session.CryptMageDefeated;
+            _rogueRecorded = session.CryptRogueCrossbowAwarded;
+            SetMageDefeated(_mageRecorded);
+            foreach (EnemyCombatant enemy in ordinaryEnemies)
+                if (enemy != null) enemy.BindTarget(player, campfireSafeZone);
+            mage.BindTarget(player, campfireSafeZone);
+            StartCoroutine(ActivateEnemies());
+        }
+
+        IEnumerator ActivateEnemies()
+        {
+            for (int frame = 0; frame < 90; frame++)
+            {
+                bool ready = surface.navMeshData != null;
+                foreach (EnemyCombatant enemy in ordinaryEnemies)
+                    if (enemy != null && !NavMesh.SamplePosition(enemy.transform.position,
+                        out _, 2f, NavMesh.AllAreas)) ready = false;
+                if (!_mageRecorded && !NavMesh.SamplePosition(mage.transform.position,
+                    out _, 2f, NavMesh.AllAreas)) ready = false;
+                if (ready)
+                {
+                    foreach (EnemyCombatant enemy in ordinaryEnemies)
+                        if (enemy != null) enemy.gameObject.SetActive(true);
+                    if (!_mageRecorded) mage.gameObject.SetActive(true);
+                    yield break;
+                }
+                yield return null;
+            }
+            Debug.LogError("Crypt enemies could not find their baked NavMesh.", this);
+        }
+
+        void Update()
+        {
+            if (_bound && !_rogueRecorded && rogue != null && rogue.IsDown)
+            {
+                _rogueRecorded = true;
+                _session.RecordCryptRogueDefeat(rogue.transform.position);
+            }
+            if (_bound && !_mageRecorded && mage != null && mage.IsDown)
+            {
+                _mageRecorded = true;
+                _session.RecordCryptMageDefeat(mage.transform.position);
+            }
+        }
+
+        public void SetShortcutOpen(bool open) => shortcutBarrier.SetActive(!open);
+
+        public void SetCacheClaimed(bool claimed) => cacheVisual.SetActive(!claimed);
+
+        public void SetMageDefeated(bool defeated)
+        {
+            ritualLight.enabled = !defeated;
+            if (defeated && mage != null && !mage.IsDown)
+                mage.gameObject.SetActive(false);
+        }
+    }
+}

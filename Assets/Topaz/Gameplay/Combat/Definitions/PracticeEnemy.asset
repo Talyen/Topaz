@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: PracticeEnemy
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.EnemyDefinition
   stableId: enemy.practice
-  health: 3
+  health: 15
   detectionRange: 9
   travelSpeed: 3.1
   strikeRange: 1.8
   strikeArcDegrees: 80
   telegraphSeconds: 0.65
   recoverySeconds: 0.9
-  damage: 1
+  damage: 4

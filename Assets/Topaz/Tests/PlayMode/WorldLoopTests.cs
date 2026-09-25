@@ -26,18 +26,17 @@ namespace Topaz.Tests
 
             object[] cue = { null, null };
             Assert.That((bool)session.GetType().GetMethod("TryGetInteraction")
-                .Invoke(session, cue), Is.True);
-            Assert.That(((Transform)cue[0]).name, Is.EqualTo("Interaction Anchor"));
-            Assert.That(cue[1], Is.EqualTo("Chop"));
+                .Invoke(session, cue), Is.False,
+                "Gathering should not show an E interaction chip.");
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
 
             Assert.That(Call<bool>(session, "TryInteract"), Is.True);
-            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Axe"));
+            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Logging Axe"));
             Assert.That(Call<bool>(session, "TryInteract"), Is.True,
                 "A second press during the committed chop is consumed.");
             yield return new WaitForSeconds(.43f);
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2));
-            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(1));
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
             yield return new WaitForSeconds(.4f);
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
             object save = session.GetType().GetField("_data",
@@ -61,7 +60,7 @@ namespace Topaz.Tests
             Set(gamepad.buttonWest, 1f);
             yield return null;
             Set(gamepad.buttonWest, 0f);
-            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Axe"));
+            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Logging Axe"));
             yield return new WaitForSeconds(.43f);
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2));
             Set(gamepad.buttonEast, 1f);
@@ -141,7 +140,7 @@ namespace Topaz.Tests
             Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                 Vector3.forward, 2.1f, 90f), Is.True);
             Assert.That(Read<bool>(harvest, "IsAvailable"), Is.False);
-            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(3));
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(10));
             Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(320));
             Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
             CollectDrop(session);
@@ -149,7 +148,7 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator GamepadAxeSwingChopsInAimedDirection()
+        public IEnumerator GamepadAttackAutoEquipsAxeForNearbyTree()
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
@@ -160,10 +159,7 @@ namespace Topaz.Tests
             Component session = player.GetComponent("WorldSession");
             Component harvest = tree.GetComponent("HarvestTree");
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
-            Set(gamepad.buttonNorth, 1f);
-            yield return null;
-            Set(gamepad.buttonNorth, 0f);
-            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Axe"));
+            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
 
             Vector3 towardTree = (tree.transform.position - player.transform.position).normalized;
             Vector3 right = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
@@ -175,13 +171,46 @@ namespace Topaz.Tests
             yield return new WaitForSeconds(.42f);
             Set(gamepad.rightTrigger, 0f);
 
-            Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2));
+            Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2),
+                "Attack should choose the tree and draw the Logging Axe.");
+            yield return new WaitForSeconds(.4f);
+            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
+            Set(gamepad.buttonWest, 1f);
+            yield return null;
+            Set(gamepad.buttonWest, 0f);
+            yield return new WaitForSeconds(.43f);
+
+            Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(1));
             Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
-            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(1));
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
         }
 
         [UnityTest]
-        public IEnumerator EachChopAwardsLoggingAndHarvestDropsWoodUntilCollected()
+        public IEnumerator LivingEnemyInMeleeRangePreventsAutoGather()
+        {
+            Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject player = GameObject.Find("Player");
+            GameObject tree = GameObject.Find("Authored Tree 01");
+            Component harvest = tree.GetComponent("HarvestTree");
+            Component session = player.GetComponent("WorldSession");
+            GameObject enemy = GameObject.Find("Enemy");
+            enemy.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+            Teleport(player, tree.transform.position + Vector3.back * 1.3f);
+            enemy.transform.position = player.transform.position + Vector3.back;
+            yield return null;
+
+            Set(gamepad.rightTrigger, 1f);
+            yield return new WaitForSeconds(.42f);
+            Set(gamepad.rightTrigger, 0f);
+            Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(3));
+            Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
+        }
+
+        [UnityTest]
+        public IEnumerator CompletedTreeAwardsLoggingAndHarvestDropsWoodUntilCollected()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
@@ -201,13 +230,13 @@ namespace Topaz.Tests
                 Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                     towardTree, 2.1f, 90f), Is.True);
                 Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
-                Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(chop + 1));
+                Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
             }
 
             Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                 towardTree, 2.1f, 90f), Is.True);
             Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
-            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(3));
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(10));
             Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
             Assert.That(Read<bool>(harvest, "IsAvailable"), Is.False);
             CollectDrop(session);
@@ -230,7 +259,7 @@ namespace Topaz.Tests
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
             Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
                 Vector3.forward, 2.1f, 90f), Is.True);
-            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(4));
+            Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(10));
         }
 
         [UnityTest]

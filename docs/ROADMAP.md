@@ -16,21 +16,22 @@ Example: `1. **Recoverable death** — Make defeat meaningful without erasing th
 
 The ordered feature backlog. The first item is the default choice for the next new piece of work.
 
-1. **UI design system** — Establish a consistent visual language and reusable patterns for menus, HUDs, inventories, prompts, and controls.
-2. **Asset approval and exclusion system** — Track which candidate assets are approved for Topaz or ruled out, with a short reason for each decision.
-3. **Characters and worlds** — Let players create appearance-only Characters and enter any fresh or existing World. See [the data model](CHARACTERS_AND_WORLDS.md) and [selection plan](plans/CHARACTER_SELECTION_PLAN.md).
-4. **Equipment system** — Equip, compare, and persist weapons, tools, armor, and other wearable items.
-5. **Weapon types** — Add weapons with meaningfully different reach, timing, impact, and combat decisions.
-6. **Tool types and gathering** — Expand beyond the axe and tree with distinct tools, resources, and gathering interactions.
-7. **Deeper use-based progression** — Grow skills through play and make deliberate talent choices without fixed classes.
-8. **Recoverable death** — Make defeat meaningful without erasing the player's world or long-term progress.
-9. **Home-area dungeon entrance and first dungeon** — Add a visible entrance near the homestead leading to an authored challenge space with a clear reset rule and worthwhile rewards.
-10. **Broader homestead building** — Let the player place and use more structures within designated home plots.
-11. **Day and night cycle** — Move through readable times of day that change the world's ambience without forcing expedition timers.
-12. **Weather** — Add weather states that make the world feel alive while preserving visibility and combat readability.
-13. **Expanded authored regions** — Travel through multiple connected outdoor areas whose important changes persist.
-14. **Campfire travel** — Discover campfires and use them as understandable travel points between visited areas.
-15. **Gentle survival needs** — Add low-pressure needs that make preparation and returning home valuable.
+1. **Enemy variety and loot** — Give expeditions distinct threats and rewards so choosing a weapon and taking a risk matter. [Crypt Rogue and Crossbow first slice](studies/HOME_CRYPT_STUDY.md) is in Mac review; broader variety remains.
+2. **UI design system** — Establish a consistent visual language and reusable patterns for menus, HUDs, inventories, prompts, and controls.
+3. **Asset approval and exclusion system** — Track which candidate assets are approved for Topaz or ruled out, with a short reason for each decision.
+4. **Characters and worlds** — Let players create appearance-only Characters and enter any fresh or existing World. See [the data model](CHARACTERS_AND_WORLDS.md) and [selection plan](plans/CHARACTER_SELECTION_PLAN.md).
+5. **Equipment system** — Equip, compare, and persist weapons, tools, armor, and other wearable items.
+6. **Weapon types** — Add weapons with meaningfully different reach, timing, impact, and combat decisions.
+7. **Tool types and gathering** — Expand beyond the axe and tree with distinct tools, resources, and gathering interactions. [Mining first slice](studies/MINING_AND_HOME_BUILDING_STUDY.md) is in Mac review.
+8. **Deeper use-based progression** — Grow skills through play and make deliberate talent choices without fixed classes. [First playable design](plans/PROGRESSION_PLAN.md) is in Mac review.
+9. **Recoverable death** — Make defeat meaningful without erasing the player's world or long-term progress.
+10. **Home-area dungeon entrance and first dungeon** — Add a visible entrance near the homestead leading to an authored challenge space with a clear reset rule and worthwhile rewards. [First crypt slice](studies/HOME_CRYPT_STUDY.md) is in Mac review.
+11. **Broader homestead building** — Let the player place and use more structures within designated home plots.
+12. **Day and night cycle** — Move through readable times of day that change the world's ambience without forcing expedition timers.
+13. **Weather** — Add weather states that make the world feel alive while preserving visibility and combat readability.
+14. **Expanded authored regions** — Travel through multiple connected outdoor areas whose important changes persist.
+15. **Campfire travel** — Discover campfires and use them as understandable travel points between visited areas.
+16. **Gentle survival needs** — Add low-pressure needs that make preparation and returning home valuable.
 
 ## Ideas
 
@@ -41,3 +42,5 @@ Unsorted possibilities for brainstorming. Promote an idea only when we want it o
 - **Characters and quests** — Give the authored world inhabitants, relationships, and reasons to explore.
 - **Homestead growth** — Let the safe home visibly develop as the player returns with resources and discoveries.
 - **World audio and music** — Give regions, combat, and the homestead distinct sound identities.
+- **Exploration map and discoveries** — Help players remember visited regions, entrances, and campfires while leaving room to find secrets.
+- **Control and comfort options** — Let players rebind controls, adjust text readability, and tune camera motion and combat effects.

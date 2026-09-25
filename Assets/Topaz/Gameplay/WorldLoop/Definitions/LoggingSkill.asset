@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a0977114d5ce4c5ebbca786a7e5cae0, type: 3}
+  m_Name: LoggingSkill
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.SkillDefinition
+  stableId: logging
+  displayName: Logging
+  levelBenefit: Logging actions are 1.5% quicker per level. Trees yield +1 Wood at levels 5 and 10.
+  handlingPerLevel: 0.015
+  benefitAtFive: 1
+  benefitAtTen: 1
+  talents:
+  - id: logging.quick-chop
+    label: Quick Chop
+    description: Logging actions are 10% quicker.
+    amount: 0.1
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: logging.deep-bite
+    label: Deep Bite
+    description: Each valid chop makes one extra unit of progress toward felling a tree.
+    amount: 1
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: logging.clean-fell
+    label: Clean Fell
+    description: A completed tree drops one extra Wood.
+    amount: 1
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: logging.stewardship
+    label: Stewardship
+    description: A tree you fell regrows 12 World hours sooner, but never in less than eight hours.
+    amount: 12
+    durationSeconds: 0
+    intervalSeconds: 0

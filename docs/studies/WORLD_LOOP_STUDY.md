@@ -4,7 +4,7 @@ This is a small, authored systems study in the Bootstrap scene. The [day and nig
 
 ## Try the loop
 
-1. Leave the blue home boundary and approach the tree to the upper-left. Press `E` (`X` on gamepad) three separate times to chop it. Each press temporarily equips the axe, aims at the tree, performs one timed chop, and restores your previous weapon. You can still equip the axe with `2` (`Y` cycles tools on gamepad) and chop manually with click/right trigger. Every successful chop earns Logging XP. The final chop drops Wood on the ground; walk near it to collect it.
+1. Leave the blue home boundary and approach the tree to the upper-left. Press `E` (`X` on gamepad) three separate times to chop it. Each press temporarily draws the Logging Axe, aims at the tree, performs one timed chop, and restores your journal-selected weapon or tool. Completing the tree earns Logging XP even if gear or a talent reduces the chops needed. The final chop drops Wood on the ground; walk near it to collect it.
 2. Return to the wooden workbench inside the home boundary. Press `E` (`X` on gamepad) and craft the chest for three Wood.
 3. Aim at a clear spot inside the home boundary and click (`A` on gamepad) to place the chest. `Esc` or `B` cancels placement without losing the crafted chest.
 4. Approach the chest and press `E`/`X` to deposit or withdraw Wood. The bedroll can be used anytime and skips eight in-game hours. The tree returns 72 in-game hours after harvest, whether time passes through play, rest, or both.
@@ -13,6 +13,7 @@ This is a small, authored systems study in the Bootstrap scene. The [day and nig
 Exploration shows one nearby interaction chip instead of a permanent controls HUD. Day, Wood, skills, and equipment remain available through the backpack and related menus. The combat study sword and enemy remain available.
 
 The [first expedition clearing](EXPEDITION_STUDY.md) adds a player-chosen trip through two scouts and a wide-sweep guardian. Its one-time Wood cache feeds this same chest recipe, inventory, and save.
+The [mining and home building slice](MINING_AND_HOME_BUILDING_STUDY.md) adds Stone, Iron, and repeatable home builds alongside this original study.
 
 ## Data boundaries
 

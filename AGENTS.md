@@ -25,6 +25,7 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
    For KayKit art, an absent decision or `keep` in `AssetReview/decisions.json` permits use in new environments. `maybe` and `archive` do not. Follow `docs/ASSET_REVIEW.md`; archived FBX files live outside Unity's `Assets` folder.
    Do not assign or change review decisions on the owner's behalf.
 6. Run `./scripts/verify.sh` for project changes and `./scripts/build.sh windows` when Windows build compatibility is affected. Inspect console/build errors and `git diff --check`.
+   For iteration, use `./scripts/verify.sh --quick --mode PlayMode --filter TestName`; the full command remains the handoff gate. Start with `./scripts/doctor.sh` when the local Editor or previous check state is unclear. Full logs and JUnit reports stay in ignored `TestResults/`; report the commands and outcomes in the handoff. Do not repeat an unchanged full gate without a concrete reason.
 7. During early feel prototypes, play the Mac build on a 60 Hz display and fix obvious jitter or hitches. Formal scenario capture and CPU/GPU/memory comparisons begin when a representative gameplay slice exists. See `docs/PERFORMANCE.md`.
 
 Do not claim the future 1080p/120 target from Editor Play mode or the empty bootstrap scene. Windows performance requires measurements on the designated Windows PC.

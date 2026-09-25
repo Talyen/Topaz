@@ -73,13 +73,14 @@ namespace Topaz.Editor
             Rule(optionsCard, -174f, 550f);
             UnityEngine.UI.Button displayMode = Button(optionsCard, "Display: Borderless native", -220, 560);
             UnityEngine.UI.Button windowSize = Button(optionsCard, "Window size: 1600 × 900", -320, 560);
-            UnityEngine.UI.Button visualLabButton = Button(optionsCard, "Graphics", -420, 560);
+            UnityEngine.UI.Button uiScale = Button(optionsCard, "UI Scale: 100%", -420, 560);
+            UnityEngine.UI.Button visualLabButton = Button(optionsCard, "Graphics", -520, 560);
             TMP_Text displayInfo = Label(optionsCard,
                 "Uses the display's native resolution.", 22,
-                -530, 65, theme.MutedText);
+                -625, 65, theme.MutedText);
             displayInfo.rectTransform.sizeDelta = new Vector2(550f, 82f);
             displayInfo.textWrappingMode = TextWrappingModes.Normal;
-            UnityEngine.UI.Button back = Button(optionsCard, "Back", -645, 560);
+            UnityEngine.UI.Button back = Button(optionsCard, "Back", -735, 560);
 
             GameMenus menus = canvas.GetComponent<GameMenus>();
             if (menus == null) menus = canvas.AddComponent<GameMenus>();
@@ -99,12 +100,15 @@ namespace Topaz.Editor
             Ref(menus, "pauseQuitButton", pauseQuit);
             Ref(menus, "displayModeButton", displayMode);
             Ref(menus, "windowSizeButton", windowSize);
+            Ref(menus, "uiScaleButton", uiScale);
             Ref(menus, "visualLabButton", visualLabButton);
             Ref(menus, "optionsBackButton", back);
             Ref(menus, "displayInfo", displayInfo);
             Ref(player.GetComponent<WorldSession>(), "menus", menus);
 
             CharacterSelectionSetup.Configure(scene, canvas, player, menus);
+            TitleRedesignSetup.ApplyToCanvas(canvas);
+            MenuSurfacePolishSetup.ApplyToCanvas(canvas.transform);
 
             camera.orthographicSize = 7.2f;
             Float(cameraRig, "minimumZoom", 5.5f);
@@ -119,6 +123,38 @@ namespace Topaz.Editor
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
             Debug.Log("[Topaz] Desktop title, pause, and options menus are ready.");
+        }
+
+        [MenuItem("Topaz/Upgrade UI Scale Control")]
+        public static void UpgradeUiScaleControl()
+        {
+            Scene scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            GameObject canvas = GameObject.Find("Loop HUD");
+            Transform card = canvas?.transform.Find("Desktop Menus/Options Screen/Options Composition");
+            GameMenus menus = canvas?.GetComponent<GameMenus>();
+            if (card == null || menus == null)
+                throw new InvalidOperationException("Build the desktop Options menu first.");
+            theme = AssetDatabase.LoadAssetAtPath<TopazUiTheme>(
+                "Assets/Topaz/UI/Themes/TopazUiTheme.asset");
+            if (theme == null) throw new InvalidOperationException("Topaz UI theme is missing.");
+            UnityEngine.UI.Button uiScale = card.Find("UI Scale: 100%")?.GetComponent<UnityEngine.UI.Button>();
+            if (uiScale == null) uiScale = Button(card, "UI Scale: 100%", -420, 560);
+            Ref(menus, "uiScaleButton", uiScale);
+            Move(card.Find("Graphics"), -520f);
+            Move(card.Find("Back"), -735f);
+            TMP_Text displayInfo = card.GetComponentsInChildren<TMP_Text>(true)
+                .FirstOrDefault(value => value.text == "Uses the display's native resolution." ||
+                    value.name == "Display Info");
+            if (displayInfo != null) Move(displayInfo.transform, -625f);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            Debug.Log("[Topaz] UI Scale control added to Options.");
+        }
+
+        static void Move(Transform target, float top)
+        {
+            if (target is RectTransform rect)
+                rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, top);
         }
 
         static GameObject FullPanel(Transform parent, string name, float opacity)

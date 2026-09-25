@@ -25,9 +25,10 @@ git lfs install
 unity mcp configure codex --local --project-path "$PWD" --yes
 ./scripts/verify.sh
 ./scripts/build.sh windows
+./scripts/doctor.sh
 ```
 
-The `unity mcp configure` command writes a machine-specific `.codex/config.toml` that is ignored by Git. `verify.sh` runs Edit Mode and Play Mode tests and builds a Mac player. The Windows build is a cross-platform smoke check; final Windows performance must be measured on Windows hardware. Generated players, reports, Unity `Library`, and logs are ignored.
+The `unity mcp configure` command writes a machine-specific `.codex/config.toml` that is ignored by Git. `verify.sh` runs Edit Mode and Play Mode tests and builds a Mac player; `verify.sh --quick --mode PlayMode --filter TestName` runs a focused iteration check without a build. The Windows build is a cross-platform smoke check; final Windows performance must be measured on Windows hardware. Check commands print brief results and save complete logs and JUnit reports in ignored `TestResults/`. See the [agent workflow](docs/AGENT_WORKFLOW.md) for test selection and read-only Editor diagnostics. Generated players, reports, Unity `Library`, and logs are ignored.
 
 The Bootstrap player can produce a diagnostic timing report when launched with `--topaz-perf`. That report checks the capture pipeline; it does not establish the future game's frame rate. See [performance process](docs/PERFORMANCE.md).
 

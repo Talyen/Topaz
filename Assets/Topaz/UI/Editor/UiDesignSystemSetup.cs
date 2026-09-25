@@ -58,6 +58,9 @@ namespace Topaz.Editor
             BuildInteractionChip(canvas);
             BuildVitality(canvas, theme);
             StyleGraphics(canvas.Find("Graphics"), theme);
+            EquipmentUiSetup.ApplyToCanvas(canvas);
+            SkillsUiSetup.ApplyToCanvas(canvas);
+            JournalPolishSetup.ApplyToCanvas(canvas);
         }
 
         internal static void StyleSelectable(UnityEngine.UI.Selectable selectable, TopazUiTheme theme)
@@ -273,7 +276,40 @@ namespace Topaz.Editor
             SetRef(hud, "selectedItemIcon", selectedIcon);
             SetRefArray(hud, "backpackSlotButtons", slotButtons);
             SetRefArray(hud, "backpackSlotLabels", slotLabels);
+            EnsureLanternEntry(journal, hud, theme);
             root.gameObject.SetActive(false);
+        }
+
+        internal static void EnsureLanternEntry(Transform journal, LoopHud hud, TopazUiTheme theme)
+        {
+            if (journal == null || hud == null || theme == null)
+                throw new ArgumentNullException("Lantern journal entry is missing its parent or theme.");
+            Transform existing = journal.Find("Lantern Entry");
+            UnityEngine.UI.Button button;
+            TMP_Text label;
+            if (existing != null)
+            {
+                button = existing.GetComponent<UnityEngine.UI.Button>();
+                label = existing.GetComponentInChildren<TMP_Text>(true);
+                if (button == null || label == null)
+                    throw new InvalidOperationException("Existing Lantern Entry is incomplete.");
+            }
+            else
+            {
+                RectTransform entry = Rect("Lantern Entry", journal, new Vector2(0f, 1f),
+                    new Vector2(900f, -654f), new Vector2(420f, 68f));
+                entry.pivot = new Vector2(0f, 1f);
+                UnityEngine.UI.Image image = entry.gameObject.AddComponent<UnityEngine.UI.Image>();
+                image.color = theme.Raised;
+                button = entry.gameObject.AddComponent<UnityEngine.UI.Button>();
+                button.targetGraphic = image;
+                label = Text("Label", entry, "Lantern  •  Off", 27f, theme.Text);
+                Stretch(label.rectTransform, 12f, 5f);
+                StyleJournalSelectable(button, theme);
+            }
+            label.color = theme.Text;
+            SetRef(hud, "lanternButton", button);
+            SetRef(hud, "lanternButtonLabel", label);
         }
 
         static void BuildInteractionChip(Transform canvas)
@@ -360,11 +396,22 @@ namespace Topaz.Editor
 
             UnityEngine.UI.Button craft = JournalButton("Craft chest", journal, theme,
                 new Vector2(1000f, -570f), new Vector2(420f, 68f));
+            UnityEngine.UI.Button path = JournalButton("Place Stone path  •  1 Stone",
+                journal, theme, new Vector2(242f, -550f), new Vector2(545f, 60f));
+            UnityEngine.UI.Button anvil = JournalButton("Place Blacksmith's Anvil  •  6 Stone + 2 Iron",
+                journal, theme, new Vector2(242f, -625f), new Vector2(545f, 60f));
+            UnityEngine.UI.Button edit = JournalButton("Edit home", journal, theme,
+                new Vector2(242f, -700f), new Vector2(545f, 60f));
+            path.GetComponentInChildren<TMP_Text>().fontSize = 23f;
+            anvil.GetComponentInChildren<TMP_Text>().fontSize = 21f;
             UnityEngine.UI.Button close = JournalButton("Close", journal, theme,
                 new Vector2(1000f, -660f), new Vector2(420f, 68f));
             SetRef(hud, "craftPanel", root.gameObject);
             SetRef(hud, "craftDescription", description);
             SetRef(hud, "craftButton", craft);
+            SetRef(hud, "pathButton", path);
+            SetRef(hud, "anvilButton", anvil);
+            SetRef(hud, "editHomeButton", edit);
             SetRef(hud, "craftCloseButton", close);
             root.gameObject.SetActive(false);
         }
@@ -378,41 +425,65 @@ namespace Topaz.Editor
             PlaceFromTopLeft(title.rectTransform, new Vector2(242f, -110f), new Vector2(550f, 90f));
             title.alignment = TextAlignmentOptions.Left;
             TMP_Text description = Text("Description", journal, "", 28f, theme.Ink);
-            PlaceFromTopLeft(description.rectTransform, new Vector2(242f, -235f),
-                new Vector2(545f, 138f));
+            PlaceFromTopLeft(description.rectTransform, new Vector2(242f, -190f),
+                new Vector2(1200f, 60f));
             description.alignment = TextAlignmentOptions.TopLeft;
             description.textWrappingMode = TextWrappingModes.Normal;
 
-            UnityEngine.UI.Button deposit = JournalButton("Deposit all", journal, theme,
-                new Vector2(242f, -415f), new Vector2(510f, 70f));
-            UnityEngine.UI.Button withdraw = JournalButton("Withdraw all", journal, theme,
-                new Vector2(242f, -505f), new Vector2(510f, 70f));
+            UnityEngine.UI.Button deposit = JournalButton("Deposit materials", journal, theme,
+                new Vector2(242f, -765f), new Vector2(230f, 62f));
+            UnityEngine.UI.Button withdraw = JournalButton("Withdraw materials", journal, theme,
+                new Vector2(485f, -765f), new Vector2(230f, 62f));
+            UnityEngine.UI.Button storeGear = JournalButton("Store gear", journal, theme,
+                new Vector2(730f, -765f), new Vector2(230f, 62f));
+            UnityEngine.UI.Button takeGear = JournalButton("Take gear", journal, theme,
+                new Vector2(973f, -765f), new Vector2(230f, 62f));
             UnityEngine.UI.Button close = JournalButton("Close", journal, theme,
-                new Vector2(242f, -595f), new Vector2(510f, 70f));
+                new Vector2(1216f, -765f), new Vector2(230f, 62f));
+
+            TMP_Text backpackHeading = Text("Backpack Heading", journal, "Backpack", 42f,
+                theme.Ink);
+            PlaceFromTopLeft(backpackHeading.rectTransform, new Vector2(242f, -260f),
+                new Vector2(530f, 60f));
+            RectTransform backpackGrid = Rect("Chest Backpack Slots", journal,
+                new Vector2(0f, 1f), new Vector2(242f, -330f), new Vector2(536f, 350f));
+            backpackGrid.pivot = new Vector2(0f, 1f);
+            var backpackLayout = backpackGrid.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
+            backpackLayout.cellSize = new Vector2(126f, 76f);
+            backpackLayout.spacing = new Vector2(8f, 8f);
+            backpackLayout.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
+            backpackLayout.constraintCount = 4;
+            var backpackButtons = new UnityEngine.UI.Button[WorldSession.BackpackCapacity];
+            var backpackLabels = new TMP_Text[backpackButtons.Length];
+            for (int i = 0; i < backpackButtons.Length; i++)
+            {
+                backpackButtons[i] = JournalButton($"Backpack Gear {i + 1:00}", backpackGrid,
+                    theme, Vector2.zero, backpackLayout.cellSize);
+                backpackLabels[i] = backpackButtons[i].GetComponentInChildren<TMP_Text>();
+                backpackLabels[i].fontSize = 20f;
+            }
 
             TMP_Text slotHeading = Text("Chest Slots Heading", journal, "Chest contents", 46f,
                 theme.Ink);
-            PlaceFromTopLeft(slotHeading.rectTransform, new Vector2(1010f, -118f),
+            PlaceFromTopLeft(slotHeading.rectTransform, new Vector2(903f, -260f),
                 new Vector2(500f, 72f));
             slotHeading.alignment = TextAlignmentOptions.Left;
             RectTransform gridRect = Rect("Chest Slots", journal, new Vector2(0f, 1f),
-                new Vector2(1010f, -228f), new Vector2(500f, 322f));
+                new Vector2(903f, -330f), new Vector2(536f, 270f));
             gridRect.pivot = new Vector2(0f, 1f);
             var grid = gridRect.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
-            grid.cellSize = new Vector2(116f, 93f);
+            grid.cellSize = new Vector2(126f, 76f);
             grid.spacing = new Vector2(8f, 8f);
             grid.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = 4;
             var labels = new TMP_Text[12];
+            var buttons = new UnityEngine.UI.Button[12];
             for (int i = 0; i < labels.Length; i++)
             {
-                RectTransform slot = Rect($"Chest Slot {i + 1:00}", gridRect,
-                    new Vector2(.5f, .5f), Vector2.zero, grid.cellSize);
-                UnityEngine.UI.Image image = slot.gameObject.AddComponent<UnityEngine.UI.Image>();
-                image.color = WithAlpha(theme.Ink, .12f);
-                image.raycastTarget = false;
-                labels[i] = Text("Contents", slot, "—", 20f, theme.Ink);
-                Stretch(labels[i].rectTransform, 6f, 6f);
+                buttons[i] = JournalButton($"Chest Slot {i + 1:00}", gridRect,
+                    theme, Vector2.zero, grid.cellSize);
+                labels[i] = buttons[i].GetComponentInChildren<TMP_Text>();
+                labels[i].fontSize = 20f;
             }
 
             SetRef(hud, "chestPanel", root.gameObject);
@@ -420,7 +491,12 @@ namespace Topaz.Editor
             SetRef(hud, "depositButton", deposit);
             SetRef(hud, "withdrawButton", withdraw);
             SetRef(hud, "chestCloseButton", close);
+            SetRef(hud, "storeGearButton", storeGear);
+            SetRef(hud, "takeGearButton", takeGear);
             SetRefArray(hud, "chestSlotLabels", labels);
+            SetRefArray(hud, "chestSlotButtons", buttons);
+            SetRefArray(hud, "chestBackpackLabels", backpackLabels);
+            SetRefArray(hud, "chestBackpackButtons", backpackButtons);
             root.gameObject.SetActive(false);
         }
 

@@ -183,7 +183,7 @@ namespace Topaz.Editor
             homeLight.type = LightType.Point;
             homeLight.color = new Color(1f,.73f,.48f);
             homeLight.intensity = 10f;
-            homeLight.range = 7.5f;
+            homeLight.range = 11f;
             homeLight.shadows = LightShadows.None;
 
             VisualOptionsMenu optionsMenu = CreateOptionsMenu(hud.transform,
@@ -295,8 +295,10 @@ namespace Topaz.Editor
             GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             Material tools = AssetDatabase.LoadAssetAtPath<Material>(
                 "Assets/Topaz/Presentation/Art/Materials/Tools.mat");
-            if (source == null || tools == null)
-                throw new InvalidOperationException("KayKit lantern or its URP material is missing.");
+            Material glass = AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Topaz/Presentation/Art/Materials/Lantern Glass.mat");
+            if (source == null || tools == null || glass == null)
+                throw new InvalidOperationException("KayKit lantern or its URP materials are missing.");
             GameObject model = PrefabUtility.InstantiatePrefab(source) as GameObject;
             model.transform.SetParent(anchor.transform, false);
             model.transform.localPosition = Vector3.zero;
@@ -304,8 +306,12 @@ namespace Topaz.Editor
             Bounds bounds = renderers[0].bounds;
             foreach (Renderer meshRenderer in renderers)
             {
-                meshRenderer.sharedMaterials = Enumerable.Repeat(tools,
-                    Math.Max(1, meshRenderer.sharedMaterials.Length)).ToArray();
+                Material[] materials = meshRenderer.sharedMaterials;
+                for (int i = 0; i < materials.Length; i++)
+                    materials[i] = materials[i] != null &&
+                        materials[i].name.IndexOf("glass", StringComparison.OrdinalIgnoreCase) >= 0
+                        ? glass : tools;
+                meshRenderer.sharedMaterials = materials;
                 bounds.Encapsulate(meshRenderer.bounds);
             }
             if (bounds.size.y > .001f) model.transform.localScale = Vector3.one * (.55f / bounds.size.y);

@@ -27,7 +27,7 @@ namespace Topaz.Tests
             Assert.That(vitality, Is.Not.Null);
             bool damaged = (bool)vitality.GetType().GetMethod("TryTakeDamage").Invoke(vitality, new object[] { 1 });
             Assert.That(damaged, Is.False, "The player starts in the safe homestead.");
-            Assert.That(Health(vitality), Is.EqualTo(3));
+            Assert.That(Health(vitality), Is.EqualTo(6));
         }
 
         [UnityTest]
@@ -85,6 +85,65 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
+        public IEnumerator HeavyAxeHitAwardsAxesXpAndInterruptsNormalEnemy()
+        {
+            Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return null;
+            GameObject player = GameObject.Find("Player");
+            Component session = player.GetComponent("WorldSession");
+            Teleport(player, GameObject.Find("Equipment Rack").transform.position + Vector3.back);
+            yield return null;
+            const string axeId = "gear.axe.twohanded.starter";
+            Assert.That((bool)session.GetType().GetMethod("TryClaimRackItem")
+                .Invoke(session, new object[] { axeId }), Is.True);
+            var pack = (System.Collections.IList)session.GetType()
+                .GetProperty("BackpackSlots").GetValue(session);
+            int axeIndex = -1;
+            for (int i = 0; i < pack.Count; i++)
+                if ((string)pack[i].GetType().GetField("itemId").GetValue(pack[i]) == axeId)
+                    axeIndex = i;
+            Assert.That((bool)session.GetType().GetMethod("TryEquipFromBackpack")
+                .Invoke(session, new object[] { axeIndex }), Is.True);
+
+            GameObject enemy = GameObject.Find("Enemy");
+            Component combatant = enemy.GetComponent("EnemyCombatant");
+            int before = Health(combatant);
+            Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right,
+                Vector3.up).normalized;
+            Teleport(player, enemy.transform.position - screenRight * 1.35f);
+            yield return new WaitForSeconds(0.1f);
+            Set(gamepad.rightStick, Vector2.right);
+            yield return null;
+            Set(gamepad.rightTrigger, 1f);
+            yield return new WaitForSeconds(0.43f);
+            Set(gamepad.rightTrigger, 0f);
+
+            int damage = before - Health(combatant);
+            Assert.That(damage, Is.EqualTo(6),
+                "Starter axe should deal one more damage than the starter sword.");
+            Assert.That((int)session.GetType().GetProperty("AxesExperience").GetValue(session),
+                Is.EqualTo(damage));
+            Assert.That((int)session.GetType().GetProperty("SwordsExperience").GetValue(session),
+                Is.Zero);
+            Assert.That(Flag(combatant, "HasHitReaction"), Is.True);
+            float staggerUntil = (float)combatant.GetType().GetField("_guardStaggerUntil",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(combatant);
+            Assert.That(staggerUntil, Is.GreaterThan(Time.time));
+            Assert.That(Flag(combatant, "IsAttacking"), Is.False);
+            Animator animator = player.GetComponentInChildren<Animator>();
+            Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("CombatAxe"), Is.True);
+            combatant.GetType().GetMethod("TakeDamage").Invoke(combatant,
+                new object[] { Health(combatant) - 2 });
+            Component combat = player.GetComponent("PlayerCombat");
+            combat.GetType().GetMethod("TryDamage", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(combat, new object[] { combatant });
+            Assert.That(Health(combatant), Is.Zero);
+            Assert.That((int)session.GetType().GetProperty("AxesExperience").GetValue(session),
+                Is.EqualTo(damage + 2), "XP must use actual health removed, not overkill damage.");
+        }
+
+        [UnityTest]
         public IEnumerator EnemyTelegraphsBeforeHittingStationaryPlayer()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
@@ -101,11 +160,11 @@ namespace Topaz.Tests
             Animator animator = enemy.GetComponentInChildren<Animator>();
             Assert.That(animator, Is.Not.Null);
             Assert.That(tell.enabled, Is.True, "The red arc must appear before the strike.");
-            Assert.That(Health(vitality), Is.EqualTo(3));
+            Assert.That(Health(vitality), Is.EqualTo(6));
             float deadline = Time.time + 1f;
             while (tell.enabled && Time.time < deadline) yield return null;
             Assert.That(tell.enabled, Is.False, "The warning arc should end at the strike.");
-            Assert.That(Health(vitality), Is.LessThan(3));
+            Assert.That(Health(vitality), Is.LessThan(6));
             AnimatorStateInfo attackPose = animator.GetCurrentAnimatorStateInfo(0);
             Assert.That(attackPose.IsName("Attack"), Is.True);
             Assert.That(attackPose.normalizedTime, Is.InRange(0.44f, 0.62f),
@@ -134,7 +193,7 @@ namespace Topaz.Tests
             bool damaged = (bool)vitality.GetType().GetMethod("TryTakeDamage")
                 .Invoke(vitality, new object[] { 1 });
             Assert.That(damaged, Is.False);
-            Assert.That(Health(vitality), Is.EqualTo(3));
+            Assert.That(Health(vitality), Is.EqualTo(6));
             Release(keyboard.leftShiftKey);
         }
 

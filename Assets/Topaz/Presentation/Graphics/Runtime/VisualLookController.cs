@@ -41,20 +41,20 @@ namespace Topaz.VisualStudy
 
         // Stylized key light stays above the horizon so the fixed camera retains readable forms.
         static readonly TimeKey[] TimeKeys = {
-            new TimeKey(0f, .9f, new Color(.62f, .75f, 1f),
-                new Color(.28f, .31f, .38f), new Color(.18f, .22f, .29f), 0f, 1.12f, .55f, 45f, -30f),
-            new TimeKey(4f, .9f, new Color(.72f, .80f, 1f),
-                new Color(.28f, .31f, .38f), new Color(.19f, .23f, .30f), 0f, 1.08f, .55f, 30f, -60f),
+            new TimeKey(0f, .45f, new Color(.62f, .75f, 1f),
+                new Color(.16f, .18f, .24f), new Color(.10f, .13f, .19f), 0f, 1.12f, .55f, 45f, -30f),
+            new TimeKey(4f, .45f, new Color(.72f, .80f, 1f),
+                new Color(.16f, .18f, .24f), new Color(.11f, .14f, .20f), 0f, 1.08f, .55f, 30f, -60f),
             new TimeKey(7f, 1.35f, new Color(1f, .79f, .60f),
                 new Color(.30f, .33f, .38f), new Color(.26f, .29f, .33f), 0f, 1f, .8f, 42f, -40f),
             new TimeKey(12f, 1.85f, new Color(.93f, .96f, 1f),
                 new Color(.34f, .36f, .40f), new Color(.28f, .32f, .34f), 0f, 1f, 1f, 50f, -30f),
-            new TimeKey(19f, 1.2f, new Color(1f, .69f, .43f),
-                new Color(.29f, .30f, .36f), new Color(.23f, .24f, .30f), -.04f, 1.04f, .8f, 28f, 45f),
-            new TimeKey(22f, .9f, new Color(.62f, .75f, 1f),
-                new Color(.28f, .31f, .38f), new Color(.18f, .22f, .29f), 0f, 1.12f, .55f, 45f, -30f),
-            new TimeKey(24f, .9f, new Color(.62f, .75f, 1f),
-                new Color(.28f, .31f, .38f), new Color(.18f, .22f, .29f), 0f, 1.12f, .55f, 45f, -30f)
+            new TimeKey(19f, .72f, new Color(1f, .69f, .43f),
+                new Color(.22f, .23f, .28f), new Color(.16f, .17f, .22f), -.04f, 1.04f, .8f, 28f, 45f),
+            new TimeKey(22f, .45f, new Color(.62f, .75f, 1f),
+                new Color(.16f, .18f, .24f), new Color(.10f, .13f, .19f), 0f, 1.12f, .55f, 45f, -30f),
+            new TimeKey(24f, .45f, new Color(.62f, .75f, 1f),
+                new Color(.16f, .18f, .24f), new Color(.10f, .13f, .19f), 0f, 1.12f, .55f, 45f, -30f)
         };
 
         public static readonly string[] SettingNames = {
@@ -93,6 +93,9 @@ namespace Topaz.VisualStudy
         bool _ready;
         double _worldHours = WorldClock.StartingHour;
         float _restFade;
+        float _cloudiness;
+        float _rain;
+        bool _interior;
 
         public int CurrentLook => _settings.look;
         public int CurrentAa => _settings.antiAliasing;
@@ -151,9 +154,22 @@ namespace Topaz.VisualStudy
             if (_baseProfile != null) ApplyTimeOfDay();
         }
 
+        public void SetInterior(bool interior)
+        {
+            _interior = interior;
+            if (_baseProfile != null) ApplyTimeOfDay();
+        }
+
         public void SetRestFade(float darkness)
         {
             _restFade = Mathf.Clamp01(darkness);
+            if (_baseProfile != null) ApplyTimeOfDay();
+        }
+
+        public void SetWeather(float cloudiness, float rain)
+        {
+            _cloudiness = Mathf.Clamp01(cloudiness);
+            _rain = Mathf.Clamp01(rain);
             if (_baseProfile != null) ApplyTimeOfDay();
         }
 
@@ -373,7 +389,6 @@ namespace Topaz.VisualStudy
             depth.aperture.Override(_settings.bokehAperture);
             depth.focalLength.Override(_settings.bokehFocalLength);
             depth.bladeCount.Override(6);
-            RenderSettings.fogEndDistance = _settings.fogEnd;
             ApplyTimeOfDay();
             optionsMenu?.Refresh();
         }
@@ -388,23 +403,35 @@ namespace Topaz.VisualStudy
             float blend = Mathf.SmoothStep(0f, 1f,
                 Mathf.InverseLerp(a.hour, b.hour, hour));
             float visible = 1f - _restFade;
-            Color ambient = Color.Lerp(a.ambient, b.ambient, blend) * visible;
+            Color ambient = Color.Lerp(a.ambient, b.ambient, blend);
+            ambient = Color.Lerp(ambient,
+                ambient * new Color(.84f, .90f, 1f), _cloudiness) *
+                (1f - .05f * _rain) * visible;
+            if (_interior) ambient *= .45f;
             RenderSettings.ambientMode = AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = ambient;
             RenderSettings.ambientEquatorColor = ambient * .36f;
             RenderSettings.ambientGroundColor = ambient * .16f;
-            RenderSettings.fogColor = Color.Lerp(a.fog, b.fog, blend) * visible;
+            Color fog = Color.Lerp(a.fog, b.fog, blend);
+            RenderSettings.fogColor = Color.Lerp(fog,
+                fog * new Color(.78f, .87f, 1f), _cloudiness) * visible;
+            RenderSettings.fogEndDistance = Mathf.Max(45f,
+                _settings.fogEnd - _rain * 8f);
 
             sun.color = Color.Lerp(a.sunlightColor, b.sunlightColor, blend);
-            sun.intensity = Mathf.Lerp(a.sunlight, b.sunlight, blend) * visible;
+            sun.intensity = Mathf.Lerp(a.sunlight, b.sunlight, blend) *
+                (1f - .32f * _cloudiness - .08f * _rain) * visible *
+                (_interior ? .16f : 1f);
             sun.shadowStrength = _settings.shadowStrength *
-                Mathf.Lerp(a.shadow, b.shadow, blend) * visible;
+                Mathf.Lerp(a.shadow, b.shadow, blend) *
+                (1f - .30f * _cloudiness) * visible * (_interior ? .35f : 1f);
             sun.transform.rotation = Quaternion.Euler(
                 Mathf.Lerp(a.pitch, b.pitch, blend), Mathf.Lerp(a.yaw, b.yaw, blend), 0f);
             homeLight.intensity = _settings.homeLight *
                 Mathf.Lerp(a.homeLight, b.homeLight, blend) * visible;
 
-            float exposureOffset = Mathf.Lerp(a.exposure, b.exposure, blend) - _restFade * 8f;
+            float exposureOffset = Mathf.Lerp(a.exposure, b.exposure, blend) -
+                _cloudiness * .03f - _rain * .03f - _restFade * 8f;
             _baseColor.postExposure.Override(_settings.exposure + exposureOffset);
             _homeColor.postExposure.Override(_settings.exposure + .06f + exposureOffset);
             _baseBalance.temperature.Override(_settings.temperature);

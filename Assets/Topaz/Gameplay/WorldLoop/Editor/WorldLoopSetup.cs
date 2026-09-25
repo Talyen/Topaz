@@ -187,9 +187,7 @@ namespace Topaz.Editor
         {
             InputActionAsset asset = AssetDatabase.LoadAssetAtPath<InputActionAsset>(ControlsPath);
             InputActionMap map = asset.FindActionMap("Player", true);
-            Add(map, "EquipSword", "<Keyboard>/1");
-            Add(map, "EquipAxe", "<Keyboard>/2");
-            Add(map, "CycleTool", "<Keyboard>/tab", "<Gamepad>/buttonNorth");
+            Add(map, "Block", "<Mouse>/rightButton", "<Gamepad>/leftTrigger");
             Add(map, "Place", "<Mouse>/leftButton", "<Gamepad>/buttonSouth");
             Add(map, "Cancel", "<Keyboard>/escape", "<Gamepad>/buttonEast");
             Add(map, "Inventory", "<Keyboard>/b", "<Gamepad>/start");

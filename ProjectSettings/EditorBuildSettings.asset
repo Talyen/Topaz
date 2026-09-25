@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Topaz/World/Scenes/Expedition.unity
     guid: 483920bf115a84dc8b3d5e334831bb50
+  - enabled: 1
+    path: Assets/Topaz/World/Scenes/Crypt.unity
+    guid: 9af78cfd6fc2b438ba7b357b270006c7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

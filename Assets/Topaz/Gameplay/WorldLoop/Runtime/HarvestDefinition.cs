@@ -6,6 +6,8 @@ namespace Topaz.LoopStudy
     public sealed class HarvestDefinition : ScriptableObject
     {
         [SerializeField] string stableId = "resource.tree.wood";
+        [SerializeField, Min(1)] int sourceLevel = 1;
+        [SerializeField, Min(1)] int completionExperience = 10;
         [SerializeField] ItemDefinition yieldItem;
         [SerializeField] string requiredToolId = "axe";
         [SerializeField, Min(1)] int chopsRequired = 3;
@@ -14,6 +16,8 @@ namespace Topaz.LoopStudy
         [SerializeField, Min(1)] int regrowthDays = 3;
 
         public string StableId => stableId;
+        public int SourceLevel => sourceLevel;
+        public int CompletionExperience => completionExperience;
         public ItemDefinition YieldItem => yieldItem;
         public string RequiredToolId => string.IsNullOrEmpty(requiredToolId) ? "axe" : requiredToolId;
         public int ChopsRequired => chopsRequired;

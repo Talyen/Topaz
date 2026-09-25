@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: ExpeditionGuardian
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.EnemyDefinition
   stableId: enemy.expedition.guardian
-  health: 4
+  health: 20
   detectionRange: 10
   travelSpeed: 2.8
   strikeRange: 2.35
   strikeArcDegrees: 145
   telegraphSeconds: 1.05
   recoverySeconds: 1.15
-  damage: 1
+  damage: 4
+  staggerImmune: 1

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a0977114d5ce4c5ebbca786a7e5cae0, type: 3}
+  m_Name: SwordsSkill
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.SkillDefinition
+  stableId: swords
+  displayName: Swords
+  levelBenefit: Sword swings are 1% quicker per level. +1 damage at levels 5 and 10.
+  handlingPerLevel: 0.01
+  benefitAtFive: 1
+  benefitAtTen: 1
+  talents:
+  - id: swords.footwork
+    label: Footwork
+    description: Move at 55% speed during a sword windup and strike instead of 45%.
+    amount: 0.55
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: swords.flow
+    label: Flow
+    description: A sword hit shortens that swing's recovery by 0.04 seconds.
+    amount: 0.04
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: swords.wide-cut
+    label: Wide Cut
+    description: Sword swing arc increases by 10 degrees.
+    amount: 10
+    durationSeconds: 0
+    intervalSeconds: 0
+  - id: swords.dodge-strike
+    label: Dodge Strike
+    description: The first sword swing within one second after dodging deals +1 damage.
+    amount: 1
+    durationSeconds: 1
+    intervalSeconds: 0

@@ -149,6 +149,7 @@ namespace Topaz.Editor
             Debug.Log("[Topaz] KayKit art study is ready.");
             Topaz.AnimationStudy.Editor.AnimationStudySetup.Configure();
             GroundArtSetup.ApplyHome();
+            GatheringAndHomeSetup.ApplyHome(false);
         }
 
         static GameObject CreatePickupPrefab(Material material)

@@ -1,6 +1,6 @@
 # Day and night cycle design
 
-Status: implemented in the first Mac review build; visual values remain prototype targets.
+Status: implemented in the first Mac review build; dusk and night sun, ambient fill, and fog were lowered in the lantern lighting pass. Visual values remain prototype targets.
 
 ## Player experience
 

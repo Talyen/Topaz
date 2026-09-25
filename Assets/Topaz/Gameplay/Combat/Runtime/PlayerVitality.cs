@@ -4,16 +4,17 @@ using UnityEngine;
 
 namespace Topaz.CombatStudy
 {
-    /// <summary>Transient practice health. Save and death rules come in a later slice.</summary>
+    /// <summary>Player health and protection while recovering at a Campfire.</summary>
     [RequireComponent(typeof(CharacterController))]
     public sealed class PlayerVitality : MonoBehaviour
     {
         [SerializeField] FeelStudyPlayer movement;
         [SerializeField] SafeZone safeZone;
-        [SerializeField, Min(1)] int maximumHealth = 3;
+        [SerializeField, Min(1)] int maximumHealth = 6;
 
         CharacterController _controller;
         bool _wasAtHome;
+        float _protectedUntil;
 
         public int CurrentHealth { get; private set; }
         public int MaximumHealth => maximumHealth;
@@ -34,16 +35,55 @@ namespace Topaz.CombatStudy
             _wasAtHome = atHome;
         }
 
-        public bool TryTakeDamage(int amount)
+        public bool TryTakeDamage(int amount) => TryTakeDirectedDamage(amount, Vector3.zero, null);
+
+        public bool TryTakeDirectedDamage(int amount, Vector3 attackerPosition,
+            EnemyCombatant attacker) => TryTakeDirectedDamageCore(amount, attackerPosition,
+                attacker, true);
+
+        public bool TryTakeRangedDamage(int amount, Vector3 attackerPosition,
+            EnemyCombatant attacker) => TryTakeDirectedDamageCore(amount, attackerPosition,
+                attacker, false);
+
+        bool TryTakeDirectedDamageCore(int amount, Vector3 attackerPosition,
+            EnemyCombatant attacker, bool staggerAttackerOnBlock)
         {
-            if (amount <= 0 || movement == null || movement.IsInvulnerable ||
+            if (amount <= 0 || CurrentHealth == 0 || Time.time < _protectedUntil ||
+                movement == null || movement.IsInvulnerable ||
                 (safeZone != null && safeZone.Contains(transform.position))) return false;
 
+            PlayerCombat combat = GetComponent<PlayerCombat>();
+            if (attacker != null && combat != null && combat.TryBlock(attackerPosition))
+            {
+                WorldSession blockingSession = GetComponent<WorldSession>();
+                float extraRecovery = blockingSession == null ? 0f :
+                    blockingSession.SkillOutputBonus(SkillIds.Shield) +
+                    blockingSession.TalentAmount(SkillIds.Shield, "shield.hold-line");
+                if (staggerAttackerOnBlock) attacker.StaggerAfterBlock(extraRecovery);
+                blockingSession?.RecordShieldBlock(attacker.SourceLevel);
+                return false;
+            }
+
+            WorldSession session = GetComponent<WorldSession>();
+            amount = Mathf.Max(1, amount - (session?.Stats.Armor ?? 0));
+
             CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
+            if (attacker != null) combat?.OnDamagedByEnemy();
             LastDamageTime = Time.unscaledTime;
             movement.ShowHit();
-            if (CurrentHealth == 0) ReturnHome();
+            if (CurrentHealth == 0)
+            {
+                if (session == null || !session.RecoverAfterDefeat(this)) ReturnHome();
+            }
             return true;
+        }
+
+        public void RestoreAfterRecovery()
+        {
+            GetComponent<PlayerCombat>()?.ClearTemporaryProgression();
+            CurrentHealth = maximumHealth;
+            _wasAtHome = safeZone != null && safeZone.Contains(transform.position);
+            _protectedUntil = Time.time + 1f;
         }
 
         void ReturnHome()
@@ -53,9 +93,7 @@ namespace Topaz.CombatStudy
             transform.position = safeZone != null ? safeZone.transform.position : Vector3.zero;
             _controller.enabled = true;
             movement.ResetMotion();
-            CurrentHealth = maximumHealth;
-            _wasAtHome = true;
-            GetComponent<WorldSession>()?.ReturnHomeAfterDefeat();
+            RestoreAfterRecovery();
         }
     }
 }

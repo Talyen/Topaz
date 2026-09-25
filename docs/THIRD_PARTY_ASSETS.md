@@ -1,6 +1,19 @@
 # Third-party asset register
 
+## JaggedStone crypt audio
+
+Three original CC0 Ogg files from JaggedStone's [Magic Spell SFX](https://opengameart.org/content/magic-spell-sfx) and [Loopable Dungeon Ambience](https://opengameart.org/node/29778) are under `Assets/ThirdParty/JaggedStone/CryptAudio/`. The exact file URLs, SHA-256 digests, acquisition date, and license evidence are in that folder's `SOURCE.md`. The files may be publicly redistributed and used commercially under CC0; credit is voluntary.
+
 KayKit CC0 game-content assets are registered below. Unity's packages and the Universal 3D template remain under their respective Unity terms. The world loop UI imports the TextMesh Pro Essential Resources distributed with Unity's `com.unity.ugui` package.
+
+## Kenney weapon sounds
+
+The weapon and crossbow slices use six unmodified CC0 clips from Kenney's free
+[RPG Audio](https://kenney.nl/assets/rpg-audio) and
+[Impact Sounds](https://kenney.nl/assets/impact-sounds) packs. The exact archive
+licenses, archive SHA-256 digests, dates, and selected filenames are recorded in
+`Assets/ThirdParty/Kenney/RpgAudio/SOURCE.md` and
+`Assets/ThirdParty/Kenney/ImpactSounds/SOURCE.md`. Kenney is credited voluntarily.
 
 For candidate free 3D pack families, licensing pitfalls, and the import process, see [Finding 3D art for Topaz](ASSET_SOURCING.md). A candidate listed there is not approved or imported merely because it is free to download.
 

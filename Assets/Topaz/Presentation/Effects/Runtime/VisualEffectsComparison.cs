@@ -9,7 +9,6 @@ namespace Topaz.VisualStudy
     {
         FeelStudyPlayer _player;
         PlayerCombat _combat;
-        EnemyCombatant _enemy;
         Material _dustMaterial;
         Material _sparkMaterial;
         Material _trailMaterial;
@@ -19,20 +18,19 @@ namespace Topaz.VisualStudy
         ParticleSystem _sparks;
         TrailRenderer _swordTrail;
         TrailRenderer _axeTrail;
+        TrailRenderer _combatAxeTrail;
         Transform _swordPivot;
         Transform _axePivot;
         bool _wasDodging;
         bool _wasAttacking;
         bool _wasSwinging;
-        int _previousEnemyHealth;
 
         public void Initialize()
         {
             _player = FindFirstObjectByType<FeelStudyPlayer>();
             _combat = _player != null ? _player.GetComponent<PlayerCombat>() : null;
-            _enemy = FindFirstObjectByType<EnemyCombatant>();
+            if (_combat != null) _combat.WeaponHit += OnWeaponHit;
             CreateParticles();
-            _previousEnemyHealth = _enemy != null ? _enemy.CurrentHealth : 0;
             _particles?.Play();
             _sparks?.Play();
         }
@@ -53,31 +51,36 @@ namespace Topaz.VisualStudy
                 {
                     _swordTrail?.Clear();
                     _axeTrail?.Clear();
+                    _combatAxeTrail?.Clear();
                 }
                 bool axe = _combat.EquippedToolId == "axe";
+                bool combatAxe = _combat.EquippedToolId == "combat-axe";
                 Transform pivot = axe ? _axePivot : _swordPivot;
                 bool swinging = _combat.IsStrikeActive && pivot != null &&
                     pivot.gameObject.activeInHierarchy;
                 if (swinging && !_wasSwinging)
                     BurstSparks(pivot.position + pivot.forward * 1.1f, pivot.forward, 5,
-                        axe ? new Color(1f, .70f, .38f, 1f) :
+                        axe || combatAxe ? new Color(1f, .70f, .38f, 1f) :
                             new Color(.68f, .93f, 1f, 1f));
                 if (_swordTrail != null)
                     _swordTrail.emitting = swinging && !axe;
                 if (_axeTrail != null)
                     _axeTrail.emitting = swinging && axe;
+                if (_combatAxeTrail != null)
+                    _combatAxeTrail.emitting = swinging && combatAxe;
                 _wasSwinging = swinging;
                 _wasAttacking = attacking;
             }
-            if (_enemy != null)
-            {
-                int health = _enemy.CurrentHealth;
-                if (health < _previousEnemyHealth && _player != null)
-                    BurstSparks(_enemy.transform.position + Vector3.up * 1.0f,
-                        (_enemy.transform.position - _player.transform.position).normalized,
-                        14, new Color(1f, .79f, .45f, 1f));
-                _previousEnemyHealth = health;
-            }
+        }
+
+        void OnWeaponHit(EnemyCombatant target, WeaponDefinition weapon)
+        {
+            if (_player == null || target == null) return;
+            bool heavy = weapon?.TwoHanded == true;
+            BurstSparks(target.transform.position + Vector3.up,
+                (target.transform.position - _player.transform.position).normalized,
+                heavy ? 11 : 7, heavy ? new Color(1f, .71f, .43f, 1f) :
+                    new Color(.86f, .88f, .76f, 1f));
         }
 
         void BurstDust(Vector3 position, int count)
@@ -148,6 +151,8 @@ namespace Topaz.VisualStudy
                     _swordPivot = child;
                     _swordTrail = CreateTrail(child, "Sword Slash Trail",
                         new Color(.48f, .90f, 1f, .8f));
+                    _combatAxeTrail = CreateTrail(child, "Combat Axe Slash Trail",
+                        new Color(1f, .67f, .35f, .72f));
                 }
                 else if (child.name == "Axe Pivot")
                 {
@@ -261,6 +266,7 @@ namespace Topaz.VisualStudy
 
         void OnDestroy()
         {
+            if (_combat != null) _combat.WeaponHit -= OnWeaponHit;
             if (_dustTexture != null) Destroy(_dustTexture);
             if (_sparkTexture != null) Destroy(_sparkTexture);
             if (_dustMaterial != null) Destroy(_dustMaterial);

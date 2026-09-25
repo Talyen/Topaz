@@ -9,6 +9,7 @@ namespace Topaz.UI
     {
         [SerializeField] UnityEngine.UI.Outline focusOutline;
         [SerializeField] UnityEngine.UI.Graphic focusMarker;
+        [SerializeField] UnityEngine.UI.Graphic[] focusBorders;
         [SerializeField] bool useOutline = true;
 
         void Awake()
@@ -49,13 +50,23 @@ namespace Topaz.UI
         {
             if (focusOutline != null) focusOutline.enabled = useOutline && focused;
             if (focusMarker != null) focusMarker.enabled = focused;
+            if (focusBorders != null)
+                foreach (UnityEngine.UI.Graphic border in focusBorders)
+                    if (border != null) border.enabled = focused;
         }
 
 #if UNITY_EDITOR
         public void SetOutline(UnityEngine.UI.Outline value) => focusOutline = value;
-        public void SetMarker(UnityEngine.UI.Graphic value)
+        public void SetMarker(UnityEngine.UI.Graphic value, bool keepOutline = false)
         {
             focusMarker = value;
+            useOutline = keepOutline;
+            SetFocused(false);
+        }
+
+        public void SetBorders(UnityEngine.UI.Graphic[] borders)
+        {
+            focusBorders = borders;
             useOutline = false;
             SetFocused(false);
         }
