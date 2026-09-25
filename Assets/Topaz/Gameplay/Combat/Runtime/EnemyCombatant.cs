@@ -13,7 +13,7 @@ namespace Topaz.CombatStudy
         [SerializeField] PlayerVitality target;
         [SerializeField] SafeZone safeZone;
         [SerializeField] Transform visualRoot;
-        [SerializeField] Renderer bodyRenderer;
+        Renderer bodyRenderer;
         [SerializeField] Collider bodyCollider;
         [SerializeField] LineRenderer telegraph;
         [SerializeField] bool keepVisualOnDefeat;
@@ -71,6 +71,11 @@ namespace Topaz.CombatStudy
 
         void Awake()
         {
+            if (visualRoot != null)
+            {
+                var visual = visualRoot.GetComponentInChildren<Topaz.AnimationStudy.CharacterVisual>(true);
+                if (visual != null) bodyRenderer = visual.BodyRenderer;
+            }
             _agent = GetComponent<NavMeshAgent>();
             _groundSpell = GetComponent<GroundSpellAbility>();
             _rangedAudio = GetComponent<AudioSource>();

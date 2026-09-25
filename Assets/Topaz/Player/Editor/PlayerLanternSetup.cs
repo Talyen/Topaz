@@ -43,15 +43,7 @@ namespace Topaz.Editor
             SetRef(lantern, "visualRoot", visualRoot);
             SetRef(lantern, "movement", movement);
             SetRef(lantern, "lanternModel", AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/ThirdParty/KayKit/RPGTools/Models/lantern.fbx"));
-            SetRef(lantern, "lanternMaterial", AssetDatabase.LoadAssetAtPath<Material>(
-                "Assets/Topaz/Presentation/Art/Materials/Tools.mat"));
-            SetRef(lantern, "glassMaterial", AssetDatabase.LoadAssetAtPath<Material>(
-                "Assets/Topaz/Presentation/Art/Materials/Lantern Glass.mat"));
-            SetRef(lantern, "emberMaterial", AssetDatabase.LoadAssetAtPath<Material>(
-                "Assets/Topaz/Presentation/Effects/Materials/Lantern Ember.mat"));
-            SetVector(lantern, "hipOffset", new Vector3(-0.4f, -0.18f, 0.1f));
-            SetFloat(lantern, "modelScale", 0.48f);
+                "Assets/Topaz/Player/Prefabs/Visuals/Carried Lantern.prefab"));
             SetVector(lantern, "lightOffset", new Vector3(0f, 1.05f, 0f));
             SetFloat(lantern, "lightRange", 8.5f);
             SetRef(appearance, "lantern", lantern);

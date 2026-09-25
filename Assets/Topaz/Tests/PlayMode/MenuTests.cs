@@ -499,7 +499,7 @@ namespace Topaz.Tests
                 Assert.That(preview, Is.Not.Null, look);
                 Assert.That(preview.GetComponentsInChildren<Renderer>(true).Length,
                     Is.GreaterThan(0), look);
-                Animator animator = preview.GetComponent<Animator>();
+                Animator animator = preview.GetComponentInChildren<Animator>(true);
                 Assert.That(animator.avatar, Is.Not.Null, look);
                 Assert.That(animator.avatar.isValid, Is.True, look);
                 UnityEngine.Object.Destroy(preview);

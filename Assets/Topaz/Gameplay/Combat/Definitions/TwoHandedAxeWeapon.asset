@@ -14,10 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.WeaponDefinition
   stableId: weapon.axe.twohanded
   attack: {fileID: 11400000, guid: 212b71a561f0d45e783e084f50b79d3e, type: 2}
+  groundSpell: {fileID: 0}
+  crossbowAttack: {fileID: 0}
   skill: 1
   twoHanded: 1
   attackClip: {fileID: 7400000, guid: 0c6d4ceeb95fb4191b5ea9d8ebe0cbbd, type: 2}
-  heldModel: {fileID: 919132149155446097, guid: 7c6449910f0354ba8b0196a3d8bfc8a4, type: 3}
+  reloadClip: {fileID: 0}
+  heldModel: {fileID: 3540101653591726785, guid: 81973b068778f40ff843b898c3f7c198, type: 3}
   swingClip: {fileID: 8300000, guid: fdfeae4f91a1641e5bafca0739ecee7e, type: 3}
   impactClip: {fileID: 8300000, guid: 7480cd67aa95d416fbfff9e05bec7a8b, type: 3}
   staggerSeconds: 0.3

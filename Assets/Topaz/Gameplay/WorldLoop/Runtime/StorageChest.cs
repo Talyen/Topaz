@@ -6,7 +6,6 @@ namespace Topaz.LoopStudy
     public sealed class StorageChest : MonoBehaviour
     {
         [SerializeField] StructureDefinition definition;
-        [SerializeField] Renderer chestRenderer;
 
         StructureStateRecord _state;
         InventorySlots _inventory;

@@ -1,4 +1,3 @@
-using System.Linq;
 using Topaz.CombatStudy;
 using UnityEngine;
 
@@ -21,15 +20,13 @@ namespace Topaz.AnimationStudy
 
         void Awake()
         {
-            foreach (Transform bone in GetComponentsInChildren<Transform>(true))
-            {
-                if (bone.name == "upperarm.l") _upperArm = bone;
-                if (bone.name == "lowerarm.l") _lowerArm = bone;
-            }
-            Transform shield = GetComponentsInChildren<Transform>(true)
-                .FirstOrDefault(bone => bone.name == "Held Shield");
-            _shieldRenderers = shield != null ? shield.GetComponentsInChildren<Renderer>(true) :
-                System.Array.Empty<Renderer>();
+            CharacterVisual visual = GetComponentInParent<CharacterVisual>();
+            if (visual == null) visual = GetComponentInChildren<CharacterVisual>(true);
+            combat = GetComponentInParent<PlayerCombat>();
+            _upperArm = visual != null ? visual.GuardUpperArm : null;
+            _lowerArm = visual != null ? visual.GuardLowerArm : null;
+            _shieldRenderers = visual != null && visual.Shield != null ?
+                visual.Shield.GetComponentsInChildren<Renderer>(true) : System.Array.Empty<Renderer>();
             _impactProperties = new MaterialPropertyBlock();
         }
 

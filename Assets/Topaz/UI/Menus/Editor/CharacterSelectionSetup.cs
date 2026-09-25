@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using TMPro;
 using Topaz.AnimationStudy;
-using Topaz.AnimationStudy.Editor;
 using Topaz.CombatStudy;
 using Topaz.FeelStudy;
 using Topaz.LoopStudy;
@@ -20,8 +19,6 @@ namespace Topaz.Editor
     public static class CharacterSelectionSetup
     {
         const string ScenePath = "Assets/Topaz/World/Scenes/Bootstrap.unity";
-        const string Adventurers = "Assets/ThirdParty/KayKit/Adventurers/";
-        const string Materials = "Assets/Topaz/Presentation/Art/Materials/";
         const string ButtonPath = "Assets/Topaz/UI/Prefabs/ActionButton.prefab";
 
         [MenuItem("Topaz/Build Character And World Selection")]
@@ -188,8 +185,7 @@ namespace Topaz.Editor
             FeelStudyPlayer movement = player.GetComponent<FeelStudyPlayer>();
             PlayerCombat combat = player.GetComponent<PlayerCombat>();
             Transform facing = player.transform.Find("Facing Visual");
-            GameObject rogue = facing?.GetComponentsInChildren<CharacterAnimationDriver>(true)
-                .FirstOrDefault(value => value.GetComponent<Animator>() != null)?.gameObject;
+            GameObject rogue = facing?.GetComponentInChildren<CharacterVisual>(true)?.gameObject;
             if (rogue == null) throw new InvalidOperationException("Animated Rogue visual is missing.");
             var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(
                 "Assets/Topaz/Characters/Animation/Controllers/Player.controller");
@@ -202,17 +198,16 @@ namespace Topaz.Editor
             Ref(appearance, "combat", combat);
             Ref(appearance, "playerController", controller);
             string[] ids = CharacterLooks.All;
-            string[] models = { "Rogue", "Rogue_Hooded", "Knight", "Ranger", "Mage", "Barbarian" };
-            string[] atlases = { "rogue", "rogue", "knight", "ranger", "mage", "barbarian" };
+            string[] models = { "Rogue", "Rogue Hooded", "Knight", "Ranger", "Mage", "Barbarian" };
             var objectData = new SerializedObject(appearance);
             SerializedProperty array = objectData.FindProperty("looks");
             array.arraySize = ids.Length;
             for (int i = 0; i < ids.Length; i++)
             {
-                string path = Adventurers + "Characters/" + models[i] + ".fbx";
+                string path = "Assets/Topaz/Characters/Prefabs/Visuals/" + models[i] + " Player.prefab";
                 GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                Avatar avatar = AnimationStudySetup.EnsureGenericAvatar(path);
-                Material material = MaterialFor(atlases[i]);
+                Avatar avatar = model != null ? model.GetComponent<CharacterVisual>()?.Animator.avatar : null;
+                Material material = model != null ? model.GetComponent<CharacterVisual>()?.BodyRenderer.sharedMaterial : null;
                 if (model == null || avatar == null || material == null)
                     throw new InvalidOperationException("Character asset is incomplete: " + path);
                 SerializedProperty entry = array.GetArrayElementAtIndex(i);
@@ -223,27 +218,6 @@ namespace Topaz.Editor
             }
             objectData.ApplyModifiedPropertiesWithoutUndo();
             return appearance;
-        }
-
-        static Material MaterialFor(string atlas)
-        {
-            Material baseMaterial = AssetDatabase.LoadAssetAtPath<Material>(Materials + "Rogue.mat");
-            if (baseMaterial == null) throw new InvalidOperationException("Rogue material is missing.");
-            if (atlas == "rogue") return baseMaterial;
-            string path = Materials + char.ToUpperInvariant(atlas[0]) + atlas.Substring(1) + ".mat";
-            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
-            if (material == null)
-            {
-                material = new Material(baseMaterial);
-                material.name = char.ToUpperInvariant(atlas[0]) + atlas.Substring(1);
-                AssetDatabase.CreateAsset(material, path);
-            }
-            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                Adventurers + "Textures/" + atlas + "_texture.png");
-            if (texture == null) throw new InvalidOperationException("Character atlas missing: " + atlas);
-            material.SetTexture("_BaseMap", texture);
-            EditorUtility.SetDirty(material);
-            return material;
         }
 
         static GameObject Page(string name, RectTransform parent, TopazUiTheme theme,

@@ -15,7 +15,7 @@ namespace Topaz.FeelStudy
         [SerializeField] InputActionAsset controls;
         [SerializeField] Camera viewCamera;
         [SerializeField] Transform visualRoot;
-        [SerializeField] Renderer bodyRenderer;
+        Renderer bodyRenderer;
         [SerializeField] PracticeNode[] practiceNodes;
 
         [SerializeField] float travelSpeed = 5.5f;
@@ -101,6 +101,9 @@ namespace Topaz.FeelStudy
 
         void Awake()
         {
+            var visual = visualRoot != null ?
+                visualRoot.GetComponentInChildren<Topaz.AnimationStudy.CharacterVisual>(true) : null;
+            if (visual != null) bodyRenderer = visual.BodyRenderer;
             _bodyProperties = new MaterialPropertyBlock();
             _controller = GetComponent<CharacterController>();
             _combat = GetComponent<PlayerCombat>();

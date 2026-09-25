@@ -51,7 +51,6 @@ namespace Topaz.LoopStudy
         [SerializeField] Transform homeCryptGate;
         [SerializeField] ItemDefinition cryptStaff;
         [SerializeField] ItemDefinition cryptCrossbow;
-        [SerializeField] Material cryptStaffMaterial;
         [SerializeField] VisualLookController look;
         [SerializeField] PlayerAppearance appearance;
         [SerializeField] PlayerLantern lantern;
@@ -928,7 +927,7 @@ namespace Topaz.LoopStudy
             WorldPickup pickup = instance.GetComponent<WorldPickup>();
             pickup.Bind(this, record, item);
             if (item == cryptStaff || item == cryptCrossbow)
-                pickup.OverrideVisual(item.Weapon?.HeldModel, cryptStaffMaterial);
+                pickup.OverrideVisual(item.Weapon?.HeldModel);
             instance.SetActive(string.IsNullOrEmpty(record.regionId) ||
                 record.regionId == _data.regionId);
         }

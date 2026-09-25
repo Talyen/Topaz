@@ -44,35 +44,15 @@ namespace Topaz.AnimationStudy
         Animator _animator;
         Pose _pose;
 
-        public void ConfigurePlayerFrom(CharacterAnimationDriver source, FeelStudyPlayer mover,
-            PlayerCombat combat, GameObject sword, GameObject axe, GameObject pickaxe,
-            GameObject combatAxe, GameObject staff, GameObject crossbow,
-            GameObject shield)
-        {
-            player = mover;
-            playerCombat = combat;
-            enemy = null;
-            enemyAgent = null;
-            dodgeForwardClip = source.dodgeForwardClip;
-            dodgeBackwardClip = source.dodgeBackwardClip;
-            dodgeLeftClip = source.dodgeLeftClip;
-            dodgeRightClip = source.dodgeRightClip;
-            jumpClip = source.jumpClip;
-            swordClip = source.swordClip;
-            axeClip = source.axeClip;
-            hitClip = source.hitClip;
-            swordVisual = sword;
-            axeVisual = axe;
-            pickaxeVisual = pickaxe;
-            combatAxeVisual = combatAxe;
-            staffVisual = staff;
-            crossbowVisual = crossbow;
-            shieldVisual = shield;
-        }
-
         void Awake()
         {
+            player = GetComponentInParent<FeelStudyPlayer>();
+            playerCombat = GetComponentInParent<PlayerCombat>();
+            enemy = GetComponentInParent<EnemyCombatant>();
+            enemyAgent = enemy != null ? enemy.GetComponent<NavMeshAgent>() : null;
             _animator = GetComponent<Animator>();
+            // Standalone visual prefabs also serve menu previews, without gameplay owners.
+            if (player == null && enemy == null) { enabled = false; return; }
             _animator.applyRootMotion = false;
             SyncHeldTool();
             if (_animator.runtimeAnimatorController == null ||

@@ -291,7 +291,7 @@ namespace Topaz.Editor
             var anchor = new GameObject("KayKit Lantern");
             anchor.transform.SetParent(parent, false);
             anchor.transform.position = new Vector3(-1.85f,0f,-.75f);
-            string modelPath = "Assets/ThirdParty/KayKit/RPGTools/Models/lantern.fbx";
+            string modelPath = "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Lantern Variant 2.prefab";
             GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             Material tools = AssetDatabase.LoadAssetAtPath<Material>(
                 "Assets/Topaz/Presentation/Art/Materials/Tools.mat");

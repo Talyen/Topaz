@@ -1,0 +1,280 @@
+{
+    "entries": [
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Characters/Barbarian.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Barbarian Player.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Characters/Knight.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Knight Player.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Characters/Mage.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Mage Player.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Characters/Ranger.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Ranger Player.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Characters/Rogue.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Rogue Player.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Characters/Rogue_Hooded.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Rogue Hooded Player.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Models/axe_2handed.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Battle Axe.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Adventurers/Models/shield_round.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Shield Round.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/banner_blue.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Banner Blue.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/barrel_large.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Barrel Large.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/barrel_small.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Barrel Small.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/bed_floor.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Bed Floor.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/chest.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Chest.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/chest_gold.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Chest Gold.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/floor_dirt_large.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Floor Dirt Large.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/floor_tile_large.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Floor Tile Large.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/floor_tile_small.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Floor Tile Small.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/pillar_decorated.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Pillar Decorated.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/rubble_large.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Rubble Large.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/shelves.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Shelves.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/stairs_narrow.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Stairs Narrow.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/sword_shield_broken.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Sword Shield Broken.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/table_small.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Table Small.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/torch_mounted.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Torch Mounted.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/wall.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Wall.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/wall_gated.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Wall Gated.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Dungeon/Models/wall_half.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Wall Half.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/FantasyWeapons/Models/sword_A.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Starter Sword.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Bush_1_A_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Bush Low.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Bush_2_A_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Bush Tall.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Grass_1_A_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Grass Short.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Grass_1_C_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Grass Short Meadow.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Grass_2_A_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Grass Tall.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Grass_2_C_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Grass Tall Meadow.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Rock_3_A_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Boulder Tall.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Rock_3_B_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Boulder Round.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Rock_3_C_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Boulder Flat.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Tree_3_B_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Broadleaf Tree.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Tree_4_A_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Pine Tall.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Tree_4_B_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Pine Medium.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Tree_4_C_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Pine Small.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Forest/Models/Tree_Bare_1_A_Color1.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Bare Tree.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Furniture/Models/shelf_A_small.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Equipment Shelf.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/arch_gate.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Arch Gate.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/bone_A.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Bone A.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/coffin.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Coffin.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/coffin_decorated.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Coffin Decorated.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/fence.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Fence.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/grave_A.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Grave A.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/gravestone.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Gravestone.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Halloween/Models/shrine_candles.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Shrine Candles.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/ResourceBits/Models/Iron_Nuggets.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Iron Nuggets.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/ResourceBits/Models/Stone_Brick.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Stone Brick.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/ResourceBits/Models/Stone_Chunks_Large.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Stone Chunks Large.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/ResourceBits/Models/Stone_Chunks_Small.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Stone Chunks Small.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/ResourceBits/Models/Wood_Log_Stack.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Wood Log Stack.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/RPGTools/Models/anvil.fbx",
+            "prefab": "Assets/Topaz/World/Environment/Prefabs/Visuals/Anvil.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/RPGTools/Models/axe.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Axe.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/RPGTools/Models/lantern.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Lantern Variant 2.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/RPGTools/Models/pickaxe.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Pickaxe.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Characters/Skeleton_Mage.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Skeleton Mage Enemy.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Characters/Skeleton_Minion.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Skeleton Melee Enemy.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Characters/Skeleton_Rogue.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Skeleton Rogue Enemy.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Characters/Skeleton_Warrior.fbx",
+            "prefab": "Assets/Topaz/Characters/Prefabs/Visuals/Skeleton Warrior Enemy.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Models/Skeleton_Arrow.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Skeleton Arrow.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Models/Skeleton_Blade.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Skeleton Blade Variant 2.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Models/Skeleton_Crossbow.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Skeleton Crossbow.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Models/Skeleton_Shield_Large_A.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Skeleton Shield Large A.prefab"
+        },
+        {
+            "source": "Assets/ThirdParty/KayKit/Skeletons/Models/Skeleton_Staff.fbx",
+            "prefab": "Assets/Topaz/Gameplay/Combat/Prefabs/Visuals/Skeleton Staff.prefab"
+        }
+    ]
+}

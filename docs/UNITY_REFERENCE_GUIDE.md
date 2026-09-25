@@ -18,6 +18,7 @@ Use this map to open only the relevant local code, tests, and guidance. [Feature
 | Home crypt and Staff | `Assets/Topaz/World/Crypt`, `Assets/Topaz/Gameplay/Combat/Runtime` | `CryptTests`, `CryptInputTests` | [Home crypt study](studies/HOME_CRYPT_STUDY.md) |
 | Menus and HUD | `Assets/Topaz/UI` | `MenuTests` | [UI design system](UI_DESIGN_SYSTEM.md) |
 | Lighting, weather, effects | `Assets/Topaz/Presentation` | `VisualStudyTests`, `WeatherTests` | [Visual study](studies/VISUAL_STUDY.md), [day/night cycle](DAY_NIGHT_CYCLE.md) |
+| Prefab composition and art replacement | `Assets/Topaz/Presentation/Art/Editor` | `OwnedPrefabTests` | [Prefab authoring](PREFAB_AUTHORING.md) |
 | Build, assets, Editor tooling | `scripts`, `Assets/Topaz/Core/Editor` | `FoundationTests` | [Project structure](PROJECT_STRUCTURE.md), [agent workflow](AGENT_WORKFLOW.md) |
 
 ## Version and Editor workflow

@@ -78,3 +78,15 @@ Unity supplies most of the **systems** below, while authored meshes, animation c
 The first [KayKit art study](studies/KAYKIT_ART_STUDY.md) now uses the free pack library and selected models in the Mac scene. Verify the Avatar and connect idle/move/dodge/swing/chop presentation to the current controller without changing its combat rules. Add restrained swing and hit feedback from built-in components, then review the Mac build at Topaz's gameplay camera before generalizing an animation framework.
 
 The current combat feedback uses Unity's Particle System and Trail Renderer with an authored URP particle material. `VisualEffectsComparison` supplies only Topaz-specific timing and simple generated shapes; it does not replace Unity's effect system. Revisit Visual Effect Graph if an authored gameplay slice needs many layered or simultaneous effects and measurement supports the added package and workflow. The far-field focus study uses native URP depth of field with a small orthographic depth adapter; review that adapter on Unity upgrades and compare Gaussian with Bokeh in a standalone player before treating either as a final art requirement. See [Visual Study](studies/VISUAL_STUDY.md).
+
+## Replaceable 3D content
+
+Topaz uses Unity's standard prefabs, nested prefabs, and material prefab variants
+for all current authored 3D content. Gameplay objects own rules, collision, and
+scene identity; nested visual prefabs own imported art and its calibration.
+`CharacterVisual` is a small serialized binding contract for Topaz's equipment,
+lantern, and guard pose, because arbitrary vendor skeleton names are not a stable
+interface. The Editor migration and validator automate project-specific
+composition and ID checks; they do not replace Unity's prefab system. No runtime
+asset registry, skin loader, or new package is needed. Revisit loading infrastructure
+only when measured content-loading needs justify it. See [prefab authoring](PREFAB_AUTHORING.md).

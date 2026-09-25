@@ -41,7 +41,7 @@ Topaz's normal zoom.
 ## Archive workflow
 
 On 2026-09-24, the owner's 69 Archive choices were moved outside `Assets/` with
-their `.meta` files. The current scene replacements are recorded in
+their `.meta` files. The historical prototype scene replacements are recorded in
 [`AssetReview/replacements.json`](../AssetReview/replacements.json). Source
 licenses and provenance notes remain with each pack under `Assets/ThirdParty`
 and have copies beside the archived files. The original extracted downloads in
@@ -54,3 +54,7 @@ and `.meta` pairs. The script refuses to move a source that is still referenced.
 `scripts/check-asset-review.py`, which runs in `scripts/verify.sh`, rejects
 remaining serialized references, C# source paths, and archived FBX files left
 inside `Assets/`.
+
+Current scenes use owned visual prefabs. Replace archived art within those prefabs,
+then run the review audit. The old direct scene replacement command was retired;
+see [prefab authoring](PREFAB_AUTHORING.md).

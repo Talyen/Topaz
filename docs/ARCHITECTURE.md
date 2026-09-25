@@ -36,3 +36,11 @@ The backpack uses 16 fixed slots and the first chest uses 12. Items have authore
 The loop study implements a first version of definition IDs, one stable authored tree ID, a versioned local save, and one player-built instance ID. The [first expedition clearing](studies/EXPEDITION_STUDY.md) tests an additive authored scene, voluntary return, and a stable region save ID. A general multi-region system, dungeons, and higher-level progression sources remain future work. Choose concrete schemas and gameplay numbers during representative feature slices.
 
 For later region work, use Unity 6.6 [Build Profile scene lists](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html) and [asynchronous scene loading](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/SceneManagement.SceneManager.LoadSceneAsync.html). For authored definition and runtime data boundaries, use [ScriptableObject](https://docs.unity3d.com/6000.6/Documentation/Manual/class-ScriptableObject.html) and [serialization rules](https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization.html). The [reference index](UNITY_REFERENCE_GUIDE.md) collects current Unity and package sources by task.
+
+## Current art replacement boundary
+
+The authored 3D content now uses Topaz-owned prefabs around replaceable nested
+visuals. Character appearance and equipment instantiate configured prefabs;
+serialized visual bindings replace runtime searches for vendor bone names.
+Persistent instance IDs remain on scene objects, while reusable assets own
+static configuration. See [prefab authoring](PREFAB_AUTHORING.md).

@@ -24,3 +24,12 @@ The two enabled scenes live in `Assets/Topaz/World/Scenes`. Renderer assets and 
 The domain migration used Unity's `AssetDatabase.MoveAsset`; file and folder `.meta` GUIDs were preserved except for deliberately removed empty folders. Scene names, stable save IDs, JSON save shape, ScriptableObject types, class names, and namespaces remain unchanged. Existing Editor build commands and tests use the new asset paths. `scripts/build.sh` passes the build-profile asset path explicitly because the Unity CLI's profile-name lookup targets the template profile folder.
 
 When a new feature grows, keep its authored definitions, runtime code, Editor tools, materials, and prefabs near one another. Use `Experimental` only for replaceable comparisons. Any later class or namespace renaming should be a separate change with its own scene and save verification; a file's new location alone does not require a type rename.
+
+## Owned prefabs
+
+Each content domain now owns its reusable prefabs, with imported models nested
+inside `Prefabs/Visuals`. Scenes and runtime spawn fields reference these Topaz
+assets. The player and menu stage are composed prefabs with scene references
+supplied as instance overrides. The former one-off 3D prototype reconstruction
+scripts have been retired; use Prefab Mode and the existing authored scenes.
+See [prefab authoring](PREFAB_AUTHORING.md) for replacement, identity, and validation.

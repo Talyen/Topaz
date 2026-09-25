@@ -20,7 +20,7 @@ MonoBehaviour:
   twoHanded: 1
   attackClip: {fileID: 7400000, guid: 7c81a0b55b4734e43aa11544bc46ae41, type: 2}
   reloadClip: {fileID: 7400000, guid: 2f4e86f9f0f20442c88d999f57b64b35, type: 2}
-  heldModel: {fileID: 919132149155446097, guid: 0e864f656bb4040ed8383a1b5543ed11, type: 3}
+  heldModel: {fileID: 5122934815468003871, guid: d83a498da9b8d4eb38183d673d90f258, type: 3}
   swingClip: {fileID: 0}
   impactClip: {fileID: 0}
   staggerSeconds: 0

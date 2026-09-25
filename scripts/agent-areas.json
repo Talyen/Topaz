@@ -37,8 +37,8 @@
   },
   "visuals": {
     "paths": ["Assets/Topaz/Presentation/"],
-    "tests": {"PlayMode": ["VisualStudyTests", "WeatherTests", "PlayerLanternTests"]},
-    "docs": ["docs/studies/VISUAL_STUDY.md", "docs/DAY_NIGHT_CYCLE.md"],
+    "tests": {"PlayMode": ["VisualStudyTests", "WeatherTests", "PlayerLanternTests"], "EditMode": ["OwnedPrefabTests"]},
+    "docs": ["docs/studies/VISUAL_STUDY.md", "docs/DAY_NIGHT_CYCLE.md", "docs/PREFAB_AUTHORING.md"],
     "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
   },
   "foundation": {

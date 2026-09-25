@@ -152,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.UI.TopazFocusIndicator
   focusOutline: {fileID: 224814729027655418}
   focusMarker: {fileID: 0}
+  focusBorders: []
   useOutline: 1
 --- !u!1 &7851162037571054308
 GameObject:

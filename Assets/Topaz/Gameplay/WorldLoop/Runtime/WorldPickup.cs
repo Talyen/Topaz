@@ -16,7 +16,7 @@ namespace Topaz.LoopStudy
         public PickupStateRecord State => _state;
         public ItemDefinition Item => _item;
 
-        public void OverrideVisual(GameObject prefab, Material material)
+        public void OverrideVisual(GameObject prefab)
         {
             if (prefab == null) return;
             if (visual != null) visual.gameObject.SetActive(false);
@@ -25,8 +25,6 @@ namespace Topaz.LoopStudy
             instance.transform.localPosition = new Vector3(0f, .45f, 0f);
             instance.transform.localRotation = Quaternion.Euler(0f, 0f, 25f);
             instance.transform.localScale = Vector3.one * .75f;
-            foreach (Renderer renderer in instance.GetComponentsInChildren<Renderer>(true))
-                if (material != null) renderer.sharedMaterial = material;
             foreach (Collider collision in instance.GetComponentsInChildren<Collider>(true))
                 collision.enabled = false;
             visual = instance.transform;

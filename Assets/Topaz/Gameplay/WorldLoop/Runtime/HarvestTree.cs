@@ -9,7 +9,7 @@ namespace Topaz.LoopStudy
         [SerializeField] string stableObjectId = "topaz.training.tree.01";
         [SerializeField] HarvestDefinition definition;
         [SerializeField] GameObject visualRoot;
-        [SerializeField] Renderer trunkRenderer;
+        Renderer trunkRenderer;
         [SerializeField] Collider trunkCollider;
         [SerializeField] NavMeshObstacle obstacle;
         [SerializeField] Color idleTint = new Color(0.44f, 0.67f, 0.43f);
@@ -28,7 +28,11 @@ namespace Topaz.LoopStudy
         public int ChopsRemaining => _state == null || definition == null ? 0 :
             Mathf.Max(0, definition.ChopsRequired - _state.chops);
 
-        void Awake() => _properties = new MaterialPropertyBlock();
+        void Awake()
+        {
+            _properties = new MaterialPropertyBlock();
+            if (visualRoot != null) trunkRenderer = visualRoot.GetComponentInChildren<Renderer>(true);
+        }
 
         void Update()
         {
