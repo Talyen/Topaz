@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Topaz.CombatStudy;
-using Topaz.LoopStudy;
+using Topaz.Combat;
+using Topaz.Gameplay;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Topaz.LoopStudy
+namespace Topaz.Gameplay
 {
     /// <summary>Focused uGUI pages for equipped gear and the finite home rack.</summary>
     public sealed class EquipmentJournalView : MonoBehaviour
@@ -50,6 +50,18 @@ namespace Topaz.LoopStudy
             _hud = hud;
             if (!_bound)
             {
+                foreach (TMP_Text label in packLabels)
+                {
+                    if (label == null) continue;
+                    label.rectTransform.anchorMin = Vector2.zero;
+                    label.rectTransform.anchorMax = Vector2.one;
+                    label.rectTransform.offsetMin = new Vector2(5f, 4f);
+                    label.rectTransform.offsetMax = new Vector2(-5f, -4f);
+                    label.fontSize = 24f;
+                    label.textWrappingMode = TextWrappingModes.Normal;
+                    label.overflowMode = TextOverflowModes.Ellipsis;
+                    label.alignment = TextAlignmentOptions.Center;
+                }
                 backpackTab.onClick.AddListener(() => { _hud.ClosePanels(); _hud.ToggleInventoryPanel(); });
                 if (skillsTab != null) skillsTab.onClick.AddListener(_hud.ShowSkillsPanel);
                 equipmentClose.onClick.AddListener(_hud.ClosePanels);

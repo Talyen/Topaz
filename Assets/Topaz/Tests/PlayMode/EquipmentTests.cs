@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -9,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class EquipmentTests : InputTestFixture
+    public sealed class EquipmentTests : TopazInputTestFixture
     {
         [UnityTest]
         public IEnumerator StarterAndHomeSidegradeStayWithCharacterAndClaimOncePerWorld()
@@ -58,8 +59,8 @@ namespace Topaz.Tests
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component vitality = player.GetComponent("PlayerVitality");
-            Component movement = player.GetComponent("FeelStudyPlayer");
-            yield return TopazTestTravel.EnterGraveyard(player);
+            Component movement = player.GetComponent("PlayerController");
+            yield return TopazTestTravel.EnterWoodland(player);
             Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
             Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right,
                 Vector3.up).normalized;
@@ -92,7 +93,7 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
-            System.Type slot = System.Type.GetType("Topaz.LoopStudy.EquipmentSlot, Assembly-CSharp");
+            System.Type slot = System.Type.GetType("Topaz.Gameplay.EquipmentSlot, Assembly-CSharp");
             foreach (string name in new[] { "Weapon", "Tool", "Offhand" })
                 Assert.That((bool)Invoke(session, "TryUnequip", System.Enum.Parse(slot, name)), Is.True);
             Assert.That((bool)Property(session, "HasWeapon"), Is.False);
@@ -102,7 +103,7 @@ namespace Topaz.Tests
             int gearCount = 0;
             foreach (object stack in pack)
                 if ((int)Field(stack, "count") == 1) gearCount++;
-            Assert.That(gearCount, Is.EqualTo(3));
+            Assert.That(gearCount, Is.EqualTo(5));
         }
 
         [UnityTest]
@@ -114,12 +115,12 @@ namespace Topaz.Tests
             Component session = player.GetComponent("WorldSession");
             object backpack = Field(session, "_backpack");
             object wood = Field(session, "wood");
-            Assert.That((int)Invoke(backpack, "Add", wood, 320), Is.EqualTo(320));
+            Assert.That((int)Invoke(backpack, "Add", wood, 320), Is.EqualTo(280));
             Teleport(player, GameObject.Find("Equipment Rack").transform.position + Vector3.back);
             yield return null;
             Assert.That((bool)Invoke(session, "TryClaimRackItem", "gear.gloves.swift"), Is.False);
             Assert.That((bool)Invoke(session, "RackHas", "gear.gloves.swift"), Is.True);
-            System.Type slot = System.Type.GetType("Topaz.LoopStudy.EquipmentSlot, Assembly-CSharp");
+            System.Type slot = System.Type.GetType("Topaz.Gameplay.EquipmentSlot, Assembly-CSharp");
             Assert.That((bool)Invoke(session, "TryUnequip", System.Enum.Parse(slot, "Hands")), Is.False);
             Assert.That((string)Field(Property(session, "Equipped"), "handsId"),
                 Is.EqualTo("gear.gloves.starter"));
@@ -143,7 +144,7 @@ namespace Topaz.Tests
                 if ((string)Field(pack[i], "itemId") == axeId) axeIndex = i;
             Assert.That(axeIndex, Is.GreaterThanOrEqualTo(0));
             object wood = Field(session, "wood");
-            Assert.That((int)Invoke(backpack, "Add", wood, 300), Is.EqualTo(300));
+            Assert.That((int)Invoke(backpack, "Add", wood, 300), Is.EqualTo(260));
 
             Assert.That((bool)Invoke(session, "TryEquipFromBackpack", axeIndex), Is.False);
             Assert.That((string)Field(Property(session, "Equipped"), "weaponId"),
@@ -177,12 +178,7 @@ namespace Topaz.Tests
             object backpack = Field(session, "_backpack");
             object wood = Field(session, "wood");
             Invoke(backpack, "Add", wood, 3);
-            Assert.That((bool)Invoke(session, "TryCraftChest"), Is.True);
-            FieldInfo preview = session.GetType().GetField("_previewPosition",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            preview.SetValue(session, new Vector3(0f, 0f, 1.5f));
-            session.GetType().GetMethod("TryPlaceChest", BindingFlags.Instance |
-                BindingFlags.NonPublic).Invoke(session, null);
+            BuildingTestActions.Place(session, "structure.storage_chest");
             Assert.That((bool)Property(session, "ChestPlaced"), Is.True);
 
             Teleport(player, GameObject.Find("Equipment Rack").transform.position + Vector3.back);
@@ -235,14 +231,8 @@ namespace Topaz.Tests
             {
                 Assert.That((bool)Invoke(appearance, "Apply", look), Is.True, look);
                 yield return null;
-                Transform shield = null;
-                foreach (Transform bone in player.GetComponentsInChildren<Transform>(true))
-                    if (bone.name == "handslot.l")
-                    {
-                        Transform candidate = bone.Find("Held Shield");
-                        if (candidate != null && candidate.gameObject.activeInHierarchy)
-                            shield = candidate;
-                    }
+                Component bindings=player.GetComponentsInChildren<Component>().First(c=>c.GetType().Name=="CharacterVisual");
+                GameObject shield=(GameObject)bindings.GetType().GetProperty("Shield").GetValue(bindings);
                 Assert.That(shield, Is.Not.Null, look + " must show its left-hand shield");
             }
         }
@@ -255,7 +245,7 @@ namespace Topaz.Tests
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component combat = player.GetComponent("PlayerCombat");
-            Component movement = player.GetComponent("FeelStudyPlayer");
+            Component movement = player.GetComponent("PlayerController");
             float starterSwing = (float)Property(combat, "AttackAnimationSeconds");
             float starterTravel = (float)Property(movement, "TravelSpeed");
             Teleport(player, GameObject.Find("Equipment Rack").transform.position + Vector3.back);
@@ -291,8 +281,16 @@ namespace Topaz.Tests
         {
             CharacterController controller = player.GetComponent<CharacterController>();
             controller.enabled = false;
+            foreach (Terrain terrain in Terrain.activeTerrains)
+            {
+                Vector3 local=position-terrain.transform.position;
+                if(local.x>=0 && local.z>=0 && local.x<=terrain.terrainData.size.x && local.z<=terrain.terrainData.size.z)
+                    position.y=terrain.SampleHeight(position)+terrain.transform.position.y+.01f;
+            }
             player.transform.position = position;
             controller.enabled = true;
+            Physics.SyncTransforms();
+            controller.Move(Vector3.down*.02f);
         }
     }
 }

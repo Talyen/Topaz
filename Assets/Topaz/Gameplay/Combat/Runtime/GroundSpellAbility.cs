@@ -1,8 +1,8 @@
-using Topaz.LoopStudy;
+using Topaz.Gameplay;
 using UnityEngine;
 using Topaz.Audio;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>One authored area spell, shared by the Mage and an equipped player staff.</summary>
     public sealed class GroundSpellAbility : MonoBehaviour
@@ -99,7 +99,7 @@ namespace Topaz.CombatStudy
         {
             if (!CanCast || damage < 1) return false;
             _center = center;
-            _center.y = Topaz.VisualStudy.GroundSurface.Height(_center) + .17f;
+            _center.y = Topaz.Rendering.GroundSurface.Height(_center) + .17f;
             _hostile = hostile;
             _damage = damage;
             _radius = definition.Radius + Mathf.Max(0f, bonusRadius);
@@ -157,10 +157,11 @@ namespace Topaz.CombatStudy
             _flash.intensity = 1.2f;
             if (impactClip != null) _audio.PlayOneShot(impactClip);
 
+            if (CampSafety.BlocksAttack(transform.position, _center)) return;
             if (_hostile)
             {
                 PlayerVitality player = FindAnyObjectByType<PlayerVitality>();
-                if (player != null && HorizontalDistance(player.transform.position, _center) <= _radius)
+                if (player != null && !CampSafety.BlocksAttack(_center, player.transform.position) && HorizontalDistance(player.transform.position, _center) <= _radius)
                     player.TryTakeDamage(_damage); // Ground damage cannot be shield-blocked.
             }
             else
@@ -168,7 +169,7 @@ namespace Topaz.CombatStudy
                 WorldSession session = GetComponent<WorldSession>();
                 foreach (EnemyCombatant enemy in FindObjectsByType<EnemyCombatant>())
                 {
-                    if (enemy == null || !enemy.IsAlive ||
+                    if (enemy == null || !enemy.IsAlive || CampSafety.BlocksAttack(_center, enemy.transform.position) ||
                         HorizontalDistance(enemy.transform.position, _center) > _radius) continue;
                     int before = enemy.CurrentHealth;
                     enemy.TakeDirectedDamage(_damage, transform.position);

@@ -14,13 +14,12 @@ namespace Topaz.Tests
     public sealed class FoundationTests
     {
         [Test]
-        public void HomesteadGraveyardAndCryptAreEnabledBuildScenes()
+        public void OnlyGeneratedGameplayScenesShip()
         {
             var enabled = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
             Assert.That(enabled.Select(scene => scene.path).ToArray(), Is.EqualTo(new[]
             {
-                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Graveyard.unity",
-                "Assets/Topaz/World/Scenes/Crypt.unity"
+                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Woodland.unity"
             }));
         }
 
@@ -79,89 +78,38 @@ namespace Topaz.Tests
         }
 
         [Test]
-        public void CombatStudyHasAuthoredDefinitionsAndBakedNavigation()
+        public void CombatDefinitionsAndProceduralPresetAreAvailable()
         {
             Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
                 "Assets/Topaz/Gameplay/Combat/Definitions/PracticeSword.asset"), Is.Not.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
                 "Assets/Topaz/Gameplay/Combat/Definitions/PracticeEnemy.asset"), Is.Not.Null);
-            Assert.That(AssetDatabase.LoadAssetAtPath<NavMeshData>(
-                "Assets/Topaz/World/Home/Navigation/PracticeNavMesh.asset"), Is.Not.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+                "Assets/Topaz/Presentation/Rendering/Environment/Woodland.asset"), Is.Not.Null);
         }
 
         [Test]
         public void WorldLoopHasStableDefinitionAssets()
         {
-            string root = "Assets/Topaz/Gameplay/WorldLoop/Definitions/";
+            string root = "Assets/Topaz/Gameplay/Inventory/Definitions/";
             foreach (string asset in new[] { "Wood", "Tree", "StorageChest", "StorageChestRecipe", "AxeChop" })
-                Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(root + asset + ".asset"),
+                Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>((asset.StartsWith("StorageChest") ? "Assets/Topaz/Gameplay/Building/Definitions/" : asset=="Tree" ? "Assets/Topaz/Gameplay/Gathering/Definitions/" : root) + asset + ".asset"),
                     Is.Not.Null, asset);
-            var tree = AssetDatabase.LoadAssetAtPath<ScriptableObject>(root + "Tree.asset");
+            var tree = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/Topaz/Gameplay/Gathering/Definitions/Tree.asset");
             Assert.That(new SerializedObject(tree).FindProperty("requiredToolId").stringValue,
                 Is.EqualTo("axe"));
         }
 
         [Test]
-        public void VisualStudyKeepsRuntimeDepthOfFieldAvailableInPlayers()
+        public void UrpHasModernScalableRendering()
         {
-            var stripping = GraphicsSettings.GetRenderPipelineSettings<URPShaderStrippingSetting>();
-            Assert.That(stripping, Is.Not.Null);
-            Assert.That(stripping.stripUnusedPostProcessingVariants, Is.False,
-                "The Visual Lab changes Volume profiles at runtime, including depth of field.");
-
-            var focus = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
-                "Assets/Topaz/Presentation/Graphics/Profiles/Focus Preview.asset");
-            Assert.That(focus, Is.Not.Null);
-            Assert.That(focus.TryGet(out DepthOfField depth), Is.True);
-            Assert.That(depth.mode.value, Is.EqualTo(DepthOfFieldMode.Gaussian));
-            Assert.That(depth.gaussianStart.value, Is.EqualTo(30f));
-            Assert.That(depth.gaussianEnd.value, Is.EqualTo(40f));
-            Assert.That(depth.gaussianMaxRadius.value, Is.EqualTo(.5f));
-            Assert.That(depth.focusDistance.value, Is.EqualTo(22f));
-            Assert.That(depth.aperture.value, Is.EqualTo(2.8f));
-            Assert.That(depth.focalLength.value, Is.EqualTo(120f));
-            Assert.That(depth.bladeCount.value, Is.EqualTo(6));
-
-            var painterly = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
-                "Assets/Topaz/Presentation/Graphics/Profiles/Painterly Clear.asset");
-            var home = AssetDatabase.LoadAssetAtPath<VolumeProfile>(
-                "Assets/Topaz/Presentation/Graphics/Profiles/Warm Home.asset");
-            Assert.That(painterly.TryGet(out WhiteBalance globalBalance), Is.True);
-            Assert.That(home.TryGet(out WhiteBalance homeBalance), Is.True);
-            Assert.That(globalBalance.temperature.value, Is.EqualTo(25f));
-            Assert.That(homeBalance.temperature.value, Is.EqualTo(60f));
-
-            var urp = UniversalRenderPipeline.asset;
-            Assert.That(urp.hdrColorBufferPrecision, Is.EqualTo(HDRColorBufferPrecision._64Bits));
-            Assert.That(urp.shadowDistance, Is.EqualTo(52f));
-            Assert.That(urp.cascade2Split, Is.EqualTo(.45f));
-
-            var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(
-                "Assets/Topaz/Presentation/Rendering/Settings/PC_Renderer.asset");
-            var correctedShader = AssetDatabase.LoadAssetAtPath<Shader>(
-                "Assets/Topaz/Presentation/Graphics/Shaders/OrthographicGaussianDepthOfField.shader");
-            Assert.That(renderer.postProcessData, Is.Not.Null);
-            Assert.That(renderer.postProcessData.shaders.gaussianDepthOfFieldPS,
-                Is.SameAs(correctedShader));
-            Assert.That(correctedShader.passCount, Is.EqualTo(5));
-
-            var bokehShader = AssetDatabase.LoadAssetAtPath<Shader>(
-                "Assets/Topaz/Presentation/Graphics/Shaders/OrthographicBokehDepthOfField.shader");
-            Assert.That(renderer.postProcessData.shaders.bokehDepthOfFieldPS,
-                Is.SameAs(bokehShader));
-            Assert.That(bokehShader.passCount, Is.EqualTo(5));
-            Assert.That(renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Count(), Is.EqualTo(1));
-            Assert.That(renderer.rendererFeatures.OfType<DecalRendererFeature>(), Is.Empty);
-            var ao = new SerializedObject(renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Single());
-            Assert.That(ao.FindProperty("m_Settings.Intensity").floatValue, Is.EqualTo(.85f));
-            Assert.That(AssetDatabase.IsValidFolder("Assets/Topaz/Presentation/Graphics/Decals"), Is.False);
-
-            MethodInfo getLightmap = typeof(PlayerSettings).GetMethod(
-                "GetLightmapEncodingQualityForPlatform", BindingFlags.Static | BindingFlags.NonPublic);
-            Assert.That(getLightmap, Is.Not.Null);
-            foreach (BuildTarget target in new[] { BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows64 })
-                Assert.That(getLightmap.Invoke(null, new object[] { target }).ToString(),
-                    Is.EqualTo("High"), target.ToString());
+            var urp = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+            Assert.That(urp, Is.Not.Null);
+            Assert.That(urp.supportsHDR, Is.True);
+            Assert.That(urp.msaaSampleCount, Is.EqualTo(1));
+            Assert.That(urp.gpuResidentDrawerMode, Is.EqualTo(GPUResidentDrawerMode.InstancedDrawing));
+            Assert.That(urp.reflectionProbeBlending && urp.reflectionProbeBoxProjection, Is.True);
+            Assert.That(urp.upscalingFilter, Is.EqualTo(UpscalingFilterSelection.STP));
         }
     }
 }

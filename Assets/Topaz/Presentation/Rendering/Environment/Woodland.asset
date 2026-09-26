@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b956caa3d74c41108503f0bdd47bf19, type: 3}
+  m_Name: Woodland
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.Generation.WoodlandPreset
+  settings:
+    version: 1
+    resolution: 129
+    size: 128
+    relief: 9
+    decorationCount: 170
+  grass: {fileID: 8574412962073106934, guid: e83e5b2c03473f74983ef0f5b9c160c0, type: 2}
+  path: {fileID: 8574412962073106934, guid: ffb94bff813c3c041b5c22cc023fb25e, type: 2}
+  terrainMaterial: {fileID: 2100000, guid: 95ed1a2cc65eb4847b859cb4f9f5be66, type: 2}
+  treeVisual: {fileID: 8289089701760591095, guid: 6a97e69475c5a41b59cf9eb5412352a0, type: 3}
+  rockVisual: {fileID: 6310605541842451183, guid: 11074cdaf98ff40f9b3096aef5a08e13, type: 3}
+  treeVariant: {fileID: 7098139946484995242, guid: 249f72f4c521943a28ceaf20dab0034d, type: 3}
+  detail: {fileID: 398929321252300881, guid: 4e6885e0d11bd224fa27617a4657c329, type: 3}

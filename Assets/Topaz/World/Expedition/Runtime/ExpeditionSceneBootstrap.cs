@@ -1,6 +1,6 @@
 using System.Collections;
-using Topaz.CombatStudy;
-using Topaz.LoopStudy;
+using Topaz.Combat;
+using Topaz.Gameplay;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,7 +13,6 @@ namespace Topaz.Expedition
         [SerializeField] NavMeshSurface surface;
         [SerializeField] Transform arrival;
         [SerializeField] Transform departure;
-        [SerializeField] Transform cryptEntrance;
         [SerializeField] Transform supplyCache;
         [SerializeField] GameObject cacheVisual;
         [SerializeField] Campfire campfire;
@@ -26,7 +25,6 @@ namespace Topaz.Expedition
 
         public Transform Arrival => arrival;
         public Transform Departure => departure;
-        public Transform CryptEntrance => cryptEntrance;
         public Transform SupplyCache => supplyCache;
         public Campfire Campfire => campfire;
         public bool CacheUnlocked => _enemiesReady;
@@ -36,7 +34,7 @@ namespace Topaz.Expedition
         {
             if (_bound) return;
             if (session == null || surface == null || arrival == null || departure == null ||
-                cryptEntrance == null || supplyCache == null ||
+                supplyCache == null ||
                 cacheVisual == null || campfire == null || enemies == null || guardian == null ||
                 player == null || home == null)
             {
@@ -44,6 +42,7 @@ namespace Topaz.Expedition
                 return;
             }
 
+            if (!session.PrepareGeneratedRegion(gameObject.scene)) return;
             _bound = true;
             _session = session;
             SetCacheStocked(!cacheClaimed);

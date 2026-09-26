@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     [CreateAssetMenu(menuName = "Topaz/Combat/Ground Spell")]
     public sealed class GroundSpellDefinition : ScriptableObject

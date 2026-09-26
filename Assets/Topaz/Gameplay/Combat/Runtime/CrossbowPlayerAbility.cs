@@ -1,13 +1,13 @@
-using Topaz.FeelStudy;
-using Topaz.LoopStudy;
+using Topaz.Player;
+using Topaz.Gameplay;
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>The player's aimed release and automatic crossbow reload.</summary>
     public sealed class CrossbowPlayerAbility : MonoBehaviour
     {
-        FeelStudyPlayer _movement;
+        PlayerController _movement;
         WorldSession _session;
         AudioSource _audio;
         CrossbowAttackDefinition _attack;
@@ -29,7 +29,7 @@ namespace Topaz.CombatStudy
 
         void Awake()
         {
-            _movement = GetComponent<FeelStudyPlayer>();
+            _movement = GetComponent<PlayerController>();
             _session = GetComponent<WorldSession>();
             _audio = GetComponent<AudioSource>();
         }

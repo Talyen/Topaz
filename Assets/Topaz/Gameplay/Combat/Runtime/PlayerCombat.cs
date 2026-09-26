@@ -1,11 +1,11 @@
 using System;
-using Topaz.FeelStudy;
-using Topaz.AnimationStudy;
-using Topaz.LoopStudy;
+using Topaz.Player;
+using Topaz.Characters;
+using Topaz.Gameplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>One deliberate sword swing with a visible windup, strike, and recovery.</summary>
     public sealed class PlayerCombat : MonoBehaviour
@@ -17,7 +17,7 @@ namespace Topaz.CombatStudy
         [SerializeField] MeleeAttackDefinition axeAttack;
         [SerializeField] MeleeAttackDefinition pickaxeAttack;
         [SerializeField] InputActionAsset controls;
-        [SerializeField] FeelStudyPlayer movement;
+        [SerializeField] PlayerController movement;
         [SerializeField] EnemyCombatant enemy;
         [SerializeField] HarvestTree tree;
         [SerializeField] Transform swordPivot;
@@ -116,7 +116,7 @@ namespace Topaz.CombatStudy
             _equippedTool == Tool.Pickaxe ? "Pickaxe" :
             _worldSession == null ? "Sword" : !_worldSession.HasWeapon ? "Unarmed" :
             CurrentWeapon?.Skill == WeaponSkill.Axes ? "Two-Handed Axe" :
-            CurrentWeapon?.Skill == WeaponSkill.Staff ? "Crypt Staff" :
+            CurrentWeapon?.Skill == WeaponSkill.Staff ? "Staff" :
             CurrentWeapon?.Skill == WeaponSkill.Crossbows ? "Crossbow" : "Sword";
         public bool IsGuarding => _guardHeld && !_guardNeedsRelease && _phase == Phase.Ready &&
             !movement.IsDodging && !movement.IsAirborne && _worldSession != null &&
@@ -516,7 +516,7 @@ namespace Topaz.CombatStudy
         {
             const int segments = 14;
             Vector3 center = transform.position;
-            center.y = Topaz.VisualStudy.GroundSurface.Height(center) + .16f;
+            center.y = Topaz.Rendering.GroundSurface.Height(center) + .16f;
             swingArc.positionCount = segments + 3;
             swingArc.SetPosition(0, center);
             for (int i = 0; i <= segments; i++)

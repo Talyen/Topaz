@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Topaz.FeelStudy
+namespace Topaz.Player
 {
     /// <summary>The carried lantern's authored light-emitting surface, independent of mesh names.</summary>
     public sealed class LanternVisual : MonoBehaviour

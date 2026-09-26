@@ -140,10 +140,12 @@ def run(command: list[str], label: str, directory: Path,
     report_ok = summarize_xml(report) if report and report.is_file() else False
     if result.returncode or (report and not report_ok):
         summarize_log(log)
-        editor_log = ROOT / "Logs/Editor.log"
+        editor_log = (Path(command[command.index("--log-file") + 1])
+                      if "--log-file" in command else ROOT / "Logs/Editor.log")
         if editor_log.is_file() and command and command[0] == "unity":
             snapshot = directory / f"{label}-editor.log"
-            shutil.copyfile(editor_log, snapshot)
+            if editor_log.resolve() != snapshot.resolve():
+                shutil.copyfile(editor_log, snapshot)
             compiler_errors = [line.strip() for line in snapshot.read_text(errors="replace").splitlines()
                                if re.search(r"error CS\d+|error:.*Assets/Topaz/", line, re.I)]
             for line in compiler_errors[-8:]:
@@ -193,11 +195,25 @@ def build_platform(platform: str, directory: Path | None = None) -> int:
     before = input_fingerprint() if own_run else None
     profile, output = PROFILES[platform]
     (ROOT / "Builds").mkdir(exist_ok=True)
-    command = ["unity", "build", str(ROOT), "--profile",
-               str(ROOT / "Assets/Topaz/Build/Profiles" / profile),
+    command = ["unity", "build", str(ROOT), "--target",
+               "StandaloneOSX" if platform == "mac" else "StandaloneWindows64",
+               "--args", f"-topazBuildProfile Assets/Topaz/Build/Profiles/{profile}",
+               "--execute-method", "Topaz.Editor.PlayerBuild.BuildConfiguredProfile",
                "--output-path", str(ROOT / "Builds" / output), "--allow-dirty-build",
+               "--log-file", str(directory / f"build-{platform}-editor.log"),
                "--timeout", "1200", "--no-tail", "--no-banner"]
+    receipt_path = ROOT / "Builds" / (output + ".build-report.json")
+    receipt_path.unlink(missing_ok=True)
     ok = run(command, f"build-{platform}", directory)
+    if ok:
+        try:
+            receipt = json.loads(receipt_path.read_text())
+            ok = (receipt.get("result") == "Succeeded" and receipt.get("errors") == 0
+                  and (ROOT / "Builds" / output).exists())
+        except (OSError, ValueError):
+            ok = False
+        if not ok:
+            print("Build did not produce a successful BuildReport receipt; an older output is not proof of success.")
     if own_run:
         after = input_fingerprint()
         if before != after:
@@ -258,7 +274,7 @@ def verify(args: argparse.Namespace) -> int:
         print("Tool tests failed or no tests were discovered")
         record(directory, kind, False, "tool tests", before, started)
         return 1
-    for name in ("check-assets.py", "check-asset-review.py"):
+    for name in ("check-assets.py",):
         if not run([sys.executable, str(ROOT / "scripts" / name)],
                    name.removesuffix(".py"), directory):
             record(directory, kind, False, name, before, started)

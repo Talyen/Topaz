@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Topaz.LoopStudy
+namespace Topaz.Gameplay
 {
     /// <summary>A shape cue for keyboard, gamepad, and pointer focus on Home actions.</summary>
     public sealed class HomeFocusFrame : MonoBehaviour,

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Topaz.Tests
 {
-    public sealed class AudioOptionsTests : InputTestFixture
+    public sealed class AudioOptionsTests : TopazInputTestFixture
     {
         [UnityTest]
         public IEnumerator AudioTabChangesSourcesPersistsValuesAndMutesInBackground()

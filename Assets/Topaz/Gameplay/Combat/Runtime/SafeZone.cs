@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>Temporary home boundary for the combat study, not a building system.</summary>
     public sealed class SafeZone : MonoBehaviour

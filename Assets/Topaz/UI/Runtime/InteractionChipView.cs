@@ -1,5 +1,5 @@
 using TMPro;
-using Topaz.LoopStudy;
+using Topaz.Gameplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -44,7 +44,8 @@ namespace Topaz.UI
             UpdateDeviceMode();
             Vector3 world = target.name == "Interaction Anchor" ? target.position :
                 target.position + Vector3.up * 1.25f;
-            Vector3 screen = worldCamera.WorldToScreenPoint(world);
+            Vector3 screen = worldCamera.orthographic ? worldCamera.WorldToScreenPoint(world) :
+                new Vector3(worldCamera.pixelRect.center.x, worldCamera.pixelRect.y + worldCamera.pixelHeight * .42f, 1);
             if (screen.z <= 0f || !worldCamera.pixelRect.Contains(screen) ||
                 !RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     canvasRect, screen, null, out Vector2 local))

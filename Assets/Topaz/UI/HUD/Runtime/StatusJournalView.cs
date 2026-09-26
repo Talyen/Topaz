@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Topaz.LoopStudy
+namespace Topaz.Gameplay
 {
     /// <summary>Character status details on the shared Journal paper.</summary>
     public sealed class StatusJournalView : MonoBehaviour
@@ -65,7 +65,7 @@ namespace Topaz.LoopStudy
             {
                 Button tab = Instantiate(skillsTab, skillsTab.transform.parent);
                 tab.name = "Status Effects Tab";
-                tab.GetComponent<RectTransform>().anchoredPosition += new Vector2(380f, 0f);
+                tab.GetComponent<RectTransform>().anchoredPosition += new Vector2(304f, 0f);
                 TMP_Text label = tab.GetComponentInChildren<TMP_Text>();
                 if (label != null) label.text = "Status";
                 tab.onClick.RemoveAllListeners();

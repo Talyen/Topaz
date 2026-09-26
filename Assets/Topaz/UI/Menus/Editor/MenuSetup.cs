@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using TMPro;
-using Topaz.FeelStudy;
-using Topaz.LoopStudy;
+using Topaz.Player;
+using Topaz.Gameplay;
 using Topaz.Menus;
 using Topaz.UI;
-using Topaz.VisualStudy;
+using Topaz.Rendering;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -30,7 +30,7 @@ namespace Topaz.Editor
                 throw new InvalidOperationException("The Bootstrap HUD, player, or camera is missing.");
             LoopHud hud = canvas.GetComponent<LoopHud>();
             VisualOptionsMenu visualLab = canvas.GetComponent<VisualOptionsMenu>();
-            FeelStudyCamera cameraRig = camera.GetComponent<FeelStudyCamera>();
+            PlayerCamera cameraRig = camera.GetComponent<PlayerCamera>();
             if (hud == null || visualLab == null || cameraRig == null)
                 throw new InvalidOperationException("Build the Visual Study before desktop menus.");
             theme = AssetDatabase.LoadAssetAtPath<TopazUiTheme>(
@@ -106,7 +106,6 @@ namespace Topaz.Editor
             Ref(menus, "displayInfo", displayInfo);
             Ref(player.GetComponent<WorldSession>(), "menus", menus);
 
-            CharacterSelectionSetup.Configure(scene, canvas, player, menus);
             TitleRedesignSetup.ApplyToCanvas(canvas);
             MenuSurfacePolishSetup.ApplyToCanvas(canvas.transform);
 

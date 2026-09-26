@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace Topaz.Tests
 {
-    public sealed class HomeBuildingPlayTests : InputTestFixture
+    public sealed class HomeBuildingPlayTests : TopazInputTestFixture
     {
         static object Field(object value, string name) => value.GetType()
             .GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
@@ -47,28 +47,6 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator CampfireUpgradeSpendsMaterialsAndPersists()
-        {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            Component session = GameObject.Find("Player").GetComponent("WorldSession");
-            object backpack = Field(session, "_backpack");
-            object wood = Property(session, "WoodItem");
-            object stone = Property(session, "StoneItem");
-            Assert.That(Call(backpack, "Add", wood, 9), Is.EqualTo(9));
-            Assert.That(Call(backpack, "Add", stone, 6), Is.EqualTo(6));
-            Assert.That(Property(session, "HomeCampfireTier"), Is.EqualTo(1));
-            Assert.That(Call(session, "UpgradeHomeCampfire"), Is.True);
-            Assert.That(Property(session, "HomeCampfireTier"), Is.EqualTo(2));
-            Assert.That(Property(session, "HomeWoodCount"), Is.EqualTo(0));
-            Assert.That(Property(session, "StoneCount"), Is.EqualTo(0));
-            Call(session, "FlushCurrent");
-            object loaded = Call(Field(session, "_repository"), "Load");
-            object world = Call(loaded, "World", Property(session, "ActiveWorldId"));
-            Assert.That(Field(world, "campfireTier"), Is.EqualTo(2));
-        }
-
-        [UnityTest]
         public IEnumerator TwoBuiltChestsHaveIndependentSavedRecords()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
@@ -78,16 +56,8 @@ namespace Topaz.Tests
             object wood = Property(session, "WoodItem");
             Assert.That(Call(backpack, "Add", wood, 6), Is.EqualTo(6));
             object builds = Field(session, "homeBuilds");
-            foreach (Vector3 position in new[] { new Vector3(3f, 0f, 3f),
-                new Vector3(-3f, 0f, 3f) })
-            {
-                Assert.That(Call(session, "BeginHomeBuild", "structure.storage_chest"), Is.True);
-                GameObject preview = (GameObject)Field(builds, "_preview");
-                Assert.That(preview.GetComponentsInChildren<Renderer>().Length,
-                    Is.GreaterThan(0), "A selected chest needs a visible placement ghost.");
-                Set(builds, "_position", position);
-                Call(builds, "ConfirmPlacement");
-            }
+            BuildingTestActions.Place(session, "structure.storage_chest");
+            BuildingTestActions.Place(session, "structure.storage_chest");
             var records = ((IEnumerable)Field(Field(session, "_world"), "structures"))
                 .Cast<object>().Where(value => (string)Field(value, "definitionId") ==
                     "structure.storage_chest").ToArray();
@@ -107,7 +77,7 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
             Component hud = GameObject.Find("Loop HUD").GetComponent("LoopHud");
-            Component home = hud.GetComponent("HomeJournalView");
+            Component home = hud.GetComponent("BuildingJournalView");
             Component menus = hud.GetComponent("GameMenus");
             Assert.That(home, Is.Not.Null);
             Assert.That(menus, Is.Not.Null);
@@ -146,9 +116,7 @@ namespace Topaz.Tests
             object backpack = Field(session, "_backpack");
             Assert.That(Call(backpack, "Add", Property(session, "WoodItem"), 3), Is.EqualTo(3));
             object builds = Field(session, "homeBuilds");
-            Assert.That(Call(session, "BeginHomeBuild", "structure.storage_chest"), Is.True);
-            Set(builds, "_position", new Vector3(3f, 0f, 3f));
-            Call(builds, "ConfirmPlacement");
+            BuildingTestActions.Place(session, "structure.storage_chest");
             object record = ((IEnumerable)Field(Field(session, "_world"), "structures"))
                 .Cast<object>().Single(value => (string)Field(value, "definitionId") ==
                     "structure.storage_chest");
@@ -156,12 +124,16 @@ namespace Topaz.Tests
             object inventory = Property(chest, "Inventory");
             Assert.That(Call(inventory, "Add", Property(session, "StoneItem"), 4), Is.EqualTo(4));
 
-            Assert.That(Call(session, "BeginHomeMove"), Is.True);
-            Set(builds, "_selected", record);
-            Set(builds, "_placingId", "structure.storage_chest");
-            Set(builds, "_position", new Vector3(-3f, 0f, 3f));
-            Call(builds, "ConfirmPlacement");
-            Assert.That(Field(record, "x"), Is.EqualTo(-3f));
+            Vector3 movedPosition = default;
+            bool moved = false;
+            for (float z=6;z<45&&!moved;z+=1.5f)
+                for(float x=6;x<45&&!moved;x+=1.5f)
+                {
+                    movedPosition=new Vector3(x,0,z);
+                    moved=(bool)Call(builds,"TryMoveAt",Field(record,"instanceId"),movedPosition,0);
+                }
+            Assert.That(moved, Is.True);
+            Assert.That(Field(record,"x"),Is.EqualTo(movedPosition.x));
             Assert.That(Call(inventory, "Count", "material.stone"), Is.EqualTo(4));
 
             Assert.That(Call(session, "BeginHomeEdit"), Is.True);
@@ -186,51 +158,17 @@ namespace Topaz.Tests
             Assert.That(Call(backpack, "Add", Property(session, "IronItem"), 5), Is.EqualTo(5));
             Assert.That(Call(backpack, "Add", Property(session, "WoodItem"), 2), Is.EqualTo(2));
             object builds = Field(session, "homeBuilds");
-            Assert.That(Call(session, "BeginHomeBuild", "structure.blacksmith_anvil"), Is.True);
-            Set(builds, "_position", new Vector3(3f, 0f, 3f));
-            Call(builds, "ConfirmPlacement");
+            Vector3 buildPosition = BuildingTestActions.Place(session, "structure.blacksmith_anvil");
             CharacterController controller = player.GetComponent<CharacterController>();
             controller.enabled = false;
-            player.transform.position = new Vector3(3f, 0f, 3f);
+            player.transform.position = buildPosition + Vector3.back * .6f + Vector3.up * .1f;
             controller.enabled = true;
-            Type forge = Type.GetType("Topaz.LoopStudy.HomeForgeCatalog, Assembly-CSharp", true);
+            Type forge = Type.GetType("Topaz.Gameplay.HomeForgeCatalog, Assembly-CSharp", true);
             object recipe = ((Array)forge.GetField("Recipes").GetValue(null)).GetValue(0);
             Assert.That(Call(session, "CanForge", recipe), Is.True);
             Assert.That(Call(session, "TryForge", recipe), Is.True);
             Assert.That(Call(backpack, "Count", "gear.sword.forged"), Is.EqualTo(1));
             Assert.That(Property(session, "IronCount"), Is.Zero);
-        }
-
-        [UnityTest]
-        public IEnumerator FinalCampfireStageOpensWalkableHomeBeyondTheCircle()
-        {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            Component session = GameObject.Find("Player").GetComponent("WorldSession");
-            object pack = Field(session, "_backpack");
-            Assert.That(Call(pack, "Add", Property(session, "WoodItem"), 33), Is.EqualTo(33));
-            Assert.That(Call(pack, "Add", Property(session, "StoneItem"), 30), Is.EqualTo(30));
-            Assert.That(Call(pack, "Add", Property(session, "IronItem"), 8), Is.EqualTo(8));
-            Assert.That(Call(session, "UpgradeHomeCampfire"), Is.True);
-            Assert.That(Call(session, "UpgradeHomeCampfire"), Is.True);
-            Assert.That(Property(session, "HomeCampfireTier"), Is.EqualTo(3));
-            object builds = Field(session, "homeBuilds");
-            Vector3 center = ((Component)Field(session, "home")).transform.position;
-            Assert.That(Field(builds, "finalHomeArea"), Is.Not.Null);
-            bool found = false;
-            for (float radius = 10f; radius <= 20f && !found; radius += 2f)
-                for (int angle = 0; angle < 16 && !found; angle++)
-                {
-                    float radians = angle * Mathf.PI / 8f;
-                    Vector3 point = center + new Vector3(Mathf.Cos(radians) * radius,
-                        0f, Mathf.Sin(radians) * radius);
-                    point.x = Mathf.Round(point.x / .75f) * .75f;
-                    point.z = Mathf.Round(point.z / .75f) * .75f;
-                    found = (bool)Call(builds, "CanPlace", "structure.home.stone-floor",
-                        point, 0, null);
-                }
-            Assert.That(found, Is.True,
-                "The final upgrade should permit a clear Home ground spot past the old circle.");
         }
 
         [UnityTest]
@@ -243,13 +181,11 @@ namespace Topaz.Tests
             object pack = Field(session, "_backpack");
             Assert.That(Call(pack, "Add", Property(session, "WoodItem"), 4), Is.EqualTo(4));
             object builds = Field(session, "homeBuilds");
-            Assert.That(Call(session, "BeginHomeBuild", "structure.home.bed"), Is.True);
-            Set(builds, "_position", new Vector3(3f, 0f, 3f));
-            Call(builds, "ConfirmPlacement");
+            Vector3 buildPosition = BuildingTestActions.Place(session, "structure.home.bed");
             double before = (double)Property(session, "WorldHours");
             CharacterController controller = player.GetComponent<CharacterController>();
             controller.enabled = false;
-            player.transform.position = new Vector3(3f, 0f, 3f);
+            player.transform.position = buildPosition + Vector3.back * .6f + Vector3.up * .1f;
             controller.enabled = true;
             Assert.That(Call(session, "TryInteract"), Is.True);
             yield return new WaitForSecondsRealtime(.75f);

@@ -4,7 +4,7 @@ using Topaz.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Topaz.LoopStudy
+namespace Topaz.Gameplay
 {
     /// <summary>Facing Travel and Cook pages over the existing Journal backdrop.</summary>
     public sealed class CampfireTravelView : MonoBehaviour

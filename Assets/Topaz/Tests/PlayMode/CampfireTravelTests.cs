@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class CampfireTravelTests : InputTestFixture
+    public sealed class CampfireTravelTests : TopazInputTestFixture
     {
         [TearDown]
         public void RestoreTime() => Time.timeScale = 1f;
@@ -60,29 +60,28 @@ namespace Topaz.Tests
             Set(gamepad.buttonEast, 0f);
             Assert.That(panel.gameObject.activeSelf, Is.False);
 
-            Component journal = GameObject.Find("Loop HUD").GetComponent("HomeJournalView");
+            Component journal = GameObject.Find("Loop HUD").GetComponent("BuildingJournalView");
             journal.GetType().GetMethod("Show").Invoke(journal, null);
-            Component upgradeLabel = journal.GetComponentsInChildren<Component>(true)
-                .First(value => value.GetType().Name == "TextMeshProUGUI" &&
-                    (string)value.GetType().GetProperty("text").GetValue(value) == "Improve fire");
-            upgradeLabel.GetComponentInParent<UnityEngine.UI.Button>().onClick.Invoke();
-            Assert.That(GameObject.Find("Loop HUD").transform
-                .Find("Home Journal/Campfire Upgrade").gameObject.activeSelf, Is.True);
+            Assert.That((bool)journal.GetType().GetProperty("IsOpen").GetValue(journal), Is.True);
+            Assert.That(journal.GetComponentsInChildren<Component>(true).Any(value => value.GetType().Name == "TextMeshProUGUI" && (string)value.GetType().GetProperty("text").GetValue(value) == "Improve fire"), Is.False);
         }
 
         [UnityTest]
-        public IEnumerator GraveyardTravelPreservesHealthAndClockAndSetsReturnFire()
+        public IEnumerator WoodlandTravelPreservesHealthAndClockAndSetsReturnFire()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            yield return TopazTestTravel.EnterGraveyard(player);
+            yield return TopazTestTravel.EnterWoodland(player);
             Teleport(player, GameObject.Find("Clearing Campfire").transform.position);
             yield return null;
             Assert.That(Get<string>(session, "ReturnCampfireId"),
                 Is.EqualTo("campfire.expedition.clearing"));
             Component vitality = player.GetComponent("PlayerVitality");
+            var firePosition = player.transform.position;
+            Teleport(player, firePosition + Vector3.right * 20f);
             Assert.That(Call<bool>(vitality, "TryTakeDamage", 2), Is.True);
+            Teleport(player, firePosition);
             int health = Get<int>(vitality, "CurrentHealth");
             Assert.That(health, Is.LessThan(Get<int>(vitality, "MaximumHealth")));
             Assert.That(Call<bool>(session, "TryInteract"), Is.True);
@@ -99,40 +98,7 @@ namespace Topaz.Tests
                 Is.LessThan(.05d));
             Assert.That(Get<string>(session, "ReturnCampfireId"),
                 Is.EqualTo("campfire.home"));
-            Assert.That(SceneManager.GetSceneByName("Graveyard").isLoaded, Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator CryptIsAnIndoorDestinationAndCanTravelBack()
-        {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            yield return TopazTestTravel.EnterGraveyard(player);
-            Teleport(player, GameObject.Find("Clearing Campfire").transform.position);
-            yield return null;
-            yield return TopazTestTravel.EnterCrypt(player);
-            Teleport(player, GameObject.Find("Crypt Campfire").transform.position);
-            yield return null;
-            Assert.That(Call<bool>(session, "TryInteract"), Is.True);
-            yield return null;
-            Transform rows = TravelPanel().Find("Campfire Journal/Destinations/Viewport/Content");
-            Assert.That(rows.Cast<Transform>().Select(value => value.name).ToArray(),
-                Is.EqualTo(new[] { "Travel to Home", "Travel to Graveyard", "Travel to Crypt" }));
-            Assert.That(rows.Find("Travel to Crypt").GetComponent<UnityEngine.UI.Button>()
-                .interactable, Is.False);
-            rows.Find("Travel to Home").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
-            yield return WaitForTravel(session, "home");
-            Assert.That(Get<string>(session, "ReturnCampfireId"),
-                Is.EqualTo("campfire.home"));
-            Assert.That(Call<bool>(session, "TryInteract"), Is.True);
-            yield return null;
-            TravelPanel().Find("Campfire Journal/Destinations/Viewport/Content/Travel to Crypt")
-                .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
-            yield return WaitForTravel(session, "dungeon.home-crypt");
-            Assert.That(SceneManager.GetSceneByName("Crypt").isLoaded, Is.True);
-            Assert.That(Get<string>(session, "ReturnCampfireId"),
-                Is.EqualTo("campfire.dungeon.home-crypt"));
+            Assert.That(SceneManager.GetSceneByName("Woodland").isLoaded, Is.False);
         }
 
         static Transform TravelPanel() => GameObject.Find("Loop HUD").transform

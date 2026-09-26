@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ExpeditionGuardian
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.EnemyDefinition
   stableId: enemy.expedition.guardian
+  sourceLevel: 1
   health: 20
   detectionRange: 10
   travelSpeed: 2.8
@@ -22,3 +23,6 @@ MonoBehaviour:
   recoverySeconds: 1.15
   damage: 4
   staggerImmune: 1
+  shielded: 0
+  groundSpell: {fileID: 0}
+  crossbowAttack: {fileID: 0}

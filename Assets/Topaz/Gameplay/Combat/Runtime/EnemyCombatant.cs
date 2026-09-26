@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     public enum SkeletonLootRole { Minion, Warrior, Rogue, Mage }
 
@@ -80,7 +80,7 @@ namespace Topaz.CombatStudy
         {
             if (visualRoot != null)
             {
-                var visual = visualRoot.GetComponentInChildren<Topaz.AnimationStudy.CharacterVisual>(true);
+                var visual = visualRoot.GetComponentInChildren<Topaz.Characters.CharacterVisual>(true);
                 if (visual != null) bodyRenderer = visual.BodyRenderer;
             }
             _agent = GetComponent<NavMeshAgent>();
@@ -127,7 +127,9 @@ namespace Topaz.CombatStudy
             }
 
             if (!_agent.isOnNavMesh) return;
-            if (target.GetComponent<Topaz.LoopStudy.WorldSession>()?.IsAtHome == true)
+            if (CampSafety.IsProtected(target.transform.position) || CampSafety.IsProtected(_agent.nextPosition))
+            { ReturnToSpawn(); return; }
+            if (target.GetComponent<Topaz.Gameplay.WorldSession>()?.IsAtHome == true)
             {
                 ReturnToSpawn();
                 return;
@@ -226,7 +228,7 @@ namespace Topaz.CombatStudy
 
         public void TakeDirectedDamage(int amount, Vector3 attackerPosition)
         {
-            if (amount <= 0 || !IsAlive) return;
+            if (amount <= 0 || !IsAlive || CampSafety.BlocksAttack(attackerPosition == Vector3.zero ? transform.position : attackerPosition, transform.position)) return;
             if (definition.Shielded && _state != State.Windup &&
                 _state != State.Recovery && attackerPosition != Vector3.zero)
             {
@@ -337,7 +339,7 @@ namespace Topaz.CombatStudy
                 _castingGroundSpell = false;
                 return; // The shared spell resolves its own radius and damage.
             }
-            if (target.GetComponent<Topaz.LoopStudy.WorldSession>()?.IsAtHome == true) return;
+            if (target.GetComponent<Topaz.Gameplay.WorldSession>()?.IsAtHome == true) return;
 
             if (definition.CrossbowAttack != null)
             {
@@ -440,7 +442,7 @@ namespace Topaz.CombatStudy
             if (definition.CrossbowAttack != null)
             {
                 Vector3 lineStart = transform.position;
-                lineStart.y = Topaz.VisualStudy.GroundSurface.Height(lineStart) + .18f;
+                lineStart.y = Topaz.Rendering.GroundSurface.Height(lineStart) + .18f;
                 telegraph.positionCount = 2;
                 telegraph.SetPosition(0, lineStart);
                 float length = definition.CrossbowAttack.Range;
@@ -458,7 +460,7 @@ namespace Topaz.CombatStudy
             }
             const int segments = 14;
             Vector3 center = transform.position;
-            center.y = Topaz.VisualStudy.GroundSurface.Height(center) + .18f;
+            center.y = Topaz.Rendering.GroundSurface.Height(center) + .18f;
             telegraph.positionCount = segments + 3;
             telegraph.SetPosition(0, center);
             for (int i = 0; i <= segments; i++)

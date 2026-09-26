@@ -1,7 +1,7 @@
 using System;
 using TMPro;
-using Topaz.LoopStudy;
-using Topaz.CombatStudy;
+using Topaz.Gameplay;
+using Topaz.Combat;
 using Topaz.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -141,7 +141,7 @@ namespace Topaz.Editor
         static void SetWoodJournalIcon()
         {
             ItemDefinition wood = AssetDatabase.LoadAssetAtPath<ItemDefinition>(
-                "Assets/Topaz/Gameplay/WorldLoop/Definitions/Wood.asset");
+                "Assets/Topaz/Gameplay/Inventory/Definitions/Wood.asset");
             Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(WoodArtPath);
             if (wood == null || sprite == null)
                 throw new InvalidOperationException("Wood definition or journal icon is missing.");

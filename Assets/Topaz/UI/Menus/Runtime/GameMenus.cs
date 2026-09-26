@@ -1,8 +1,8 @@
 using System;
 using TMPro;
-using Topaz.FeelStudy;
-using Topaz.LoopStudy;
-using Topaz.VisualStudy;
+using Topaz.Player;
+using Topaz.Gameplay;
+using Topaz.Rendering;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,7 +15,7 @@ namespace Topaz.Menus
 
         [SerializeField] LoopHud loopHud;
         [SerializeField] VisualOptionsMenu visualLab;
-        [SerializeField] FeelStudyCamera cameraRig;
+        [SerializeField] PlayerCamera cameraRig;
         [SerializeField] WorldSession session;
         [SerializeField] CharacterWorldMenu selection;
         [SerializeField] MainMenuStage menuStage;
@@ -42,7 +42,7 @@ namespace Topaz.Menus
 
         static readonly int[] Widths = { 1280, 1600, 1920 };
         static readonly int[] Heights = { 720, 900, 1080 };
-        static readonly float[] CameraSizes = { 5.8f, 7.2f, 9f };
+        static readonly float[] CameraSizes = { 2.5f, 4.5f, 6.5f };
         static readonly float[] UiScales = { 1f, 1.25f, 1.5f };
         static readonly Vector2 UiReferenceResolution = new Vector2(1920f, 1080f);
 
@@ -91,11 +91,11 @@ namespace Topaz.Menus
                 PlayerPrefs.GetInt("Topaz.UiScalePreset", 0), 0, UiScales.Length - 1);
             ApplyUiScale();
             bool editorTest = Application.isEditor || Array.Exists(Environment.GetCommandLineArgs(),
-                value => value.Equals("-runTests", StringComparison.OrdinalIgnoreCase));
+                value => (value.Equals("-runTests", StringComparison.OrdinalIgnoreCase) || value == "--topaz-smoke"));
             if (editorTest)
             {
                 session.EnterEditorTestPair();
-                SetState(ScreenState.Game);
+                SetState(session.HasActivePair ? ScreenState.Game : ScreenState.Title);
                 return;
             }
             _borderless = PlayerPrefs.GetInt("Topaz.Borderless", 1) == 1;

@@ -1,7 +1,7 @@
-using Topaz.CombatStudy;
+using Topaz.Combat;
 using UnityEngine;
 
-namespace Topaz.AnimationStudy
+namespace Topaz.Characters
 {
     /// <summary>Raises the shared left arm after the base Generic-rig animation is evaluated.</summary>
     [DefaultExecutionOrder(100)]

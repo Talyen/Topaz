@@ -1,13 +1,13 @@
-using Topaz.CombatStudy;
-using Topaz.FeelStudy;
+using Topaz.Combat;
+using Topaz.Player;
 using UnityEngine;
 
-namespace Topaz.VisualStudy
+namespace Topaz.Rendering
 {
     /// <summary>Gameplay feedback authored for the fixed-angle camera.</summary>
     public sealed class VisualEffectsComparison : MonoBehaviour
     {
-        FeelStudyPlayer _player;
+        PlayerController _player;
         PlayerCombat _combat;
         Material _dustMaterial;
         Material _sparkMaterial;
@@ -27,7 +27,7 @@ namespace Topaz.VisualStudy
 
         public void Initialize()
         {
-            _player = FindFirstObjectByType<FeelStudyPlayer>();
+            _player = FindFirstObjectByType<PlayerController>();
             _combat = _player != null ? _player.GetComponent<PlayerCombat>() : null;
             if (_combat != null) _combat.WeaponHit += OnWeaponHit;
             CreateParticles();

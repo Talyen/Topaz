@@ -18,9 +18,9 @@ MonoBehaviour:
   crossbowAttack: {fileID: 0}
   skill: 0
   twoHanded: 0
-  attackClip: {fileID: 7400000, guid: b3a3a38a6debc4b279417c6b2c67fa6e, type: 2}
+  attackClip: {fileID: 0}
   reloadClip: {fileID: 0}
-  heldModel: {fileID: 9079467392114888498, guid: b7c16eb3a835148dea1cc03c8c5fa4ce, type: 3}
+  heldModel: {fileID: 7154719111496950872, guid: eb71242ba4749498585ecf4a61b22846, type: 3}
   swingClip: {fileID: 8300000, guid: 6d49fd3e49cd94880a820dad85a8424f, type: 3}
   impactClip: {fileID: 8300000, guid: 7f627c44c8bb845d68170938bde0ae74, type: 3}
   staggerSeconds: 0

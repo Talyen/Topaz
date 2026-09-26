@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class SurvivalPlayTests : InputTestFixture
+    public sealed class SurvivalPlayTests : TopazInputTestFixture
     {
         [TearDown]
         public void RestoreTime() => Time.timeScale = 1f;
@@ -83,7 +83,7 @@ namespace Topaz.Tests
                 (string)slot.GetType().GetField("itemId").GetValue(slot) == "food.red-berries");
             Assert.That(Invoke<bool>(session, "TryEat", index), Is.True);
 
-            yield return TopazTestTravel.EnterGraveyard(player);
+            yield return TopazTestTravel.EnterWoodland(player);
             Component vitality = player.GetComponent("PlayerVitality");
             Assert.That(Invoke<bool>(vitality, "TryTakeDamage", 2), Is.True);
             double before = (double)Property(session, "WorldHours");

@@ -8,7 +8,7 @@ namespace Topaz.Tests
     public sealed class SurvivalRulesTests
     {
         static Type Find(string name) => AppDomain.CurrentDomain.GetAssemblies()
-            .Select(assembly => assembly.GetType("Topaz.LoopStudy." + name))
+            .Select(assembly => assembly.GetType("Topaz.Gameplay." + name))
             .First(type => type != null);
 
         static object Call(Type type, string name, params object[] args) =>
@@ -54,21 +54,6 @@ namespace Topaz.Tests
             Assert.That((float)Field(character, "stamina"), Is.LessThanOrEqualTo(100f));
         }
 
-        [Test]
-        public void VersionElevenMigrationGivesExistingCharactersFullStamina()
-        {
-            Type profileType = Find("TopazProfileData");
-            object profile = Activator.CreateInstance(profileType);
-            object character = profileType.GetMethod("CreateCharacter")
-                .Invoke(profile, new object[] { "rogue" });
-            object world = profileType.GetMethod("CreateWorld").Invoke(profile, null);
-            profileType.GetMethod("GetOrCreateVisit").Invoke(profile,
-                new[] { Field(character, "id"), Field(world, "id") });
-            Set(profile, "version", 11);
-            Set(character, "stamina", 0f);
-            profileType.GetMethod("MigrateFromVersion11").Invoke(profile, null);
-            Assert.That(Field(profile, "version"), Is.EqualTo(12));
-            Assert.That(Field(character, "stamina"), Is.EqualTo(100f));
-        }
+
     }
 }

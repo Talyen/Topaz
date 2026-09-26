@@ -6,7 +6,7 @@ Status: implemented for Mac review. Dusk and night now use darker sun and ambien
 
 - Time advances continuously during active play through a medium-length cycle. Start tuning at **45 minutes of active play per full day**. Menus and scene loading pause the clock. Closing the game does not advance it.
 - Dawn, daylight, dusk, and night change the outdoor lighting and ambience. Night is moody but always readable: the player, enemies, attack tells, paths, pickups, and interactions remain identifiable without a carried light.
-- The first day/night pass had no enemy deadline. The later [Graveyard and loot slice](studies/GRAVEYARD_STUDY.md) uses elapsed World time for 24-hour Skeleton returns and 72-hour cache refills. The player returns from the Graveyard by choice.
+- The first day/night pass had no enemy deadline. The later [current baseline](BASELINE.md) uses elapsed World time for 24-hour Skeleton returns and 72-hour cache refills. The player returns from the Woodland by choice.
 - The environment communicates time. Do not add a clock, day counter, or time-of-day HUD. The existing home bedroll can be used at any time and advances the clock by **eight in-game hours**, which is **15 minutes of cycle time** at the 45-minute starting speed. Resting is a time skip, so it should use a short visual transition rather than animating eight hours of light movement.
 - Keep indoor or authored dungeon lighting locally controlled when those spaces arrive, while the same world clock continues advancing during active play.
 

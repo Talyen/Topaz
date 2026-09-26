@@ -1,11 +1,11 @@
-using Topaz.CombatStudy;
-using Topaz.FeelStudy;
+using Topaz.Combat;
+using Topaz.Player;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Topaz.AnimationStudy
+namespace Topaz.Characters
 {
-    /// <summary>Shows gameplay state with KayKit clips; gameplay owns all movement and hit timing.</summary>
+    /// <summary>Shows gameplay state with configured animation clips; gameplay owns all movement and hit timing.</summary>
     [RequireComponent(typeof(Animator))]
     public sealed class CharacterAnimationDriver : MonoBehaviour
     {
@@ -15,7 +15,7 @@ namespace Topaz.AnimationStudy
             Jump, Sword, Axe, CombatAxe, Staff, Crossbow, CrossbowReload, Hit, Attack, Death
         }
 
-        [SerializeField] FeelStudyPlayer player;
+        [SerializeField] PlayerController player;
         [SerializeField] PlayerCombat playerCombat;
         [SerializeField] EnemyCombatant enemy;
         [SerializeField] NavMeshAgent enemyAgent;
@@ -46,7 +46,7 @@ namespace Topaz.AnimationStudy
 
         void Awake()
         {
-            player = GetComponentInParent<FeelStudyPlayer>();
+            player = GetComponentInParent<PlayerController>();
             playerCombat = GetComponentInParent<PlayerCombat>();
             enemy = GetComponentInParent<EnemyCombatant>();
             enemyAgent = enemy != null ? enemy.GetComponent<NavMeshAgent>() : null;
@@ -138,13 +138,13 @@ namespace Topaz.AnimationStudy
         {
             switch (player.LastDodgeFacing)
             {
-                case FeelStudyPlayer.DodgeFacing.Backward:
+                case PlayerController.DodgeFacing.Backward:
                     Show(Pose.DodgeBackward, dodgeBackwardClip, player.DodgeVisualSeconds);
                     break;
-                case FeelStudyPlayer.DodgeFacing.Left:
+                case PlayerController.DodgeFacing.Left:
                     Show(Pose.DodgeLeft, dodgeLeftClip, player.DodgeVisualSeconds);
                     break;
-                case FeelStudyPlayer.DodgeFacing.Right:
+                case PlayerController.DodgeFacing.Right:
                     Show(Pose.DodgeRight, dodgeRightClip, player.DodgeVisualSeconds);
                     break;
                 default:

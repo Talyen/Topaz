@@ -1,46 +1,21 @@
-# Architecture decisions
+# Architecture
 
-## Product boundary
+[BASELINE.md](BASELINE.md) is the current product contract.
 
-Topaz is a premium single-player desktop game. The world and dungeon layouts are authored, not procedurally generated. Outdoor regions connect through designed transitions; interiors and dungeons are separate authored spaces. Mobile remains an option, but desktop performance and controls lead development.
+## Ownership
 
-## Visual and simulation baseline
+Use GameObjects/components, ScriptableObject definitions, and plain serializable runtime records. WorldSession coordinates the active Character–World pair; region travel/recovery lives in its Regions partial. It owns atomic inventory/world transactions and persistence. Do not introduce parallel save authorities.
 
-Use the URP 3D renderer, a fixed-angle orthographic camera with zoom, stylized meshes and materials, and restrained effects. The intended day/night cycle should change ambience with a limited number of dynamic lights and shadow casters; measure a representative scene before setting exact texture, light, draw-call, or geometry budgets. Keep quality settings scalable. Do not pick HDRP solely for DLSS.
+WoodlandPlan produces deterministic data with separate layout/resource/decoration streams. WoodlandRegion realizes terrain, art, resources, reserved routes, and runtime navigation. RegionBuildings binds only the active region's structures, resolves region-local coordinates, validates placement, and rebuilds navigation after changes.
 
-Build around readable combat with 1–10 visible enemies, not mass swarms. Use conventional GameObjects, physics, and navigation initially. Profile before introducing spatial indexes, Burst/Jobs, ECS, GPU animation, or custom draw submission.
+Campfire objects provide discovery and arrival points. Fixed destinations are catalogued from build scenes; player camps resolve from saved World structures even while their region is unloaded. CampSafety owns active protection and navigation exclusion; combat damage and projectiles consult it. Protection does not award kills or discard respawn deadlines.
 
-## Player feel and first prototype
+Static definitions remain separate from mutable state. Characters own inventory/equipment/progression. Worlds own terrain identity, structures/storage, resource state, pickups, and encounter deadlines. Visits own position, discoveries, and recovery selection.
 
-Moment-to-moment play favors responsive travel and deliberate, readable attacks. One safe homestead anchors expeditions into the authored world. The first playable study should prove movement and camera feel in a small Mac build before adding progression systems.
+## Saves
 
-WASD moves relative to the screen; W moves toward the top of the view. Gamepad movement is analog. Start with one responsive travel speed and a short directional dodge, without stamina. The fixed-angle orthographic camera supports zoom and gently, within a bounded distance, looks ahead toward the aim direction while keeping the character near center. Tune speeds, dodge duration, zoom range, and camera smoothing by playtesting rather than freezing numbers in this document.
+Baseline-v1 is a fresh versioned save root. Historical migrations are retired. ProfileRepository retains validated snapshots, atomic replacement, backup recovery, and coalesced background writes. Unsupported/corrupt saves are reported rather than silently overwritten. Generator settings and version are persisted. No old saves require compatibility.
 
-The dodge provides brief invulnerability and uses a cooldown rather than stamina. Early melee attacks sweep a readable arc toward the mouse cursor or right-stick aim, without automatic lock-on. Homestead crafting, storage, and recovery make return trips valuable, but expeditions have no forced return timer.
+## Presentation
 
-The first combat slice uses one sword and one enemy with a visible attack windup. A sword swing slows movement during windup and strike; dodge can cancel recovery, but not the committed swing. The central homestead is safe: threats stay in the expedition space and no mandatory raids interrupt crafting or rest.
-
-The first gathering slice adds an aimed axe with deliberate chops. A completed tree awards Logging XP and drops persistent Wood that is picked up nearby. Damaging sword hits award Swords XP. The player can craft one chest from Wood and place it within the home boundary. Resting skips eight in-game hours; that tree returns after 72 elapsed in-game hours, including active play and rest skips. This deliberately small loop tests use-based progress, authored resource state, crafting, placement, storage, and persistence before broadening any one of them. The later [progression design](plans/PROGRESSION_PLAN.md) adds five skills, source-level XP scaling, and talents.
-
-The backpack uses 16 fixed slots and the first chest uses 12. Items have authored maximum stack sizes; Wood currently stacks to 20. There is no weight or encumbrance system. Full backpacks leave uncollected items in the world. The current [Character and World collection](CHARACTERS_AND_WORLDS.md) migrates the earlier combined save without discarding standalone progress.
-
-## Boundaries for later systems
-
-- **Content definitions:** immutable item, recipe, skill, talent, loot, and building definitions. Author in Unity assets; use stable definition IDs rather than scene object references in saves.
-- **Runtime state:** plain data for character progress, inventory, world changes, structures, harvested nodes, and dungeon reset state. Keep presentation objects replaceable.
-- **Persistence:** versioned local save format; stable IDs for authored objects and player-built instances; migration tests whenever format changes. Recoverable death updates the same world state rather than deleting it.
-- **Regions:** asynchronously load and unload authored scenes at transitions. Persist region changes. Unloaded regions do not run full real-time simulation; apply bounded elapsed-time rules when revisited.
-- **Building:** designated homestead plots, with snapping or a grid. A placement change updates local navigation and persisted state, not the entire world.
-- **Progression:** classless, use-based skills with deliberate talent choices. Domain events such as a completed harvest or a confirmed hit award progress, rather than per-frame polling.
-
-The loop study implements definition IDs, stable authored object IDs, versioned local saves, and player-built instance IDs. The [Graveyard](studies/GRAVEYARD_STUDY.md) tests a walk-through transition to an additive authored outdoor scene with a stable saved region ID; its crypt entrance leads to a separate interior. A general multi-region authoring system and higher-level progression sources remain future work.
-
-For later region work, use Unity 6.6 [Build Profile scene lists](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html) and [asynchronous scene loading](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/SceneManagement.SceneManager.LoadSceneAsync.html). For authored definition and runtime data boundaries, use [ScriptableObject](https://docs.unity3d.com/6000.6/Documentation/Manual/class-ScriptableObject.html) and [serialization rules](https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization.html). The [reference index](UNITY_REFERENCE_GUIDE.md) collects current Unity and package sources by task.
-
-## Current art replacement boundary
-
-The authored 3D content now uses Topaz-owned prefabs around replaceable nested
-visuals. Character appearance and equipment instantiate configured prefabs;
-serialized visual bindings replace runtime searches for vendor bone names.
-Persistent instance IDs remain on scene objects, while reusable assets own
-static configuration. See [prefab authoring](PREFAB_AUTHORING.md).
+Unity 6000.6.2f1, URP 17.6, Input System 1.20, Cinemachine 6.6, AI Navigation 2.0.14, uGUI/TMP, Shader Graph and VFX Graph. First-party systems own rendering, camera collision, navigation, input and UI; small Topaz components implement game rules. Third-party art is referenced through replaceable owned visuals.

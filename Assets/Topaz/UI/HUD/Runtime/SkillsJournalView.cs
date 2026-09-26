@@ -1,10 +1,10 @@
 using TMPro;
-using Topaz.LoopStudy;
+using Topaz.Gameplay;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Topaz.LoopStudy
+namespace Topaz.Gameplay
 {
     /// <summary>Journal presentation for Character-owned levels and talent loadouts.</summary>
     public sealed class SkillsJournalView : MonoBehaviour

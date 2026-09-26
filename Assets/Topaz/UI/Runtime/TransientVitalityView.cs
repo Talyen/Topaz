@@ -1,6 +1,6 @@
 using TMPro;
-using Topaz.CombatStudy;
-using Topaz.LoopStudy;
+using Topaz.Combat;
+using Topaz.Gameplay;
 using UnityEngine;
 
 namespace Topaz.UI

@@ -1,37 +1,22 @@
 # Topaz
 
-Topaz is an early-stage, single-player action RPG and survival crafting game in a hand-authored world. The current Mac build contains [movement and camera](docs/studies/FEEL_STUDY.md), [one-enemy combat](docs/studies/COMBAT_STUDY.md), and a [small gathering and homestead loop](docs/studies/WORLD_LOOP_STUDY.md).
+An early single-player fantasy survival-crafting action RPG: third-person movement, procedural connected outdoor regions, gathering, crafting, building, and melee/ranged/magic combat using Unity URP.
 
-The standalone player opens at a title menu. Press **Esc** to pause or open Options during play; [display and camera controls](docs/MENUS_AND_DISPLAY.md) and the [Visual Lab](docs/studies/VISUAL_STUDY.md) are available there.
+Start with [the game baseline](docs/BASELINE.md), [architecture](docs/ARCHITECTURE.md), [feature status](docs/FEATURE_STATUS.md), and [agent workflow](AGENTS.md).
 
-## Project brief
+## Open and verify
 
-- Stylized 3D, fixed-angle orthographic view; Windows/Steam is the primary target, with Mac playtesting.
-- WASD movement and mouse aiming, with analog gamepad movement and right-stick aiming in the current study.
-- Readable encounters of roughly 1–10 visible enemies, connected authored regions, and authored dungeons that may reset.
-- Gentle survival needs, plot-based homestead building, recoverable death, and classless skills that improve through use.
-- Responsive travel and deliberate attacks; one safe homestead anchors expeditions. The first playable study focuses on screen-relative movement, a short dodge, aiming, and gentle camera look-ahead.
-- Use a 60 Hz Mac display as the near-term smoothness baseline. A designated Windows PC will later test the 1080p/120 FPS gameplay target; a lower-tier 60 FPS target will be selected after a representative scene exists.
-
-## Tools and checks
-
-Use Unity **6000.6.2f1**. The project was created from the Universal 3D template. Unity CLI and `com.unity.pipeline` let agents operate a running Editor; [AGENTS.md](AGENTS.md) describes the workflow.
-
-Topaz's [Unity feature policy](docs/UNITY_FEATURE_POLICY.md) favors built-in and official features, with custom code limited to game-specific rules and replaceable adapters.
-Agents can find versioned Unity 6.6 and installed-package sources in the [Unity reference guide](docs/UNITY_REFERENCE_GUIDE.md), with links from each local feature study.
+Use Unity **6000.6.2f1**. Run `git lfs install` and restore the private terrain sample following [procedural worlds](docs/PROCEDURAL_WORLDS.md). The raw sample art and source audio archives are local-only dependencies; they are not committed to this public repository.
 
 ```sh
-git lfs install
 unity mcp configure codex --local --project-path "$PWD" --yes
+./scripts/doctor.sh
 ./scripts/verify.sh
 ./scripts/build.sh windows
-./scripts/doctor.sh
 ```
 
-The `unity mcp configure` command writes a machine-specific `.codex/config.toml` that is ignored by Git. `verify.sh` runs Edit Mode and Play Mode tests and builds a Mac player; `verify.sh --quick --mode PlayMode --filter TestName` runs a focused iteration check without a build. The Windows build is a cross-platform smoke check; final Windows performance must be measured on Windows hardware. Check commands print brief results and save complete logs and JUnit reports in ignored `TestResults/`. See the [agent workflow](docs/AGENT_WORKFLOW.md) for test selection and read-only Editor diagnostics. Generated players, reports, Unity `Library`, and logs are ignored.
-
-The Bootstrap player can produce a diagnostic timing report when launched with `--topaz-perf`. That report checks the capture pipeline; it does not establish the future game's frame rate. See [performance process](docs/PERFORMANCE.md).
+`verify.sh` runs tool checks, EditMode and PlayMode tests, and a Mac build. Focused iteration: `./scripts/verify.sh --quick --mode PlayMode --filter RegionalBaselineTests`. Builds and reports remain ignored. The Windows build is a compatibility check; Windows performance requires the designated Windows PC.
 
 ## Rights and assets
 
-Project-authored software source is licensed under [PolyForm Noncommercial 1.0.0](LICENSE.md). Original Topaz creative content is all rights reserved. Third-party content keeps its own license. See [rights](RIGHTS.md), the [asset register](docs/THIRD_PARTY_ASSETS.md), and the [free 3D asset sourcing guide](docs/ASSET_SOURCING.md). We are not accepting outside pull requests yet because a premium release requires clear commercial rights to contributions.
+Project-authored software uses [PolyForm Noncommercial](LICENSE.md); original creative content is all rights reserved. Third-party assets retain their own licenses. See [rights](RIGHTS.md) and [the asset register](docs/THIRD_PARTY_ASSETS.md). Asset approval galleries and per-asset review decisions are no longer part of development. Preserve the audio library and its independent review records.

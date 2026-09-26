@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ExpeditionScout
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.CombatStudy.EnemyDefinition
   stableId: enemy.expedition.scout
+  sourceLevel: 1
   health: 10
   detectionRange: 9
   travelSpeed: 3.5
@@ -21,3 +22,7 @@ MonoBehaviour:
   telegraphSeconds: 0.45
   recoverySeconds: 0.75
   damage: 4
+  staggerImmune: 0
+  shielded: 0
+  groundSpell: {fileID: 0}
+  crossbowAttack: {fileID: 0}

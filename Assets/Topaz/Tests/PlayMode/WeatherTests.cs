@@ -9,10 +9,10 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class WeatherTests : InputTestFixture
+    public sealed class WeatherTests : TopazInputTestFixture
     {
         static readonly Type Schedule = Type.GetType(
-            "Topaz.LoopStudy.WeatherSchedule, Assembly-CSharp", true);
+            "Topaz.Gameplay.WeatherSchedule, Assembly-CSharp", true);
 
         [Test]
         public void ScheduleIsStableAcrossTimeSkipsAndOverridesHaveExplicitPriority()

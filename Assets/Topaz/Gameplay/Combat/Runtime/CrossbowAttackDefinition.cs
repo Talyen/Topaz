@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     [CreateAssetMenu(menuName = "Topaz/Combat/Crossbow Attack")]
     public sealed class CrossbowAttackDefinition : ScriptableObject

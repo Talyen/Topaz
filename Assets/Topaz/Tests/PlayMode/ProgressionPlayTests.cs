@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class ProgressionPlayTests : InputTestFixture
+    public sealed class ProgressionPlayTests : TopazInputTestFixture
     {
         static object Call(object target, string method, params object[] arguments) =>
             target.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Public)
@@ -59,7 +59,7 @@ namespace Topaz.Tests
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component hud = UnityEngine.Object.FindFirstObjectByType(Type.GetType(
-                "Topaz.LoopStudy.LoopHud, Assembly-CSharp")) as Component;
+                "Topaz.Gameplay.LoopHud, Assembly-CSharp")) as Component;
             Assert.That(session, Is.Not.Null);
             Assert.That(hud, Is.Not.Null);
             Call(session, "RecordSkillCompletion", "mining", 10, 1);
@@ -135,7 +135,7 @@ namespace Topaz.Tests
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            yield return TopazTestTravel.EnterGraveyard(player);
+            yield return TopazTestTravel.EnterWoodland(player);
             Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
             int before = (int)Property(enemy, "CurrentHealth");
             Call(enemy, "ApplyBleed", 1, 2f, 1.5f);
@@ -154,7 +154,7 @@ namespace Topaz.Tests
             Component combat = player.GetComponent("PlayerCombat");
             Call(session, "RecordSkillCompletion", "axes", 10, 1);
             Assert.That((bool)Call(session, "TryLearnTalent", "axes", "axes.bleed"), Is.True);
-            yield return TopazTestTravel.EnterGraveyard(player);
+            yield return TopazTestTravel.EnterWoodland(player);
             Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
             Vector3 safePosition = player.transform.position;
             Teleport(player, enemy.transform.position + Vector3.back * 1.3f);
@@ -182,7 +182,7 @@ namespace Topaz.Tests
             Component vitality = player.GetComponent("PlayerVitality");
             Call(session, "RecordSkillCompletion", "axes", 10, 1);
             Assert.That((bool)Call(session, "TryLearnTalent", "axes", "axes.rage"), Is.True);
-            yield return TopazTestTravel.EnterGraveyard(player);
+            yield return TopazTestTravel.EnterWoodland(player);
             Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
             Teleport(player, enemy.transform.position + Vector3.back * 1.3f);
             EquipAxeForTest(session, combat, enemy);

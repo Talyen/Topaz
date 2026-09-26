@@ -1,6 +1,6 @@
 using System;
 using TMPro;
-using Topaz.LoopStudy;
+using Topaz.Gameplay;
 using Topaz.UI;
 using UnityEditor;
 using UnityEngine;

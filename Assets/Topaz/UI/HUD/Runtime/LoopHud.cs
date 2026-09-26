@@ -2,7 +2,7 @@ using TMPro;
 using Topaz.UI;
 using UnityEngine;
 
-namespace Topaz.LoopStudy
+namespace Topaz.Gameplay
 {
     /// <summary>Small, readable uGUI view over the first loop; it owns no game state.</summary>
     public sealed class LoopHud : MonoBehaviour
@@ -51,7 +51,7 @@ namespace Topaz.LoopStudy
         int _selectedChestPackSlot = -1;
         int _selectedChestSlot = -1;
         bool _listenersBound;
-        HomeJournalView _homeJournal;
+        BuildingJournalView _homeJournal;
         CampfireTravelView _travelView;
         StatusJournalView _statusJournal;
         UnityEngine.UI.Button _eatButton;
@@ -82,9 +82,9 @@ namespace Topaz.LoopStudy
             {
                 craftButton.onClick.AddListener(() => _session.TryCraftChest());
                 if (pathButton != null) pathButton.onClick.AddListener(() =>
-                    _session.BeginHomeBuild(HomeBuilds.PathId));
+                    _session.BeginHomeBuild(RegionBuildings.PathId));
                 if (anvilButton != null) anvilButton.onClick.AddListener(() =>
-                    _session.BeginHomeBuild(HomeBuilds.AnvilId));
+                    _session.BeginHomeBuild(RegionBuildings.AnvilId));
                 if (editHomeButton != null) editHomeButton.onClick.AddListener(() =>
                     _session.BeginHomeEdit());
                 depositButton.onClick.AddListener(() => _session.DepositAllItems());
@@ -135,12 +135,14 @@ namespace Topaz.LoopStudy
                 }
                 _listenersBound = true;
             }
+            ConfigureJournalTab(equipmentTabButton, 840f);
+            ConfigureJournalTab(skillsTabButton, 992f);
             equipmentView?.Bind(session, this);
             skillsView?.Bind(session, this);
             if (_homeJournal == null)
             {
-                _homeJournal = gameObject.GetComponent<HomeJournalView>();
-                if (_homeJournal == null) _homeJournal = gameObject.AddComponent<HomeJournalView>();
+                _homeJournal = gameObject.GetComponent<BuildingJournalView>();
+                if (_homeJournal == null) _homeJournal = gameObject.AddComponent<BuildingJournalView>();
             }
             _homeJournal.Bind(session, this, skillsTabButton,
                 craftDescription != null ? craftDescription.font : null,
@@ -162,12 +164,27 @@ namespace Topaz.LoopStudy
             Refresh();
         }
 
+        static void ConfigureJournalTab(UnityEngine.UI.Button button, float x)
+        {
+            if (button == null) return;
+            RectTransform rect = button.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(x, -100f);
+            rect.sizeDelta = new Vector2(140f, 56f);
+            TMP_Text label = button.GetComponentInChildren<TMP_Text>();
+            if (label == null) return;
+            label.fontSize = 24f;
+            label.rectTransform.anchorMin = Vector2.zero;
+            label.rectTransform.anchorMax = Vector2.one;
+            label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
+        }
+
         public void Refresh()
         {
             if (_session == null) return;
             Set(craftDescription, $"Storage chest  •  {_session.ChestCost} Wood\n" +
-                (_session.ChestPlaced ? "Already placed" :
-                    _session.PendingChest ? "Ready to place" : $"You have {_session.WoodCount} Wood"));
+                $"Available in this region: {_session.HomeWoodCount} Wood");
             Set(chestDescription, $"Backpack: {_session.WoodCount} Wood, " +
                 $"{_session.StoneCount - _session.ChestStone} Stone, " +
                 $"{_session.IronCount - _session.ChestIron} Iron\n" +
@@ -196,7 +213,7 @@ namespace Topaz.LoopStudy
             if (editHomeButton != null) editHomeButton.interactable = true;
             TMP_Text craftAction = craftButton.GetComponentInChildren<TMP_Text>();
             if (craftAction != null)
-                Set(craftAction, _session.ChestPlaced ? "Already built" : "Craft chest");
+                Set(craftAction, "Place chest");
             depositButton.interactable = _session.BackpackHasMaterials && _session.ChestPlaced;
             withdrawButton.interactable = _session.ChestHasMaterials;
             if (storeGearButton != null)
@@ -472,7 +489,6 @@ namespace Topaz.LoopStudy
         public void ShowEquipmentPanel() => equipmentView?.Show();
         public void ShowSkillsPanel() => skillsView?.Show();
         public void ShowSmithingPanel() => _homeJournal?.ShowSmithing();
-        public void ShowCampfirePanel() => _homeJournal?.ShowCampfire();
         public void ShowTravelPanel()
         {
             ClosePanels();

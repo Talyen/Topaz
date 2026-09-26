@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class MovementInputTests : InputTestFixture
+    public sealed class MovementInputTests : TopazInputTestFixture
     {
         [UnityTest]
         public IEnumerator SpaceJumpsOnceAndReturnsToGround()
@@ -19,12 +19,12 @@ namespace Topaz.Tests
             GameObject player = GameObject.Find("Player");
             Animator animator = player.GetComponentInChildren<Animator>();
             float groundY = player.transform.position.y;
-            Component movement = player.GetComponent("FeelStudyPlayer");
+            Component movement = player.GetComponent("PlayerController");
             Assert.That((bool)movement.GetType().GetProperty("IsAirborne").GetValue(movement), Is.False);
             Press(keyboard.spaceKey);
             yield return new WaitForSeconds(0.12f);
             Assert.That(player.transform.position.y, Is.GreaterThan(groundY + 0.2f));
-            Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"), Is.True);
+            Assert.That((bool)movement.GetType().GetProperty("IsAirborne").GetValue(movement), Is.True);
             yield return new WaitForSeconds(0.6f);
             Assert.That(player.transform.position.y, Is.LessThan(groundY + 0.1f));
             yield return new WaitForSeconds(0.25f);
@@ -78,7 +78,7 @@ namespace Topaz.Tests
 
             Transform visual = GameObject.Find("Facing Visual").transform;
             Vector3 screenRightOnGround = Vector3.ProjectOnPlane(camera.transform.right, Vector3.up).normalized;
-            Assert.That(Vector3.Dot(visual.forward, screenRightOnGround), Is.GreaterThan(0.8f));
+            Assert.That(Vector3.Dot(visual.forward, screenUpOnGround), Is.GreaterThan(0.8f));
         }
 
         [UnityTest]
@@ -94,9 +94,9 @@ namespace Topaz.Tests
             Set(gamepad.leftStick, Vector2.right);
             yield return new WaitForSeconds(0.25f);
 
-            Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion"), Is.True);
-            Assert.That(animator.GetFloat("MoveX"), Is.GreaterThan(0.5f));
-            Assert.That(Mathf.Abs(animator.GetFloat("MoveY")), Is.LessThan(0.35f));
+            Component movement=GameObject.Find("Player").GetComponent("PlayerController");
+            Vector3 velocity=(Vector3)movement.GetType().GetProperty("PlanarVelocity").GetValue(movement);
+            Assert.That(Vector3.Dot(velocity,Camera.main.transform.right),Is.GreaterThan(.5f));
         }
 
         [UnityTest]
@@ -106,7 +106,7 @@ namespace Topaz.Tests
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return null;
 
-            Component player = GameObject.Find("Player").GetComponent("FeelStudyPlayer");
+            Component player = GameObject.Find("Player").GetComponent("PlayerController");
             Animator animator = GameObject.Find("Player").GetComponentInChildren<Animator>();
             Assert.That(animator, Is.Not.Null);
             Set(gamepad.rightStick, Vector2.up);
@@ -123,8 +123,7 @@ namespace Topaz.Tests
             Assert.That((bool)player.GetType().GetProperty("IsInvulnerable").GetValue(player), Is.False);
             Assert.That((bool)player.GetType().GetProperty("IsDodgeVisualActive").GetValue(player), Is.True,
                 "The visual finish should read after the movement and invulnerability window.");
-            Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("DodgeRight"), Is.True,
-                "A rightward dodge should play KayKit's right dodge pose.");
+            Assert.That(player.GetType().GetProperty("LastDodgeFacing").GetValue(player).ToString(), Is.EqualTo("Right"));
         }
 
         [UnityTest]
@@ -141,8 +140,11 @@ namespace Topaz.Tests
             Assert.That(bench, Is.Not.Null);
             Assert.That(hud, Is.Not.Null);
 
-            player.transform.position = bench.transform.position + Vector3.forward * .7f;
+            var controller=player.GetComponent<CharacterController>();controller.enabled=false;
+            player.transform.position = bench.transform.position + Vector3.forward * 1.2f;
+            controller.enabled=true;Physics.SyncTransforms();controller.Move(Vector3.down*.02f);
             yield return new WaitForSeconds(0.1f);
+            AimAt(GameObject.Find("Workbench").transform.position);
             Press(keyboard.eKey);
             yield return new WaitForSeconds(0.1f);
             Release(keyboard.eKey);
@@ -150,6 +152,7 @@ namespace Topaz.Tests
                 .GetProperty("MenuOpen").GetValue(hud.GetComponent("LoopHud"));
             Assert.That(menuOpen, Is.True, "Interaction should open the workbench panel.");
             yield return null;
+            AimAt(GameObject.Find("Workbench").transform.position);
             Press(keyboard.eKey);
             yield return new WaitForSeconds(0.1f);
             Release(keyboard.eKey);

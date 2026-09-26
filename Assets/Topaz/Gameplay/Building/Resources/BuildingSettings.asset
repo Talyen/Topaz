@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948c679c872de4c8a9b44e2a105e2434, type: 3}
+  m_Name: BuildingSettings
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.BuildingSettings
+  grid: 0.75
+  maximumHeightDifference: 0.25
+  maximumSlope: 12
+  campRadius: 12
+  enemyClearance: 5
+  campWood: 5
+  campStone: 5
+  surfaceMaterial: {fileID: 2100000, guid: c5dab6fa608b84ec28d4b5e060652df9, type: 2}
+  emberMaterial: {fileID: 2100000, guid: 18ddcefeda8934c718aaf55042e80990, type: 2}

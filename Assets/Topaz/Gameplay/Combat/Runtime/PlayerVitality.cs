@@ -1,14 +1,14 @@
-using Topaz.FeelStudy;
-using Topaz.LoopStudy;
+using Topaz.Player;
+using Topaz.Gameplay;
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>Player health and protection while recovering at a Campfire.</summary>
     [RequireComponent(typeof(CharacterController))]
     public sealed class PlayerVitality : MonoBehaviour
     {
-        [SerializeField] FeelStudyPlayer movement;
+        [SerializeField] PlayerController movement;
         [SerializeField] SafeZone safeZone;
         [SerializeField, Min(1)] int maximumHealth = 6;
 
@@ -53,7 +53,7 @@ namespace Topaz.CombatStudy
         bool TryTakeDirectedDamageCore(int amount, Vector3 attackerPosition,
             EnemyCombatant attacker, bool staggerAttackerOnBlock)
         {
-            if (amount <= 0 || CurrentHealth == 0 || Time.time < _protectedUntil ||
+            if (CampSafety.BlocksAttack(attackerPosition == Vector3.zero ? transform.position : attackerPosition, transform.position) || amount <= 0 || CurrentHealth == 0 || Time.time < _protectedUntil ||
                 (_session?.IsFastTraveling == true || _session?.IsTravelMenuOpen == true ||
                  _session?.IsResting == true) ||
                 movement == null || movement.IsInvulnerable ||

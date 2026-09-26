@@ -1,50 +1,174 @@
 {
   "movement": {
-    "paths": ["Assets/Topaz/Player/", "Assets/Topaz/Core/Input/"],
-    "tests": {"PlayMode": ["MovementInputTests"]},
-    "docs": ["docs/studies/FEEL_STUDY.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
+    "paths": [
+      "Assets/Topaz/Player/",
+      "Assets/Topaz/Core/Input/"
+    ],
+    "tests": {
+      "PlayMode": [
+        "MovementInputTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity"
+    ]
   },
   "combat": {
-    "paths": ["Assets/Topaz/Gameplay/Combat/", "Assets/Topaz/Characters/Animation/"],
-    "tests": {"PlayMode": ["CombatStudyTests"], "EditMode": ["AnimationStudyTests"]},
-    "docs": ["docs/studies/COMBAT_STUDY.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
+    "paths": [
+      "Assets/Topaz/Gameplay/Combat/",
+      "Assets/Topaz/Characters/Animation/"
+    ],
+    "tests": {
+      "PlayMode": [
+        "CombatStudyTests"
+      ],
+      "EditMode": [
+        "AnimationStudyTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity"
+    ]
   },
   "worldloop": {
-    "paths": ["Assets/Topaz/Gameplay/WorldLoop/"],
-    "tests": {"PlayMode": ["ProfilePersistenceTests", "WorldLoopTests", "EquipmentTests", "MiningAndHomeTests", "ProgressionPlayTests", "CampfireTravelTests", "SurvivalPlayTests"], "EditMode": ["ProgressionRulesTests", "SurvivalRulesTests"]},
-    "docs": ["docs/ARCHITECTURE.md", "docs/studies/WORLD_LOOP_STUDY.md", "docs/studies/MINING_AND_HOME_BUILDING_STUDY.md", "docs/plans/EQUIPMENT_SYSTEM_PLAN.md", "docs/plans/PROGRESSION_PLAN.md", "docs/plans/CAMPFIRE_TRAVEL_PLAN.md", "docs/plans/GENTLE_SURVIVAL_PLAN.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
+    "paths": [
+      "Assets/Topaz/Gameplay/Inventory/",
+      "Assets/Topaz/Gameplay/Persistence/",
+      "Assets/Topaz/Gameplay/Gathering/",
+      "Assets/Topaz/Gameplay/Survival/",
+      "Assets/Topaz/Gameplay/Progression/"
+    ],
+    "tests": {
+      "PlayMode": [
+        "ProfilePersistenceTests",
+        "WorldLoopTests",
+        "EquipmentTests",
+        "MiningAndHomeTests",
+        "ProgressionPlayTests",
+        "CampfireTravelTests",
+        "SurvivalPlayTests"
+      ],
+      "EditMode": [
+        "ProgressionRulesTests",
+        "SurvivalRulesTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity"
+    ]
   },
   "expedition": {
-    "paths": ["Assets/Topaz/World/Expedition/"],
-    "tests": {"PlayMode": ["ExpeditionTests"]},
-    "docs": ["docs/studies/GRAVEYARD_STUDY.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Graveyard.unity"]
-  },
-  "crypt": {
-    "paths": ["Assets/Topaz/World/Crypt/"],
-    "tests": {"PlayMode": ["CryptTests", "CryptInputTests"]},
-    "docs": ["docs/studies/HOME_CRYPT_STUDY.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Crypt.unity"]
+    "paths": [
+      "Assets/Topaz/World/Expedition/"
+    ],
+    "tests": {
+      "PlayMode": [
+        "ExpeditionTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Woodland.unity"
+    ]
   },
   "ui": {
-    "paths": ["Assets/Topaz/UI/"],
-    "tests": {"PlayMode": ["MenuTests", "ProgressionPlayTests", "CampfireTravelTests", "SurvivalPlayTests"]},
-    "docs": ["docs/UI_DESIGN_SYSTEM.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
+    "paths": [
+      "Assets/Topaz/UI/"
+    ],
+    "tests": {
+      "PlayMode": [
+        "MenuTests",
+        "ProgressionPlayTests",
+        "CampfireTravelTests",
+        "SurvivalPlayTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity"
+    ]
   },
   "visuals": {
-    "paths": ["Assets/Topaz/Presentation/"],
-    "tests": {"PlayMode": ["VisualStudyTests", "WeatherTests", "PlayerLanternTests"], "EditMode": ["OwnedPrefabTests"]},
-    "docs": ["docs/studies/VISUAL_STUDY.md", "docs/DAY_NIGHT_CYCLE.md", "docs/PREFAB_AUTHORING.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
+    "paths": [
+      "Assets/Topaz/Presentation/"
+    ],
+    "tests": {
+      "PlayMode": [
+        "VisualStudyTests",
+        "WeatherTests",
+        "PlayerLanternTests"
+      ],
+      "EditMode": [
+        "OwnedPrefabTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity"
+    ]
   },
   "foundation": {
-    "paths": ["Assets/Topaz/Core/", "Assets/Topaz/Build/"],
-    "tests": {"EditMode": ["FoundationTests"]},
-    "docs": ["docs/PROJECT_STRUCTURE.md", "docs/AGENT_WORKFLOW.md"],
-    "scenes": ["Assets/Topaz/World/Scenes/Bootstrap.unity"]
+    "paths": [
+      "Assets/Topaz/Core/",
+      "Assets/Topaz/Build/"
+    ],
+    "tests": {
+      "EditMode": [
+        "FoundationTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity"
+    ]
+  },
+  "building": {
+    "paths": [
+      "Assets/Topaz/Gameplay/Building/",
+      "Assets/Topaz/World/Regions/"
+    ],
+    "tests": {
+      "PlayMode": [
+        "RegionalBaselineTests",
+        "HomeBuildingPlayTests",
+        "CampfireTravelTests"
+      ],
+      "EditMode": [
+        "BaselineRulesTests",
+        "HomeBuildingTests"
+      ]
+    },
+    "docs": [
+      "docs/BASELINE.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity",
+      "Assets/Topaz/World/Scenes/Woodland.unity"
+    ]
   }
 }

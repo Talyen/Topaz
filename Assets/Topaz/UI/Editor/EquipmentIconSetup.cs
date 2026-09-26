@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Topaz.LoopStudy;
+using Topaz.Gameplay;
 using UnityEditor;
 using UnityEngine;
 

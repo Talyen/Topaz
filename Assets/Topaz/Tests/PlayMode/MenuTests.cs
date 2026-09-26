@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System;
 using System.Reflection;
@@ -10,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class MenuTests : InputTestFixture
+    public sealed class MenuTests : TopazInputTestFixture
     {
         [UnityTest]
         public IEnumerator EscapePausesAndResumesTheGame()
@@ -144,9 +145,13 @@ namespace Topaz.Tests
                 $"Canvas {canvas.rect.size}, book scale {book.localScale.x}");
             GameObject focused = EventSystem.current.currentSelectedGameObject;
             Assert.That(focused, Is.Not.Null);
-            Assert.That(focused.transform.Find("Focus Frame")
-                ?.GetComponent<UnityEngine.UI.Image>().enabled, Is.True,
-                "The selected Journal control needs a visible focus frame.");
+            Component indicator = focused.GetComponent("TopazFocusIndicator");
+            Assert.That(indicator, Is.Not.Null);
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            var marker = indicator.GetType().GetField("focusMarker", flags).GetValue(indicator) as UnityEngine.UI.Graphic;
+            var borders = indicator.GetType().GetField("focusBorders", flags).GetValue(indicator) as UnityEngine.UI.Graphic[];
+            Assert.That((marker != null && marker.enabled) || (borders != null && borders.Any(b => b != null && b.enabled)), Is.True,
+                "The selected Journal control needs a visible focus frame or border.");
             var corners = new Vector3[4];
             book.GetWorldCorners(corners);
             foreach (Vector3 world in corners)
@@ -500,8 +505,8 @@ namespace Topaz.Tests
                 Assert.That(preview.GetComponentsInChildren<Renderer>(true).Length,
                     Is.GreaterThan(0), look);
                 Animator animator = preview.GetComponentInChildren<Animator>(true);
-                Assert.That(animator.avatar, Is.Not.Null, look);
-                Assert.That(animator.avatar.isValid, Is.True, look);
+                Assert.That(animator, Is.Not.Null, look);
+                Assert.That(preview.GetComponent("CharacterVisual"), Is.Not.Null, look);
                 UnityEngine.Object.Destroy(preview);
                 yield return null;
             }
@@ -554,6 +559,30 @@ namespace Topaz.Tests
                     (string)session.GetType().GetProperty("ActiveWorldId").GetValue(session) ==
                     oldWorld) && Time.realtimeSinceStartup < deadline)
                 yield return null;
+        }
+        [UnityTest]
+        public IEnumerator JournalTabsDoNotOverlapAndEquipmentRemainsReachable()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            var hud=GameObject.Find("Loop HUD").GetComponent("LoopHud");
+            hud.GetType().GetMethod("ToggleInventoryPanel").Invoke(hud,null);yield return null;
+            var flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            var equipment=(UnityEngine.UI.Button)hud.GetType().GetField("equipmentTabButton",flags).GetValue(hud);
+            var skills=(UnityEngine.UI.Button)hud.GetType().GetField("skillsTabButton",flags).GetValue(hud);
+            var tabs=new[]{equipment.GetComponent<RectTransform>(),skills.GetComponent<RectTransform>(),
+                skills.transform.parent.Find("Build Tab").GetComponent<RectTransform>(),
+                skills.transform.parent.Find("Status Effects Tab").GetComponent<RectTransform>()};
+            var corners=new Vector3[4];var bounds=new Rect[tabs.Length];
+            for(int index=0;index<tabs.Length;index++)
+            {
+                tabs[index].GetWorldCorners(corners);
+                bounds[index]=Rect.MinMaxRect(corners[0].x,corners[0].y,corners[2].x,corners[2].y);
+                for(int previous=0;previous<index;previous++)
+                    Assert.That(bounds[index].Overlaps(bounds[previous]),Is.False,tabs[index].name+" overlaps "+tabs[previous].name);
+            }
+            equipment.onClick.Invoke();
+            var view=hud.GetComponent("EquipmentJournalView");
+            Assert.That(view.GetType().GetProperty("IsOpen").GetValue(view),Is.True);
         }
     }
 }

@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class MiningAndHomeTests : InputTestFixture
+    public sealed class MiningAndHomeTests : TopazInputTestFixture
     {
         [UnityTest]
         public IEnumerator HomeSceneryIsGatherableAndCircleIsClear()
@@ -24,8 +24,8 @@ namespace Topaz.Tests
                 .Cast<Component>().ToArray();
             Component[] rocks = components.Where(value => value.GetType().Name == "MiningRock")
                 .Cast<Component>().ToArray();
-            Assert.That(trees.Length, Is.GreaterThanOrEqualTo(17));
-            Assert.That(rocks.Length, Is.GreaterThanOrEqualTo(6));
+            Assert.That(trees.Length, Is.EqualTo(12));
+            Assert.That(rocks.Length, Is.EqualTo(4));
             var ids = new HashSet<string>();
             foreach (Component tree in trees)
             {
@@ -39,20 +39,10 @@ namespace Topaz.Tests
                 Assert.That(ids.Add((string)Property(rock, "StableObjectId")), Is.True);
                 Assert.That((bool)Invoke(circle, "Contains", rock.transform.position), Is.False);
             }
-            foreach (Transform scenery in GameObject.Find("KayKit Art Study").transform)
-            {
-                if (scenery.name.StartsWith("Tree_") || scenery.name.StartsWith("Home Tree "))
-                    Assert.That(scenery.GetComponent("HarvestTree"), Is.Not.Null,
-                        scenery.name + " should be gatherable.");
-                if (scenery.name.StartsWith("Rock_"))
-                    Assert.That(scenery.GetComponent("MiningRock"), Is.Not.Null,
-                        scenery.name + " should be gatherable.");
-            }
-            Transform grass = GameObject.Find("Grass Clumps").transform;
-            Assert.That(grass.childCount, Is.GreaterThanOrEqualTo(80));
-            foreach (Transform clump in grass)
-                Assert.That((bool)Invoke(circle, "Contains", clump.position), Is.False);
-            Assert.That(GameObject.Find("Firewood 1"), Is.Null);
+            Assert.That(Terrain.activeTerrains.Length,Is.EqualTo(1));
+            Assert.That(Terrain.activeTerrain.terrainData.detailPrototypes.Length,Is.GreaterThan(0));
+            Assert.That(Terrain.activeTerrain.terrainData.detailPrototypes[0].useInstancing,Is.True);
+
         }
 
         [UnityTest]
@@ -66,6 +56,7 @@ namespace Topaz.Tests
             Component rock = GameObject.Find("Mining Rock 01").GetComponent("MiningRock");
             Teleport(player, rock.transform.position + Vector3.back * 1.25f);
             yield return null;
+            yield return new WaitForSeconds(.1f);
             Set(gamepad.rightTrigger, 1f);
             yield return new WaitForSeconds(.55f);
             Set(gamepad.rightTrigger, 0f);
@@ -146,8 +137,8 @@ namespace Topaz.Tests
                 "structure.blacksmith_anvil"), Is.True);
 
             Component builds = (Component)Field(session, "homeBuilds");
-            Set(builds, "_position", new Vector3(3f, 0f, 3f));
-            Invoke(builds, "ConfirmPlacement");
+            Invoke(builds, "Cancel");
+            BuildingTestActions.Place(session, "structure.blacksmith_anvil");
             IList structures = (IList)Field(Field(session, "_data"), "structures");
             Assert.That(structures.Cast<object>().Count(value =>
                 (string)Field(value, "definitionId") == "structure.blacksmith_anvil"), Is.EqualTo(1));
@@ -155,7 +146,7 @@ namespace Topaz.Tests
             Assert.That((int)Property(session, "IronCount"), Is.Zero);
 
             object wood = Invoke(session, "Item", "material.wood");
-            Assert.That((int)Invoke(pack, "Add", wood, 320), Is.EqualTo(320));
+            Assert.That((int)Invoke(pack, "Add", wood, 320), Is.EqualTo(280));
             Assert.That((bool)Invoke(session, "BeginHomeEdit"), Is.True);
             Set(builds, "_selected", structures.Cast<object>().First(value =>
                 (string)Field(value, "definitionId") == "structure.blacksmith_anvil"));
@@ -181,7 +172,7 @@ namespace Topaz.Tests
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             object data = Field(session, "_data");
             IList structures = (IList)Field(data, "structures");
-            Type recordType = Type.GetType("Topaz.LoopStudy.StructureStateRecord, Assembly-CSharp", true);
+            Type recordType = Type.GetType("Topaz.Gameplay.StructureStateRecord, Assembly-CSharp", true);
             object chestRecord = Activator.CreateInstance(recordType);
             Set(chestRecord, "instanceId", "test-home-chest");
             Set(chestRecord, "definitionId", "structure.storage_chest");
@@ -194,6 +185,7 @@ namespace Topaz.Tests
             object stone = Property(session, "StoneItem");
             Assert.That((int)Invoke(chestInventory, "Add", stone, 1), Is.EqualTo(1));
             Component builds = (Component)Field(session, "homeBuilds");
+            Invoke(builds, "Bind", session, Field(session, "_world"), "home");
 
             Assert.That((bool)Invoke(session, "BeginHomeBuild", "structure.stone_path"), Is.True);
             Invoke(builds, "Cancel");
@@ -201,9 +193,7 @@ namespace Topaz.Tests
             Assert.That(structures.Cast<object>().Count(value =>
                 (string)Field(value, "definitionId") == "structure.stone_path"), Is.Zero);
 
-            Assert.That((bool)Invoke(session, "BeginHomeBuild", "structure.stone_path"), Is.True);
-            Set(builds, "_position", new Vector3(3f, 0f, 3f));
-            Invoke(builds, "ConfirmPlacement");
+            BuildingTestActions.Place(session, "structure.stone_path");
             Assert.That(structures.Cast<object>().Count(value =>
                 (string)Field(value, "definitionId") == "structure.stone_path"), Is.EqualTo(1));
             Assert.That((int)Property(session, "StoneCount"), Is.Zero);
@@ -218,6 +208,12 @@ namespace Topaz.Tests
         {
             CharacterController controller = player.GetComponent<CharacterController>();
             if (controller != null) controller.enabled = false;
+            foreach (Terrain terrain in Terrain.activeTerrains)
+            {
+                Vector3 local=position-terrain.transform.position;
+                if(local.x>=0 && local.z>=0 && local.x<=terrain.terrainData.size.x && local.z<=terrain.terrainData.size.z)
+                    position.y=terrain.SampleHeight(position)+terrain.transform.position.y+.01f;
+            }
             player.transform.position = position;
             if (controller != null) controller.enabled = true;
         }

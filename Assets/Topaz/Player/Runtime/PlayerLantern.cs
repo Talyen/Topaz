@@ -1,13 +1,13 @@
-using Topaz.AnimationStudy;
+using Topaz.Characters;
 using UnityEngine;
 
-namespace Topaz.FeelStudy
+namespace Topaz.Player
 {
     /// <summary>Presentation for the player's permanent, manually switched lantern.</summary>
     public sealed class PlayerLantern : MonoBehaviour
     {
         [SerializeField] Transform visualRoot;
-        [SerializeField] FeelStudyPlayer movement;
+        [SerializeField] PlayerController movement;
         [SerializeField] GameObject lanternModel;
         [SerializeField] Vector3 lightOffset = new Vector3(0f, 1.05f, 0f);
         [SerializeField] float lightRange = 8.5f;

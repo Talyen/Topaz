@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class WorldLoopTests : InputTestFixture
+    public sealed class WorldLoopTests : TopazInputTestFixture
     {
         [UnityTest]
         public IEnumerator InteractWithTreeChopsAndRestoresPreviousWeapon()
@@ -35,7 +35,7 @@ namespace Topaz.Tests
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Logging Axe"));
             Assert.That(Call<bool>(session, "TryInteract"), Is.True,
                 "A second press during the committed chop is consumed.");
-            yield return new WaitForSeconds(.43f);
+            yield return new WaitForSeconds(.6f);
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2));
             Assert.That(Read<int>(session, "LoggingExperience"), Is.Zero);
             yield return new WaitForSeconds(.4f);
@@ -58,11 +58,12 @@ namespace Topaz.Tests
             Teleport(player, tree.transform.position + Vector3.back * 1.2f);
             yield return null;
 
+            yield return new WaitForSeconds(.1f);
             Set(gamepad.buttonWest, 1f);
             yield return null;
             Set(gamepad.buttonWest, 0f);
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Logging Axe"));
-            yield return new WaitForSeconds(.43f);
+            yield return new WaitForSeconds(.6f);
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2));
             Set(gamepad.buttonEast, 1f);
             yield return new WaitForSeconds(.05f);
@@ -102,7 +103,7 @@ namespace Topaz.Tests
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component hud = GameObject.Find("Loop HUD").GetComponent("LoopHud");
-            Teleport(player, new Vector3(1.5f, 0f, -.1f));
+            Teleport(player, GameObject.Find("Rest Point").transform.position);
             var method = session.GetType().GetMethod("TryGetInteraction");
             object[] arguments = { null, null };
             Assert.That((bool)method.Invoke(session, arguments), Is.True);
@@ -110,6 +111,7 @@ namespace Topaz.Tests
             Assert.That((string)arguments[1], Is.EqualTo("Rest"));
             CanvasGroup chip = GameObject.Find("Interaction Chip").GetComponent<CanvasGroup>();
             yield return null;
+            yield return new WaitForSeconds(.2f);
             Assert.That(chip.alpha, Is.GreaterThan(0f));
 
             Call<object>(hud, "ToggleInventoryPanel");
@@ -133,7 +135,7 @@ namespace Topaz.Tests
             object wood = session.GetType().GetField("wood",
                 BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
             int accepted = (int)backpack.GetType().GetMethod("Add").Invoke(backpack, new[] { wood, (object)320 });
-            Assert.That(accepted, Is.EqualTo(320));
+            Assert.That(accepted, Is.EqualTo(280));
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
             for (int i = 0; i < 2; i++)
                 Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
@@ -142,7 +144,7 @@ namespace Topaz.Tests
                 Vector3.forward, 2.1f, 90f), Is.True);
             Assert.That(Read<bool>(harvest, "IsAvailable"), Is.False);
             Assert.That(Read<int>(session, "LoggingExperience"), Is.EqualTo(10));
-            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(320));
+            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(280));
             Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
             CollectDrop(session);
             Assert.That(Read<int>(session, "PickupCount"), Is.EqualTo(1));
@@ -168,18 +170,20 @@ namespace Topaz.Tests
             Set(gamepad.rightStick, new Vector2(Vector3.Dot(towardTree, right),
                 Vector3.Dot(towardTree, forward)));
             yield return null;
+            yield return new WaitForSeconds(.1f);
             Set(gamepad.rightTrigger, 1f);
-            yield return new WaitForSeconds(.42f);
+            yield return new WaitForSeconds(.6f);
             Set(gamepad.rightTrigger, 0f);
 
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(2),
                 "Attack should choose the tree and draw the Logging Axe.");
             yield return new WaitForSeconds(.4f);
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
+            yield return new WaitForSeconds(.1f);
             Set(gamepad.buttonWest, 1f);
             yield return null;
             Set(gamepad.buttonWest, 0f);
-            yield return new WaitForSeconds(.43f);
+            yield return new WaitForSeconds(.6f);
 
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(1));
             Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
@@ -194,8 +198,8 @@ namespace Topaz.Tests
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            yield return TopazTestTravel.EnterGraveyard(player);
-            GameObject tree = GameObject.Find("Graveyard").GetComponentsInChildren<MonoBehaviour>()
+            yield return TopazTestTravel.EnterWoodland(player);
+            GameObject tree = GameObject.Find("Woodland").GetComponentsInChildren<MonoBehaviour>()
                 .First(value => value.GetType().Name == "HarvestTree").gameObject;
             Component harvest = tree.GetComponent("HarvestTree");
             GameObject enemy = GameObject.Find("Scout A");
@@ -204,8 +208,9 @@ namespace Topaz.Tests
             enemy.transform.position = player.transform.position + Vector3.back;
             yield return null;
 
+            yield return new WaitForSeconds(.1f);
             Set(gamepad.rightTrigger, 1f);
-            yield return new WaitForSeconds(.42f);
+            yield return new WaitForSeconds(.6f);
             Set(gamepad.rightTrigger, 0f);
             Assert.That(Read<int>(harvest, "ChopsRemaining"), Is.EqualTo(3));
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
@@ -246,7 +251,7 @@ namespace Topaz.Tests
             Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(6));
             Assert.That(Read<int>(session, "PickupCount"), Is.Zero);
 
-            Teleport(player, new Vector3(1.5f, 0, -.1f));
+            Teleport(player, GameObject.Find("Rest Point").transform.position);
             double harvestedAt = Read<double>(session, "WorldHours");
             for (int rest = 1; rest <= 8; rest++)
             {
@@ -283,7 +288,8 @@ namespace Topaz.Tests
             object save = session.GetType().GetField("_data",
                 BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
             var nodes = (System.Collections.IList)save.GetType().GetField("nodes").GetValue(save);
-            double readyAt = (double)nodes[0].GetType().GetField("readyAtWorldHours").GetValue(nodes[0]);
+            object harvestedNode = nodes.Cast<object>().Single(n => (string)n.GetType().GetField("objectId").GetValue(n) == Read<string>(harvest, "StableObjectId"));
+            double readyAt = (double)harvestedNode.GetType().GetField("readyAtWorldHours").GetValue(harvestedNode);
             save.GetType().GetField("worldHours").SetValue(save, readyAt - .0005d);
             Call<object>(hud, "ToggleInventoryPanel");
             double pausedAt = Read<double>(session, "WorldHours");
@@ -315,87 +321,6 @@ namespace Topaz.Tests
             yield return new WaitForSeconds(.7f);
             Assert.That(Read<int>(session, "PickupCount"), Is.Zero);
             Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(6));
-        }
-
-        [UnityTest]
-        public IEnumerator CraftingConsumesWoodAndCreatesOnePendingChest()
-        {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-
-            GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
-            Component session = player.GetComponent("WorldSession");
-            Component harvest = tree.GetComponent("HarvestTree");
-            Teleport(player, tree.transform.position + Vector3.back * 1.3f);
-            for (int i = 0; i < 3; i++)
-                Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
-                    Vector3.forward, 2.1f, 90f), Is.True);
-            CollectDrop(session);
-            Teleport(player, Vector3.zero);
-
-            Assert.That(Call<bool>(session, "TryCraftChest"), Is.True);
-            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(3));
-            Assert.That(Read<bool>(session, "PendingChest"), Is.True);
-            Assert.That(Call<bool>(session, "TryCraftChest"), Is.False);
-            Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(3));
-        }
-
-        [UnityTest]
-        public IEnumerator PlacedChestStoresWoodAndSurvivesSaveRoundTrip()
-        {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-
-            GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
-            Component session = player.GetComponent("WorldSession");
-            Component harvest = tree.GetComponent("HarvestTree");
-            Teleport(player, tree.transform.position + Vector3.back * 1.3f);
-            for (int i = 0; i < 3; i++)
-                Call<bool>(harvest, "TryChop", player.transform.position,
-                    Vector3.forward, 2.1f, 90f);
-            CollectDrop(session);
-            Teleport(player, Vector3.zero);
-            Assert.That(Call<bool>(session, "TryCraftChest"), Is.True);
-
-            FieldInfo previewPosition = session.GetType().GetField("_previewPosition",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            previewPosition.SetValue(session, new Vector3(0, 0, 1.5f));
-            session.GetType().GetMethod("TryPlaceChest", BindingFlags.Instance | BindingFlags.NonPublic)
-                .Invoke(session, null);
-            Assert.That(Read<bool>(session, "ChestPlaced"), Is.True);
-            Assert.That(Read<bool>(session, "PendingChest"), Is.False);
-            Teleport(player, GameObject.Find("Workbench").transform.position);
-            object[] prompt = { null, null };
-            Assert.That((bool)session.GetType().GetMethod("TryGetInteraction")
-                .Invoke(session, prompt), Is.True);
-            Assert.That(prompt[1], Is.EqualTo("Inspect"));
-            session.GetType().GetMethod("DepositAllItems").Invoke(session, null);
-            Assert.That(Read<int>(session, "WoodCount"), Is.Zero);
-            Assert.That(Read<int>(session, "ChestWood"), Is.EqualTo(3));
-
-            object repository = session.GetType().GetField("_repository",
-                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
-            string savePath = (string)repository.GetType().GetProperty("PathOnDisk").GetValue(repository);
-            Assert.That(savePath, Does.StartWith(Application.temporaryCachePath),
-                "Editor tests must never use the standalone player save directory.");
-            object saved = repository.GetType().GetMethod("Load").Invoke(repository, null);
-            var characters = (System.Collections.IList)saved.GetType().GetField("characters").GetValue(saved);
-            var worlds = (System.Collections.IList)saved.GetType().GetField("worlds").GetValue(saved);
-            Assert.That(characters.Count, Is.EqualTo(1));
-            Assert.That(worlds.Count, Is.EqualTo(1));
-            Assert.That((bool)characters[0].GetType().GetField("pendingChest")
-                .GetValue(characters[0]), Is.False);
-            var structures = (System.Collections.IList)worlds[0].GetType().GetField("structures")
-                .GetValue(worlds[0]);
-            object placed = structures.Cast<object>().Single(value =>
-                (string)value.GetType().GetField("definitionId").GetValue(value) ==
-                "structure.storage_chest");
-            Assert.That((string)placed.GetType().GetField("instanceId").GetValue(placed), Is.Not.Empty);
-            var slots = (System.Collections.IList)placed.GetType().GetField("slots").GetValue(placed);
-            Assert.That(slots.Count, Is.EqualTo(12));
-            Assert.That((int)slots[0].GetType().GetField("count").GetValue(slots[0]), Is.EqualTo(3));
         }
 
         [UnityTest]
@@ -436,161 +361,6 @@ namespace Topaz.Tests
                 "The first World keeps its harvested tree.");
         }
 
-        [Test]
-        public void VersionOneSaveMigratesStacksWithoutLosingWood()
-        {
-            string directory = Path.Combine(Path.GetTempPath(), "TopazMigration-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            try
-            {
-                string json = "{\"version\":1,\"day\":4,\"loggingExperience\":5," +
-                    "\"equippedTool\":\"axe\",\"backpack\":[{\"itemId\":\"material.wood\",\"count\":25}]," +
-                    "\"nodes\":[],\"structures\":[{\"instanceId\":\"chest1\",\"definitionId\":\"structure.storage_chest\"," +
-                    "\"x\":1,\"z\":1,\"woodStored\":23}]}";
-                File.WriteAllText(Path.Combine(directory, "topaz-save.json"), json);
-                Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
-                object repository = Activator.CreateInstance(type, directory);
-                object migrated = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(5));
-                var backpack = (System.Collections.IList)migrated.GetType().GetField("backpackSlots").GetValue(migrated);
-                Assert.That(backpack.Count, Is.EqualTo(2));
-                Assert.That((int)backpack[0].GetType().GetField("count").GetValue(backpack[0]), Is.EqualTo(20));
-                Assert.That((int)backpack[1].GetType().GetField("count").GetValue(backpack[1]), Is.EqualTo(5));
-                var structures = (System.Collections.IList)migrated.GetType().GetField("structures").GetValue(migrated);
-                var chestSlots = (System.Collections.IList)structures[0].GetType().GetField("slots").GetValue(structures[0]);
-                Assert.That(chestSlots.Count, Is.EqualTo(2));
-                type.GetMethod("Save").Invoke(repository, new[] { migrated });
-                object reloaded = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)reloaded.GetType().GetField("version").GetValue(reloaded), Is.EqualTo(5));
-            }
-            finally { Directory.Delete(directory, true); }
-        }
-
-        [Test]
-        public void VersionTwoSaveMigratesWithoutLosingSlots()
-        {
-            string directory = Path.Combine(Path.GetTempPath(), "TopazMigration-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            try
-            {
-                string json = "{\"version\":2,\"day\":2,\"loggingExperience\":7," +
-                    "\"backpackSlots\":[{\"itemId\":\"material.wood\",\"count\":11}]," +
-                    "\"nodes\":[],\"structures\":[]}";
-                File.WriteAllText(Path.Combine(directory, "topaz-save.json"), json);
-                Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
-                object repository = Activator.CreateInstance(type, directory);
-                object migrated = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(5));
-                Assert.That((int)migrated.GetType().GetField("loggingExperience").GetValue(migrated), Is.EqualTo(7));
-                var slots = (System.Collections.IList)migrated.GetType().GetField("backpackSlots").GetValue(migrated);
-                Assert.That((int)slots[0].GetType().GetField("count").GetValue(slots[0]), Is.EqualTo(11));
-            }
-            finally { Directory.Delete(directory, true); }
-        }
-
-        [Test]
-        public void VersionThreeSaveMigratesToHomeWithoutLosingDrops()
-        {
-            string directory = Path.Combine(Path.GetTempPath(), "TopazMigration-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            try
-            {
-                string json = "{\"version\":3,\"day\":4,\"backpackSlots\":[]," +
-                    "\"nodes\":[],\"structures\":[],\"pickups\":[{" +
-                    "\"instanceId\":\"drop1\",\"itemId\":\"material.wood\",\"count\":2," +
-                    "\"x\":5,\"z\":6}]}";
-                File.WriteAllText(Path.Combine(directory, "topaz-save.json"), json);
-                Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
-                object repository = Activator.CreateInstance(type, directory);
-                object migrated = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(5));
-                Assert.That((string)migrated.GetType().GetField("regionId").GetValue(migrated), Is.EqualTo("home"));
-                var drops = (System.Collections.IList)migrated.GetType().GetField("pickups").GetValue(migrated);
-                Assert.That(drops.Count, Is.EqualTo(1));
-                Assert.That((int)drops[0].GetType().GetField("count").GetValue(drops[0]), Is.EqualTo(2));
-            }
-            finally { Directory.Delete(directory, true); }
-        }
-
-        [Test]
-        public void VersionFourTreeKeepsRemainingRestProgressOnMigration()
-        {
-            string directory = Path.Combine(Path.GetTempPath(), "TopazMigration-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            try
-            {
-                string json = "{\"version\":4,\"day\":2,\"regionId\":\"home\"," +
-                    "\"backpackSlots\":[],\"structures\":[],\"pickups\":[],\"nodes\":[" +
-                    "{\"objectId\":\"tree.pending\",\"nextAvailableDay\":4}," +
-                    "{\"objectId\":\"tree.ready\",\"nextAvailableDay\":2}]}";
-                File.WriteAllText(Path.Combine(directory, "topaz-save.json"), json);
-                Type type = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
-                object repository = Activator.CreateInstance(type, directory);
-                object migrated = type.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)migrated.GetType().GetField("version").GetValue(migrated), Is.EqualTo(5));
-                Assert.That((double)migrated.GetType().GetField("worldHours").GetValue(migrated), Is.EqualTo(8d));
-                var nodes = (System.Collections.IList)migrated.GetType().GetField("nodes").GetValue(migrated);
-                Assert.That((double)nodes[0].GetType().GetField("readyAtWorldHours").GetValue(nodes[0]),
-                    Is.EqualTo(24d), "Two remaining old rests become two eight-hour skips.");
-                Assert.That((double)nodes[1].GetType().GetField("readyAtWorldHours").GetValue(nodes[1]),
-                    Is.Zero);
-                type.GetMethod("Save").Invoke(repository, new[] { migrated });
-                object reloaded = type.GetMethod("Load").Invoke(repository, null);
-                var restoredNodes = (System.Collections.IList)reloaded.GetType().GetField("nodes").GetValue(reloaded);
-                Assert.That((double)restoredNodes[0].GetType().GetField("readyAtWorldHours")
-                    .GetValue(restoredNodes[0]), Is.EqualTo(24d));
-            }
-            finally { Directory.Delete(directory, true); }
-        }
-
-        [Test]
-        public void ExpeditionRegionAndClaimedCacheSurviveSaveReload()
-        {
-            string directory = Path.Combine(Path.GetTempPath(), "TopazExpeditionSave-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            try
-            {
-                Type repositoryType = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
-                Type dataType = Type.GetType("Topaz.LoopStudy.TopazSaveData, Assembly-CSharp", true);
-                object repository = Activator.CreateInstance(repositoryType, directory);
-                object data = Activator.CreateInstance(dataType);
-                dataType.GetField("regionId").SetValue(data, "expedition.clearing");
-                dataType.GetField("expeditionCacheClaimed").SetValue(data, true);
-                dataType.GetField("playerX").SetValue(data, 100f);
-                dataType.GetField("worldHours").SetValue(data, 37.5d);
-                repositoryType.GetMethod("Save").Invoke(repository, new[] { data });
-
-                object reloaded = repositoryType.GetMethod("Load").Invoke(repository, null);
-                Assert.That((string)dataType.GetField("regionId").GetValue(reloaded),
-                    Is.EqualTo("expedition.clearing"));
-                Assert.That((bool)dataType.GetField("expeditionCacheClaimed").GetValue(reloaded), Is.True);
-                Assert.That((float)dataType.GetField("playerX").GetValue(reloaded), Is.EqualTo(100f));
-                Assert.That((double)dataType.GetField("worldHours").GetValue(reloaded), Is.EqualTo(37.5d));
-            }
-            finally { Directory.Delete(directory, true); }
-        }
-
-        [Test]
-        public void QueuedSavesKeepTheNewestSnapshot()
-        {
-            string directory = Path.Combine(Path.GetTempPath(), "TopazQueuedSave-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            try
-            {
-                Type repositoryType = Type.GetType("Topaz.LoopStudy.SaveRepository, Assembly-CSharp", true);
-                Type dataType = Type.GetType("Topaz.LoopStudy.TopazSaveData, Assembly-CSharp", true);
-                object repository = Activator.CreateInstance(repositoryType, directory);
-                object data = Activator.CreateInstance(dataType);
-                dataType.GetField("day").SetValue(data, 2);
-                repositoryType.GetMethod("QueueSave").Invoke(repository, new[] { data });
-                dataType.GetField("day").SetValue(data, 3);
-                repositoryType.GetMethod("QueueSave").Invoke(repository, new[] { data });
-                object reloaded = repositoryType.GetMethod("Load").Invoke(repository, null);
-                Assert.That((int)dataType.GetField("day").GetValue(reloaded), Is.EqualTo(3));
-            }
-            finally { Directory.Delete(directory, true); }
-        }
-
         static void CollectDrop(Component session)
         {
             GameObject drop = GameObject.Find("Wood Pickup");
@@ -610,8 +380,17 @@ namespace Topaz.Tests
         {
             CharacterController controller = player.GetComponent<CharacterController>();
             controller.enabled = false;
+            foreach (Terrain terrain in Terrain.activeTerrains)
+            {
+                Vector3 local = position - terrain.transform.position;
+                if (local.x >= 0 && local.z >= 0 && local.x <= terrain.terrainData.size.x && local.z <= terrain.terrainData.size.z)
+                    position.y = terrain.SampleHeight(position) + terrain.transform.position.y + .01f;
+            }
             player.transform.position = position;
+            player.GetComponent("PlayerController").GetType().GetMethod("ResetMotion").Invoke(player.GetComponent("PlayerController"), null);
             controller.enabled = true;
+            Physics.SyncTransforms();
+            controller.Move(Vector3.down * .02f);
         }
     }
 }

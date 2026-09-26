@@ -1,8 +1,8 @@
 using System;
 using TMPro;
-using Topaz.AnimationStudy;
-using Topaz.FeelStudy;
-using Topaz.LoopStudy;
+using Topaz.Characters;
+using Topaz.Player;
+using Topaz.Gameplay;
 using Topaz.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -24,7 +24,7 @@ namespace Topaz.Editor
             if (player == null || canvas == null)
                 throw new InvalidOperationException("Bootstrap player or journal Canvas is missing.");
 
-            FeelStudyPlayer movement = player.GetComponent<FeelStudyPlayer>();
+            PlayerController movement = player.GetComponent<PlayerController>();
             PlayerAppearance appearance = player.GetComponent<PlayerAppearance>();
             WorldSession session = player.GetComponent<WorldSession>();
             LoopHud hud = canvas.GetComponent<LoopHud>();

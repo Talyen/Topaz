@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     public enum WeaponSkill { Swords, Axes, Staff, Crossbows }
 

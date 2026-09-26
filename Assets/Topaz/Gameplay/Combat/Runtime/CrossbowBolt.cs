@@ -1,8 +1,8 @@
 using System;
-using Topaz.LoopStudy;
+using Topaz.Gameplay;
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>A visible, swept bolt shared by the Rogue and player crossbow.</summary>
     public sealed class CrossbowBolt : MonoBehaviour
@@ -48,6 +48,7 @@ namespace Topaz.CombatStudy
             }
             float step = Mathf.Min(_remaining, _attack.BoltSpeed * Time.deltaTime);
             Vector3 start = transform.position;
+            if (CampSafety.BlocksAttack(start, start + _direction * step)) { Destroy(gameObject); return; }
             RaycastHit[] hits = Physics.SphereCastAll(start, .07f, _direction, step,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
             Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
@@ -62,7 +63,7 @@ namespace Topaz.CombatStudy
                 transform.position = start + _direction * hit.distance;
                 if (_enemyOwner != null && player != null)
                 {
-                    player.TryTakeRangedDamage(_damage, _enemyOwner.transform.position,
+                    player.TryTakeRangedDamage(_damage, _source,
                         _enemyOwner);
                     Destroy(gameObject);
                     return;

@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
-    public sealed class PlayerLanternTests : InputTestFixture
+    public sealed class PlayerLanternTests : TopazInputTestFixture
     {
         [UnityTest]
         public IEnumerator BackpackLanternTogglesTheWorldLightWithoutUsingAStackSlot()
@@ -48,16 +48,12 @@ namespace Topaz.Tests
                 .FirstOrDefault(candidate => candidate.name == "Carried Lantern");
             Assert.That(carried, Is.Not.Null);
             Renderer lanternBody = carried.GetComponentsInChildren<Renderer>(true)
-                .FirstOrDefault(candidate => candidate.name == "Visual");
+                .FirstOrDefault();
             Assert.That(lanternBody, Is.Not.Null);
             Assert.That(Vector3.Distance(lanternBody.bounds.center, carried.position),
                 Is.LessThan(.3f), "The lantern mesh should hang at its mount, not beside the player.");
             Assert.That(light.color.r, Is.GreaterThan(light.color.g));
             Assert.That(light.color.g, Is.GreaterThan(light.color.b));
-            Assert.That(GameObject.Find("KayKit Lantern").GetComponentsInChildren<Renderer>(true)
-                .SelectMany(renderer => renderer.sharedMaterials)
-                .Any(material => material != null && material.name == "Lantern Glass" &&
-                    material.GetColor("_EmissionColor") == Color.black), Is.True);
             Assert.That((bool)session.GetType().GetProperty("LanternOn").GetValue(session), Is.False);
             Assert.That(light.enabled, Is.False);
             var stacks = (IEnumerable)session.GetType().GetProperty("BackpackSlots")

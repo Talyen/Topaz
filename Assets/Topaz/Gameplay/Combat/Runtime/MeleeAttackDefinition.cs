@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>Shared authored values for a melee attack; runtime phase lives on the attacker.</summary>
     [CreateAssetMenu(menuName = "Topaz/Combat/Melee Attack")]

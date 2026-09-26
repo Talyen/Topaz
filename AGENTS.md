@@ -5,13 +5,15 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
 ## Technical baseline
 
 - Unity 6000.6.2f1; Universal Render Pipeline; Windows desktop first, Mac playtesting, mobile only as a future option.
-- Single-player, hand-authored connected regions, fixed-angle orthographic camera, 1–10 visible enemies.
+- Single-player, seeded procedural connected regions, survival-style third-person camera, 1–10 visible enemies.
 - Use ordinary Unity GameObjects and components first. Add Burst, Jobs, ECS, custom rendering, or Addressables only for a measured bottleneck or clear content-loading need.
 - Use the Input System action model for keyboard/mouse and gamepad. Keep simulation, rendering, and camera motion coherent at both 60 Hz and 120 Hz.
-- First feel prototype: screen-relative WASD and analog gamepad movement, one travel speed, a short directional dodge without stamina, and bounded camera look-ahead toward aim. Tune numerical values in a Mac build.
-- When combat arrives: the dodge has brief invulnerability and a cooldown; melee swings in an aimed arc without lock-on. Expeditions return to the homestead by player choice, not a timer.
+- First feel prototype: screen-relative WASD and analog gamepad movement, one travel speed, a short directional dodge without stamina, and mouse/right-stick camera rotation with collision handling. Tune numerical values in a Mac build.
+- When combat arrives: the dodge has brief invulnerability and a cooldown; melee swings in an aimed arc without lock-on. Connected regions have no return timer. Construction works across outdoor regions; player campfires provide protection, cooking, recovery and fast travel. See docs/BASELINE.md.
 - Keep static definitions separate from runtime state. Future persistent objects need stable IDs and versioned saves; unloaded regions pause and resolve bounded changes on return.
 - Prefer Unity's maintained first-party features and supported official packages for gameplay foundations, content authoring, UI, graphics, effects, audio, and tooling. Check the installed version and English Unity docs before custom work; use small custom code for Topaz-specific rules. Record tradeoffs and upgrade paths in `docs/UNITY_FEATURE_POLICY.md`.
+
+See `docs/PROCEDURAL_WORLDS.md` for the current generator, rendering stack, private sample-asset restore process, and preservation boundaries. Preserve the complete sound library and unfinished audio review work.
 
 ## Agent workflow
 
@@ -22,8 +24,7 @@ Topaz's owner delegates Unity and code work to agents. Give the owner a concise 
 3. Add packages through Unity's Package Manager API or `unity pipeline install`, not by hand-editing `Packages/manifest.json`.
 4. Keep every asset with its `.meta` file. Do not commit `Library`, `Temp`, logs, builds, reports, or machine-specific settings.
 5. Before importing any free placeholder asset, follow `docs/ASSET_SOURCING.md`, verify that its exact terms allow public source redistribution, and record source, license, attribution, and files in `docs/THIRD_PARTY_ASSETS.md`. Ordinary Unity Asset Store downloads do not qualify.
-   For KayKit art, an absent decision or `keep` in `AssetReview/decisions.json` permits use in new environments. `maybe` and `archive` do not. Follow `docs/ASSET_REVIEW.md`; archived FBX files live outside Unity's `Assets` folder.
-   Do not assign or change review decisions on the owner's behalf.
+
 6. Run `./scripts/verify.sh` for project changes and `./scripts/build.sh windows` when Windows build compatibility is affected. Inspect console/build errors and `git diff --check`.
    For iteration, use `./scripts/verify.sh --quick --mode PlayMode --filter TestName`; the full command remains the handoff gate. Start with `./scripts/doctor.sh` when the local Editor or previous check state is unclear. Full logs and JUnit reports stay in ignored `TestResults/`; report the commands and outcomes in the handoff. Do not repeat an unchanged full gate without a concrete reason.
 7. During early feel prototypes, play the Mac build on a 60 Hz display and fix obvious jitter or hitches. Formal scenario capture and CPU/GPU/memory comparisons begin when a representative gameplay slice exists. See `docs/PERFORMANCE.md`.

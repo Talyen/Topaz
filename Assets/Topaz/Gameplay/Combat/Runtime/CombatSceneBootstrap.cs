@@ -3,7 +3,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>Enables the enemy only after its authored NavMesh is registered.</summary>
     public sealed class CombatSceneBootstrap : MonoBehaviour

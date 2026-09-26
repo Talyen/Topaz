@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Topaz.CombatStudy
+namespace Topaz.Combat
 {
     /// <summary>Static values for the single combat practice enemy.</summary>
     [CreateAssetMenu(menuName = "Topaz/Combat/Enemy")]

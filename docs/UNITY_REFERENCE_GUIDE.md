@@ -1,68 +1,28 @@
-# Unity references for Topaz agents
+# Unity reference guide and task map
 
-Use this index when an older Unity tutorial conflicts with the project. It was checked against Unity's English documentation on 2026-09-23. Topaz currently uses Editor **6000.6.2f1** (`ProjectSettings/ProjectVersion.txt`), URP **17.6.0**, Input System **1.20.0**, AI Navigation **2.0.14**, Test Framework **1.8.0**, and uGUI **2.6.0** (`Packages/manifest.json`). Read those files again before applying version-specific advice. The package links below use their installed major/minor documentation streams; check the package page for patch-specific changes.
+Baseline: Unity 6000.6.2f1; URP/Shader Graph/VFX Graph 17.6.0; Cinemachine 6.6.0; Input System 1.20.0; AI Navigation 2.0.14. Keep these versions unless an upgrade is explicitly needed.
 
-Start with [Topaz's feature policy](UNITY_FEATURE_POLICY.md), then the local study or architecture note for the feature. Use the matching Unity Manual, Scripting API, or package documentation below before copying code from a tutorial. The docs explain engine behavior; Topaz's files describe game rules and project decisions.
+Use [BASELINE.md](BASELINE.md), [architecture](ARCHITECTURE.md), and [project structure](PROJECT_STRUCTURE.md) before editing. `scripts/agent-areas.json` maps current paths to tests.
 
-## Task map
+| Task | Source domain | Focused checks |
+|---|---|---|
+| Movement/camera | Player, Core/Input | MovementInputTests |
+| Combat/equipment | Gameplay/Combat, Gameplay/Progression, Characters | CombatStudyTests, EquipmentTests, ProgressionPlayTests |
+| Inventory/gathering | Gameplay/Inventory, Gameplay/Gathering | WorldLoopTests, MiningAndHomeTests |
+| Construction/camps | Gameplay/Building, World/Regions | RegionalBaselineTests, HomeBuildingPlayTests, CampfireTravelTests, BaselineRulesTests |
+| Persistence | Gameplay/Persistence | ProfilePersistenceTests, BaselineRulesTests |
+| Procedural terrain/travel | World/Generation, World/Regions | WoodlandGenerationTests, ExpeditionTests |
+| UI | UI | MenuTests, HomeBuildingPlayTests |
+| Rendering/audio | Presentation | VisualStudyTests, WeatherTests, PlayerLanternTests, AudioOptionsTests |
 
-Use this map to open only the relevant local code, tests, and guidance. [Feature status](FEATURE_STATUS.md) identifies the current note and remaining review for each slice. The executable area-to-test mapping is `scripts/agent-areas.json`; [agent workflow](AGENT_WORKFLOW.md) documents focused checks and Editor diagnostics.
+## Versioned first-party references
 
-| Task | Code starting point | Focused tests | Local guidance |
-| --- | --- | --- | --- |
-| Movement, aim, camera | `Assets/Topaz/Player/Runtime` | `MovementInputTests` | [Feel study](studies/FEEL_STUDY.md) |
-| Combat, enemy navigation | `Assets/Topaz/Gameplay/Combat/Runtime` | `CombatStudyTests` | [Combat study](studies/COMBAT_STUDY.md), [weapon types](plans/WEAPON_TYPES_PLAN.md) |
-| Saves, inventory, world clock | `Assets/Topaz/Gameplay/WorldLoop/Runtime` | `ProfilePersistenceTests`, `WorldLoopTests`, `MiningAndHomeTests` | [Architecture](ARCHITECTURE.md), [world loop study](studies/WORLD_LOOP_STUDY.md), [mining and home building](studies/MINING_AND_HOME_BUILDING_STUDY.md) |
-| Skills and talents | `Assets/Topaz/Gameplay/WorldLoop/Runtime`, `Assets/Topaz/Gameplay/Combat/Runtime` | `ProgressionRulesTests`, `ProgressionPlayTests` | [Progression plan](plans/PROGRESSION_PLAN.md) |
-| Regions and travel | `Assets/Topaz/World/Expedition/Runtime`, `Assets/Topaz/Gameplay/WorldLoop/Runtime` | `ExpeditionTests`, `CampfireTravelTests` | [Graveyard study](studies/GRAVEYARD_STUDY.md), [Campfire travel](plans/CAMPFIRE_TRAVEL_PLAN.md) |
-| Home crypt and Staff | `Assets/Topaz/World/Crypt`, `Assets/Topaz/Gameplay/Combat/Runtime` | `CryptTests`, `CryptInputTests` | [Home crypt study](studies/HOME_CRYPT_STUDY.md) |
-| Menus and HUD | `Assets/Topaz/UI` | `MenuTests` | [UI design system](UI_DESIGN_SYSTEM.md) |
-| Gentle survival and stamina | `Assets/Topaz/Gameplay/WorldLoop/Runtime`, `Assets/Topaz/UI` | `SurvivalRulesTests`, `SurvivalPlayTests` | [Survival plan](plans/GENTLE_SURVIVAL_PLAN.md) |
-| Lighting, weather, effects | `Assets/Topaz/Presentation` | `VisualStudyTests`, `WeatherTests` | [Visual study](studies/VISUAL_STUDY.md), [day/night cycle](DAY_NIGHT_CYCLE.md) |
-| Prefab composition and art replacement | `Assets/Topaz/Presentation/Art/Editor` | `OwnedPrefabTests` | [Prefab authoring](PREFAB_AUTHORING.md) |
-| Build, assets, Editor tooling | `scripts`, `Assets/Topaz/Core/Editor` | `FoundationTests` | [Project structure](PROJECT_STRUCTURE.md), [agent workflow](AGENT_WORKFLOW.md) |
+- [Unity 6.6 manual](https://docs.unity3d.com/6000.6/Documentation/Manual/index.html)
+- [URP 17.6](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.6/manual/index.html)
+- [AI Navigation 2.0](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/index.html)
+- [Input System 1.20](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.20/manual/index.html)
+- [uGUI 2.6](https://docs.unity3d.com/Packages/com.unity.ugui@2.6/manual/index.html)
+- [AssetDatabase.MoveAsset](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/AssetDatabase.MoveAsset.html)
+- [SceneManager.LoadSceneAsync](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/SceneManagement.SceneManager.LoadSceneAsync.html)
 
-## Version and Editor workflow
-
-| When working on | Read | Why it matters here |
-| --- | --- | --- |
-| A Unity upgrade or unfamiliar API | [Unity 6.6 Manual](https://docs.unity3d.com/6000.6/Documentation/Manual/index.html), [new in 6.6](https://docs.unity3d.com/6000.6/Documentation/Manual/WhatsNewUnity66.html), [6.6 upgrade guide](https://docs.unity3d.com/6000.6/Documentation/Manual/UpgradeGuideUnity66.html), [6000.6.2f1 release notes](https://unity.com/releases/editor/whats-new/6000.6.2f1) | Check behavioral changes and the exact patch before changing the project. An older `6000.0` page may describe a different capability. |
-| Adding or updating a package | [Package Manager](https://docs.unity3d.com/6000.6/Documentation/Manual/upm-ui.html), [finding package documentation](https://docs.unity3d.com/6000.6/Documentation/Manual/upm-docs.html), [feature lifecycle](https://docs.unity3d.com/6000.6/Documentation/Manual/feature-lifecycle.html) | Confirm compatibility and maturity. Follow `AGENTS.md` for package installation through Unity, then check `Packages/manifest.json` and the lockfile. |
-| Editing scenes, prefabs, or assets | [Asset metadata](https://docs.unity3d.com/6000.6/Documentation/Manual/AssetMetadata.html), [Asset Database](https://docs.unity3d.com/6000.6/Documentation/Manual/AssetDatabase.html) | Keep the asset and its `.meta` together; Unity uses GUIDs to preserve references. Let the Editor import and serialize assets when possible. |
-| Entering Play mode or using static state | [Configuring Play mode](https://docs.unity3d.com/6000.6/Documentation/Manual/configurable-enter-play-mode.html), [without domain reload](https://docs.unity3d.com/6000.6/Documentation/Manual/domain-reloading.html), [without scene reload](https://docs.unity3d.com/6000.6/Documentation/Manual/scene-reloading.html) | Unity 6.6 defaults new projects to scene reload without domain reload. Topaz has explicit options in `ProjectSettings/EditorSettings.asset`; inspect them before assuming a fresh static state or a particular callback sequence. Test repeated Play mode entry when adding static caches or events. |
-| Building or adding scenes | [Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profiles.html), [scene list](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html), [Test Framework](https://docs.unity3d.com/Packages/com.unity.test-framework@1.8/manual/index.html) | Topaz has Mac and Windows profile assets under `Assets/Topaz/Build/Profiles/`; use `scripts/verify.sh` and `scripts/build.sh` as described in the README. |
-
-## Gameplay and content
-
-| When working on | Read | Apply to Topaz |
-| --- | --- | --- |
-| Movement, dodging, aiming, camera | [Input System actions 1.20](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.20/manual/Actions.html), [action workflow](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.20/manual/using-actions-workflow.html), [Character Controller](https://docs.unity3d.com/6000.6/Documentation/Manual/class-CharacterController.html), [time and frame rate](https://docs.unity3d.com/6000.6/Documentation/Manual/managing-time-and-frame-rate.html) | See [feel study](studies/FEEL_STUDY.md). Keep the existing action asset and CharacterController approach in mind; check the timing model before moving logic between `Update`, `FixedUpdate`, and `LateUpdate`. |
-| Physics-driven motion or jitter | [Fixed updates](https://docs.unity3d.com/6000.6/Documentation/Manual/fixed-updates.html), [Rigidbody interpolation](https://docs.unity3d.com/6000.6/Documentation/Manual/rigidbody-interpolation.html) | Consult these if a future object uses Rigidbody physics. Topaz's player currently uses CharacterController, so Rigidbody interpolation is not a direct fix for its camera. |
-| Enemy paths or changing obstacles | [AI Navigation 2.0 overview](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/NavigationOverview.html), [NavMesh Surface](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/NavMeshSurface.html), [NavMesh Obstacle](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/NavMeshObstacle.html) | See [combat study](studies/COMBAT_STUDY.md) for the baked surface and [world loop](studies/WORLD_LOOP_STUDY.md) for the tree obstacle. Recheck bake and runtime registration when editing geometry. |
-| Definition assets and saves | [ScriptableObject](https://docs.unity3d.com/6000.6/Documentation/Manual/class-ScriptableObject.html), [serialization rules](https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization.html), [dictionary serialization in 6.6](https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization-dictionaries.html) | See [architecture](ARCHITECTURE.md) and [world loop](studies/WORLD_LOOP_STUDY.md). Unity 6.6 supports serialized dictionary fields, but changing an existing serialized field still needs data migration. Keep save IDs and schema rules explicit. |
-| Runtime UI | [UI system comparison](https://docs.unity3d.com/6000.6/Documentation/Manual/UI-system-compare.html), [uGUI 2.6](https://docs.unity3d.com/Packages/com.unity.ugui@2.6/manual/index.html) | The current HUD uses uGUI and TextMesh Pro. Revisit UI Toolkit at a larger UI milestone rather than assuming every new Unity UI example matches the project. |
-| URP materials, lighting, post-processing, or custom passes | [URP volumes](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/volumes-landing-page.html), [Render Graph](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/render-graph.html), [URP upgrade guides](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/upgrade-guides.html) | Check the active renderer and URP asset under `Assets/Topaz/Presentation/Rendering/Settings/`. Unity 6 Render Graph guidance differs from older `Execute`-style renderer feature tutorials. Prefer built-in URP effects before a custom pass. |
-
-## Performance and later region work
-
-| When working on | Read | Apply to Topaz |
-| --- | --- | --- |
-| Frame pacing or a measured bottleneck | [Profiler](https://docs.unity3d.com/6000.6/Documentation/Manual/Profiler.html), [collecting performance data](https://docs.unity3d.com/6000.6/Documentation/Manual/profiler-profiling-applications.html), [Frame Debugger](https://docs.unity3d.com/6000.6/Documentation/Manual/FrameDebugger.html), [URP Render Graph Viewer](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/render-graph-view.html) | Follow [Topaz's performance process](PERFORMANCE.md): diagnose on representative standalone builds and measure on Windows hardware for the Windows target. |
-| Connected regions and scene transitions | [scene list in Build Profiles](https://docs.unity3d.com/6000.6/Documentation/Manual/build-profile-scene-list.html), [SceneManager.LoadSceneAsync](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/SceneManagement.SceneManager.LoadSceneAsync.html), [SceneManager.UnloadSceneAsync](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/SceneManagement.SceneManager.UnloadSceneAsync.html) | The [Graveyard](studies/GRAVEYARD_STUDY.md) uses paired walk-through trail boundaries and a stable saved region ID. Keep authored scene identity and save state separate; measure transitions before adding broader content-loading infrastructure. |
-
-## Starting points for later features
-
-These topics are not commitments to install more packages. Check the project and the [feature policy](UNITY_FEATURE_POLICY.md) when a concrete feature calls for them.
-
-| Feature | Official starting points | Decision to make |
-| --- | --- | --- |
-| Character animation or scripted sequences | [Animation](https://docs.unity3d.com/6000.6/Documentation/Manual/AnimationSection.html), [Timeline](https://docs.unity3d.com/6000.6/Documentation/Manual/com.unity.timeline.html) | Use the existing animation tools or installed Timeline package before writing a custom sequence system. |
-| Art direction and effects | [Lighting](https://docs.unity3d.com/6000.6/Documentation/Manual/LightingOverview.html), [Shader Graph](https://docs.unity3d.com/6000.6/Documentation/Manual/com.unity.shadergraph.html), [visual effects](https://docs.unity3d.com/6000.6/Documentation/Manual/visual-effects.html) | Check URP compatibility and built-in effects before adding a shader or renderer feature. |
-| Sound and mix | [Audio overview](https://docs.unity3d.com/6000.6/Documentation/Manual/AudioOverview.html), [Audio Mixer](https://docs.unity3d.com/6000.6/Documentation/Manual/class-AudioMixer.html) | Route gameplay sounds through Unity's audio tools; measure before building custom playback infrastructure. |
-| More content or streaming | [Managing assets at runtime](https://docs.unity3d.com/6000.6/Documentation/Manual/assets-managing-runtime.html), [Addressables](https://docs.unity3d.com/6000.6/Documentation/Manual/com.unity.addressables.html) | Start with authored scenes; consider Addressables only for a demonstrated content-loading need. It is not currently a direct dependency. |
-
-For third-party 3D models and textures, use [Topaz's asset sourcing guide](ASSET_SOURCING.md) before importing anything into a public scene or prefab.
-
-## Keeping this index useful
-
-When the Editor or a package changes, update the version line and affected links after reading its release and upgrade notes. Add links to the local feature document where an agent will first look, with one sentence explaining the Topaz-specific decision. Prefer a versioned English Unity page to an unversioned search result; avoid copying large excerpts into the repository.
+Read the installed PackageCache documentation/source when precise package behavior matters. Use the connected Editor for asset changes, Package Manager for dependencies, and the existing scripts for checks/builds.

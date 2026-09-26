@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
-using Topaz.CombatStudy;
-using Topaz.FeelStudy;
-using Topaz.LoopStudy;
+using Topaz.Combat;
+using Topaz.Player;
+using Topaz.Gameplay;
 using UnityEngine;
 
-namespace Topaz.AnimationStudy
+namespace Topaz.Characters
 {
     /// <summary>Swaps a configured Topaz character visual prefab; the player object owns gameplay.</summary>
     public sealed class PlayerAppearance : MonoBehaviour
@@ -22,7 +22,7 @@ namespace Topaz.AnimationStudy
 
         [SerializeField] Transform visualRoot;
         [SerializeField] GameObject rogueVisual;
-        [SerializeField] FeelStudyPlayer movement;
+        [SerializeField] PlayerController movement;
         [SerializeField] PlayerLantern lantern;
         [SerializeField] PlayerCombat combat;
         [SerializeField, HideInInspector] RuntimeAnimatorController playerController;

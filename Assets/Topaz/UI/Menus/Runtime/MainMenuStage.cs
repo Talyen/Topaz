@@ -1,5 +1,5 @@
-using Topaz.AnimationStudy;
-using Topaz.LoopStudy;
+using Topaz.Characters;
+using Topaz.Gameplay;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -93,9 +93,7 @@ namespace Topaz.Menus
 
         void SyncEffects()
         {
-            menuCameraData.renderPostProcessing = gameplayCameraData.renderPostProcessing;
             menuCameraData.antialiasing = gameplayCameraData.antialiasing;
-            menuCameraData.antialiasingQuality = gameplayCameraData.antialiasingQuality;
             menuCameraData.volumeLayerMask = gameplayCameraData.volumeLayerMask;
             menuCameraData.volumeTrigger = volumeTrigger;
             menuCameraData.dithering = gameplayCameraData.dithering;
