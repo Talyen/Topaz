@@ -8,6 +8,8 @@ namespace Topaz.Gameplay
     public sealed class LoopHud : MonoBehaviour
     {
         [SerializeField] TMP_Text statusLabel;
+        [SerializeField] TMP_FontAsset journalHeadingFont;
+        public TMP_FontAsset JournalHeadingFont=>journalHeadingFont;
         [SerializeField] TMP_Text crossbowReloadLabel;
         [SerializeField] TMP_Text craftDescription;
         [SerializeField] Sprite homeJournalBackground;
@@ -184,7 +186,7 @@ namespace Topaz.Gameplay
         {
             if (_session == null) return;
             Set(craftDescription, $"Storage chest  •  {_session.ChestCost} Wood\n" +
-                $"Available in this region: {_session.HomeWoodCount} Wood");
+                $"Backpack + chests within 30 m: {_session.HomeWoodCount} Wood");
             Set(chestDescription, $"Backpack: {_session.WoodCount} Wood, " +
                 $"{_session.StoneCount - _session.ChestStone} Stone, " +
                 $"{_session.IronCount - _session.ChestIron} Iron\n" +
@@ -221,9 +223,9 @@ namespace Topaz.Gameplay
             if (takeGearButton != null)
                 takeGearButton.interactable = IsSelectedGear(_session.ChestSlots, _selectedChestSlot);
 
-            if (_session.SaveProblem != null)
+            if (_session.SaveProblem != null || _session.WorldProblem != null)
             {
-                statusLabel.text = _session.SaveProblem;
+                statusLabel.text = _session.SaveProblem ?? _session.WorldProblem;
                 return;
             }
             if (Time.time >= _statusUntil) statusLabel.text = "";
@@ -232,7 +234,7 @@ namespace Topaz.Gameplay
         public void Tick()
         {
             if (_session == null) return;
-            if (_session.SaveProblem == null && Time.time >= _statusUntil) Set(statusLabel, "");
+            if (_session.SaveProblem == null && _session.WorldProblem == null && Time.time >= _statusUntil) Set(statusLabel, "");
             if (crossbowReloadLabel != null)
                 Set(crossbowReloadLabel, _session.IsCrossbowEquipped &&
                     _session.CrossbowReloadProgress < 1f

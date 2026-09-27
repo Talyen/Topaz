@@ -17,6 +17,7 @@ namespace Topaz.Tests
         public IEnumerator HomeSceneryIsGatherableAndCircleIsClear()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             MonoBehaviour[] components = UnityEngine.Object.FindObjectsByType<MonoBehaviour>();
             Component circle = components.First(value => value.GetType().Name == "SafeZone");
@@ -24,8 +25,8 @@ namespace Topaz.Tests
                 .Cast<Component>().ToArray();
             Component[] rocks = components.Where(value => value.GetType().Name == "MiningRock")
                 .Cast<Component>().ToArray();
-            Assert.That(trees.Length, Is.EqualTo(12));
-            Assert.That(rocks.Length, Is.EqualTo(4));
+            Assert.That(trees.Length, Is.GreaterThan(0));
+            Assert.That(rocks.Length, Is.GreaterThan(0));
             var ids = new HashSet<string>();
             foreach (Component tree in trees)
             {
@@ -39,7 +40,7 @@ namespace Topaz.Tests
                 Assert.That(ids.Add((string)Property(rock, "StableObjectId")), Is.True);
                 Assert.That((bool)Invoke(circle, "Contains", rock.transform.position), Is.False);
             }
-            Assert.That(Terrain.activeTerrains.Length,Is.EqualTo(1));
+            Assert.That(Terrain.activeTerrains.Length,Is.InRange(4,12));
             Assert.That(Terrain.activeTerrain.terrainData.detailPrototypes.Length,Is.GreaterThan(0));
             Assert.That(Terrain.activeTerrain.terrainData.detailPrototypes[0].useInstancing,Is.True);
 
@@ -50,10 +51,11 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            Component rock = GameObject.Find("Mining Rock 01").GetComponent("MiningRock");
+            Component rock = FindResource("MiningRock").GetComponent("MiningRock");
             Teleport(player, rock.transform.position + Vector3.back * 1.25f);
             yield return null;
             yield return new WaitForSeconds(.1f);
@@ -70,12 +72,13 @@ namespace Topaz.Tests
         public IEnumerator TreeInteractionRestoresSelectedPickaxeAndSavesToolBelt()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Assert.That((bool)Invoke(session, "SelectManualTool", "pickaxe"), Is.True);
             Assert.That((string)Property(session, "EquippedToolName"), Is.EqualTo("Pickaxe"));
-            GameObject tree = GameObject.Find("Authored Tree 01");
+            GameObject tree = FindResource("HarvestTree");
             Teleport(player, tree.transform.position + Vector3.back * 1.2f);
             yield return null;
             Assert.That((bool)Invoke(session, "TryInteract"), Is.True);
@@ -95,21 +98,24 @@ namespace Topaz.Tests
         public IEnumerator PickaxeMinesTwiceThenRockReturnsAfterWorldTime()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component combat = player.GetComponent("PlayerCombat");
-            Component rock = GameObject.Find("Mining Rock 01").GetComponent("MiningRock");
+            Component rock = FindResource("MiningRock").GetComponent("MiningRock");
             Assert.That((int)Property(rock, "StrikesRemaining"), Is.EqualTo(2));
             Teleport(player, rock.transform.position + Vector3.back * 1.25f);
             yield return null;
 
-            Assert.That((bool)Invoke(combat, "TryStartMining", rock), Is.True);
+            Assert.That((bool)Invoke(combat, "TryStartMining", rock), Is.True,
+                "Ready="+Property(combat,"CanStartHarvest")+" available="+Property(rock,"IsAvailable")+" airborne="+Property(player.GetComponent("PlayerController"),"IsAirborne")+" distance="+Vector3.Distance(player.transform.position,rock.transform.position));
             Assert.That((string)Property(session, "EquippedToolName"), Is.EqualTo("Pickaxe"));
             yield return new WaitForSeconds(1.05f);
             Assert.That((int)Property(rock, "StrikesRemaining"), Is.EqualTo(1));
             Assert.That((string)Property(session, "EquippedToolName"), Is.EqualTo("Sword"));
-            Assert.That((bool)Invoke(combat, "TryStartMining", rock), Is.True);
+            Assert.That((bool)Invoke(combat, "TryStartMining", rock), Is.True,
+                "Ready="+Property(combat,"CanStartHarvest")+" available="+Property(rock,"IsAvailable")+" airborne="+Property(player.GetComponent("PlayerController"),"IsAirborne")+" distance="+Vector3.Distance(player.transform.position,rock.transform.position));
             yield return new WaitForSeconds(1.05f);
             Assert.That((bool)Property(rock, "IsAvailable"), Is.False);
             Assert.That((int)Property(session, "MiningExperience"), Is.EqualTo(10));
@@ -126,6 +132,7 @@ namespace Topaz.Tests
         public IEnumerator AnvilPlacementSpendsMaterialsAndRemovalRefundsWithoutLoss()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             object pack = Field(session, "_backpack");
@@ -168,6 +175,7 @@ namespace Topaz.Tests
         public IEnumerator StonePathUsesChestMaterialsOnlyAfterConfirmedPlacement()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             object data = Field(session, "_data");
@@ -185,7 +193,7 @@ namespace Topaz.Tests
             object stone = Property(session, "StoneItem");
             Assert.That((int)Invoke(chestInventory, "Add", stone, 1), Is.EqualTo(1));
             Component builds = (Component)Field(session, "homeBuilds");
-            Invoke(builds, "Bind", session, Field(session, "_world"), "home");
+            Invoke(builds, "Bind", session, Field(session, "_world"), "wilderness");
 
             Assert.That((bool)Invoke(session, "BeginHomeBuild", "structure.stone_path"), Is.True);
             Invoke(builds, "Cancel");

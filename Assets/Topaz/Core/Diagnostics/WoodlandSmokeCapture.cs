@@ -12,8 +12,9 @@ namespace Topaz
     {
         [Serializable] sealed class Report
         {
-            public string unity, platform, graphics, pipeline, status;
-            public int seed, frames, enemies, width, height;
+            public string unity, platform, graphics, pipeline, status, lightState, mainLight, keywords, graphicsSettingsPath;
+            public double captureWorldHours;
+            public int seed, frames, enemies, width, height, errors;
             public double refreshHz;
             public bool focused, gpuOcclusion;
             public double averageGpuMs;
@@ -22,6 +23,12 @@ namespace Topaz
             public long allocatedBytes;
             public bool gathered, cooked, homeBuilt, woodlandBuilt, campProtected, campTravel, reloadPreserved;
         }
+        int runtimeErrors;
+        void Awake()=>Application.logMessageReceived+=ObserveLog;
+        void OnDestroy()=>Application.logMessageReceived-=ObserveLog;
+        void ObserveLog(string message,string stack,LogType type)
+        {if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)runtimeErrors++;}
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Launch()
         {
@@ -31,6 +38,7 @@ namespace Topaz
         }
         IEnumerator Start()
         {
+            Application.runInBackground=true; // Automated temporary-profile captures must continue while the owner uses other apps.
             string directory=Path.Combine(Application.persistentDataPath,"Diagnostics");
             foreach(var arg in System.Environment.GetCommandLineArgs())if(arg.StartsWith("--topaz-capture-dir="))directory=arg.Substring(20);
             Directory.CreateDirectory(directory);
@@ -38,12 +46,17 @@ namespace Topaz
             WorldSession session=null;float deadline=Time.realtimeSinceStartup+30;
             while(Time.realtimeSinceStartup<deadline)
             {
-                session=FindAnyObjectByType<WorldSession>();if(session!=null&&session.HasActivePair)break;yield return null;
+                session=FindAnyObjectByType<WorldSession>();if(session!=null&&session.HasActivePair&&session.ActiveRegion.Streaming.InitialReady)break;yield return null;
             }
             if(session==null||!session.HasActivePair){report.status="world creation failed";File.WriteAllText(Path.Combine(directory,"smoke.json"),JsonUtility.ToJson(report,true));yield break;}
             report.width=Screen.width;report.height=Screen.height;report.refreshHz=Screen.currentResolution.refreshRateRatio.value;
-            report.seed=session.ActiveWorld.seed;report.homeGenerationMs=FindObjectsByType<WoodlandRegion>().First(r=>r.regionId=="home").GenerationMilliseconds;
+            report.seed=session.ActiveWorld.seed;report.homeGenerationMs=FindObjectsByType<WoodlandRegion>().First(r=>r.regionId==TopazSaveData.WildernessRegion).GenerationMilliseconds;
             yield return new WaitForSecondsRealtime(8);
+            report.captureWorldHours=session.WorldHours;
+            report.graphicsSettingsPath=FindAnyObjectByType<Topaz.Rendering.VisualLookController>().SettingsPath;
+            report.lightState=string.Join(";",FindObjectsByType<Light>().Where(l=>l.type==LightType.Directional).Select(l=>l.name+":"+l.enabled+"/"+l.intensity+"/"+l.transform.eulerAngles+"/"+l.bakingOutput.isBaked));
+            report.mainLight=Shader.GetGlobalColor("_MainLightColor").ToString()+" position "+Shader.GetGlobalVector("_MainLightPosition");
+            report.keywords=string.Join(",",Shader.enabledGlobalKeywords.Select(k=>k.name));
             ScreenCapture.CaptureScreenshot(Path.Combine(directory,"home.png"));yield return new WaitForEndOfFrame();
             yield return new WaitForSecondsRealtime(1);
             report.gpuOcclusion=((UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline).gpuResidentDrawerEnableOcclusionCullingInCameras;
@@ -64,20 +77,21 @@ namespace Topaz
             yield return new WaitForSecondsRealtime(2);
             ScreenCapture.CaptureScreenshot(Path.Combine(directory,"rain.png"));yield return new WaitForEndOfFrame();
             session.SetEventWeatherOverride(null);
-            session.RequestTrailCrossing("expedition.clearing");deadline=Time.realtimeSinceStartup+30;
-            while(Time.realtimeSinceStartup<deadline&&(session.CurrentRegionId!="expedition.clearing"||session.BlockMovement))yield return null;
-            var expedition=FindObjectsByType<WoodlandRegion>().FirstOrDefault(r=>r.regionId=="expedition.clearing");
-            if(expedition==null||!expedition.Ready){report.status="expedition failed";}else
-            {
-                report.expeditionGenerationMs=expedition.GenerationMilliseconds;yield return new WaitForSecondsRealtime(3);
-                report.enemies=FindObjectsByType<Topaz.Combat.EnemyCombatant>().Length;
-                ScreenCapture.CaptureScreenshot(Path.Combine(directory,"expedition.png"));yield return new WaitForEndOfFrame();
-                report.status=report.enemies>0?"passed":"enemies not activated";
-                session.FlushCurrent();
-            }
+            var site=session.ActiveRegion.Wilderness.Discoveries.OrderBy(s=>s.X*s.X+s.Z*s.Z).First();
+            var destination=new Vector3(site.X,session.ActiveRegion.Wilderness.Height(site.X,site.Z),site.Z);
+            yield return session.ActiveRegion.Streaming.PrepareDestination(destination);
+            MovePlayer(session,destination);
+            Camera.main.GetComponent<Topaz.Player.PlayerCamera>().LookAtPoint(destination+Vector3.forward*10);
+            yield return new WaitForSecondsRealtime(12);
+            report.enemies=FindObjectsByType<Topaz.Combat.EnemyCombatant>().Count(e=>e.enabled&&e.IsAlive&&e.GetComponent<UnityEngine.AI.NavMeshAgent>().isOnNavMesh);
+            ScreenCapture.CaptureScreenshot(Path.Combine(directory,"expedition.png"));yield return new WaitForEndOfFrame();
+            report.status=report.enemies>0?"passed":"enemies not activated";
+            session.FlushCurrent();
             if (System.Environment.GetCommandLineArgs().Contains("--topaz-baseline-smoke") &&
                 !(report.gathered && report.cooked && report.homeBuilt && report.woodlandBuilt && report.campProtected && report.campTravel && report.reloadPreserved))
                 report.status="baseline scenario failed";
+            report.errors=runtimeErrors;
+            if(runtimeErrors>0)report.status="runtime errors";
             report.allocatedBytes=UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong();
             File.WriteAllText(Path.Combine(directory,"smoke.json"),JsonUtility.ToJson(report,true));
             Debug.Log("[Topaz] Standalone smoke: "+report.status+"; "+directory);
@@ -96,7 +110,7 @@ namespace Topaz
             var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
             var valid=typeof(RegionBuildings).GetMethod("CanPlace",flags);
             var height=typeof(RegionBuildings).GetMethod("PlacementHeight",flags);
-            var origin=session.ActiveRegion.regionOffset;
+            var origin=session.transform.position;
             if(!builder.BeginPlacement(id))throw new InvalidOperationException("Could not begin "+id);
             for(float z=-18;z<=42;z+=1.5f)for(float x=15;x<=42;x+=1.5f)
             {
@@ -130,11 +144,12 @@ namespace Topaz
             Camera.main.GetComponent<Topaz.Player.PlayerCamera>().LookAtPoint(home+Vector3.up*.5f);
             yield return new WaitForSecondsRealtime(1);
             ScreenCapture.CaptureScreenshot(Path.Combine(directory,"home-building.png"));yield return new WaitForEndOfFrame();
-            var journal=FindAnyObjectByType<BuildingJournalView>();journal.Show();yield return null;
+            var journal=FindAnyObjectByType<BuildingJournalView>();journal.Show();yield return new WaitForSecondsRealtime(.2f);
             ScreenCapture.CaptureScreenshot(Path.Combine(directory,"build-journal.png"));yield return new WaitForEndOfFrame();journal.Hide();
-            session.RequestTrailCrossing(TopazSaveData.ExpeditionRegion);
-            float deadline=Time.realtimeSinceStartup+30;
-            while((session.IsAtHome||session.BlockMovement)&&Time.realtimeSinceStartup<deadline)yield return null;
+            var away=new Vector3(160,session.ActiveRegion.Wilderness.Height(160,20),20);
+            yield return session.ActiveRegion.Streaming.PrepareDestination(away);
+            MovePlayer(session,away);
+            yield return new WaitForSecondsRealtime(8);
             Vector3 camp=Build(session,BuildCatalog.Camp);report.woodlandBuilt=true;
             MovePlayer(session,camp+Vector3.forward);yield return null;
             string campId=session.ReturnCampfireId;

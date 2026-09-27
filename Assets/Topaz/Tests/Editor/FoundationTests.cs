@@ -14,12 +14,20 @@ namespace Topaz.Tests
     public sealed class FoundationTests
     {
         [Test]
+        public void RuntimeTerrainMaterialRetainsInstancedNormalVariant()
+        {
+            var material=AssetDatabase.LoadAssetAtPath<Material>("Assets/Topaz/Presentation/Rendering/SyntySample/Terrain.mat");
+            Assert.That(material.enableInstancing,Is.True);
+            Assert.That(material.IsKeywordEnabled("_TERRAIN_INSTANCED_PERPIXEL_NORMAL"),Is.True,
+                "Runtime-generated terrain must retain the same normal variant used by the Editor.");
+        }
+        [Test]
         public void OnlyGeneratedGameplayScenesShip()
         {
             var enabled = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
             Assert.That(enabled.Select(scene => scene.path).ToArray(), Is.EqualTo(new[]
             {
-                "Assets/Topaz/World/Scenes/Bootstrap.unity", "Assets/Topaz/World/Scenes/Woodland.unity"
+                "Assets/Topaz/World/Scenes/Bootstrap.unity"
             }));
         }
 

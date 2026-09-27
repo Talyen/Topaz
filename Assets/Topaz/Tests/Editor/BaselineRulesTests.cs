@@ -22,7 +22,7 @@ namespace Topaz.Tests.Editor
             Assert.That(type.GetMethod("Intersects").Invoke(null,new object[]{new Vector3(ax,0,az),new Vector3(bx,0,bz),Vector3.zero,12f}),Is.EqualTo(blocked));
         }
         [Test]
-        public void RegionStructureHeightAndContentsRoundTripAndNewestQueueWins()
+        public void WorldStructuresAcrossChunksKeepHeightContentsAndNewestQueueWins()
         {
             string dir=Path.Combine(Path.GetTempPath(),"TopazBaseline-"+Guid.NewGuid().ToString("N"));
             try
@@ -31,11 +31,11 @@ namespace Topaz.Tests.Editor
                 object character=Call(profile,"CreateCharacter","rogue"), world=Call(profile,"CreateWorld");
                 Call(profile,"GetOrCreateVisit",Get(character,"id"),Get(world,"id"));
                 var structures=(IList)Get(world,"structures");
-                foreach(string region in new[]{"home","expedition.clearing"})
+                foreach(float worldX in new[]{4.5f,132.75f})
                 {
                     object r=Activator.CreateInstance(T("StructureStateRecord"));
                     Set(r,"instanceId",Guid.NewGuid().ToString("N"));Set(r,"definitionId","structure.storage_chest");
-                    Set(r,"regionId",region);Set(r,"x",4.5f);Set(r,"y",3.75f);Set(r,"z",8.25f);
+                    Set(r,"regionId","wilderness");Set(r,"x",worldX);Set(r,"y",3.75f);Set(r,"z",8.25f);
                     object slot=Activator.CreateInstance(T("ItemStackRecord"));Set(slot,"itemId","wood");Set(slot,"count",7);
                     ((IList)Get(r,"slots")).Add(slot);structures.Add(r);
                 }
@@ -44,7 +44,8 @@ namespace Topaz.Tests.Editor
                 object loaded=Call(repo,"Load");object saved=((IList)Get(loaded,"worlds"))[0];
                 Assert.That(Get(saved,"worldHours"),Is.EqualTo(80d));
                 var records=(IList)Get(saved,"structures");Assert.That(records.Count,Is.EqualTo(2));
-                Assert.That(Get(records[1],"regionId"),Is.EqualTo("expedition.clearing"));
+                Assert.That(Get(records[1],"regionId"),Is.EqualTo("wilderness"));
+                Assert.That(Get(records[1],"x"),Is.EqualTo(132.75f));
                 Assert.That(Get(records[1],"y"),Is.EqualTo(3.75f));
                 Assert.That(Get(((IList)Get(records[1],"slots"))[0],"count"),Is.EqualTo(7));
             }
@@ -57,7 +58,7 @@ namespace Topaz.Tests.Editor
             var r=Activator.CreateInstance(T("StructureStateRecord"));Set(r,"instanceId","test");Set(r,"definitionId","structure.campfire");Set(r,"regionId","deleted-dungeon");
             ((IList)Get(w,"structures")).Add(r);
             Assert.Throws<TargetInvocationException>(()=>Call(p,"Validate"));
-            Set(r,"regionId","home");Set(r,"y",float.NaN);
+            Set(r,"regionId","wilderness");Set(r,"y",float.NaN);
             Assert.Throws<TargetInvocationException>(()=>Call(p,"Validate"));
         }
         [Test]

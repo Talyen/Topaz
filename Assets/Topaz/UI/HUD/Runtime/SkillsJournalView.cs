@@ -136,15 +136,15 @@ namespace Topaz.Gameplay
             bool learned = _session.IsTalentLearned(id, current.id);
             bool active = _session.HasTalent(id, current.id);
             detail.text = current.description + "\n" +
-                (active ? "Active. Change talents freely at home." :
-                    learned ? "Learned. Equip this talent at home." :
+                (active ? "Active. Change talents freely at a camp." :
+                    learned ? "Learned. Equip this talent at a camp." :
                     _session.SkillChoices(id) > 0 ? "Ready to learn." :
                     "A talent choice unlocks at levels 2, 5, and 8; all unlock at 10.");
             actionButton.interactable = !learned ? _session.SkillChoices(id) > 0 :
                 _session.IsAtHome && (active || _session.ActiveTalentCount(id) <
                     (currentLevel >= 5 ? 2 : currentLevel >= 2 ? 1 : 0));
             actionLabel.text = !learned ? "Learn" : active ? "Unequip" :
-                _session.IsAtHome ? "Equip" : "Return home";
+                _session.IsAtHome ? "Equip" : "Return to a camp";
         }
     }
 }

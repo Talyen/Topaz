@@ -1,0 +1,488 @@
+[
+  {
+    "name": "Sidekick",
+    "version": "1.0.4",
+    "archive": "Synty Studios/3D ModelsCharacters/FREE Starter Pack - Sidekick Modular Characters by Synty.unitypackage",
+    "files": [
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Materials/Starter_01.mat",
+        "sha256": "a035cd16628971f396af651c598639c8ea9c6fbb9dff5c964705f458d8bd25ed"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Materials/Starter_01.mat.meta",
+        "sha256": "2855da94b4e617bd91a8bb110dd0937e4dd79d066202084ce863f0dd80d4a026"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Meshes/Starter_01-avatar.asset",
+        "sha256": "c9d70f8c8f75b0934abeef56d18a4e075bf18078c63eb15a840644bf7aee6bd5"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Meshes/Starter_01-avatar.asset.meta",
+        "sha256": "ddb4caaae2ed6ee1a142b70b1daa609c1042e598e49db1338e19ae35ad0e137a"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Meshes/Starter_01.asset",
+        "sha256": "fc05c29911b4107dc38f4706cb743d593aa11d00edd68160b8b2cb72a1234d07"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Meshes/Starter_01.asset.meta",
+        "sha256": "fe474d237cc4b8934c5bad29daec6110981fa68d82f3597dab043666a120fbdd"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Starter_01.prefab",
+        "sha256": "f7b067b148a5cc1dcc98287738fc0d492caabf7a63de39ea89e651bb8b2008e1"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Starter_01.prefab.meta",
+        "sha256": "ff2a8270941fb3ad2c888ac4a32ef26514cd7145256950e15b5b199c7d07005f"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Textures/T_Starter_01ColorMap.png",
+        "sha256": "76841741ec7230fdaec07d091f6b779d7d0707bc859d53ec63514aaeb32c495b"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_01/Textures/T_Starter_01ColorMap.png.meta",
+        "sha256": "ef450742a66ca547f52ad97cb8314c74798e7b6992d122f5843f5f7bb3cf9d8d"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Materials/Starter_02.mat",
+        "sha256": "32e02f3030ffa69925a70923e3b69d09d6daec2339456bee99c266b5a5e98388"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Materials/Starter_02.mat.meta",
+        "sha256": "42cb2ac9b5aecbf7a0339f50694f6e57b508406e721302a8265332cc5c3915c1"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Meshes/Starter_02-avatar.asset",
+        "sha256": "9d24334c3f81f1dbd75203e6d90e430b41ca79b149736d1b15a0667c738c501f"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Meshes/Starter_02-avatar.asset.meta",
+        "sha256": "9354a962942412c4a4be9cd37e3ad57608871326260b253395f824596a39567f"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Meshes/Starter_02.asset",
+        "sha256": "57424f0d6b7f2f4e27de230f5b25fee3c8df6b0d9de18a083fb67c0b4eef037d"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Meshes/Starter_02.asset.meta",
+        "sha256": "7a72419543ace1a83fc464b58412d23bec41b9d56a9d246317f29becb9bfc12f"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Starter_02.prefab",
+        "sha256": "46e05f7f0187d9d83146560d1ae0076d50179793a79b1cddb1b052a5ecceed81"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Starter_02.prefab.meta",
+        "sha256": "a56ca4d60064ff4c6c52e8f58a14756820ef65ef2055f94ddc12d67e3a627502"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Textures/T_Starter_02ColorMap.png",
+        "sha256": "c9d6269d15997859bfa3411c9846872659a1a46a10242e7bb4d8e76947b5bd13"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_02/Textures/T_Starter_02ColorMap.png.meta",
+        "sha256": "f82ce12abe43b193e3d6a6d373b5afce21ecc0a572b702265c6dc3745f05c5be"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Materials/Starter_03.mat",
+        "sha256": "1110897c727375ca13bbb17796e98bff3272d2be52b23f7a96373b0630ebfbd0"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Materials/Starter_03.mat.meta",
+        "sha256": "b4452b063b2f079de20e6a622ae3d4601c4106961e53ce5c2aea3745c8636bf3"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Meshes/Starter_03-avatar.asset",
+        "sha256": "46b19496c8b5c2afb75395518992c3a46af2f98ea1792fddb2ceabbc2e0e8080"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Meshes/Starter_03-avatar.asset.meta",
+        "sha256": "4d15402521993f236516889f28f65f5aa4528bdfb333b2f052b4b64fd0eeb886"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Meshes/Starter_03.asset",
+        "sha256": "74ff2d7f423287932dcdde1c8eb2bb65fd5614d7466a8de53dca05ab756335ce"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Meshes/Starter_03.asset.meta",
+        "sha256": "9da5cba07b340e9c8d9fa6bba6a9aa80bc44a15e410b396e5129f9a856fba524"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Starter_03.prefab",
+        "sha256": "cda13821fa7a577142cb9492009392f2cfc331b499198807f9903b2e72d20acb"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Starter_03.prefab.meta",
+        "sha256": "ad2529557b153414b76efa56346129b9f32bc7b69992e71b736274c09efa3bdc"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Textures/T_Starter_03ColorMap.png",
+        "sha256": "257560c3771282a1fdb10837f8bf0848ae9a0229c40c9fec293f320e364ba32f"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_03/Textures/T_Starter_03ColorMap.png.meta",
+        "sha256": "c1c39cb0fb0406f0dfd5575d8ae53bbdb7a29c72524e02020a16556f396adaa3"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Materials/Starter_04.mat",
+        "sha256": "1c021d35bebe1c22e991ecb42d7e89e83ecf112abc78555c7ce752ed9d6fdf12"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Materials/Starter_04.mat.meta",
+        "sha256": "3a971d011fd8a68312a31f4fbbb82c78e27a581cf0528f40991abdb30477dd00"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Meshes/Starter_04-avatar.asset",
+        "sha256": "88d9b3c414158a9b0bf74983bd732f867c9b84ad36818b596a00333fc2db4cdc"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Meshes/Starter_04-avatar.asset.meta",
+        "sha256": "47a6e465d36b6a047dd59d89f037b419595cdb8439dfaa3297c5017685538637"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Meshes/Starter_04.asset",
+        "sha256": "59dde5df1563d365e94039e3aa7ced71269370bda0032b2637709fd012760b19"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Meshes/Starter_04.asset.meta",
+        "sha256": "d625d40e70cd1862a373ed7595250e095c339280c2c6193e48351873ce819050"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Starter_04.prefab",
+        "sha256": "951f9c61a21a3f643896fec8fa2ddbc53a77bc134cb223fd8ab68bfa8360ee5f"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Starter_04.prefab.meta",
+        "sha256": "a1d60f149484d21348a17c46933a6bbdc501bd291450ca2db73ef87237f27955"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Textures/T_Starter_04ColorMap.png",
+        "sha256": "0eec2c421292f6b65c865acb177b6f3abe2520ba6175b2e138fcaf73827b39d7"
+      },
+      {
+        "path": "Assets/Synty/SidekickCharacters/Characters/Starter/Starter_04/Textures/T_Starter_04ColorMap.png.meta",
+        "sha256": "958a62ec9e282f978b44ca88fae02c2ed0bb95912c43e353ab9477199902e5ce"
+      }
+    ]
+  },
+  {
+    "name": "BasicMotion",
+    "version": "2.4.2",
+    "archive": "Kevin Iglesias/Animation/Human Basic Motions FREE.unitypackage",
+    "files": [
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle01-Idle02.fbx",
+        "sha256": "ea379ecb12eaabe1de737e608754c996ccdd0e6010120d8c882fdb6a892dc520"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle01-Idle02.fbx.meta",
+        "sha256": "277ddd22e6a96d2792f306d96ce00752e9342fe4ea9677862ebf4d95d5113246"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle01.fbx",
+        "sha256": "21cc44f4e0126c2876720fd2cb66e1f60c15e3f532504702bf1b71572e4e500c"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle01.fbx.meta",
+        "sha256": "250b4dd6bcf3f65de68a6eb382270c52e344cf44d4ec02086f655db6a8cb8df5"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle02-Idle01.fbx",
+        "sha256": "3e08412ecd0bc38664d8d2fae2cbc69297ca1dc9e394a0933e463b4560ec0b5e"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle02-Idle01.fbx.meta",
+        "sha256": "5b1be24acf1c47eaba227889cf4d248b2231df2b55d72bc716b610b2b6e71679"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle02.fbx",
+        "sha256": "e1b8229185a6b41784a93ea2336e71a4b3205bdeee1dee8099ecaff19592e1a1"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle02.fbx.meta",
+        "sha256": "817d0df85200ad7b0b6ab269a8edb67651b43da32e86aa0ec794fe1358919041"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Fall01.fbx",
+        "sha256": "28b00c372e477bee413001e2ff4c6a7c1db81690f56237566ca7c39a02e8676b"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Fall01.fbx.meta",
+        "sha256": "cbf123d60080bcd94e088f4791796b312fac47eebfbe8a1bb6a52340c465874d"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 - Begin.fbx",
+        "sha256": "2dae4c4b07c826eb5f2a0ddc28aee3d19bbc26b34a98bbb1ffd2b155ef76f385"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 - Begin.fbx.meta",
+        "sha256": "c9fcef0fe0f523a0a0cbce493b910e1f59a54897cf7b0baa8ca92311ac0a1daf"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 - Land.fbx",
+        "sha256": "cbe6b0ceedbac609ee59f9df2c3a2c3311ae87995f7ef6b4864f45564ab4cdd9"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 - Land.fbx.meta",
+        "sha256": "c3a044c34ee78f1e7dbf3b35d7c5ba91d5d85a59c58e7c3c6d772b71603d535c"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 [RM] - Begin.fbx",
+        "sha256": "6e478fb81dc6c9640a4396e02e5edb35be8452cd5c5c8a5c7d4ef3555406857c"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 [RM] - Begin.fbx.meta",
+        "sha256": "1fc46123b6e3f4fbde6572fff1404ee4b66d2d1ffc0384263a3c40a9d1b4eb4b"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 [RM] - Land.fbx",
+        "sha256": "a83d117a5c705c804823f978c2bfdc564f35f10231fcb505733a2277bd2602fc"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 [RM] - Land.fbx.meta",
+        "sha256": "8849ad185ae34e366e93291d52183c332693dc324f60a99dd2eaf7bebbf2ae4e"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 [RM].fbx",
+        "sha256": "ffab916f360a57dfe0304d74b3eb7774ae10ebd7eb43d171c86588af64372634"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01 [RM].fbx.meta",
+        "sha256": "b998ee0813847af15ea903ba3b648255105e4155992a4132754f7bc5dca54af7"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01.fbx",
+        "sha256": "f91337e8b1bc09cbd98ae05cb8af82bf31aa1ba6d4d9ee42fd96919e01e5cc94"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Jump/HumanM@Jump01.fbx.meta",
+        "sha256": "8bef14cf2639326b5a493754229df6b0f6dd9514d586d83b379c76f8170effb9"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Backward.fbx",
+        "sha256": "077cbb3c568acce931f056808a512cac8961edc376320f3d762dff8a11cde9ce"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Backward.fbx.meta",
+        "sha256": "170a001a9ed187e2fafe8065e9bf638d55dcb4bae63994dfd40870af23c75833"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_BackwardLeft.fbx",
+        "sha256": "a44f8e327c78f9de515b2f06617b4c2a775bd881ac52c523a0c8d9b4c783f6cd"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_BackwardLeft.fbx.meta",
+        "sha256": "4e71006ade66f681a5ba4353c9defc0b547df39fd8587b5eaea225763ee23c5a"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_BackwardRight.fbx",
+        "sha256": "d89cbebcc0b2ae8b2755e6c9656ecaba33adb5b71eff3de5a3a38b4b14f91ff4"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_BackwardRight.fbx.meta",
+        "sha256": "1d5265473271105bf49d30fbc65cfd65ae1567fd8258dfc7def76c4c7b6b7599"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Forward.fbx",
+        "sha256": "3e70ef632c445aff8e405a7722b7145ef963be25f803f7c0cbb4aee76ce8bce0"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Forward.fbx.meta",
+        "sha256": "ecc0eef85185533d52b091227d621445e60f51c50d2a89149f7c0060557c7f3d"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_ForwardLeft.fbx",
+        "sha256": "dd0b7b7d61c3918f6a2b8cda9b08f45852ec119fc9782e762274af3458070b21"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_ForwardLeft.fbx.meta",
+        "sha256": "0ed7a3cd5f382bc04f697060a219f6739ba561d488fd3ed05fbb53475f64a845"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_ForwardRight.fbx",
+        "sha256": "e0021f6317ab9079f751dc332a46f39a17161c2827a27ac85ffde2adcb8d78c6"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_ForwardRight.fbx.meta",
+        "sha256": "1250a7e96f2ec90a3af9296b172c0236959fc4c8a3e3bd8387e37a14ffc9893f"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Left.fbx",
+        "sha256": "cdf1a2c77d94cf9c93b84e21543b9039195cff2a4b36c87798287e197290a812"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Left.fbx.meta",
+        "sha256": "c4d166fa098c7d49b3b420cdeb758e9696a677a7764abe54099b42f73dc8ffe6"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Right.fbx",
+        "sha256": "85ad6748d09503b408e6ab166917daf536aeb5ae520ba96ccb3eb8b1e9109359"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Right.fbx.meta",
+        "sha256": "5952c5cd66edeb0cbcbb330c40e6502777785f6514d93678612194f8b750c8f5"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Forward.fbx",
+        "sha256": "d0f4d815e5a8011b1e3711e6f5dabbefbbd4d2a3535d84a69171f740c9a40f72"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Forward.fbx.meta",
+        "sha256": "41fbc2616fdebe5ce13fdedbe6297ed7aae5c642b0b61e784d4b03057753c6a5"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_ForwardLeft.fbx",
+        "sha256": "4fdbc33e765fe1419427cd39bc7862f0d3402419508e3cf3d2ae624c391e7d00"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_ForwardLeft.fbx.meta",
+        "sha256": "92aaea7121dab217d97e7d2338b8ddbb431ab67279d8b21bf9322c9d5db1f8b1"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_ForwardRight.fbx",
+        "sha256": "63723ba2a99273109d57be410aa901d5408c270c0a42a97a12c8d95a10ab00b9"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_ForwardRight.fbx.meta",
+        "sha256": "ba546cd5b800ab60929dc1ff635235b701c52cde473996c4d9f92bf6a956fe4f"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Left.fbx",
+        "sha256": "8e8652dad99b64e4a4666dfe0b9a382c56fffa7345fcd0184d55b6d4f54c02aa"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Left.fbx.meta",
+        "sha256": "f694a9002c3508c5e14314998640f486b624eaf9d27ef475336749ce53020c0b"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Right.fbx",
+        "sha256": "cd5cc662c6ad832328d90240bdd7b079cb3a548fc932d0434521160535ab1b25"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Right.fbx.meta",
+        "sha256": "04591688be8501c394c45769ed5726d4119281c529ecacb1ba8a3021abf2cc3d"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Left [RM].fbx",
+        "sha256": "10888cfbbacfce4e00c0cda92165c4d56ba30a4b68817c7073476cb29ae43df2"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Left [RM].fbx.meta",
+        "sha256": "1a08f39a3fb5c14011ab4db82286a121fd25921a47ac03eb27186c61713b5bd7"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Left.fbx",
+        "sha256": "5cc801fa5cb9d978bba2c363b3faa093a7fe2bb5fdcd6514a8f65a1df1b38630"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Left.fbx.meta",
+        "sha256": "8f8b9e82ee16b82bc66930964a8a57c705dc1c3b7226503b93e5c50fb0413575"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Right [RM].fbx",
+        "sha256": "7882699bdbdb2b820998ccba9787f8d2d8967474e892a35c6ca3800c623c1081"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Right [RM].fbx.meta",
+        "sha256": "924c36aaec02e41fe92f98bfa5d92ef92372ee031b2da6a6661dce14874a73aa"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Right.fbx",
+        "sha256": "c1f778ff9c4042018a12456a11c62a7bdcaa081055feb6fc3ca50110f58ad7f3"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Turn/HumanM@Turn01_Right.fbx.meta",
+        "sha256": "8520fc2be16ae9c7be8767494fc39cabe7decddf25fe23c609689db745768b2a"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Backward.fbx",
+        "sha256": "b6d6281bcc34abb2e2b2fb50ac5ebba630907c54fc148179b42a59b73a9282ea"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Backward.fbx.meta",
+        "sha256": "dd29e993fdee3bac8f98c96f2e78bf645fb4f56e32b30e50f6c603de34901e35"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_BackwardLeft.fbx",
+        "sha256": "9b35298aa054e222c3c6d8fbc056c742769e268db70b63952b49d2c16f2738a1"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_BackwardLeft.fbx.meta",
+        "sha256": "66743d5b5bdf26a4ba240d06f11bfbe3d4d135e3396d9bcbd1985fc3fa09b7b1"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_BackwardRight.fbx",
+        "sha256": "8f9fc6314521c6af46fd1409b370b7a13c61a2cb63a1045d8ff69f9193388a97"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_BackwardRight.fbx.meta",
+        "sha256": "dd1cf2b53a158b807c9a67ab66e2b5d070748e66968bb709a1e49a12db0e189f"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Forward.fbx",
+        "sha256": "c621a32819daf8e785e87e1f8c0baf8e09fdeead3c8bf13385a967dee6227329"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Forward.fbx.meta",
+        "sha256": "420183ccce6abb3a7c06cf417c13bb73fb7a6d800c16419d94d5e2a40dbec736"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_ForwardLeft.fbx",
+        "sha256": "f96488c6c8c7b510bacfe82949209aaf5dcce28b20a3ab4701d3a3b746c605d7"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_ForwardLeft.fbx.meta",
+        "sha256": "35b0d858f1b3e145ba56019dd6dad5e3e49837250aa95db11076ae7121d988f2"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_ForwardRight.fbx",
+        "sha256": "20ba6eac7e77e1a2581a0eca7fdbd6e17e3bcff0bb75594561e5e01636f25697"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_ForwardRight.fbx.meta",
+        "sha256": "faf900d337a8be3df3f8004ff234f6a60593e6e3056a7498ce17dead69369757"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Left.fbx",
+        "sha256": "f62128ddc5b8efc286240c1351a23d9d2066736bf0e3e75f7c5f151e8e62aa90"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Left.fbx.meta",
+        "sha256": "fff794ac1961d608e9671193814dd6e34d0ecc6378c104ce19ec09f9ecac7fb5"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Right.fbx",
+        "sha256": "d6813a0616f6eef877dd05424483e8b700ad0d2c60d42366369844950b940d43"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Right.fbx.meta",
+        "sha256": "a7fb5b6b686fc5d1c80ef7794e0a3a0844568409bdd4aabc21cd734a310d7854"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Social/Conversation/HumanM@Talk01.fbx",
+        "sha256": "366da7af0631b673184384a2ffe88e49c585944acebbfd5b7991e54475cfdc1c"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Animations/Male/Social/Conversation/HumanM@Talk01.fbx.meta",
+        "sha256": "d52df0bd0f4eb4cf225b29fc84ae8499e388f3cb6d3a4088364a2115c43b1aa9"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Models/Avatar Masks/Human Body Full Mask.mask",
+        "sha256": "b9ef1f71e7cc7073bf6b1c4ea3ec11b5434f5120af855c413e8ed9b53a36c4a1"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Models/Avatar Masks/Human Body Full Mask.mask.meta",
+        "sha256": "1b2fd1a12d5f15a23715baac50ec0fd54105ee0587f37eb1565e6865ea5959e4"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Models/HumanM_Model.fbx",
+        "sha256": "23c21d030341aa335b4dfbcab1fac9a81ac5f21a513bfb2b49ab97084c4be4b5"
+      },
+      {
+        "path": "Assets/Kevin Iglesias/Human Animations/Models/HumanM_Model.fbx.meta",
+        "sha256": "b8c4e7b9e23106d3c9e69b9fa75735d5a2a0ecfa0368ef39ccf65b7fff562dd7"
+      }
+    ]
+  }
+]

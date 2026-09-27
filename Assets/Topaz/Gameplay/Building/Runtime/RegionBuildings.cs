@@ -95,11 +95,38 @@ namespace Topaz.Gameplay
                 world.structures.Add(_records[_records.Count - 1]);
                 world.starterBedrollInitialized = true;
             }
-            foreach (StructureStateRecord record in _records)
-                if (Known(record.definitionId)) Show(record);
+            RefreshLoadedStructures(player.transform.position);
             Physics.SyncTransforms();
-            if (region?.navigation != null) region.navigation.BuildNavMesh();
+            region?.Streaming?.InvalidateNavigation();
             
+        }
+
+        public void RefreshLoadedStructures(Vector3 focus)
+        {
+            if(_records==null)return;
+            var center=Topaz.Generation.WildernessPlan.Chunk.At(focus.x,focus.z);
+            bool Nearby(StructureStateRecord r)
+            {
+                float reach=192+Footprint(r.definitionId)+2;
+                return Mathf.Abs(r.x-(center.X+.5f)*128)<=reach && Mathf.Abs(r.z-(center.Z+.5f)*128)<=reach;
+            }
+            foreach(var record in _records)
+            {
+                if(!Known(record.definitionId))continue;
+                bool keep=Nearby(record);
+                if(keep && !_visuals.ContainsKey(record.instanceId))Show(record);
+                else if(!keep && _visuals.TryGetValue(record.instanceId,out var visual))
+                {
+                    if(_selected==record)continue;
+                    if(_chests.TryGetValue(record.instanceId,out var stored))
+                    {
+                        _chests.Remove(record.instanceId);stored.Bind(null);_session.OnChestRemoved(stored);
+                    }
+                    visual.SetActive(false);
+                    if(visual!=chest.gameObject && visual!=restPoint.gameObject)Destroy(visual);
+                    _visuals.Remove(record.instanceId);
+                }
+            }
         }
 
         public bool BeginPlacement(string id)
@@ -325,7 +352,7 @@ namespace Topaz.Gameplay
             BuildCatalog.Entry entry = BuildCatalog.Find(_placingId).Value;
             if (!_session.TrySpendHomeMaterials(entry.Wood, entry.Stone, entry.Iron))
             {
-                _session.ShowHomeStatus("Not enough materials in the backpack and regional chests.");
+                _session.ShowHomeStatus("Not enough materials in the backpack and chests within 30 m.");
                 return;
             }
             var record = new StructureStateRecord
@@ -342,6 +369,7 @@ namespace Topaz.Gameplay
             _world.structures.Add(record);
             if (record.definitionId == BuildCatalog.Camp) _session.DiscoverCamp(record.instanceId);
             Show(record);
+            _session.RefreshBuiltGround(Position(record),Footprint(record.definitionId));
             _session.RebuildRegionNavigation();
             _session.RefreshHomeGatherables();
             string label = entry.Label;
@@ -355,6 +383,7 @@ namespace Topaz.Gameplay
             StructureStateRecord record = _selected;
             if (!_records.Remove(record)) return;
             _world.structures.Remove(record);
+            _session.RefreshBuiltGround(Position(record),Footprint(record.definitionId));
             if (record.definitionId == BuildCatalog.Camp) _session.ForgetCamp(record.instanceId);
             _selected = null;
             if (_chests.TryGetValue(record.instanceId, out StorageChest stored))
@@ -396,6 +425,8 @@ namespace Topaz.Gameplay
             if (id == BuildCatalog.Camp) return CreateCamp();
             if (id == BuildCatalog.Chest) return Instantiate(chest.gameObject, transform);
             if (id == BuildCatalog.Bedroll) return Instantiate(restPoint.gameObject, transform);
+            if (BuildingSettings.Current.VisualFor(id) != null)
+                return BuildVisuals.Create(id, transform, player.transform);
             if (id == BuildCatalog.Bed && bedTemplate != null)
                 return Instantiate(bedTemplate, transform);
             if (id == BuildCatalog.Table && tableTemplate != null)
@@ -411,7 +442,7 @@ namespace Topaz.Gameplay
             GameObject visual;
             if (record.definitionId == BuildCatalog.Chest)
             {
-                StorageChest instance = _chests.Count == 0 ? chest : Instantiate(chest, transform);
+                StorageChest instance = !chest.IsPlaced ? chest : Instantiate(chest, transform);
                 instance.Bind(record);
                 _chests.Add(record.instanceId, instance);
                 visual = instance.gameObject;
@@ -484,6 +515,9 @@ namespace Topaz.Gameplay
             }
             return result;
         }
+
+        public bool IsFloorCollider(Collider collider) => _records!=null && _records.Any(record=>
+            record.definitionId==BuildCatalog.Floor && _visuals.TryGetValue(record.instanceId,out var visual) && visual!=null && collider.transform.IsChildOf(visual.transform));
 
         public bool BlocksResource(Vector3 position, float radius) => _records != null &&
             _records.Any(record => record.definitionId != PathId &&

@@ -7,7 +7,7 @@ namespace Topaz.Generation.Editor
 {
     public static class WoodlandGenerationTools
     {
-        [Serializable] sealed class Report { public int version; public int firstSeed; public int regions; public double milliseconds; public string status; }
+        [Serializable] sealed class Report { public int version; public int firstSeed; public int worlds; public double milliseconds; public string status; }
         [MenuItem("Topaz/Generation/Validate Seed Batch")]
         public static void ValidateBatch()
         {
@@ -19,12 +19,11 @@ namespace Topaz.Generation.Editor
             }
             if(count<1||count>10000)throw new ArgumentOutOfRangeException(nameof(count));
             var watch=Stopwatch.StartNew();
-            for(int i=0;i<count;i++)foreach(string region in new[]{"home","expedition.clearing"})
-                WoodlandPlan.Generate(unchecked(seed+i),region,new WoodlandSettings()).Validate();
-            var report=new Report{version=WoodlandPlan.Version,firstSeed=seed,regions=count*2,milliseconds=watch.Elapsed.TotalMilliseconds,status="passed"};
+            for(int i=0;i<count;i++)new WildernessPlan(unchecked(seed+i)).Validate();
+            var report=new Report{version=WildernessPlan.Version,firstSeed=seed,worlds=count,milliseconds=watch.Elapsed.TotalMilliseconds,status="passed"};
             Directory.CreateDirectory("TestResults/Generation");
             File.WriteAllText("TestResults/Generation/seed-batch.json",JsonUtility.ToJson(report,true));
-            UnityEngine.Debug.Log("[Topaz] Validated "+report.regions+" generated regions in "+report.milliseconds.ToString("0")+" ms.");
+            UnityEngine.Debug.Log("[Topaz] Validated "+report.worlds+" generated worlds in "+report.milliseconds.ToString("0")+" ms.");
         }
     }
 }

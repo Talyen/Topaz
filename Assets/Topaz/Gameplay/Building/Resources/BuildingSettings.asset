@@ -19,5 +19,20 @@ MonoBehaviour:
   enemyClearance: 5
   campWood: 5
   campStone: 5
+  visuals:
+  - id: structure.home.table
+    prefab: {fileID: 8986853049951475195, guid: d373c5518e30f4249ac0bce67f1d215a, type: 3}
+  - id: structure.home.stone-floor
+    prefab: {fileID: 2530793905017398337, guid: 2a0e224442eb04c739f60012b3c2a7cc, type: 3}
+  - id: structure.home.timber-wall
+    prefab: {fileID: 1617181849805476278, guid: c9a043749fc2b4cbb8c811f6fd407803, type: 3}
+  - id: structure.home.roof
+    prefab: {fileID: 1547112847730568820, guid: db114bd22967a4e6aa04d8c5ca9a0d17, type: 3}
+  - id: structure.campfire
+    prefab: {fileID: 1580202360666742853, guid: 2cb32e4b9430547c5be5bc41d39e6f25, type: 3}
+  - id: structure.home.bed
+    prefab: {fileID: 7761908046186314993, guid: f8a9cd08981cf4b86a7f490b028303ba, type: 3}
+  - id: structure.home.timber-doorway
+    prefab: {fileID: 1677667503669732943, guid: fcfcf04885e804ba6b0955d79e37dea6, type: 3}
   surfaceMaterial: {fileID: 2100000, guid: c5dab6fa608b84ec28d4b5e060652df9, type: 2}
   emberMaterial: {fileID: 2100000, guid: 18ddcefeda8934c718aaf55042e80990, type: 2}

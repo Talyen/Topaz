@@ -26,8 +26,12 @@ namespace Topaz.Gameplay
         }
         void MoveRecord(StructureStateRecord record, Vector3 position, int turns)
         {
+            var previous=Position(record);
             record.x=position.x-Origin.x; record.y=position.y-Origin.y; record.z=position.z-Origin.z;
             record.quarterTurns=turns;
+            _session.InvalidateStorageIndex();
+            _session.RefreshBuiltGround(previous,Footprint(record.definitionId));
+            _session.RefreshBuiltGround(position,Footprint(record.definitionId));
             if (_visuals.TryGetValue(record.instanceId,out var visual))
                 visual.transform.SetPositionAndRotation(position,Quaternion.Euler(0,turns*90,0));
             _session.RefreshHomeGatherables();
@@ -59,17 +63,14 @@ namespace Topaz.Gameplay
         }
         bool TerrainAllows(string id, Vector3 position, float radius, StructureStateRecord moving)
         {
-            if (region == null || region.Plan == null) return false;
+            if (region == null || region.Wilderness == null || !region.Streaming.IsReadyAt(position)) return false;
             var settings = BuildingSettings.Current;
             Vector3 local = position - Origin;
-            var p = new WoodlandPlan.Point(local.x, local.z);
-            float extent = region.Plan.Settings.size / 2 - radius - 2;
+            float extent = WildernessPlan.HalfSize - radius - 8;
             if (Mathf.Abs(local.x) > extent || Mathf.Abs(local.z) > extent) return false;
             float reserved = id == BuildCatalog.Camp ? settings.campRadius + settings.enemyClearance : radius + 2;
-            if (region.Plan.DistanceToRoute(p) < (id == BuildCatalog.Camp ? settings.campRadius + 1.5f : radius + 1.5f) ||
-                HorizontalDistance(local, region.Plan.Entry) < reserved ||
-                HorizontalDistance(local, region.Plan.Exit) < reserved ||
-                (RegionId != TopazSaveData.HomeRegion && HorizontalDistance(local, region.Plan.Encounter) < reserved + 6)) return false;
+            foreach (var site in region.Wilderness.Discoveries)
+                if (Vector2.Distance(new Vector2(local.x,local.z),new Vector2(site.X,site.Z)) < reserved + 9) return false;
             bool supported = id != BuildCatalog.Floor && id != BuildCatalog.Camp && _records.Any(r =>
                 r != moving && r.definitionId == BuildCatalog.Floor &&
                 Mathf.Abs(Position(r).x-position.x) <= .8f && Mathf.Abs(Position(r).z-position.z) <= .8f);
@@ -97,10 +98,10 @@ namespace Topaz.Gameplay
             }
             return true;
         }
-        static float HorizontalDistance(Vector3 local, WoodlandPlan.Point point) =>
-            Vector2.Distance(new Vector2(local.x,local.z),new Vector2(point.x,point.z));
         GameObject CreateCamp()
         {
+            var prefab=BuildingSettings.Current.VisualFor(BuildCatalog.Camp);
+            if(prefab!=null)return Instantiate(prefab,transform,false);
             var go = new GameObject("Campfire");
             go.transform.SetParent(transform, false);
             for (int i=0;i<8;i++)

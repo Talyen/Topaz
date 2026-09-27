@@ -11,6 +11,13 @@ namespace Topaz.Gameplay
         [Min(0)] public float enemyClearance = 5f;
         [Min(0)] public int campWood = 5;
         [Min(0)] public int campStone = 5;
+        [System.Serializable] public struct VisualEntry { public string id; public GameObject prefab; }
+        public VisualEntry[] visuals = System.Array.Empty<VisualEntry>();
+        public GameObject VisualFor(string id)
+        {
+            foreach(var entry in visuals) if(entry.id==id) return entry.prefab;
+            return null;
+        }
         public Material surfaceMaterial;
         public Material emberMaterial;
         static BuildingSettings current;

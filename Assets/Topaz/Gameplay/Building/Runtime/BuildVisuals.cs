@@ -7,6 +7,13 @@ namespace Topaz.Gameplay
     {
         public static GameObject Create(string id, Transform parent, Transform player)
         {
+            var prefab = BuildingSettings.Current.VisualFor(id);
+            if (prefab != null)
+            {
+                var instance = Object.Instantiate(prefab, parent, false);
+                instance.GetComponent<BuildingVisualBinding>()?.Bind(player);
+                return instance;
+            }
             var root = new GameObject(id);
             root.transform.SetParent(parent, false);
             if (id == BuildCatalog.Floor)

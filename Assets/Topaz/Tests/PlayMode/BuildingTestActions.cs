@@ -13,12 +13,13 @@ namespace Topaz.Tests
             var builder=(Component)Field(session,"homeBuilds");
             Assert.That((bool)session.GetType().GetMethod("BeginHomeBuild").Invoke(session,new object[]{id}),Is.True);
             Assert.That(((GameObject)Field(builder,"_preview")).GetComponentsInChildren<Renderer>().Length,Is.GreaterThan(0),"Placement needs a visible ghost.");
-            Vector3 origin=(Vector3)builder.GetType().GetProperty("Origin",Private).GetValue(builder);
+            Vector3 origin=session.transform.position;
             var can=builder.GetType().GetMethod("CanPlace",Private);
             var height=builder.GetType().GetMethod("PlacementHeight",Private);
-            for(float z=-48;z<=48;z+=1.5f) for(float x=-48;x<=48;x+=1.5f)
+            for(float radius=3;radius<=48;radius+=1.5f) for(int step=0;step<32;step++)
             {
-                Vector3 p=origin+new Vector3(x,0,z);
+                float angle=step*Mathf.PI/16;
+                Vector3 p=origin+new Vector3(Mathf.Cos(angle)*radius,0,Mathf.Sin(angle)*radius);
                 p.y=(float)height.Invoke(builder,new object[]{p,id});
                 if(!(bool)can.Invoke(builder,new object[]{id,p,0,null}))continue;
                 builder.GetType().GetField("_position",Private).SetValue(builder,p);

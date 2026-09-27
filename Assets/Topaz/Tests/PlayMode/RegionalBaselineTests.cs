@@ -17,32 +17,35 @@ namespace Topaz.Tests
         static void Give(Component s,int wood,int stone=0)
         {var pack=Get(s,"_backpack");Call(pack,"Add",Get(s,"WoodItem"),wood);Call(pack,"Add",Get(s,"StoneItem"),stone);}
         [UnityTest]
-        public IEnumerator OutdoorStructuresKeepRegionHeightAndIndependentStorageAfterTravel()
+        public IEnumerator OutdoorStructuresKeepWorldHeightAndSpatialStorageAfterTravel()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return null;
             var player=GameObject.Find("Player");var s=player.GetComponent("WorldSession");
             Give(s,20);var home=BuildingTestActions.Place(s,"structure.storage_chest");
             var chest=((IEnumerable)Get(Get(s,"homeBuilds"),"Chests")).Cast<object>().Single();
             Call(Get(chest,"Inventory"),"Add",Get(s,"WoodItem"),17);
+            int carried=(int)Get(s,"WoodCount");
             yield return TopazTestTravel.EnterWoodland(player);
-            Assert.That(Get(s,"HomeWoodCount"),Is.EqualTo(17),"Only the carried Wood is available in the other region.");
+            Assert.That(Get(s,"HomeWoodCount"),Is.EqualTo(carried),"Distant saved storage must not fund construction.");
             var away=BuildingTestActions.Place(s,"structure.storage_chest");
             var records=Records(s).Where(r=>(string)Get(r,"definitionId")=="structure.storage_chest").ToArray();
             Assert.That(records.Length,Is.EqualTo(2));
-            Assert.That(records.Select(r=>(string)Get(r,"regionId")).Distinct().Count(),Is.EqualTo(2));
+            Assert.That(records.Select(r=>(string)Get(r,"regionId")).Distinct().Count(),Is.EqualTo(1));
             Assert.That((float)Get(records[1],"y"),Is.EqualTo(away.y).Within(.01f));
             Call(s,"FlushCurrent");
             var repo=Get(s,"_repository");var loaded=Call(repo,"Load");
             var worlds=(IEnumerable)Get(loaded,"worlds");
             Assert.That(((IEnumerable)Get(worlds.Cast<object>().Single(),"structures")).Cast<object>().Count(r=>(string)Get(r,"definitionId")=="structure.storage_chest"),Is.EqualTo(2));
-            yield return (IEnumerator)Call(s,"ReturnHome");
-            Assert.That(((IEnumerable)Get(Get(s,"homeBuilds"),"Chests")).Cast<object>().Count(),Is.EqualTo(1));
-            Assert.That(Get(s,"HomeWoodCount"),Is.EqualTo(31));
+            yield return (IEnumerator)Call(s,"FastTravel",((IEnumerable)Get(s,"TravelDestinations")).Cast<object>().Single(d=>(string)Get(d,"stableId")=="campfire.home"));
+            Assert.That(((IEnumerable)Get(Get(s,"homeBuilds"),"Chests")).Cast<object>().Any(),Is.True);
+            Assert.That(Get(s,"HomeWoodCount"),Is.EqualTo((int)Get(s,"WoodCount")+17));
         }
         [UnityTest]
         public IEnumerator BuiltCampIsDiscoveredProtectsTravelsRecoversAndRemovalRepairsVisits()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return null;
             var player=GameObject.Find("Player");var s=player.GetComponent("WorldSession");
             Give(s,20,20);yield return TopazTestTravel.EnterWoodland(player);
             Vector3 position=BuildingTestActions.Place(s,"structure.campfire");yield return null;
@@ -56,10 +59,10 @@ namespace Topaz.Tests
             Assert.That(safety.GetMethod("IsProtected").Invoke(null,new object[]{position}),Is.True);
             var vitality=player.GetComponent("PlayerVitality");
             Assert.That(Call(vitality,"TryTakeDamage",100),Is.False);
-            yield return (IEnumerator)Call(s,"ReturnHome");
+            yield return (IEnumerator)Call(s,"FastTravel",((IEnumerable)Get(s,"TravelDestinations")).Cast<object>().Single(d=>(string)Get(d,"stableId")=="campfire.home"));
             var destination=((IEnumerable)Get(s,"TravelDestinations")).Cast<object>().Single(d=>(string)Get(d,"stableId")==id);
             yield return (IEnumerator)Call(s,"FastTravel",destination);
-            Assert.That(Get(s,"CurrentRegionId"),Is.EqualTo("expedition.clearing"));
+            Assert.That(Get(s,"CurrentRegionId"),Is.EqualTo("wilderness"));
             Assert.That(Vector3.Distance(player.transform.position,position),Is.LessThan(3));
             double before=(double)Get(s,"WorldHours");
             Assert.That(Call(s,"RecoverAfterDefeat",vitality),Is.True);
@@ -74,18 +77,19 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator UnavailableCampDestinationRestoresCurrentRegionAndStructures()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return null;
             var player=GameObject.Find("Player");var session=player.GetComponent("WorldSession");
             Give(session,6);yield return TopazTestTravel.EnterWoodland(player);
             BuildingTestActions.Place(session,"structure.storage_chest");
             var type=Type.GetType("Topaz.Gameplay.CampfireTravelCatalog+Destination, Assembly-CSharp",true);
             var target=Activator.CreateInstance(type);
             type.GetField("stableId").SetValue(target,"missing-camp");
-            type.GetField("regionId").SetValue(target,"home");
+            type.GetField("regionId").SetValue(target,"wilderness");
             type.GetField("sceneName").SetValue(target,"Bootstrap");
             var position=player.transform.position;
             yield return (IEnumerator)Call(session,"FastTravel",target);
-            Assert.That(Get(session,"CurrentRegionId"),Is.EqualTo("expedition.clearing"));
+            Assert.That(Get(session,"CurrentRegionId"),Is.EqualTo("wilderness"));
             Assert.That(Get(session,"BlockMovement"),Is.False);
             Assert.That(Vector3.Distance(player.transform.position,position),Is.LessThan(.3f));
             Assert.That(((IEnumerable)Get(Get(session,"homeBuilds"),"Chests")).Cast<object>().Count(),Is.EqualTo(1));
@@ -93,10 +97,11 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator OverlappingProtectionBlocksMeleeSpellAndBoltWithoutAwardingDamage()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return null;
             var player=GameObject.Find("Player");var session=player.GetComponent("WorldSession");
             yield return TopazTestTravel.EnterWoodland(player);
-            var enemy=GameObject.Find("Scout A").GetComponent("EnemyCombatant");
+            var enemy=TopazTestTravel.Scout().GetComponent("EnemyCombatant");
             ((Behaviour)enemy).enabled=false;
             enemy.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled=false;
             Vector3 center=enemy.transform.position;

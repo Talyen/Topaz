@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b97ebd01eff6b4c7899d393df91efdfe, type: 3}
   m_Name: TopazUiTheme
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.UI.TopazUiTheme
-  backdrop: {r: 0.09019608, g: 0.07450981, b: 0.07058824, a: 1}
-  panel: {r: 0.16078432, g: 0.12941177, b: 0.11372549, a: 1}
-  raised: {r: 0.19215687, g: 0.14509805, b: 0.11764706, a: 1}
+  backdrop: {r: 0.078431375, g: 0.1254902, b: 0.105882354, a: 1}
+  panel: {r: 0.10980392, g: 0.16862746, b: 0.13333334, a: 1}
+  raised: {r: 0.14901961, g: 0.21568628, b: 0.16862746, a: 1}
   text: {r: 1, g: 0.94509804, b: 0.84705883, a: 1}
   mutedText: {r: 0.8784314, g: 0.7764706, b: 0.6392157, a: 1}
   copper: {r: 0.9372549, g: 0.78039217, b: 0.5176471, a: 1}

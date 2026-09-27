@@ -18,6 +18,7 @@ namespace Topaz.Tests
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             Component menus = GameObject.Find("Loop HUD").GetComponent("GameMenus");
@@ -41,6 +42,7 @@ namespace Topaz.Tests
         public IEnumerator TitleAndOptionsPanelsAreWired()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -57,6 +59,7 @@ namespace Topaz.Tests
         public IEnumerator TitleUsesTheCampfireCameraAndGameRestoresTheWorldCamera()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -78,6 +81,7 @@ namespace Topaz.Tests
         public IEnumerator GraphicsMenuTemporarilyReplacesOptionsCard()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -100,6 +104,7 @@ namespace Topaz.Tests
         public IEnumerator UiScaleCyclesThroughThreeSizesAndKeepsOptionsFocus()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -128,6 +133,7 @@ namespace Topaz.Tests
         public IEnumerator LargeUiScaleKeepsTheJournalInsideTheCanvas()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -166,6 +172,7 @@ namespace Topaz.Tests
         public IEnumerator LargeUiScaleKeepsTitleAndOptionsControlsReachable()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -191,6 +198,7 @@ namespace Topaz.Tests
         public IEnumerator EquipmentSlotsStayOnTheirJournalPageAtLargeScale()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             hud.GetComponent("GameMenus").GetType().GetMethod("SetUiScaleIndex")
@@ -215,6 +223,7 @@ namespace Topaz.Tests
         public IEnumerator LargeUiScaleKeepsGraphicsAndCharacterSelectionVisible()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -257,6 +266,7 @@ namespace Topaz.Tests
         public IEnumerator BackpackOpenedFromPauseReturnsToPauseWhenClosed()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -278,6 +288,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -299,6 +310,7 @@ namespace Topaz.Tests
         public IEnumerator CharacterDeletionRequiresConfirmationAndClearsContinuePair()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -336,6 +348,7 @@ namespace Topaz.Tests
         public IEnumerator WorldDeletionRequiresConfirmationAndKeepsCharacter()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -363,6 +376,7 @@ namespace Topaz.Tests
         public IEnumerator PlayCanCreateKnightInFreshWorldAndReturnToOriginalPair()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -457,6 +471,7 @@ namespace Topaz.Tests
         public IEnumerator BackFromDraftDoesNotCreateCharacterOrWorld()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -487,6 +502,7 @@ namespace Topaz.Tests
         public IEnumerator EveryOfferedLookHasAPlayableBodyAndLivePreview()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component appearance = GameObject.Find("Player").GetComponent("PlayerAppearance");
             Component menus = GameObject.Find("Loop HUD").GetComponent("GameMenus");
@@ -516,6 +532,7 @@ namespace Topaz.Tests
         public IEnumerator PreviewStaysOnChosenLookWhilePointerMovesAndModelRotates()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -563,7 +580,8 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator JournalTabsDoNotOverlapAndEquipmentRemainsReachable()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return null;
             var hud=GameObject.Find("Loop HUD").GetComponent("LoopHud");
             hud.GetType().GetMethod("ToggleInventoryPanel").Invoke(hud,null);yield return null;
             var flags=BindingFlags.Instance|BindingFlags.NonPublic;

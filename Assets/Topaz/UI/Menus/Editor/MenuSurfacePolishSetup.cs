@@ -16,8 +16,8 @@ namespace Topaz.Editor
         const string ScenePath = "Assets/Topaz/World/Scenes/Bootstrap.unity";
         const string ThemePath = "Assets/Topaz/UI/Themes/TopazUiTheme.asset";
         const string ButtonPrefabPath = "Assets/Topaz/UI/Prefabs/ActionButton.prefab";
-        static readonly Color Dark = new Color32(23, 19, 18, 255);
-        static readonly Color Row = new Color32(49, 37, 30, 255);
+        static readonly Color Dark = new Color32(20, 32, 27, 255);
+        static readonly Color Row = new Color32(38, 55, 43, 255);
         static readonly Color Ivory = new Color32(255, 241, 216, 255);
         static readonly Color Supporting = new Color32(224, 198, 163, 255);
         static readonly Color Brass = new Color32(239, 199, 132, 255);
@@ -250,7 +250,7 @@ namespace Topaz.Editor
             if (theme == null) throw new System.InvalidOperationException("UI theme is missing.");
             var data = new SerializedObject(theme);
             ColorField(data, "backdrop", Dark);
-            ColorField(data, "panel", new Color32(41, 33, 29, 255));
+            ColorField(data, "panel", new Color32(28, 43, 34, 255));
             ColorField(data, "raised", Row);
             ColorField(data, "text", Ivory);
             ColorField(data, "mutedText", Supporting);

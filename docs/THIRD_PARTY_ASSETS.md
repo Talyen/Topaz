@@ -76,3 +76,49 @@ The former CC0 KayKit imports, derived animation clips, tracked art archive and 
 ## Unity graph authoring templates
 
 The generated VFX and Shader Graph assets begin with Unity 17.6 package templates (Simple Loop/Burst and Lit Basic), adapted for Topaz. Package templates are governed by their included Unity Companion License. Topaz-specific HLSL and gameplay adapters are authored in this repository. No sample audio is imported or substituted for the existing sound library.
+
+## Synty POLYGON Starter Pack 1.2.1 — private dependency
+
+Acquired through Unity Package Manager on 2026-09-26, product 156819. Standard Unity Asset Store EULA; raw files are ignored under `Assets/Synty/`. Selected files, source and license evidence, restore workflow and presentation changes are recorded in [SYNTY_SAMPLE.md](SYNTY_SAMPLE.md) and `scripts/synty-starter-files.json`. Original downloads and all existing audio archives remain preserved.
+
+## Storybook wilderness additions (2026-09-26)
+
+- Synty POLYGON Starter 1.2.1: expanded the selected dependency closure to natural
+  environment, modular base, and camp props. Original archive unchanged; private
+  source files and hashes are in `scripts/synty-starter-files.json`.
+- [FREE Starter Pack - Sidekick Modular Characters by Synty](https://assetstore.unity.com/packages/3d/characters/free-starter-pack-sidekick-modular-characters-by-synty-336970),
+  owned version 1.0.4, Standard Unity Asset Store EULA. Selected baked characters
+  and dependencies only; no vendor editor/runtime scripts. Private under Assets/Synty.
+- Kevin Iglesias Human Basic Motions FREE 2.4.2 and Human Crafting Animations FREE:
+  account-owned downloads, animation-only dependencies. The publisher's
+  [license statement](https://keviniglesias.com/assets/dwarfMeleeAnimationsFREE.html)
+  applies the Standard Unity Asset Store EULA to all animation packs, including free
+  versions. Public raw redistribution is prohibited; sources remain ignored under
+  Assets/Kevin Iglesias. Attribution is appreciated, not required.
+- `scripts/storybook-assets.json` records exact imported files, versions and hashes;
+  restore using `python3 scripts/restore-storybook-assets.py` after account download.
+
+## KayKit motion reused for Storybook
+
+The owner-approved flexible-motion scope reuses **animation only** from the preserved
+KayKit Character Animations 1.1 download. Its included License.txt explicitly grants
+CC0 use, including commercial use and redistribution. Source:
+https://kaylousberg.itch.io/kaykit-animations . The selected Rig_Medium CombatMelee,
+CombatRanged, MovementAdvanced, Tools and General FBXs and original license are under
+Assets/ThirdParty/KayKitMotion. No KayKit visible characters or environment art are used.
+Topaz configures humanoid retargeting in Unity; original source archives remain intact.
+
+Storybook sound uses the existing private Sonniss library: Tovusound grass footsteps,
+Studio 23 gravel footsteps, Mindful Audio woodland birds and Soundopolis forest wind.
+`Topaz/Audio/Configure Storybook Sound` derives short normalized/faded footstep clips
+using Unity's audio decoder, records original hashes and sample ranges in the private
+`Assets/ThirdParty/Sonniss/Derived/Storybook/SOURCE.md`, and streams the ambience beds.
+Original WAV files and all source archives remain unchanged. The existing Sonniss
+license applies; derived audio remains excluded from public source redistribution.
+
+The validated humanoid `Hit_A` and `Death_A` clips are now saved as standalone CC0
+`.anim` assets under Assets/Topaz/Characters/Animation/Clips. Their original General
+FBX remains in LocalSourceArchives; removing its redundant imported copy avoids
+import-time assertions from unsupported source tracks. The used curves passed the
+finite-value regression before export. Other selected KayKit motion FBXs remain
+imported with only the clips required by the controllers enabled.

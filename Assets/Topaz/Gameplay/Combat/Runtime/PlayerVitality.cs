@@ -14,9 +14,7 @@ namespace Topaz.Combat
 
         CharacterController _controller;
         WorldSession _session;
-        bool _wasAtHome;
         float _protectedUntil;
-        bool _preserveHealthOnHomeArrival;
 
         public int CurrentHealth { get; private set; }
         public int MaximumHealth => maximumHealth;
@@ -28,16 +26,6 @@ namespace Topaz.Combat
             _session = GetComponent<WorldSession>();
             CurrentHealth = maximumHealth;
             LastDamageTime = -1000f;
-            _wasAtHome = _session?.IsAtHome == true;
-        }
-
-        void Update()
-        {
-            bool atHome = _session?.IsAtHome == true;
-            if (atHome && !_wasAtHome && !_preserveHealthOnHomeArrival)
-                CurrentHealth = maximumHealth;
-            if (atHome) _preserveHealthOnHomeArrival = false;
-            _wasAtHome = atHome;
         }
 
         public bool TryTakeDamage(int amount) => TryTakeDirectedDamage(amount, Vector3.zero, null);
@@ -56,8 +44,7 @@ namespace Topaz.Combat
             if (CampSafety.BlocksAttack(attackerPosition == Vector3.zero ? transform.position : attackerPosition, transform.position) || amount <= 0 || CurrentHealth == 0 || Time.time < _protectedUntil ||
                 (_session?.IsFastTraveling == true || _session?.IsTravelMenuOpen == true ||
                  _session?.IsResting == true) ||
-                movement == null || movement.IsInvulnerable ||
-                _session?.IsAtHome == true) return false;
+                movement == null || movement.IsInvulnerable) return false;
 
             PlayerCombat combat = GetComponent<PlayerCombat>();
             if (attacker != null && combat != null && combat.TryBlock(attackerPosition))
@@ -89,7 +76,6 @@ namespace Topaz.Combat
         {
             GetComponent<PlayerCombat>()?.ClearTemporaryProgression();
             CurrentHealth = maximumHealth;
-            _wasAtHome = _session?.IsAtHome == true;
             _protectedUntil = Time.time + 1f;
         }
 
@@ -99,7 +85,7 @@ namespace Topaz.Combat
             _protectedUntil = Time.time + 1f;
         }
 
-        public void PreserveHealthOnHomeArrival() => _preserveHealthOnHomeArrival = true;
+        public void PreserveHealthOnHomeArrival() { }
 
         void ReturnHome()
         {

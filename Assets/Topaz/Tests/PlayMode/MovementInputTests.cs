@@ -14,6 +14,7 @@ namespace Topaz.Tests
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return new WaitForSeconds(0.1f);
 
             GameObject player = GameObject.Find("Player");
@@ -38,6 +39,7 @@ namespace Topaz.Tests
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
@@ -61,6 +63,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
@@ -86,6 +89,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             Animator animator = GameObject.Find("Player").GetComponentInChildren<Animator>();
@@ -104,6 +108,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             Component player = GameObject.Find("Player").GetComponent("PlayerController");
@@ -131,6 +136,7 @@ namespace Topaz.Tests
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");

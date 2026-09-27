@@ -16,8 +16,8 @@ namespace Topaz.Player
         [SerializeField] float stickSensitivity = 140;
         [SerializeField] bool invertY;
         [SerializeField] float minimumZoom = 2;
-        [SerializeField] float maximumZoom = 7;
-        float distance = 4.5f, yaw, pitch = 22;
+        [SerializeField] float maximumZoom = 9;
+        float distance = 6.5f, yaw, pitch = 14;
         Transform pivot;
         CinemachineCamera rig;
         CinemachineThirdPersonFollow follow;
@@ -41,7 +41,7 @@ namespace Topaz.Player
         void Awake()
         {
             if (target == null || controls == null) { enabled=false; return; }
-            var camera = GetComponent<Camera>(); camera.orthographic=false; camera.fieldOfView=60; camera.nearClipPlane=.1f; camera.farClipPlane=250;
+            var camera = GetComponent<Camera>(); camera.orthographic=false; camera.fieldOfView=58; camera.nearClipPlane=.1f; camera.farClipPlane=900;
             if (!TryGetComponent<CinemachineBrain>(out _)) gameObject.AddComponent<CinemachineBrain>();
             session = target.GetComponent<WorldSession>();
             var map = controls.FindActionMap("Player", true);
@@ -51,9 +51,9 @@ namespace Topaz.Player
             invertY=PlayerPrefs.GetInt("Camera.InvertY",0)!=0;
             pivot = new GameObject("Camera Aim Pivot").transform;
             rig = new GameObject("Third Person Camera").AddComponent<CinemachineCamera>();
-            rig.Follow=pivot; rig.Lens.FieldOfView=60;
+            rig.Follow=pivot; rig.Lens.FieldOfView=58;
             follow=rig.gameObject.AddComponent<CinemachineThirdPersonFollow>();
-            follow.ShoulderOffset=new Vector3(.45f,0,0); follow.VerticalArmLength=0; follow.CameraSide=1;
+            follow.ShoulderOffset=new Vector3(.35f,0,0); follow.VerticalArmLength=0; follow.CameraSide=1;
             follow.Damping=new Vector3(.1f,.1f,.1f);
             follow.AvoidObstacles=new CinemachineThirdPersonFollow.ObstacleSettings { Enabled=true, CollisionFilter=~(1<<2), IgnoreTag="Player", CameraRadius=.2f, DampingIntoCollision=0, DampingFromCollision=.2f };
             UpdatePivot();

@@ -13,15 +13,41 @@ MonoBehaviour:
   m_Name: Woodland
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.Generation.WoodlandPreset
   settings:
-    version: 1
-    resolution: 129
+    version: 2
+    resolution: 65
     size: 128
-    relief: 9
-    decorationCount: 170
-  grass: {fileID: 8574412962073106934, guid: e83e5b2c03473f74983ef0f5b9c160c0, type: 2}
-  path: {fileID: 8574412962073106934, guid: ffb94bff813c3c041b5c22cc023fb25e, type: 2}
-  terrainMaterial: {fileID: 2100000, guid: 95ed1a2cc65eb4847b859cb4f9f5be66, type: 2}
-  treeVisual: {fileID: 8289089701760591095, guid: 6a97e69475c5a41b59cf9eb5412352a0, type: 3}
-  rockVisual: {fileID: 6310605541842451183, guid: 11074cdaf98ff40f9b3096aef5a08e13, type: 3}
-  treeVariant: {fileID: 7098139946484995242, guid: 249f72f4c521943a28ceaf20dab0034d, type: 3}
-  detail: {fileID: 398929321252300881, guid: 4e6885e0d11bd224fa27617a4657c329, type: 3}
+    relief: 13
+    decorationCount: 560
+  grass: {fileID: 8574412962073106934, guid: 9bb8f1c281bf4418281a3f99cef60d58, type: 2}
+  path: {fileID: 8574412962073106934, guid: 908c9aa0630e44d88b400a7e6eec7fde, type: 2}
+  rockLayer: {fileID: 8574412962073106934, guid: b546ef41285e44c67a88614f09ce4bc8, type: 2}
+  forestLayer: {fileID: 8574412962073106934, guid: b28f705abc62841d19a5b3c0253ca8e0, type: 2}
+  distantMaterial: {fileID: 2100000, guid: a4d2114ea14ef4aca9c43aa7614400e0, type: 2}
+  trees:
+  - {fileID: 835550654800859958, guid: 2ae1d8901443e429697f6d230e5ae06b, type: 3}
+  - {fileID: 6227791589494779584, guid: ec49649445f90490381a5e6e7427440a, type: 3}
+  - {fileID: 3012380642336582535, guid: 8f31d3198d00f424b93d0ac74a74ea38, type: 3}
+  - {fileID: 2068827974591931629, guid: e656186de85f14c78bccbc4c9bac359b, type: 3}
+  - {fileID: 8080424910602766967, guid: 3737df40244ea4e658da4e2b3ee1d702, type: 3}
+  rocks:
+  - {fileID: 5022091010394590963, guid: 3f6b6169af4ed455dbfc706099e8e331, type: 3}
+  - {fileID: 565394168084077101, guid: 14ae24c2970d54e02948c20d22a19997, type: 3}
+  - {fileID: 8820056103899385487, guid: 96ad828a5a48444138a7ceab21d18389, type: 3}
+  undergrowth:
+  - {fileID: 3834310259915888531, guid: 6fe6d993e855f4f2991b584949cee8a4, type: 3}
+  - {fileID: 6168463711117121936, guid: cf5867c9f9a694abd8d9815592812fcf, type: 3}
+  - {fileID: 8618261082863526011, guid: f137e131a2ea947569fb6e96ba08e7f8, type: 3}
+  - {fileID: 6484899192440205495, guid: 7aa1278ec95104e7fbf8c076d99746e8, type: 3}
+  discoveryCache: {fileID: 1600480940528917322, guid: b77e3dab04e9c473eb14ada366b41158, type: 3}
+  discoveries:
+  - {fileID: 7069491063704433567, guid: 0b8a290f246834c36931d84e9d1aae1f, type: 3}
+  - {fileID: 7443173758583403981, guid: f8d8575ba38624cbe9bfcd6e7e0a7648, type: 3}
+  - {fileID: 7649265448815151388, guid: 4091db25f01bd49c28fc99d9c31b9568, type: 3}
+  enemies:
+  - {fileID: 5826282059846889464, guid: 3ff0b1af964524764bb00095a340f7da, type: 3}
+  - {fileID: 7220008274385331759, guid: 9420585507e3848f7a4cf44f1379d33c, type: 3}
+  terrainMaterial: {fileID: 2100000, guid: 480dee5c884ca43019337d92bd802d21, type: 2}
+  treeVisual: {fileID: 2068827974591931629, guid: e656186de85f14c78bccbc4c9bac359b, type: 3}
+  rockVisual: {fileID: 5022091010394590963, guid: 3f6b6169af4ed455dbfc706099e8e331, type: 3}
+  treeVariant: {fileID: 8080424910602766967, guid: 3737df40244ea4e658da4e2b3ee1d702, type: 3}
+  detail: {fileID: 6809944013612058936, guid: a4037385712174cf9972975a24442b42, type: 3}

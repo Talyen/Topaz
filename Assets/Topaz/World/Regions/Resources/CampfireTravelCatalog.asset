@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.LoopStudy.CampfireTravelCatalog
   destinations:
   - stableId: campfire.home
-    regionId: home
+    regionId: wilderness
     sceneName: Bootstrap
-    label: Home
-  - stableId: campfire.expedition.clearing
-    regionId: expedition.clearing
-    sceneName: Woodland
-    label: Woodland
+    label: First Hearth

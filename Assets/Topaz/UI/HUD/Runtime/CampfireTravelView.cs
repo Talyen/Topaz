@@ -158,7 +158,9 @@ namespace Topaz.Gameplay
                         ? "  •  Here" : ""), 31f,
                     new Vector2(25f, 0f), new Vector2(520f, 80f), Ivory,
                     TextAlignmentOptions.Left);
-                iconImage.enabled = false;
+                iconImage.enabled = true;
+                label.rectTransform.anchoredPosition=new Vector2(75f,0);
+                label.rectTransform.sizeDelta=new Vector2(470,80);
                 bool current = destination.stableId == _session.CurrentCampfireId;
                 if (current)
                 {
@@ -263,6 +265,7 @@ namespace Topaz.Gameplay
             outline.effectDistance = new Vector2(2f, -2f);
             outline.enabled = false;
             rect.gameObject.AddComponent<TopazFocusIndicator>();
+            JournalInk.Apply(button);
             return button;
         }
 
@@ -273,7 +276,7 @@ namespace Topaz.Gameplay
             rect.anchoredPosition = position;
             var label = rect.gameObject.AddComponent<TextMeshProUGUI>();
             label.text = value;
-            label.font = _font;
+            label.font = size>=45 ? GetComponent<LoopHud>().JournalHeadingFont??_font : _font;
             label.fontSize = size;
             label.color = color;
             label.alignment = alignment;

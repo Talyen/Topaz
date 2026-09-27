@@ -1,4 +1,13 @@
-# Procedural woodland foundation
+# Continuous Storybook wilderness
+
+The active implementation now uses a 1024 m continuous wilderness, 128 m chunks,
+Unity Terrain, URP, and a local asynchronous AI Navigation surface. See
+[implementation/evidence ledger](STORYBOOK_IMPLEMENTATION.md), [baseline](BASELINE.md)
+and [architecture](ARCHITECTURE.md). The former two-region description below is
+historical context while its remaining test/settings adapters are retired; it is
+not the current player-facing world contract.
+
+# Previous procedural woodland foundation
 
 Topaz uses Unity 6000.6.2f1, URP 17.6, VFX Graph 17.6, Cinemachine 6.6,
 Input System 1.20, and AI Navigation 2.0.14. HDRP was evaluated and removed.
@@ -51,7 +60,11 @@ particle capacity and explicit bounds. Shader Graph templates expose wetness, wi
 emission and dissolve controls; the graph authoring adapter is pinned to Unity 17.6
 and should be revalidated when upgrading packages.
 
-## Private art dependency
+## Current Synty review sample
+
+The active preset now uses the owned Synty Starter Pack subset and matte Topaz terrain layers. See [sample inventory and restore instructions](SYNTY_SAMPLE.md). The Unity Terrain Sample below is preserved as a retired source dependency; it is no longer the active woodland binding. Procedural layout and save contracts are unchanged.
+
+## Previous private art dependency
 
 The account-owned Unity URP Terrain Sample (product 213197, downloaded version 1.0.3)
 is licensed under the standard Asset Store EULA according to its included

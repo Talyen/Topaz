@@ -15,6 +15,7 @@ namespace Topaz.Tests
         public IEnumerator AudioTabChangesSourcesPersistsValuesAndMutesInBackground()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject canvas = GameObject.Find("Loop HUD");
             Component preferences = canvas.GetComponent("TopazAudioSettings");

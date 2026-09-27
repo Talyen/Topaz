@@ -15,6 +15,7 @@ namespace Topaz.Tests
         public IEnumerator EnemyIsOnBakedNavigationAndHomeBlocksDamage()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
@@ -25,7 +26,7 @@ namespace Topaz.Tests
             Assert.That(damaged, Is.False, "The player starts in the safe homestead.");
             Assert.That(Health(vitality), Is.EqualTo(6));
             yield return TopazTestTravel.EnterWoodland(player);
-            Assert.That(GameObject.Find("Scout A").GetComponent<NavMeshAgent>().isOnNavMesh,
+            Assert.That(TopazTestTravel.Scout().GetComponent<NavMeshAgent>().isOnNavMesh,
                 Is.True);
         }
 
@@ -33,11 +34,12 @@ namespace Topaz.Tests
         public IEnumerator EnemyFindsPathWhenPlayerLeavesHome()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
             yield return TopazTestTravel.EnterWoodland(player);
-            GameObject enemy = GameObject.Find("Scout A");
+            GameObject enemy = TopazTestTravel.Scout();
             Assert.That(enemy, Is.Not.Null);
             Assert.That(player, Is.Not.Null);
             NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
@@ -54,11 +56,12 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
             yield return TopazTestTravel.EnterWoodland(player);
-            GameObject enemy = GameObject.Find("Scout A");
+            GameObject enemy = TopazTestTravel.Scout();
             Assert.That(enemy, Is.Not.Null);
             Assert.That(player, Is.Not.Null);
             Component combatant = enemy.GetComponent("EnemyCombatant");
@@ -91,6 +94,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -109,7 +113,7 @@ namespace Topaz.Tests
                 .Invoke(session, new object[] { axeIndex }), Is.True);
 
             yield return TopazTestTravel.EnterWoodland(player);
-            GameObject enemy = GameObject.Find("Scout A");
+            GameObject enemy = TopazTestTravel.Scout();
             Component combatant = enemy.GetComponent("EnemyCombatant");
             int before = Health(combatant);
             Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right,
@@ -152,17 +156,18 @@ namespace Topaz.Tests
         public IEnumerator EnemyTelegraphsBeforeHittingStationaryPlayer()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
             yield return TopazTestTravel.EnterWoodland(player);
-            GameObject enemy = GameObject.Find("Scout A");
+            GameObject enemy = TopazTestTravel.Scout();
             Component vitality = player.GetComponent("PlayerVitality");
             Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
             Teleport(player, enemy.transform.position - screenRight * 1.35f);
             yield return new WaitForSeconds(0.12f);
 
-            LineRenderer tell = GameObject.Find("Scout A Tell").GetComponent<LineRenderer>();
+            LineRenderer tell = ((Component)TopazTestTravel.Scout().GetComponent("EnemyCombatant").GetType().GetField("telegraph",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(TopazTestTravel.Scout().GetComponent("EnemyCombatant"))).gameObject.GetComponent<LineRenderer>();
             Animator animator = enemy.GetComponentInChildren<Animator>();
             Assert.That(animator, Is.Not.Null);
             Assert.That(tell.enabled, Is.True, "The red arc must appear before the strike.");
@@ -179,6 +184,7 @@ namespace Topaz.Tests
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
@@ -205,6 +211,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");

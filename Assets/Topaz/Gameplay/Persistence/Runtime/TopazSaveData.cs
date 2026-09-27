@@ -6,9 +6,9 @@ namespace Topaz.Gameplay
     [Serializable]
     public sealed class TopazSaveData
     {
-        public const int CurrentVersion = 1;
-        public const string HomeRegion = "home";
-        public const string ExpeditionRegion = "expedition.clearing";
+        public const int CurrentVersion = 2;
+        public const string WildernessRegion = "wilderness";
+        public const string HomeRegion = WildernessRegion;
 
         public int version = CurrentVersion;
         public double worldHours = WorldClock.StartingHour;
@@ -18,7 +18,6 @@ namespace Topaz.Gameplay
         public float playerX;
         public float playerZ;
         public string regionId = HomeRegion;
-        public bool expeditionCacheClaimed;
         public bool pendingChest;
         public List<ItemStackRecord> backpackSlots = new List<ItemStackRecord>();
         public List<NodeStateRecord> nodes = new List<NodeStateRecord>();

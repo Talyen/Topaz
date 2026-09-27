@@ -17,12 +17,14 @@ namespace Topaz.Tests
         public IEnumerator InteractWithTreeChopsAndRestoresPreviousWeapon()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
+            GameObject tree = FindResource("HarvestTree");
             Component session = player.GetComponent("WorldSession");
             Component harvest = tree.GetComponent("HarvestTree");
             Teleport(player, tree.transform.position + Vector3.back * 1.2f);
+            AimAt(tree.transform.position);
             yield return null;
 
             object[] cue = { null, null };
@@ -50,12 +52,14 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
+            GameObject tree = FindResource("HarvestTree");
             Component session = player.GetComponent("WorldSession");
             Component harvest = tree.GetComponent("HarvestTree");
             Teleport(player, tree.transform.position + Vector3.back * 1.2f);
+            AimAt(tree.transform.position);
             yield return null;
 
             yield return new WaitForSeconds(.1f);
@@ -76,6 +80,7 @@ namespace Topaz.Tests
         {
             Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component hud = GameObject.Find("Loop HUD").GetComponent("LoopHud");
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
@@ -96,6 +101,7 @@ namespace Topaz.Tests
         public IEnumerator InteractionChipUsesGameplayTargetAndHidesForOpenInventory()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Assert.That(GameObject.Find("Resources"), Is.Null,
                 "The permanent prototype resource overlay should be removed.");
@@ -125,9 +131,10 @@ namespace Topaz.Tests
         public IEnumerator FullBackpackLeavesHarvestDropOnGround()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
+            GameObject tree = FindResource("HarvestTree");
             Component session = player.GetComponent("WorldSession");
             Component harvest = tree.GetComponent("HarvestTree");
             object backpack = session.GetType().GetField("_backpack",
@@ -155,20 +162,18 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
+            GameObject tree = FindResource("HarvestTree");
             Component session = player.GetComponent("WorldSession");
             Component harvest = tree.GetComponent("HarvestTree");
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
 
-            Vector3 towardTree = (tree.transform.position - player.transform.position).normalized;
-            Vector3 right = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
-            Vector3 forward = Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up).normalized;
-            Set(gamepad.rightStick, new Vector2(Vector3.Dot(towardTree, right),
-                Vector3.Dot(towardTree, forward)));
+            // The third-person right stick rotates the camera; it is no longer a world-space aim vector.
+            AimAt(tree.transform.position);
             yield return null;
             yield return new WaitForSeconds(.1f);
             Set(gamepad.rightTrigger, 1f);
@@ -195,14 +200,15 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             yield return TopazTestTravel.EnterWoodland(player);
-            GameObject tree = GameObject.Find("Woodland").GetComponentsInChildren<MonoBehaviour>()
+            GameObject tree = FindResource("HarvestTree").GetComponentsInChildren<MonoBehaviour>()
                 .First(value => value.GetType().Name == "HarvestTree").gameObject;
             Component harvest = tree.GetComponent("HarvestTree");
-            GameObject enemy = GameObject.Find("Scout A");
+            GameObject enemy = TopazTestTravel.Scout();
             enemy.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
             enemy.transform.position = player.transform.position + Vector3.back;
@@ -221,10 +227,11 @@ namespace Topaz.Tests
         public IEnumerator CompletedTreeAwardsLoggingAndHarvestDropsWoodUntilCollected()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
+            GameObject tree = FindResource("HarvestTree");
             Assert.That(player, Is.Not.Null);
             Assert.That(tree, Is.Not.Null);
             Component session = player.GetComponent("WorldSession");
@@ -274,11 +281,12 @@ namespace Topaz.Tests
         public IEnumerator InventoryPausesWorldClockAndTreeRegrowsFromActiveTime()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component hud = GameObject.Find("Loop HUD").GetComponent("LoopHud");
-            Component harvest = GameObject.Find("Authored Tree 01").GetComponent("HarvestTree");
+            Component harvest = FindResource("HarvestTree").GetComponent("HarvestTree");
             Teleport(player, harvest.transform.position + Vector3.back * 1.3f);
             for (int chop = 0; chop < 3; chop++)
                 Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
@@ -307,9 +315,10 @@ namespace Topaz.Tests
         public IEnumerator WalkingNearDropCollectsItAutomatically()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
-            GameObject tree = GameObject.Find("Authored Tree 01");
+            GameObject tree = FindResource("HarvestTree");
             Component session = player.GetComponent("WorldSession");
             Component harvest = tree.GetComponent("HarvestTree");
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
@@ -327,12 +336,14 @@ namespace Topaz.Tests
         public IEnumerator CarriedWoodTravelsWhileHarvestedTreeBelongsToItsWorld()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
-            Component harvest = GameObject.Find("Authored Tree 01").GetComponent("HarvestTree");
+            Component harvest = FindResource("HarvestTree").GetComponent("HarvestTree");
             string characterId = Read<string>(session, "ActiveCharacterId");
             string firstWorldId = Read<string>(session, "ActiveWorldId");
+            string firstNodeId = Read<string>(harvest,"StableObjectId");
             Teleport(player, harvest.transform.position + Vector3.back * 1.3f);
             for (int i = 0; i < 3; i++)
                 Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
@@ -348,7 +359,8 @@ namespace Topaz.Tests
                     (Action<bool>)(success => entered = success) });
             Assert.That(entered, Is.True);
             Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(6));
-            Assert.That(Read<bool>(harvest, "IsAvailable"), Is.True,
+            yield return WaitForWilderness();
+            Assert.That(Read<bool>(FindResource("HarvestTree").GetComponent("HarvestTree"), "IsAvailable"), Is.True,
                 "A fresh World has its own tree state.");
 
             entered = false;
@@ -357,7 +369,8 @@ namespace Topaz.Tests
                     (Action<bool>)(success => entered = success) });
             Assert.That(entered, Is.True);
             Assert.That(Read<int>(session, "WoodCount"), Is.EqualTo(6));
-            Assert.That(Read<bool>(harvest, "IsAvailable"), Is.False,
+            yield return WaitForWilderness();
+            Assert.That(Read<bool>(FindResource("HarvestTree","StableObjectId",firstNodeId).GetComponent("HarvestTree"), "IsAvailable"), Is.False,
                 "The first World keeps its harvested tree.");
         }
 

@@ -12,20 +12,19 @@ namespace Topaz.Gameplay
 {
     public sealed partial class WorldSession
     {
-        public WoodlandRegion ActiveRegion => FindInScene<WoodlandRegion>(SceneManager.GetSceneByName(
-            CurrentRegionId == TopazSaveData.HomeRegion ? "Bootstrap" : ExpeditionSceneName));
+        WoodlandRegion activeWilderness;
+        public WoodlandRegion ActiveRegion => activeWilderness != null ? activeWilderness :
+            activeWilderness = FindInScene<WoodlandRegion>(SceneManager.GetSceneByName("Bootstrap"));
 
         IEnumerable<CampfireTravelCatalog.Destination> Destinations(TopazWorldData world)
         {
-            if (_travelCatalog != null)
-                foreach (var d in _travelCatalog.Destinations)
-                    if (d.regionId == TopazSaveData.HomeRegion || d.regionId == TopazSaveData.ExpeditionRegion) yield return d;
+            yield return new CampfireTravelCatalog.Destination {stableId=Campfire.HomeId,regionId=TopazSaveData.WildernessRegion,sceneName="Bootstrap",label="First Hearth"};
             if (world == null) yield break;
             foreach (var s in world.structures)
                 if (s.definitionId == BuildCatalog.Camp)
                     yield return new CampfireTravelCatalog.Destination {
                         stableId = s.instanceId, regionId = s.regionId,
-                        sceneName = s.regionId == TopazSaveData.HomeRegion ? "Bootstrap" : ExpeditionSceneName,
+                        sceneName = "Bootstrap",
                         label = string.IsNullOrEmpty(s.label) ? "Camp " + s.instanceId.Substring(0, 6) : s.label };
         }
         CampfireTravelCatalog.Destination ResolveDestination(string id, TopazWorldData world = null) =>
@@ -33,7 +32,7 @@ namespace Topaz.Gameplay
 
         IEnumerable<Campfire> CurrentCampfires()
         {
-            var fixedFire = IsAtHome ? homeCampfire : _expedition?.Campfire;
+            var fixedFire = homeCampfire;
             if (fixedFire != null) yield return fixedFire;
             foreach (var fire in homeBuilds.Campfires) if (fire != null) yield return fire;
         }
@@ -75,7 +74,7 @@ namespace Topaz.Gameplay
             var region = ActiveRegion;
             if (region?.navigation == null) return;
             Physics.SyncTransforms();
-            region.navigation.BuildNavMesh();
+            region.Streaming?.InvalidateNavigation();
         }
 
         IEnumerator FastTravel(CampfireTravelCatalog.Destination destination)
@@ -84,58 +83,48 @@ namespace Topaz.Gameplay
             homeBuilds.Cancel();
             hud.ClosePanels(); combat.CancelActiveAttack();
             yield return FadeTrail(true);
-            string previous = CurrentRegionId;
-            var targetScene = SceneManager.GetSceneByName(destination.sceneName);
-            bool loadedHere = !targetScene.isLoaded;
-            if (loadedHere)
+            Vector3 destinationPosition;
+            if (destination.stableId == Campfire.HomeId) destinationPosition = homeCampfire.ArrivalPosition;
+            else
             {
-                AsyncOperation load = null;
-                try { load = LoadRegionSceneAsync(destination.sceneName); }
-                catch (Exception e) { Debug.LogWarning("Camp travel unavailable: " + e.Message); }
-                if (load != null) yield return load;
-                targetScene = SceneManager.GetSceneByName(destination.sceneName);
+                var record=_world.structures.Find(s=>s.instanceId==destination.stableId && s.definitionId==BuildCatalog.Camp);
+                if(record==null)
+                {
+                    yield return FadeTrail(false);_traveling=_fastTraveling=false;
+                    hud.ShowStatus("That camp is no longer available.");yield break;
+                }
+                destinationPosition=new Vector3(record.x,record.y,record.z)+Quaternion.Euler(0,record.quarterTurns*90,0)*Vector3.forward*1.25f;
             }
-            bool ready = targetScene.isLoaded && PrepareGeneratedRegion(targetScene);
-            if (ready)
+            var streaming=ActiveRegion.Streaming;
+            yield return streaming.PrepareDestination(destinationPosition);
+            if(!streaming.IsReadyAt(destinationPosition) || !TrySafeArrival(destinationPosition,out destinationPosition))
             {
-                _data.regionId = destination.regionId;
-                BindRegionBuildings();
+                yield return streaming.PrepareDestination(transform.position);
+                yield return FadeTrail(false);_traveling=_fastTraveling=false;
+                hud.ShowStatus("Camp travel could not finish. Please retry.");yield break;
             }
-            Campfire target = ready ? CurrentCampfires().FirstOrDefault(f => f.StableId == destination.stableId)
-                ?? FindCampfire(targetScene, destination.stableId) : null;
-            if (target == null || !target.HasArrival)
-            {
-                _data.regionId = previous;
-                BindRegionBuildings();
-                if (loadedHere && targetScene.isLoaded) yield return SceneManager.UnloadSceneAsync(targetScene);
-                _generationFailed = false;
-                yield return FadeTrail(false);
-                _traveling = _fastTraveling = false;
-                hud.ShowStatus("That destination is unavailable.");
-                yield break;
-            }
-            ClearBoundEnemies();
-            if (destination.regionId == TopazSaveData.ExpeditionRegion)
-            {
-                _expedition = FindInScene<ExpeditionSceneBootstrap>(targetScene);
-                _expedition?.Bind(this, GetComponent<PlayerVitality>(), home, ExpeditionCacheClaimed);
-                BindGatherables(targetScene);
-                foreach (var enemy in targetScene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<EnemyCombatant>(true))) RegisterEnemy(enemy);
-            }
-            if (destination.regionId == TopazSaveData.HomeRegion) GetComponent<PlayerVitality>()?.PreserveHealthOnHomeArrival();
-            Teleport(target.ArrivalPosition);
-            _visit.lastCampfireId = target.StableId;
+            Teleport(destinationPosition);
+            _visit.lastCampfireId=destination.stableId;
             look.SetInterior(false);
-            if (destination.regionId == TopazSaveData.HomeRegion)
-            {
-                var old = SceneManager.GetSceneByName(ExpeditionSceneName);
-                _expedition = null;
-                if (old.isLoaded) yield return SceneManager.UnloadSceneAsync(old);
-            }
             RefreshPickupVisibility(); UpdateWeather(true);
             _traveling = false; Commit();
             yield return FadeTrail(false);
             _fastTraveling = false;
+        }
+
+        bool TrySafeArrival(Vector3 intended,out Vector3 result)
+        {
+            foreach(float radius in new[]{0f,1f,2f})for(int i=0;i<(radius==0?1:8);i++)
+            {
+                float angle=i*Mathf.PI/4;var point=intended+new Vector3(Mathf.Cos(angle)*radius,0,Mathf.Sin(angle)*radius);
+                if(!ActiveRegion.Streaming.IsReadyAt(point))continue;
+                point.y=WoodlandRegion.GroundHeight(point);
+                bool blocked=false;
+                foreach(var collider in Physics.OverlapCapsule(point+Vector3.up*.4f,point+Vector3.up*1.6f,.28f,~0,QueryTriggerInteraction.Ignore))
+                    if(!(collider is TerrainCollider) && !collider.transform.IsChildOf(transform) && !homeBuilds.IsFloorCollider(collider)){blocked=true;break;}
+                if(!blocked){result=point;return true;}
+            }
+            result=intended;return false;
         }
 
         IEnumerator RecoverAtCampfire(PlayerVitality vitality)

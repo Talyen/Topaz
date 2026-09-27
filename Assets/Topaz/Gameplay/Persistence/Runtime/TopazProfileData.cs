@@ -37,7 +37,7 @@ namespace Topaz.Gameplay
     [Serializable]
     public sealed class TopazProfileData
     {
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
         public int version = CurrentVersion;
         public List<TopazCharacterData> characters = new List<TopazCharacterData>();
         public List<TopazWorldData> worlds = new List<TopazWorldData>();
@@ -177,10 +177,9 @@ namespace Topaz.Gameplay
                     world.enemyRespawns == null ||
                     world.claimedGearIds == null ||
                     double.IsNaN(world.worldHours) || double.IsInfinity(world.worldHours) ||
-                    world.worldHours < WorldClock.StartingHour ||
-                    !ValidDeadline(world.woodlandCacheReadyAt))
+                    world.worldHours < WorldClock.StartingHour)
                     throw new ArgumentException("World record is invalid.");
-                if (world.generatorVersion != Topaz.Generation.WoodlandPlan.Version || world.generationSettings == null)
+                if (world.generatorVersion != Topaz.Generation.WildernessPlan.Version || world.generationSettings == null)
                     throw new ArgumentException("Unsupported procedural world version or missing settings.");
                 world.generationSettings.Validate();
                 var spawnIds = new HashSet<string>();
@@ -198,7 +197,7 @@ namespace Topaz.Gameplay
                     if (structure == null || string.IsNullOrEmpty(structure.instanceId) ||
                         !structureIds.Add(structure.instanceId) ||
                         string.IsNullOrEmpty(structure.definitionId) ||
-                        (structure.regionId != TopazSaveData.HomeRegion && structure.regionId != TopazSaveData.ExpeditionRegion) ||
+                        structure.regionId != TopazSaveData.WildernessRegion ||
                         float.IsNaN(structure.y) || float.IsInfinity(structure.y) ||
                         float.IsNaN(structure.x) || float.IsInfinity(structure.x) ||
                         float.IsNaN(structure.z) || float.IsInfinity(structure.z) ||
@@ -221,8 +220,7 @@ namespace Topaz.Gameplay
                 if (visit == null || !characterIds.Contains(visit.characterId) ||
                     !worldIds.Contains(visit.worldId) ||
                     !pairs.Add(visit.characterId + "/" + visit.worldId) ||
-                    (visit.regionId != TopazSaveData.HomeRegion &&
-                     visit.regionId != TopazSaveData.ExpeditionRegion) ||
+                    visit.regionId != TopazSaveData.WildernessRegion ||
                     float.IsNaN(visit.playerX) || float.IsNaN(visit.playerZ) ||
                     float.IsInfinity(visit.playerX) || float.IsInfinity(visit.playerZ) ||
                     string.IsNullOrEmpty(visit.lastCampfireId) ||
@@ -288,18 +286,16 @@ namespace Topaz.Gameplay
     public sealed class TopazWorldData
     {
         public int seed = Guid.NewGuid().GetHashCode();
-        public int generatorVersion = Topaz.Generation.WoodlandPlan.Version;
+        public int generatorVersion = Topaz.Generation.WildernessPlan.Version;
         public Topaz.Generation.WoodlandSettings generationSettings = new Topaz.Generation.WoodlandSettings();
         public string id;
         public string label;
         public double worldHours = WorldClock.StartingHour;
-        public bool expeditionCacheClaimed;
         public List<NodeStateRecord> nodes = new List<NodeStateRecord>();
         public List<StructureStateRecord> structures = new List<StructureStateRecord>();
         public List<PickupStateRecord> pickups = new List<PickupStateRecord>();
         public List<string> claimedGearIds = new List<string>();
         public List<EnemyRespawnRecord> enemyRespawns = new List<EnemyRespawnRecord>();
-        public double woodlandCacheReadyAt;
         public bool starterBedrollInitialized;
     }
 

@@ -17,14 +17,15 @@ namespace Topaz.Tests
         public IEnumerator ForageCookAndEatUseWorldAndCharacterState()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             float deadline = Time.realtimeSinceStartup + 12f;
             while (!(bool)Property(session, "HasActivePair") &&
                    Time.realtimeSinceStartup < deadline) yield return null;
             Assert.That(Property(session, "HasActivePair"), Is.True);
-            Component mushrooms = GameObject.Find("mushrooms.home.west").GetComponent("ForagePlant");
-            Component berries = GameObject.Find("berries.home.west").GetComponent("ForagePlant");
+            Component mushrooms = FindResource("ForagePlant","Mushrooms",true).GetComponent("ForagePlant");
+            Component berries = FindResource("ForagePlant","Mushrooms",false).GetComponent("ForagePlant");
             Assert.That(Invoke<bool>(mushrooms, "TryForage"), Is.True);
             Assert.That(Invoke<bool>(berries, "TryForage"), Is.True);
             Assert.That(Property(mushrooms, "IsAvailable"), Is.False);
@@ -70,12 +71,13 @@ namespace Topaz.Tests
         public IEnumerator RestAdvancesWorldTimeOnceAndRefreshesHealthAndReserve()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             float deadline = Time.realtimeSinceStartup + 12f;
             while (!(bool)Property(session, "HasActivePair") &&
                    Time.realtimeSinceStartup < deadline) yield return null;
-            Component berries = GameObject.Find("berries.home.east").GetComponent("ForagePlant");
+            Component berries = FindResource("ForagePlant","Mushrooms",false).GetComponent("ForagePlant");
             Assert.That(Invoke<bool>(berries, "TryForage"), Is.True);
             object[] stacks = ((System.Collections.IEnumerable)Property(session,
                 "BackpackSlots")).Cast<object>().ToArray();

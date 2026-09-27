@@ -39,12 +39,14 @@ namespace Topaz.Rendering
             if (painterlyVolume == null || sun == null || cameraData == null)
             { Debug.LogError("URP environment references are incomplete.", this); enabled = false; return; }
             profile = painterlyVolume.profile;
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-no-sun-shadows")>=0)sun.shadows=LightShadows.None;
             string directory=Application.isEditor?Path.Combine(Application.temporaryCachePath,"TopazVisual-"+Guid.NewGuid().ToString("N")):Application.persistentDataPath;
             Directory.CreateDirectory(directory);
             SettingsPath = Path.Combine(directory, "urp-world-settings.json");
             if (!Application.isEditor && File.Exists(SettingsPath))
                 try { settings = JsonUtility.FromJson<GraphicsPreferences>(File.ReadAllText(SettingsPath)) ?? settings; }
                 catch (Exception e) { Debug.LogWarning("URP settings reset: " + e.Message); }
+            if(settings.version != GraphicsPreferences.CurrentVersion) settings = new GraphicsPreferences();
             Apply(); optionsMenu?.Bind(this);
         }
         public void SetLook(int look) { settings.look = Mathf.Clamp(look, 0, 1); Apply(); SaveSelection(); }
@@ -102,18 +104,21 @@ namespace Topaz.Rendering
             if (profile == null) return;
             float hour = (float)(hours % 24);
             float daylight = Mathf.Clamp01(Mathf.Sin((hour - 6) / 24 * Mathf.PI * 2));
-            sun.transform.rotation = Quaternion.Euler((hour - 6) * 15, -30, 0);
-            sun.intensity = Mathf.Lerp(.02f, 1.6f, daylight) * Mathf.Lerp(1, .5f, cloudiness);
+            sun.transform.rotation = Quaternion.Euler(Mathf.Sin((hour - 6) / 24 * Mathf.PI * 2) * 58, -40 + (hour - 12) * 12, 0);
+            sun.intensity = Mathf.Lerp(0f, 1.7f, daylight) * Mathf.Lerp(1, .5f, cloudiness);
+            sun.useColorTemperature=false;
+            sun.shadowStrength = settings.shadowStrength;
             sun.color = Color.Lerp(new Color(1,.66f,.38f), Color.white, Mathf.Clamp01(daylight * 3));
-            if (moon != null) { moon.intensity = Mathf.Lerp(.12f, 0, daylight); moon.transform.rotation = Quaternion.Euler(45,120,0); }
+            if (moon != null) { moon.useColorTemperature=false;moon.color=new Color(.6f,.72f,1);moon.intensity = Mathf.Lerp(.24f, 0, daylight); moon.transform.rotation = Quaternion.Euler(45,120,0); }
+            RenderSettings.sun=daylight>.02f || moon==null?sun:moon;
             Override<ColorAdjustments>().postExposure.Override(settings.exposure - fade * 12);
             RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = Color.Lerp(new Color(.035f,.05f,.09f),new Color(.45f,.55f,.7f),daylight);
-            RenderSettings.ambientEquatorColor = Color.Lerp(new Color(.025f,.035f,.055f),new Color(.3f,.34f,.35f),daylight);
-            RenderSettings.ambientGroundColor = Color.Lerp(new Color(.015f,.02f,.025f),new Color(.15f,.17f,.12f),daylight);
+            RenderSettings.ambientSkyColor = Color.Lerp(new Color(.12f,.18f,.29f),new Color(.58f,.70f,.83f),daylight);
+            RenderSettings.ambientEquatorColor = Color.Lerp(new Color(.09f,.14f,.20f),new Color(.48f,.55f,.46f),daylight);
+            RenderSettings.ambientGroundColor = Color.Lerp(new Color(.065f,.095f,.13f),new Color(.3f,.34f,.23f),daylight);
             RenderSettings.fog = !interior; RenderSettings.fogMode = FogMode.ExponentialSquared;
-            RenderSettings.fogDensity = HighQuality ? Mathf.Lerp(.004f,.012f,rain) : Mathf.Lerp(.003f,.009f,rain);
-            RenderSettings.fogColor = Color.Lerp(new Color(.025f,.035f,.06f),new Color(.5f,.59f,.65f),daylight);
+            RenderSettings.fogDensity = Mathf.Lerp(.0017f,.005f,rain) * 240f / Mathf.Max(80, settings.fogEnd);
+            RenderSettings.fogColor = Color.Lerp(new Color(.11f,.17f,.26f),new Color(.68f,.76f,.76f),daylight);
             if (homeLight != null) homeLight.intensity = Mathf.Lerp(2.5f, .4f, daylight);
             Shader.SetGlobalFloat("_TopazWetness", rain);
             Shader.SetGlobalVector("_TopazWind", new Vector4(.5f + cloudiness, 0, .3f, Time.time));

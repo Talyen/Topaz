@@ -1,0 +1,3375 @@
+{
+  "product": 156819,
+  "version": "1.2.1",
+  "archiveSha256": "3b4d9186c486b03a0388d96eb15b7ff30072fac1dac54c62d4ef89f80aee9c47",
+  "files": [
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Alts/Generic_01_A.mat",
+      "sha256": "33482ff2895c682885d944d3d0cefdfd01a17d1fd81efef2cf6ae83e0f33b81e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Alts/Generic_01_A.mat.meta",
+      "sha256": "e0aa94d3f05a7c6aad63d29e2e2d0c7dabe71aeed901aca0a15d1830eb96f1ae"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Brick.mat",
+      "sha256": "a34c8d9ab5c7f6e06f5b5883a1bd407e1fa4f8a9b53f50984eb635978ed1e2e2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Brick.mat.meta",
+      "sha256": "ccd9c2f3d46ecf31a961aceabccca29e3eaab5c2c9921ccbd55957673bb2397e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Concrete.mat",
+      "sha256": "3843ad31158a37367f3cf8ee5b1c9b8e97e827f5c798d5c74d319e8a50de07f8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Concrete.mat.meta",
+      "sha256": "1c65f66cc40c2707ea17f93997f8d2acdbef676b2c8576a7aceb764c7276e72a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Glass.mat",
+      "sha256": "6f77f75ee8f171be6c2ce430c876880b42d6f60ba6d1a582be7d6ecd8d1668a0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Glass.mat.meta",
+      "sha256": "91a8482059633357ed98ee3c22b573caeeb238d3e9c923e9b246df4c60549afa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Plaster.mat",
+      "sha256": "c10cf634e3816e2dc5d2c10d467e03521a52ac32ae367fd6f1df8ddf430c748b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Plaster.mat.meta",
+      "sha256": "f6f199b5893cd15e92e74209ce8294f982c953e58608ce367bc0920a31dfa356"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Triplanar_Grass_01.mat",
+      "sha256": "c97ee2b12bdf0694d7e5c55aa6e57642726c7b5ad19e158b6b063f15405c640c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Triplanar_Grass_01.mat.meta",
+      "sha256": "ae4f4535cd966529ecfffc5d75f12ee68ce009388e3ceb2cad24cf20feb0fb15"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Wood.mat",
+      "sha256": "31c64dec8775c8c2858379e332fa145484fc09b1d2c4933d11adca393b65674f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Materials/Generic_Wood.mat.meta",
+      "sha256": "4354e597f5057905b3ea2195d1425d36fdb70facc677443cb6ac7697d3f53baf"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Stairs_01_Collision.fbx",
+      "sha256": "1dc7d19cc4caab3d5271566b570a909b61a50d9e02c4146a50422672bf7d0801"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Stairs_01_Collision.fbx.meta",
+      "sha256": "0089cf76b20fb9df4ac99cc0c91ced1afe37859015ad787df8c33f6c5d3e14b1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Stairs_02_Collision.fbx",
+      "sha256": "e05614359b4f8f1c27b3a60041f61b21285e780dd2b46c8d041258475e437bb6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Stairs_02_Collision.fbx.meta",
+      "sha256": "e1745f27cd40c9bdbc1ad3bd1551c48b05ee2c7c26651fd9f9ca0b09e29284c6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Angle_01_Collision.fbx",
+      "sha256": "33405740727f055904cb4720b4b7dd8f6e88a02de0dd7eec3fd0bc7ae90d195f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Angle_01_Collision.fbx.meta",
+      "sha256": "e2aeba3a8524f94b3fa1e3677c143cabd818b0471631afc46f33be31778f7b21"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Door_01_Collision.fbx",
+      "sha256": "94b63b6099b02b598966977ce708ceb4303d4474fb88d6b3a1d9a409a5778a1c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Door_01_Collision.fbx.meta",
+      "sha256": "0b692c3268492c0c31d564afad655aa50ebd1b09cee713a92272a0db7711a1f4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Door_Double_01_Collision.fbx",
+      "sha256": "fc722ca32628e8593f9c00c0dc25974f540a150f739a57a53a4ec9ee65f067c0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Door_Double_01_Collision.fbx.meta",
+      "sha256": "c61363d8bedfd1f1db789477c0c31bbedd4c6afcc5352b638c7a0a76e1b8f2ba"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Door_Large_01_Collision.fbx",
+      "sha256": "b4895df9c02d5359d26eb195efe6df6eaaedc5e68b3b5ebd6f39df9f58ec92e6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/Collision/SM_Bld_Base_Wall_Door_Large_01_Collision.fbx.meta",
+      "sha256": "2a6e3f26ed3a73c743d5557452c775114d62b298d3cb22ef67ba10b418de3a67"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Floor_01.fbx",
+      "sha256": "f31d8fbad6634fde7c0d91775846d9f7d352042763a93c0c8c1f03de62916da5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Floor_01.fbx.meta",
+      "sha256": "0f117f35e938f582ad1ee0adf8bddd1f54355ba40ac45324aee2329644078698"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Floor_Combined_01.fbx",
+      "sha256": "bac2ff0deb61809cecc975f28ed35500f9850384fbccf9ba12982b5b2473dc07"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Floor_Combined_01.fbx.meta",
+      "sha256": "4ba26f3e0978048346e3ce3874b99751a1c741306c0d7eb8099f26488925399d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Wall_01.fbx",
+      "sha256": "8aef8aa3aa9c1771be14254ad7e1e8b5618931c15c17f70183c437041474eb8d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Wall_01.fbx.meta",
+      "sha256": "bfa68b021413547f833b57884eec947e7c79028188f32a2f8ffe689d06b6be8c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Wall_Door_01.fbx",
+      "sha256": "85801aa533197f78ef22a9ea3a9a0908851ff777576c1442a51c8887a2e63d9b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Wall_Door_01.fbx.meta",
+      "sha256": "a831840de175d95b6fe61a13967491a0bfdbecf3254ae467a391249e6b399376"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Wall_Half_01.fbx",
+      "sha256": "ada7b8c4f1c773ba80bd1285ef3eae42d7b01257c297714835e75879fe59c35f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_45_Wall_Half_01.fbx.meta",
+      "sha256": "23ceaa5476caa60fe2ee5c7814d9ecf4b343890f5dd65c1b55059d769f8abb19"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_01.fbx",
+      "sha256": "6eb159df1a7b17d96b53fb2cc5e67a235a0acabc202c1a6c9c834681b8eae0c6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_01.fbx.meta",
+      "sha256": "5a2c3212b220911c36bbd3fca582eef7f42933a9d4a1b17770ba8c7c2f00500d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_45_01.fbx",
+      "sha256": "33bda30f9d8d9b818235be83ee6c3dad1d26561d6b8f16cb1dea1b958322474d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_45_01.fbx.meta",
+      "sha256": "a0a9666803103c87b835f316b1428ef0e8e65fa1cd35c17fd69ddf19bb5c2446"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_Half_01.fbx",
+      "sha256": "102038d0eb162680806cf0d03d568253efdda6d35bd475e2511b98aeff381856"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_Half_01.fbx.meta",
+      "sha256": "a0b3d1cc02bd5f1f97278ecfeafff9cdd2f08f36641d7c2c07de437689324a99"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_Quarter_01.fbx",
+      "sha256": "358953a4c4169d206583f03a7018534e061e8b239bd81c86df3a30acb9b0f08c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Ceiling_Quarter_01.fbx.meta",
+      "sha256": "0c9ddb98b258776c9b179ec6d8af99bd1b446e6fe92330ec3ed9e9a23a30bf46"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Door_01.fbx",
+      "sha256": "73e38e6194e3591e60a627640f411ec28efabf52887fd259669d7935ab7b5f1a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Door_01.fbx.meta",
+      "sha256": "2b05e4ebf4e205e5e5f09b778d7031f8f990136168ce4f45662b0cc2ebc3b39c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Door_Large_01.fbx",
+      "sha256": "1e48baf53429ca1b5523c42a1db28eb37c5204156576a48685100a9b6202163a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Door_Large_01.fbx.meta",
+      "sha256": "076913c3e22fff57a86c31f10148ab03cb021920b7bbc50a33fab252584b0033"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_01.fbx",
+      "sha256": "2abf559ce17a5ee36494cd31186f1e768f1cb1fedf91d96f07cc37f72ff8e7df"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_01.fbx.meta",
+      "sha256": "b487e3e9d2ed0c1e18f81ad5da78572a123f0c29df54efa6ef14df639ac9a1d1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Combined_01.fbx",
+      "sha256": "b0fb5185d76217e280d36c8234f2176cb472ac25938b7192b872c2767e1c004f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Combined_01.fbx.meta",
+      "sha256": "681d7dbc5917c57752dddb5d1395d802422baa22ad4769b09f20df5bb0a6052a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Half_01.fbx",
+      "sha256": "27abb0c5ef99c6e790e42bec8399360a8d9daa6cb2a8d75e604e3c5742a2b0aa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Half_01.fbx.meta",
+      "sha256": "365fa188f7d5184c1805fc8e40b7bf04f5c3ce4855197e9a08bc58026270a50f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Hole_01.fbx",
+      "sha256": "d00739b329a684994c158aff02fa31ef9e11396bef92767877cedcbf96bc4768"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Hole_01.fbx.meta",
+      "sha256": "326fa06a3a0161b3933b12611df34cc8e3d8ad1924f94a34a536f4c806cb1423"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Quarter_Combined_01.fbx",
+      "sha256": "49a316fe4121a17fbbf0106079dd26b3f8db11b3b5e901bf2749dd00b0f55b36"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Quarter_Combined_01.fbx.meta",
+      "sha256": "2b9527d948ae7456284e78f80acf422a19542610d2ac86b79349889966ca6145"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Round_01.fbx",
+      "sha256": "357ad154f5dbff49911e1abf1654ddcca7e75e3db40f545c4884371b793c1659"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Floor_Round_01.fbx.meta",
+      "sha256": "d143a7b02031c0f3e812910a7fab406b690c23f29f8fd3e3d0e2c643abcfe7f0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_01.fbx",
+      "sha256": "ee6b7fe24bd92ad13d757edd55dfc529e2db51f1c8ff9ff50814ed3fbd492775"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_01.fbx.meta",
+      "sha256": "377f45dddf095a24209fdb226f252e202ab685b55ebe08bfb5a27e83ab6ae5bf"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_02.fbx",
+      "sha256": "eb1debdce7e2285d04599e0d020fcecf4a10dc6ef0398a49f0f9f593f7c118d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_02.fbx.meta",
+      "sha256": "5253d90be746a155129351385fbdc747fb3988426963c8da3b82da39191e09bc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_03.fbx",
+      "sha256": "3abd7263b0465d2eff68be00eecdcd1ff3418c9aa81ec69ce841a354e9bcfb29"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_03.fbx.meta",
+      "sha256": "2205959a4692a2383fc56dc165e49b1b8d8d665798ea39f13751fc27eddf7aef"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_04.fbx",
+      "sha256": "596eb153e52b4aa824d5d9efcbb33f2ca3e2ff8ee1938134d5aee35b0e330c20"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_04.fbx.meta",
+      "sha256": "74169a70f39a92ccc63fcd740ed4ad7161302fe493af18a64df00db11bcf7578"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_05.fbx",
+      "sha256": "7323c780537ad4a2f541aa065c5ae4bd97b0d5ce6ebb590a2094b90a13d11d4f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_05.fbx.meta",
+      "sha256": "be60015de369d2ace6382436fbcc6866563050966fcb0b15c445a19b3a9fe970"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_01.fbx",
+      "sha256": "460e800fc0d294c3c78ea41ce506b47545293b1bef89ad924cd3a7a3f4253336"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_01.fbx.meta",
+      "sha256": "454f99eabb13e2f4df8bf03d4b811e396e9337d6a01c6fc6dd3b5f53db6679db"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_02.fbx",
+      "sha256": "ada952772e86171b51e0ec38d4e524ef537e46077ebf9d37dddbf33f03ba65b2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_02.fbx.meta",
+      "sha256": "689baf76bab9cd12c8ddcfdf2e0ca6fd438b866cdfd02f753d25768c1d84da95"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_03.fbx",
+      "sha256": "d2d751e21c523dbe4a295b30b8f5877eff1d91d28777479a59d7662360a68cf3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_03.fbx.meta",
+      "sha256": "5f0b363567db47401de29d8f43b9f6fa4311785191f87da7cd45512df582f843"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_04.fbx",
+      "sha256": "047c332302a3dad1feef15af48dcad94c6670ebe4faf97155c54df5def1f214e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_04.fbx.meta",
+      "sha256": "992f93b0b246b7894e82e9badb2fc43acd1b7267481f12648e79b9a1a575273f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_05.fbx",
+      "sha256": "95401e1c6296150f66c70276054f684037db0959f42598c7b6444653dc8fc6cd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Pillar_Half_05.fbx.meta",
+      "sha256": "d77855c292814b857baea1c2a0e696f2a9265ed925171919aa6577745deae18a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_01.fbx",
+      "sha256": "ef08e4b51477a5179ce7f8681ed2a01ee6ba260b6fec23c85f193683f5f9649a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_01.fbx.meta",
+      "sha256": "5870fefdb242b0db6676a06a9fbe3f44e4dc0e402b432be3349714aaccedfc3a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_Angle_01.fbx",
+      "sha256": "979855ba875d1fe50181b8c1d92db1694345a6546cf157b054c5ee09e6fb2d27"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_Angle_01.fbx.meta",
+      "sha256": "716417456043a750e9c3d835dbc79460b4bff9877597254d26334e200321664b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_Angle_Half_01.fbx",
+      "sha256": "7e8c2cb39f82062b4bb351e086ee731a993253c0a4d4aec302a3ac2e2e0ce691"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_Angle_Half_01.fbx.meta",
+      "sha256": "b59b95131d2f426805be8376d008147b952d405680f94376f003989a1ee44a48"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_End_01.fbx",
+      "sha256": "6ee09e7eb44e78bf2ccb52b8ef01a60d7f04026fb2c511acecfcd7529a86bab7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_End_01.fbx.meta",
+      "sha256": "bfb4045a42810bb49ee6d5e0d0e553413ff2f766f01341bc5936599d11b1766f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_Half_01.fbx",
+      "sha256": "c43f3cc639c28b33a65aa7e4960ece97010547a1326762f8d2101befdb00a101"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Cap_Half_01.fbx.meta",
+      "sha256": "7f70ef31518aa407d8e02144bd446d78d7f46821bc539a11e8c899acdcc67865"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Corner_In_01.fbx",
+      "sha256": "23a10cdf67b2cf436dd1305e86f593cef8607fd7b507d8321cb6699ee7fcf72d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Corner_In_01.fbx.meta",
+      "sha256": "9277799e7f4207ada6d893834ce06d3c73e727869e6e114b14c0f502ec26d24b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Corner_Out_01.fbx",
+      "sha256": "23eaa77f134f0d42980aa0727b8e5d55cee2a3a37b776992b27263a340bb0e83"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Corner_Out_01.fbx.meta",
+      "sha256": "f5410ef9960e40b864649ff0c5d71969eb20278d7bcbb76f41397b735a839449"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Half_01.fbx",
+      "sha256": "2a6a7c20bfa44a7f164000004b5cde50720be573f09cb945dc1f8238d31e6b72"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Half_01.fbx.meta",
+      "sha256": "12ab6702c382faed3b71ad992f1c56bd467b407d2be6b03d99f5ec1012368e63"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Half_02.fbx",
+      "sha256": "5e233fb724eff65bd619735b0dbbf926478be4e2210ee6d6cb9867a4a0107586"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Half_02.fbx.meta",
+      "sha256": "5842c5a2d3378b11aad3802206655a919c40aa3747534f412ec4259fd06ef5ca"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Quarter_01.fbx",
+      "sha256": "3e7be2bff390d72308b2ad1e212ab4d2d97eff3d71c5cfc5a359dfd6c7d20c84"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Quarter_01.fbx.meta",
+      "sha256": "f93a8889d8cf16896ecf5620676342211c836eca451961cfabe56b103d927c7b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Straight_01.fbx",
+      "sha256": "c492e7e7f3c78169c009874427cdf44add71b1de207017ac5dde275c083ff12d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Straight_01.fbx.meta",
+      "sha256": "025eb96dba95b99eda5cdaa1264664e8f7a2b557158cf1226aa6908fa9c2460e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Trim_01.fbx",
+      "sha256": "f51718ede00e567631061a725ee865b1944bc68ef270fe36a2d99604f10a38f8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Trim_01.fbx.meta",
+      "sha256": "2793f4aff563baf5b7a92b48f574bb23ca42104549b4c72070bc12612b409767"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Trim_Corner_01.fbx",
+      "sha256": "5bdcef92f2fb9094dba1d64711cbd2ae7e4893329389a194993e9e5c3b02c404"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Trim_Corner_01.fbx.meta",
+      "sha256": "32cdb6f1f0e17a9e7bd9fd1f242cd3b4bc64840fe178055fd51a36229fc01fa1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Trim_Half_01.fbx",
+      "sha256": "f0afc14af1a64f5ac601aaea5e4d3c8e377959f6056124731446e92cd57cb1cb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Trim_Half_01.fbx.meta",
+      "sha256": "7a66a5fb2388692357d8d04194309ca26e8ee8cb6672f114eb381a8cc7da47f4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stair_Half_01.fbx",
+      "sha256": "d85756edb6223b515c44cd19b6f3dd07577d7ce8f31860722feaa4c1e5d5b569"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stair_Half_01.fbx.meta",
+      "sha256": "2d359dca65137063e4ac42a811ca6d47e4e2bb111ab789d8b66a0da886b6c85b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stair_Quarter_01.fbx",
+      "sha256": "7017d880adea75a21d4f4c5f1f2899a4e303990fd071e8628ac1a4d87bf760fa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stair_Quarter_01.fbx.meta",
+      "sha256": "f5c9f9c298a91ab426cc5d38ee8e173c0c64b9724a322fb1c7a1d0b58407d164"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stairs_01.fbx",
+      "sha256": "b9bfc077f396531d4ef19fc47f132f56cd428a15b2493dec8a15ffbe29a14587"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stairs_01.fbx.meta",
+      "sha256": "997fc20170a47ae29f5d93bd2728565648926f1ce4abb55321dd72a17920db42"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stairs_02.fbx",
+      "sha256": "09bb8b4179f13fd33f089870808363451b7610d94b7500f9f729d68cb6a8e26f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stairs_02.fbx.meta",
+      "sha256": "15e20b526fb8995b0a81a3f76022c044ed9d6b187d68cc14fbe8c15fa1a555e2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stairwell_Wall_01.fbx",
+      "sha256": "f95e6afd9411fdc30e11c5e0bd23c2fe5d31196d3deadfce7206237e089ff30b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Stairwell_Wall_01.fbx.meta",
+      "sha256": "3bc48b8bbcba224a7c4b8b7b31554b098c95e6f016023dc75bde05ccd1818772"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_01.fbx",
+      "sha256": "56c02a5363b381f286b7781ce75a8a6fccab3df8954b5c9fa9cfebda6d1e36ee"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_01.fbx.meta",
+      "sha256": "e913bb170f166c7ddb3ab36b4f243e403393a333a426f585e642e230290c4b4f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Angle_01.fbx",
+      "sha256": "a3ef5ff7b3937a792a7ee18acd374dee717738a89f31e7ea4176c3cf1650763b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Angle_01.fbx.meta",
+      "sha256": "80d19c344f275808a2f33922738334a3eb25187c69d7ae2346fd81021eeae6ae"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Angle_02.fbx",
+      "sha256": "c5d28f76c49122632411cdbc416cfc9cbac1e0b244bf35d399295f72ae65114f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Angle_02.fbx.meta",
+      "sha256": "e686680d6cf132e624d2bc898cf6e04cc74637fdea99703484b0e0e07b9a70a7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Corner_01.fbx",
+      "sha256": "977e29c6814cc9a8f1808118211bd74147328cfa3466c84aba8172eea6c1efa9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Corner_01.fbx.meta",
+      "sha256": "00c9061bcd3c9bf2f9b2976e1003757389f56302226e4d3e3aeb7596416d4e01"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Destroyed_01.fbx",
+      "sha256": "183ba8f73eacc88b7720467bb2bb83760de1c985f3f6d987569ea3fce9e88e51"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Destroyed_01.fbx.meta",
+      "sha256": "e6b7e6d688db2c2693078c4b077745370ff126f52588f4ec401719145a5f77ea"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Destroyed_02.fbx",
+      "sha256": "1bce21f0d6f2b23db91231187f33e45364e0f168a3899618b721d2ed5bd14052"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Destroyed_02.fbx.meta",
+      "sha256": "17ff028cb6bc56eeb3f4719fb790713b0509fd86f427b82fd9f83b7a65478a74"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_01.fbx",
+      "sha256": "3b5351875d44ca2cd9e9802dcd8f2446150433ff69ee332e0bc21dcc3a2cc58f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_01.fbx.meta",
+      "sha256": "ddf8abc29fdd8a547cceffcf2381480745ed6781056e7d4aefe99361712c25c5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_Double_01.fbx",
+      "sha256": "a553f23b1af5615e0a824a1c6f8e1176acb9044815e7c57c5cec7f4b5e382b9b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_Double_01.fbx.meta",
+      "sha256": "7269ec42b5e58942ab216cc880d9152b5b24cda645c25db1a95086c6b2d2d7e9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_Double_Large_01.fbx",
+      "sha256": "3de372df72615ca02e7aa580e5f6452cf5ba7de3c8d25dc13f85ca668c4eeb35"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_Double_Large_01.fbx.meta",
+      "sha256": "4b2488dcd6b9fd417f23ee2a20ec39f5d1f7a22e7e638ded4dc739a527629524"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_Large_01.fbx",
+      "sha256": "7538891eb428cf68dc261dee4f495c809b690738d5d24fda660005112df953de"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_Large_01.fbx.meta",
+      "sha256": "ba0168845ad68ee5f4b0c5247ea296cd70b6649e412230feb5fa3608150b5cf9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_01.fbx",
+      "sha256": "02a333b8c7f23a83b8db4021c3f6c36ca109c36646f2340f2bb061eb227c8022"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_01.fbx.meta",
+      "sha256": "bc4b316c280d7d447514f70de15de079b1961d5f7a7ac774d78041f0bbd6db6f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_02.fbx",
+      "sha256": "acc85d85f1e235f369de02da4b9c8bdd928dec1065ecb9146b1e79fbd3307639"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_02.fbx.meta",
+      "sha256": "1fad640e3304007da038b462d4dd3076cbcc1c814821cbfbab2264e3766c520e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_Angle_01.fbx",
+      "sha256": "8ef81f9ced63629172589e9334a8be69dfee6258910f35ce8eba564773a5d7c5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_Angle_01.fbx.meta",
+      "sha256": "650a5000c07d243e98256fc0d344acb1aedc2e19dc6dae1eccf8836f6816d27d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_Angle_02.fbx",
+      "sha256": "d9fb70db24c7d8a8e23395f8c172a2d8d1a301a83253a96a096e33007e804b5b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Half_Angle_02.fbx.meta",
+      "sha256": "a1a1c025f5ac2ece7d9ed1581cd8106f6efd1ecdd9e11e5cab2687360d728b72"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Quarter_01.fbx",
+      "sha256": "0e00e1c114d99d242fb99c7998f8a2ae740a0f9ff47716bbb70e327cb25ba2c9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Quarter_01.fbx.meta",
+      "sha256": "84b8acc56f625fb7082eea6a1e807c119c08e269e0649c92ddc79c275539e780"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Round_01.fbx",
+      "sha256": "d28c6aded56b607b41426cc375782e8195310c6c6d311909650ba9006e4c37c1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Round_01.fbx.meta",
+      "sha256": "f4ccb47f4d2aa32383db08c77db7d6ef5ea5033346a02027207256fa88c3704b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Round_Half_01.fbx",
+      "sha256": "5e51eee1f760cdc43280ce23e0577edb7601ab65e5743f1cf27c18500b508888"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Round_Half_01.fbx.meta",
+      "sha256": "3a9752e4e798e327d76a8edb7381432f9d655815d40e5a590288d70f9cd3c967"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_01.fbx",
+      "sha256": "4cbf71ab2a8ae5e1dd1e929cb500528a5729cdc0186313399cc57d29e7125afd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_01.fbx.meta",
+      "sha256": "a96bce8451d1eb36c2254d87ecf2bc11563ecd0061788af30e32727d25b2a7cb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_Half_01.fbx",
+      "sha256": "b20c11f8928dbfc850ab4b5d1555a327d53beb99bfd12efea8771c2d093e9bba"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_Half_01.fbx.meta",
+      "sha256": "84e4ab16160d1f56d962e13d043ffc92e0c976556e3696e30b082a475cfe9c77"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_Half_02.fbx",
+      "sha256": "a0f52afbbeab59d303e0cbdd83ee16c9c7977fe60721c8174dbaff7126145a59"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_Half_02.fbx.meta",
+      "sha256": "b4c2cd7f99cd9f18b55e67c61da2a4a78ea834433496f82547033b3190b7fafa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_Quarter_01.fbx",
+      "sha256": "ff64e9e6bfb93773240d09af1d8d834ff6ccaca5b5305d3b5261e5d52464e347"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Thin_Quarter_01.fbx.meta",
+      "sha256": "2d7d180d027aa59061220f68889478a6f08c3bae014d3dd1f99667f6dc4750fa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Trim_01.fbx",
+      "sha256": "8a4bc3ad8b2ba97bfc9cbbac9a521a8c3a433831fc8924155b60acf377b7de99"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Trim_01.fbx.meta",
+      "sha256": "b856357b0b001c8b07106e6c36116d8af49a1f8156d3e37eba1578bd9937017d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_01.fbx",
+      "sha256": "45a06496640f93849df560547c8ad2c9350f67c45a0252b55ab9660093650d0d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_01.fbx.meta",
+      "sha256": "453441a9abce17d618ce64eff2dd972488247cb4740d6cb81a696d0ccccafe17"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_Double_01.fbx",
+      "sha256": "30eab67a384fda5aa88f2bd188c3ae147671bdea3f1fd19efc2f0500fb12dba4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_Double_01.fbx.meta",
+      "sha256": "c97b808bd71f785bc3dbbd6cd753e39b80fe853437cc49613536f10e9299e83b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_Half_01.fbx",
+      "sha256": "5b9a9683c75d3f606d12c2cd365bc8d80cca2820ec68d56c47e595b9b0053548"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_Half_01.fbx.meta",
+      "sha256": "3b66ccf542222e93e361c28ecef07c5e3163ba3245c42f16b71c803431e618c2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_Half_02.fbx",
+      "sha256": "dfd574053ed64a9592f365abc6a9a6aac05292a1e250fea3578d93b367a5b888"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_Half_02.fbx.meta",
+      "sha256": "87c640f99cb10fef5a8d54b00484799ac22464bebafc03b504f4275f6be1637b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Barrel_Wood_01_Convex.asset",
+      "sha256": "80423f90ff647e51bdba84275cc32592d72dbe87b887a2042dcb436d5417bd4f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Barrel_Wood_01_Convex.asset.meta",
+      "sha256": "46ed4eed2297b371dd937abc283bc1af1791acfa3f248eb172a7d51b0385a31e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Barrel_Wood_02_Convex.asset",
+      "sha256": "847d6d4406e22db1972445671a729f15b82d30df934e31d7fe0819da7f53c2de"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Barrel_Wood_02_Convex.asset.meta",
+      "sha256": "b08d3ae6c522f1885345984736ccc7a0ddb2bfe214bfd4753deaebec4561d3b5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Barrel_Wood_03_Convex.asset",
+      "sha256": "2d2dc21fb8e77fd52024252c8d01506c8387d67278b244597a1954e816d8841e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Barrel_Wood_03_Convex.asset.meta",
+      "sha256": "ac88b6891878875f0b5f264f7653f273d40327510c65ae12134e70e4dd6df9b1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Chest_01_Convex 1.asset",
+      "sha256": "5f571fdc775986071a47ad91ccea7029360378c40f1b1901e48a78d88534253e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Chest_01_Convex 1.asset.meta",
+      "sha256": "dcfdc3fa2927cc721ab6b407d22c0b0188dc8dc121c27abf81bfd806117c4944"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Chest_01_Convex.asset",
+      "sha256": "ea9d9c149b4ebbec791a754670d80869ad67431b724606c5450f4814a03037c1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Collision/SM_Gen_Prop_Chest_01_Convex.asset.meta",
+      "sha256": "8e4f62f94221d66cf278242728ef7bdd528e27122e02ecd9bd2594ac3b122caa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Generic_Characters.fbx",
+      "sha256": "857e43c0df2230e70ea4ab840f95de5b8ca113c7e81c63a927e1dcc41c853c3f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/Generic_Characters.fbx.meta",
+      "sha256": "3160f922e5bf47f85ad795c5d9972cb3bbd4223142bb8c5a0c965a8c1938fdd6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Chr_Attach_Chops_01.fbx",
+      "sha256": "cc022c5b5ad94134b4ec384ec47a0885cf59deaeb171d2ad1335ab0627e44a83"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Chr_Attach_Chops_01.fbx.meta",
+      "sha256": "b15e9a9acd62030392db59e5c44d262290213252610e83750066055639c5b7fa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Chr_Attach_Hair_08.fbx",
+      "sha256": "ce1bc25fcab73205890f1e54c8619bb2b8be98ddd4fc285085d5fc32d21b234a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Chr_Attach_Hair_08.fbx.meta",
+      "sha256": "f7c85ae0e73bbb8c7dff6661fda327348f47de4f4e5d1e0c474f5663af2012b3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_01.fbx",
+      "sha256": "3bfecad36e67cbb801aa26f5682f8fe9038ccbe9dc945e5b7a3373da3cd8ad57"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_01.fbx.meta",
+      "sha256": "de382c0b735609f8a3905fd67481b989b764aec77833b77b3c55c3f110977996"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_02.fbx",
+      "sha256": "0db9e6cb3c065acaf988a431f85bbbc928c003e6f13e1a1ba9a430eedc4a160e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_02.fbx.meta",
+      "sha256": "c2f1959f7bab3896f568ac5a1a8998d4917ceec9e002a3c202e33f3fefb5a2ee"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_03.fbx",
+      "sha256": "fd33544c1fbe7713e08a6f3fad4facafbe8a24f9d490d051b2842d5c787bece3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_03.fbx.meta",
+      "sha256": "0205804faf2938f56898965a01a559b7add44deab7f4ec67d267e6177158bd0d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_04.fbx",
+      "sha256": "705955f1a4eaa62093c5bb49510220216b50734dd5c0d918396d3aab72cc27e6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_04.fbx.meta",
+      "sha256": "71553101c0a567e035f29dde2a70c46768d9f5d6305fde4e26248b90e28a519b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_01.fbx",
+      "sha256": "c45d0c0e82c3b70674f455c7768c3142f8d005de4e64356a83794beabf85de4e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_01.fbx.meta",
+      "sha256": "e7021644c151f3c3699baed07358e702d75da0da3447c6a60bbb0890d47a1f79"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_02.fbx",
+      "sha256": "c1cff6395e1bf7b4250e7425f45a1fcc70f1008f38b38306a904a0aed001804a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_02.fbx.meta",
+      "sha256": "2b872dd75a731dfd142ae327b343c02f465f2de3e8513e8b7e92c97ea8fa2b7a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_03.fbx",
+      "sha256": "e2eb80f9f54da3585b9469f3412bb8a9ac397df2b293af34c3a308f2595a3e48"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_03.fbx.meta",
+      "sha256": "acef816f86c0da8dc246e5378074e560db554a70e44227110df2fa4f1bcb7fd4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_04.fbx",
+      "sha256": "94abc505faa929e639d81eb5a1dd5f4ae04f2bfe11e060ef33624d7ba4ac9bba"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Large_04.fbx.meta",
+      "sha256": "b38a0cd8837ffdefc5b5f03befb958eca034b9a1e9352ef760e359c54bbee784"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_01.fbx",
+      "sha256": "4879298cf50b958b23eed55c631edd1df30c2c40cdb37e260a0bc58d95cbdef8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_01.fbx.meta",
+      "sha256": "3ac1f7e2dcbc3a92a58a6f719daab287fd46bc0bc9005db4db52824c624edf8a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_02.fbx",
+      "sha256": "a6b9b7cf1ae418f2f7475caeb5dd0ab33ea4eb25dfc47fe032c77ef036481687"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_02.fbx.meta",
+      "sha256": "5d5054a2400edf10309319511aca04bc714b7ed0b8eb982ac3c6e68b6fd42e54"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_03.fbx",
+      "sha256": "96a4b3e3e72e0538e4ba3acf4afdde0a80cfb51c4e662dd80de41e55d6c07cd2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_03.fbx.meta",
+      "sha256": "9b59452052ea65675f2516ba028befdff69ecbf998652400b1c7127eaee25394"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_04.fbx",
+      "sha256": "a96c6caeb2230402a4bca6700c905e861d84a4cd4e8bb93f277a6ad3145f5b4e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_04.fbx.meta",
+      "sha256": "17d61a3a49e92a6c5941f21d9ee69c997d3b4d0a4aa6dae4a557c43cae63ffaf"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_05.fbx",
+      "sha256": "73050162c01848a49e07502b87629d22abc027e32ba47d06c59629db4cb96f09"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_05.fbx.meta",
+      "sha256": "2e85a9f734386f9afef91799177e93f9361abff4c7ae8e0fd9447996f01ae29d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_06.fbx",
+      "sha256": "eb6048b9fe19d47677cf36e68bb78e0d8957e65582ddfcf47cb67661369163be"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Bush_Part_06.fbx.meta",
+      "sha256": "362411a513d63b86ae757cf49ca0a26ddf57a245f3e222d5e65fe0a9c9b2f53f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_01.fbx",
+      "sha256": "61ba5f682605a00e64f62e7d6d75c3c648bb41b38ae60c56d2de12da62efff14"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_01.fbx.meta",
+      "sha256": "96a6d3837f3110c600284c36244ef86f4ebe67739ea74546ff1e5727ca86308e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_02.fbx",
+      "sha256": "0531f8a962e9c444e08521ce7e38afd24c7010f2208d1b9c200be397f90ee529"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_02.fbx.meta",
+      "sha256": "52cc2895c1bd3b278a5ce081a5d5b0a21f1bfffa26b04da261f06dd14ae3246c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_03.fbx",
+      "sha256": "b11d907b6eb5aad4ea1572278690a7254f852279283e14bcd5c12bfd968c2b10"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_03.fbx.meta",
+      "sha256": "c657db9be420890b895df1d589551ea788fc543cd14f26f6287df945961e3aee"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_04.fbx",
+      "sha256": "62e8058a7525afbf3b0e9f73332914ed04014834d690e2d1de18a969a16d6f62"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_04.fbx.meta",
+      "sha256": "2d74afffaed7288ed01fa6ffc117a9a5358fe34e47a6c908be26b5434bd32f3a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_Arch_01.fbx",
+      "sha256": "96772a3a35b1a04e87b646af7762968a651cd52d2e12f1c03ca3a08bbe94c68e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_Arch_01.fbx.meta",
+      "sha256": "18b9f72043ca6ee69f0ed1b0b6c6081311b66b13c00eda006af6dc57ab841429"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_Arch_02.fbx",
+      "sha256": "917af26b2fc68fc74b5f2fb6b75dfea3a619e86ef7f165b1783e58de632ae11a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_Arch_02.fbx.meta",
+      "sha256": "44dce3a0301cf72c9431687592ebc8577e0e905e0b1345cfb683449041de40b8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_Pillar_01.fbx",
+      "sha256": "5888072b9179f9bbdbb901cb440b1d387689dcae5e27ae116d9ccd1ea07dbd1a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Cliff_Pillar_01.fbx.meta",
+      "sha256": "c7acbc193b8d769d3c3f2a3a4c619864a9ed802f7afe2333a81a5ecd9501a01f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_01.fbx",
+      "sha256": "1112ef6c55031a681dcc87f20138104599b730b19fe75d295e6c2a35dfde621f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_01.fbx.meta",
+      "sha256": "b52efadbbd8c8be2ccfec9e112ff14d31237905b3e1fd3ce13ecee753fb24016"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_02.fbx",
+      "sha256": "2c4d2691d1eb839c8a902db7369f1cc0f78ade3c583ae8f7336175908ec1042e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_02.fbx.meta",
+      "sha256": "a949513ec73a745b677c65a1e167e7fc022f77139bfbc112aaa4896f159e8dbb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_03.fbx",
+      "sha256": "6d1a0fd9df649379a9aab016684a3c12ae01cc82ac27fcb8268aa2f8157e2d18"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_03.fbx.meta",
+      "sha256": "cf0d793480fab28dc19292cc7e424784107562a5f2dccdcbd867432a1c1be7a5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_04.fbx",
+      "sha256": "c23ef8b883d81bfc3deb2d062e9b2afbc52a8f4d6190a28996af0b0d25bdea0e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_04.fbx.meta",
+      "sha256": "493fc5e56a18f9867ab9eb7a31b91b03bbf9319ecf88c25406ab9d9bd2af42d9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_05.fbx",
+      "sha256": "01550a4530949335ab99bbb8541189eabf6113d67940f07df3fadefeaf9ceaef"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_05.fbx.meta",
+      "sha256": "5104e895cb19418a7bc03ab5ada7614dc0eb4702eb7e6d81566dec19e614cda3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_06.fbx",
+      "sha256": "fad3f2d53adf1e3fb0addc78bb32190ff59b9872e1d62dd4a83c4254d9488fda"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_06.fbx.meta",
+      "sha256": "589425a45f4013dfb10c85a631f1058ac3765953d8492936b3a87da1ebede671"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_07.fbx",
+      "sha256": "43721aa7aba153b1472bff581e657dc40d0606188f834380e2982d9a1c6c0f17"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_07.fbx.meta",
+      "sha256": "8a2514e01aeb4f36dfa9a073d9563db81e5666aad8b5a37d8b65e34dbc56a97a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_08.fbx",
+      "sha256": "868287261ebfb8ae3c5a7a84da90c5f5b59a27ba3000cde61065a734f43316dd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Dirt_Cliff_08.fbx.meta",
+      "sha256": "e51e09a8e4b645787de54caab0c8ec52eb649825d820ecbc84e0fa9c87de2ef7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Fern_01.fbx",
+      "sha256": "81159f9f66fa13db0e92ebd0bf9c2b3aef2ef7babad14be92b97b2aab7900b72"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Fern_01.fbx.meta",
+      "sha256": "296215b684ed36b923b220fe63be2ce4d9dba6dd6aaf623d11ed44b30f46a04f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Fern_02.fbx",
+      "sha256": "20e918f5bd280c75c29a1d3dfda2636f4736c821904d6b5826ca56b45bf6dc0c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Fern_02.fbx.meta",
+      "sha256": "82950a5c7a57aba2d4e1b5f2bdb6989d80d60093c09911905e3bfbb588c652a8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Fern_03.fbx",
+      "sha256": "4b58c2ba57ee6e92a878afdf289d018be640041c16dadf2ac6f4647cfffbb164"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Fern_03.fbx.meta",
+      "sha256": "e5295bd45c576f1cf37dbe87a27b482e975732d6b5b3feabcd2bb15324cc99f8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_01.fbx",
+      "sha256": "2736a12fc9a70bdecad085c5833f1ed7f52572e9a5d990eceeb669a27ce2f97d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_01.fbx.meta",
+      "sha256": "a224eed45c17df165cd102bc27834ae0dea9a4e9dc74a85f5f97003f616e871c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_02.fbx",
+      "sha256": "1c8f5a86aec06cd7716f1af723343fa08356b62dbe0f332aa24d19d231ff7e09"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_02.fbx.meta",
+      "sha256": "04756ebec134f99c80a0f8acb275ce870c1449d91177287f16af7aa792d417a8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_03.fbx",
+      "sha256": "0dfa1c4a5f14a379f22acfc204513c279890c6385a1b0b43444730c979443432"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_03.fbx.meta",
+      "sha256": "2ab7499bc3cd5a096cf202fa14ea02f3076c222c3d29bff1ef9d20e01ac2a681"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_04.fbx",
+      "sha256": "1e8fb2cb6f6c533565c03c7c4dc4fc4c46a92298e96398c86526c278ccece813"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_04.fbx.meta",
+      "sha256": "0515a3dca0b113f0386efb66a3331f339af89e779d59f3e1cd50d5bfb2ecb58c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_05.fbx",
+      "sha256": "9fe945e163ae7d8875123ee2fb7e634ebf1512fd5072807945e2f82f98bf158b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_05.fbx.meta",
+      "sha256": "526590bc6a9457438b6375055adda42b7039dded4b0c6ab0d1a7bd89d55487c2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_06.fbx",
+      "sha256": "9c4d1bbb08ab97f1e5376374934b79e26d76f35a93cbb776ffe4af499482fdb8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_06.fbx.meta",
+      "sha256": "33e8172df960bc1fb0a574cf662b5ae36107482c562d12b283e8e37704672583"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_07.fbx",
+      "sha256": "8c3b1cde8f41b1580c050959f953263a55eca9e6f8e1e6c8a480e5cfd3f2bd2a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Grass_07.fbx.meta",
+      "sha256": "8c3f2c5041d079366a545e45fd11697d775307d4f551e03274bd46b5d6396cc2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_01.fbx",
+      "sha256": "3bde8c01c26fd9724e53a5764a08c78a79ec88cb8e605807cd7e4897743cdeeb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_01.fbx.meta",
+      "sha256": "ffd04514dfe50275c6e3c6d84052154b698d20ffc18418d8e0a516589ce34521"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_02.fbx",
+      "sha256": "7fa150196910259d0da0f4b626b8f742883b4878f558d6e762718469d60c11be"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_02.fbx.meta",
+      "sha256": "1f5da4212669df884f101c8961df6b1b94e8a2ec1a33205582598eb6e90d8bcb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_03.fbx",
+      "sha256": "b9d82731a57b5b3f79a6fc8b2bd1742b1ab8ae48c5b8cff1501b697cd3074d39"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_03.fbx.meta",
+      "sha256": "b73e501fad7772aa9c6ac2f1c6a242925a098ae30cb1c003086bfe52063baa7b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_04.fbx",
+      "sha256": "c441b8fbee87d99fb24c621e6210836faeb5d0e38c0b82cd0a8247aa7cf9dabf"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Grass_04.fbx.meta",
+      "sha256": "ecb7dc0513052dc5d5b7511d365914d384903d0b20486e31bfb30b7f46835c3c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_01.fbx",
+      "sha256": "dd6cdde90b1fdd1af670265b2560a5d2be293f72d9be4fcd1bff4e7f74126066"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_01.fbx.meta",
+      "sha256": "dd6ce67a820e384f32b1c36d82ecad8a8357afd4b724e4701f341f5e34e53166"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_02.fbx",
+      "sha256": "537435d983d2aeddf7bf863c49aca2a168e27b4a2eeab9258ac20530768607e3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_02.fbx.meta",
+      "sha256": "c579075fa63892205198c9ba3509d7115076cd3427f89ab09e043a5341c97d4f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_03.fbx",
+      "sha256": "6c670c0665b52b0cd39be309c1ca160f2865086967465131705461de38543b63"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_03.fbx.meta",
+      "sha256": "11f8638d484f43904936ab6208b244b312fb724b50d4ad4cff467caed60543f9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_04.fbx",
+      "sha256": "193a15adb8015ab87691cad44577b8a95a84805a5635cc45ac02050005bb8117"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_04.fbx.meta",
+      "sha256": "feca2c15610a5e99b91b3182d4834d79500abf4dcb8e3ca1564ca4925ae3030d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_05.fbx",
+      "sha256": "f95d27b002cf814c0485028427183f6054d85e610b9e0a8464085facb5c5f742"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_05.fbx.meta",
+      "sha256": "d0a203616a4d5036dd760fcf84f3a43c5b9c0c72f2bfbc82f6dda64c9bd16cc3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_06.fbx",
+      "sha256": "ea944dcaa3389d74f1080602bc4fde63f1ee4b5d2f2d9d925f642205c28938e7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_06.fbx.meta",
+      "sha256": "6211e099c0c80233f175ed64e557748b233444839bbd769420ac145d3c6538d8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_07.fbx",
+      "sha256": "6cb440c5ae1d3072b83f2907ac3df9357743ea58bc5a379383d5efeece640a0a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_River_Grass_07.fbx.meta",
+      "sha256": "62e61f31bfad06dcd68b37c7a00ac581b5676b86105d86d2420a60081e6c36d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Slope_Grass_01.fbx",
+      "sha256": "3f5a1bc4fab69ac7895a22fe66f2cb697eb7ec2a9ed5db284d21845e7d1a85d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Slope_Grass_01.fbx.meta",
+      "sha256": "af1c58b936550eca849aab2d9523a1eba6d3fd3beeca9b65a1f340919cf99976"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Slope_Grass_02.fbx",
+      "sha256": "b2278849c6e4c3b925579b069db9617b6e315747d606c8d1f9b751e8fc597c2a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Ground_Slope_Grass_02.fbx.meta",
+      "sha256": "96fe44761c63bffa9b08548f10d6e1815ec215ed89418634f0a66ab88915b6e6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_01.fbx",
+      "sha256": "87236fcc1f469421b4695dc58d98cee2c52affcf9429c81995631d9c28b583f6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_01.fbx.meta",
+      "sha256": "425f30f7e23a0bf4c9933027fdfde443f69c7ab80221fc1457e38446e7b8ca83"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_02.fbx",
+      "sha256": "fb48238c827b6663ce74c0c52af61b68e78a253e3f9566dc33fb02295a5c8b66"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_02.fbx.meta",
+      "sha256": "d5e137ff26f16a62608601c17d66d9005ab1eb4a7ae5fcce016740d22ba5e0a2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_03.fbx",
+      "sha256": "2a01038391eeb5c58579aaee177131e60508ced8e8eee51131b889a59d9801ac"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_03.fbx.meta",
+      "sha256": "7b46675c024a2053cacb270aef06a08da7c1fd4b6d5445021d275444369f267f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_Pile_01.fbx",
+      "sha256": "893f361083b7e988188958847cc54e56101ef31b984ff5ec34d22631e853edf7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_Pile_01.fbx.meta",
+      "sha256": "334c43e72e76eba773a083afe71434c8ac4e802805b163b7ead009d4993dab03"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_Pile_02.fbx",
+      "sha256": "3407ca545204d8e3d88bace8854ff46ec0b8d8224aa7b5677562c8513a8d0095"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Leaves_Pile_02.fbx.meta",
+      "sha256": "b7fcbea20333002ea9b047467ab6c49887d9dcd5be852b16721cca685d2003f0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Log_01.fbx",
+      "sha256": "407dcb3982950b2a25195dd1b84540a53a410551ea4df1020daf1d1e4560ee7a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Log_01.fbx.meta",
+      "sha256": "1ab5c40fd2134a66819f6a8c826a608a74c5f22a973405cab1ece7831a90f6a9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Log_02.fbx",
+      "sha256": "12de1366479d658403d234e3976e663afdbe733eedbd04f61ac3a3f4162fe07e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Log_02.fbx.meta",
+      "sha256": "0d6fe5490148f995867d0332580931471be87769e3668db5d6916979c4073379"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Mushroom_01.fbx",
+      "sha256": "3218c90551d9e22e5d6cafb784fde10c84ea6c6a69941012454c7718bd282043"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Mushroom_01.fbx.meta",
+      "sha256": "451f30767f4571e7adc661a1f995ed92991c0fdb3d092025837f34b9c15a95dc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_01.fbx",
+      "sha256": "e2393358f9d8e76ccaad0323b9a64d5398d09a274dc04d36f2cd2ea6e3aa8465"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_01.fbx.meta",
+      "sha256": "301315cbf9a313d78a54ab067b3f87dedb66a73ce4a51b571bb4ba553327c515"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_02.fbx",
+      "sha256": "a20a4915a72645ab2699324ddd32bb4453c2f31fe31c4610897bcf731f14c2c7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_02.fbx.meta",
+      "sha256": "d4e5bb83644546be6238f91e097e6a8dc2d99182aff3d1cb9e40d62f3184b3f6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_03.fbx",
+      "sha256": "9815653bd1bfcb0041238d821747345dea0ab6f9eeee8e2d1e23bd340be4b6ce"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_03.fbx.meta",
+      "sha256": "edb36f2b46bd4e618e0614f30093de0b6e9ad9e6e517d73ea16a47197c78a476"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_04.fbx",
+      "sha256": "e4967b3857e49b97d206b21db3615018fec3b3e127e267167fa56e336799c01d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_04.fbx.meta",
+      "sha256": "dfe62882f85ddbbb8965470dde7dd694104591a2b18df4bdb62215aff2c6d260"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_05.fbx",
+      "sha256": "336ae98c2e2b289a3612e84650556a3d9fc325ccf21050844f7e0042e76b3857"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_05.fbx.meta",
+      "sha256": "97a9b938eea1d43844893225a9adcf4bccb96eed10413b175b135df418cfefc2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_06.fbx",
+      "sha256": "6123295e1a71ddf341c95062303027204433c77e92d32db9659aa39668150cde"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_06.fbx.meta",
+      "sha256": "9441fec30ede745f58e1d6f39794c846f1c35f0a1ecc6500c6d0c1dfbc42f108"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_07.fbx",
+      "sha256": "2aeb033f4f3856c7386ce3584334d1a64a050390384505a4aca0a39e58b67f8f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_07.fbx.meta",
+      "sha256": "d6f28b05c23cf79f25468b7c5d57f155b3aa80c0cc4f30cce333f4625e1568b4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_08.fbx",
+      "sha256": "0481cf6bb2a3a3a3e20b9ce2525da1e5c8fec0cb9be7f0b174ad98acae5c5ef3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_08.fbx.meta",
+      "sha256": "49852a5fd706468a760c1c31e60a4180899fd005f161d1608b00cfaada67a224"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_09.fbx",
+      "sha256": "137435a8a5d8e2d3d78dc8ec4241a7b70db30a1a6678341bf815ae01a3ba6f3b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_09.fbx.meta",
+      "sha256": "4636294911a88118b866c6f01db9434283e130d71b0d5fef30c7c4e7c6d5b7ed"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_10.fbx",
+      "sha256": "e88c3611cbb5f547f80ccff7c6be300d71f0019950f279150826b45f6a8faf52"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_10.fbx.meta",
+      "sha256": "484d5d5a20e093b80a4b3f12b98c899daf303a7160059bae3eec7378c832e6ee"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_01.fbx",
+      "sha256": "91d6fce2b430791470a183d6298c670d8c0e8b037105204d82f8b24233192e07"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_01.fbx.meta",
+      "sha256": "4b551eb0f184e7c77405366179ba75f37550b91fc32776c7197500ff538d72d4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_02.fbx",
+      "sha256": "7b6fb10a85bd5ffd663eadd684b62ff3bb014931916c2d2cf0be21c83e9063c0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_02.fbx.meta",
+      "sha256": "b28dc74011ef049fe5c50eaedfa9818635a6168f4d5956591e87aa4a28ca08f5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_03.fbx",
+      "sha256": "d6af79c19b88b02be451289bcccc7e97604d93774b352777df0a87cd2cabc81b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_03.fbx.meta",
+      "sha256": "a6b1cb57f25b140ed6d680bbe352dcabee3e20f99a880ea3b2844fb438f9d4d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_04.fbx",
+      "sha256": "76ddb7dd3dfaec71ec63d82d4dcd5a9489b150551edf63da43f0e1b6d1e60aa5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_04.fbx.meta",
+      "sha256": "82c8b2cabbfc466e69cb336a6c7ccc7dd5b883b4ebc3c8f7fd0d9dce9b04a8a9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_05.fbx",
+      "sha256": "ea75d3b3a73d34a8319816e3842f62b5b61ef8f115ab52686aaa8330d7a07256"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Rock_Pebbles_05.fbx.meta",
+      "sha256": "2f658f8ab18172dfb485c58405b3bf5f3621cbeea98b42203ed9a635dea4e262"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Shrub_01.fbx",
+      "sha256": "4474138d78bc3b6da52cc527a1a50a95a7e0ff10283286f4fb3c15cb67bcdb46"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Shrub_01.fbx.meta",
+      "sha256": "92edc987bf9e272217272cda2e682e2c6ed3f96a51efaedd47a7eddc411f9c1b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Shrub_02.fbx",
+      "sha256": "7f5d44fd9da8cf8d761356bdfca851473f5ceb63eda24c4e344499606613c6e6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Shrub_02.fbx.meta",
+      "sha256": "91e7f11e8f9de7369274337519f8ddbf69f9142e0417cf3f43156ada95a4b305"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Shrub_03.fbx",
+      "sha256": "6dab4905184b37e0b816ebfd0dd654f0f97bf46faedbd0f5df3b045dc06f416b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Shrub_03.fbx.meta",
+      "sha256": "eca48ef36c27c292f54de1d7f64307cf9d1d707b84ceef7b1eb7c50456e05bb4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Stump_01.fbx",
+      "sha256": "2b4466d0f68d4bb5a1a94c8fd6335aa11ae74d92413ee409221eb39147dbfc21"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Stump_01.fbx.meta",
+      "sha256": "2235d0775b1361a52b7ba9715d99f6c81da4c2fc20862812b11718a5fab2ad8f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Stump_02.fbx",
+      "sha256": "dad9aee1120fbe2cdc6bf66aa86725ea1e32403c70b1901260663638b1a02ce2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Stump_02.fbx.meta",
+      "sha256": "e34f67587dfbb40c31c078c51a5c84cb1b292b212f09730a1fc28a521b643908"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Stump_03.fbx",
+      "sha256": "9505fec83d00a62bc1db28da5f975e16926fbe0964706c7fd832fc0e8166b36d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Stump_03.fbx.meta",
+      "sha256": "8951c059f144cdc11df1ad3ae8262829926372a350a88e654c33f82f40fc836c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_01.fbx",
+      "sha256": "90ef48a17d63530435aae5e1422d6bdb63cc56450e9a18af3f5659dea2fe16bc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_01.fbx.meta",
+      "sha256": "dce7c81dbb003f8781aba250473eea433d83388762446eb8c5bd0a47b7aaa99d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_02.fbx",
+      "sha256": "41205c90c268be7d373afd3741255234ffc436c6c3c3c82bb9d78ba78d629832"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_02.fbx.meta",
+      "sha256": "a397bc02e22f4c9d2c4d910d5498ab6829022030661f73d3794e972503383477"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_03.fbx",
+      "sha256": "0866fb82d4b18fb6582f92f77c8ea6e93aa8ea2d7a4a86db7db17a2cf5fc07c1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_03.fbx.meta",
+      "sha256": "996946d1c6b8ef2927c7dbc073e58e9171bdb8a2ffd55ab049f5eede67644965"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Dead_01.fbx",
+      "sha256": "cfdaeee6d156bd6a95e0dfc129332eb2f869891984f96d06f891085ee977f316"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Dead_01.fbx.meta",
+      "sha256": "4a5772595437c8d0ce18e731f0cee3b998cbac49bfaf490018183f271bdfc98e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Dead_02.fbx",
+      "sha256": "df8aeea24ddb07657cc4270f89c38ccb1fdc02e6471034936917d1c294205775"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Dead_02.fbx.meta",
+      "sha256": "6390d2d03e378f03a0abe5cd13c4b7b3485bc35d3f4cb29b3bb64041b830f3c7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Dead_03.fbx",
+      "sha256": "cbdd59148ae2f298c2238d7a8043d65df9d88e1fa658003aaa2a8b5b98906205"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Dead_03.fbx.meta",
+      "sha256": "a3220d432d28c8a6bc5f59fbd0d9410db433b8b897229734d12fe2061b0d028c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Pine_01.fbx",
+      "sha256": "0240c20f9b6494acc3fa68f8ebbd390ede9d36599c967ed4a68fcc0530b9ce32"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Pine_01.fbx.meta",
+      "sha256": "59d8bb629eede87f88938761e5bae9df57919ffdb9d210e3a540ad4190ab69aa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Pine_02.fbx",
+      "sha256": "c8d0af2fa1e83364b997bba055cf8ce6e3d28227114b8a61c3f40a103da04851"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Pine_02.fbx.meta",
+      "sha256": "1f5999870c02c843ea8ae4877a4216dcf4f760883381ddb1d5e71f460a87bf86"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Pine_03.fbx",
+      "sha256": "1232b68d66fae3c8767c950bf92b73d8aeba840e45b4112f55cf35db913d9e3f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Env_Tree_Pine_03.fbx.meta",
+      "sha256": "0c160c5ae88d97350ded1ec96736f92f511ac01b00f2448d43a07c9661ed2689"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Barrel_Wood_01.fbx",
+      "sha256": "96a9aa86dd53cae84c37299c9e23d45f1cfc6e31b2eb9a32dd34f92773849dc3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Barrel_Wood_01.fbx.meta",
+      "sha256": "ea6d567b91c356c87056dbe20509b45a34cc1555611002f2f79f8c07cbba3605"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Barrel_Wood_02.fbx",
+      "sha256": "c6f659896f8bddf1ef52fe410ee39318bad395f12106c6f0e4b4cf42c29b2c2e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Barrel_Wood_02.fbx.meta",
+      "sha256": "1d235f2f4e0421aa0ef723d618f26d1649ba089f309fc1d03d70644d37a7c7b4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Barrel_Wood_03.fbx",
+      "sha256": "32a412c6646170583983d0aeab6c8d5533fdb8640b632c9baec0f26477ff37ef"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Barrel_Wood_03.fbx.meta",
+      "sha256": "a3d028521f8a5fbe7a6edeeda3071c814a2d092caa520c8929f8cd7e52e724ab"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Chair_01.fbx",
+      "sha256": "96b4f3111f12d795e1fb6588e5ec42de6292aa556425ee7d0e870a2f15b60947"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Chair_01.fbx.meta",
+      "sha256": "21404d192c50937c62045fe9936f9b71fcc9a7c63ec7f443dcf3a51497a8ecce"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Chest_01.fbx",
+      "sha256": "130b69d95636243b762f03aafe5dbbce1045e1d330400eb4decdaa32f43f9fc8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Chest_01.fbx.meta",
+      "sha256": "8e9fd11429b6546981cd066f19958f9b4d1dd50a7618cf0ca8fb59dd0ae77a60"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Chest_02.fbx",
+      "sha256": "a24ef934ae4313ba375a2356a043f9b65edab6d7d47e0be0c00f694c411f7d47"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Chest_02.fbx.meta",
+      "sha256": "c89ed36ca714a24da813e9f404d6fb332ec3cd9874ee783e7055873f1e4baea2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_01.fbx",
+      "sha256": "4dd46adf613b8d5a032bc0fe15ad9669577faa25351daff91bc2551efcf3e317"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_01.fbx.meta",
+      "sha256": "7a250c48060fc482205718b7638861bf7708319a4681a370b52d7bf99f5748ac"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_02.fbx",
+      "sha256": "6aa37092b0643ebe7c1af4e2e17fc45a635df7df3fc7fe456530105626ca1b73"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_02.fbx.meta",
+      "sha256": "02e2f9cfdb7495a220a5be8d3727ce1e2e9e82b58398185be9a8d1c1bd413cd1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_03.fbx",
+      "sha256": "69aef80d8184acee4d17386aa1b4622f9fb866acc7c68d5a62f420d6c40a2260"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_03.fbx.meta",
+      "sha256": "a61a7fc1bb06ac982c7e779faf09690f19fed29f5321a59b9285f95e5aa0bcf5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_Preset_01.fbx",
+      "sha256": "3d405acc16b492fc7daa80aa82b94d53cc0f756915a57867f2f0d37015fc6645"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Crate_Preset_01.fbx.meta",
+      "sha256": "8cd35107eeb945e199e0712c4515449f23d698f5a5075f494999cc369cf5cb49"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Plank_01.fbx",
+      "sha256": "347d20f544a92970f8649c8a460be47ef98a362186d7b3ff31f5087f57c20a94"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Plank_01.fbx.meta",
+      "sha256": "48452dde91c3a376aeabd27a6fbae67dab02de20f101645aa38dd9e46e14b4c6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Plank_02.fbx",
+      "sha256": "fd104e13419370b11ecec76e54d49e19f48360b6d39de42e9f408daa0363dec3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Plank_02.fbx.meta",
+      "sha256": "7a72124d88a4a50ee2c38393443a2948e39ea8dc254b105b4aad361122b06948"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_01.fbx",
+      "sha256": "2632181463a69c25a278f2da6ee8795532fd8d84869743b7bbfd7d08add56375"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_01.fbx.meta",
+      "sha256": "9c545e8969fa5ee41eed9ef01a7e60c4adefc9bde22abfa7bf2fa2df1b172a93"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_02.fbx",
+      "sha256": "7a1fd67dc54f5ff0190b19dc64245ad1a225ad7fd60877af1a22296027d8c2cc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_02.fbx.meta",
+      "sha256": "896042a3ecf82ce2dfeb8d6f2b3b92c6bf2b619bd89e5213e1727be42eb36672"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_03.fbx",
+      "sha256": "be7a5a923abaa30ec27ebe269dab501d6365bfd560e48f5193377d0b1020f353"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_03.fbx.meta",
+      "sha256": "b16f51a88eaddadb2a0d280544fd1727d25ab5fe5ef2cf7d56426f79b690369f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_04.fbx",
+      "sha256": "3a3553339d1c33b856e051d119903105cde583545410c96b79e0d8223951adf7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_04.fbx.meta",
+      "sha256": "f16e886225189bcad09b15a2e145859aeeda1ef8feaf92ee983311b809a4d8ab"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_05.fbx",
+      "sha256": "2fe794dbb01ac5bbcc23543b7a85ce0d90df7b3efbb064f2933fb163d8d537af"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_05.fbx.meta",
+      "sha256": "21981b5a1bb25e9a99350f935e9b521def0b8da1f36f7d46e6b27d6a767d1ae9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_Stack_01.fbx",
+      "sha256": "11a8923ee45afd38d192a25efdee7a990e9325e46bccd16c10a62121c7069599"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_Stack_01.fbx.meta",
+      "sha256": "d300c1f506055d935f33a3587a764ae2c08ecd0a0a7d3faa02a64099a828956f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_Stack_02.fbx",
+      "sha256": "faf796784b5da3d621e45751e2d67ae3d67e602ad27af44b83104d28a9ae4ad4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Sack_Stack_02.fbx.meta",
+      "sha256": "d76cd4238d5ce524d0376859eb4199a73f76167c6b0480bb38c05edbee1998dd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Table_01.fbx",
+      "sha256": "7fe459f6fcba864717790a3330cadb428f4aa46aa0aea4f82c6a6a12b59fcda9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Prop_Table_01.fbx.meta",
+      "sha256": "97424dae965dd83c420bb847f7d621f46a386ffc2f3c53bb2d2bbebccbdbf955"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Wep_Axe_01.fbx",
+      "sha256": "762cd95751102eed6f9a3ab4ffa81e84452f07b701a62aedfe970b3fd3f05cf9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Wep_Axe_01.fbx.meta",
+      "sha256": "8f24b5845399c9902eb6b40fad1b893a98a6e371f5a6668c8895c4f17af27230"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Wep_Pickaxe_01.fbx",
+      "sha256": "2bb5f673ace803fee6f69682df381afb93f5801333824cfca3c7ed535d7881c9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Models/SM_Gen_Wep_Pickaxe_01.fbx.meta",
+      "sha256": "04f70293cf9777c10eefec2a3544f402f47c4689ae2b776e6c3e6460ec408761"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Floor_01.prefab",
+      "sha256": "874115095c22631f6dfffcffefec3696912c3da87c4fb4d2c21a97497ef13305"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Floor_01.prefab.meta",
+      "sha256": "4c392f143f2df2927f629c15a5da7879286552a2489c5c9ebe5a7dded2ac8f6b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Floor_Combined_01.prefab",
+      "sha256": "5042f1d776db7479c310622a038758cae808372702100322fc81b9693ec1895e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Floor_Combined_01.prefab.meta",
+      "sha256": "9870339a7d4c529730c599f8a9c22043e5166e6cff152baec7661fa8a41ef4c0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Wall_01.prefab",
+      "sha256": "270b7d83ae9a62d3f7b80a61ee78a3b8cb6b8e74b373cef4394da8a066830aaa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Wall_01.prefab.meta",
+      "sha256": "76f2351fa07327116bf25913efe38b05c2a4673d784ee9ac846951a6b05af2d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Wall_Door_01.prefab",
+      "sha256": "0d5f6d7ec5acf6694b5d08f30df6db4e8707eeddd4e674e1ffd966e0a6d1456e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Wall_Door_01.prefab.meta",
+      "sha256": "a3caa02845032503a439df1949bc24eb3fd2d62d5ed275823d584ca9b1f4077d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Wall_Half_01.prefab",
+      "sha256": "2952b33f225b3b777f03edec8998ea0d15eff6a84c3907c32303428ad7fb26b6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_45_Wall_Half_01.prefab.meta",
+      "sha256": "fe97fc7070c7e03459561cf55552df56daa999e58a51d9de3e3b066b3f9f6446"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_01.prefab",
+      "sha256": "181498b9b7937f94ef6daad99ab2324cb7558b8fd73dc1d63c1eb11e0061e2f5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_01.prefab.meta",
+      "sha256": "4f56777086457e15c28cdbbbbe56b4b9592d1eb3ee39915a67eb25a98053304f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_45_01.prefab",
+      "sha256": "84b7523de3793592f82db1854c572ac2e46d16e0bc58391df205c824e2eab1d0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_45_01.prefab.meta",
+      "sha256": "60536474e46fb9c938b868573ac76b7940a143f5e9dac11fed5769b086aeba0c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_Half_01.prefab",
+      "sha256": "c6fbaff88a8a947b0f8df715d35900d68cbf92cef1d583c61b450292371fd0dc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_Half_01.prefab.meta",
+      "sha256": "7bd879e309c9693374f0ec6c1643e1f344b44f0f8a07d5baa2758d2f6739f6a2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_Quarter_01.prefab",
+      "sha256": "83fe1b09eeb80fb7d91a7795ceec40a4d0fd7eb1752ddaa48d5ec2edf1ff2d13"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Ceiling_Quarter_01.prefab.meta",
+      "sha256": "4fecc7da68fc56807357c4db61fa14594e2c5e84e378486fdc63b1234dce0a47"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Door_01.prefab",
+      "sha256": "550dc27e78587846fb9258d7f8a42ad22c8778900084a7a3b50682864c9d2a16"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Door_01.prefab.meta",
+      "sha256": "963ce460a232533e77e75306becdc1e84184e57e1bae76a9ff20f65023d65d3d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Door_Large_01.prefab",
+      "sha256": "22a6e4b5af4c9f46663c7da55361faba09edeb7574b6b426b24be57d59fe1141"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Door_Large_01.prefab.meta",
+      "sha256": "f2899f987e4eb0dcd41395d027d8f4c8707ccabe9e610685e18cdaedb88c7f27"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_01.prefab",
+      "sha256": "62e3b1f196d67651ae28a8aeeadb75e651d176fe8eef9974e15c938965dd97ee"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_01.prefab.meta",
+      "sha256": "bf8f5a1137726f9e44a941d087fd9ed9c42b37208ee9a8e3573153330c3558b6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Combined_01.prefab",
+      "sha256": "135712f93ae19bb20a9466a786a11297cab9dfcad0ae76c23ae183f73bf66329"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Combined_01.prefab.meta",
+      "sha256": "188b69723b67375e0dc7c3250418fb350af4589d5932c6d6be9365f2d5bff844"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Half_01.prefab",
+      "sha256": "fd971251bf1fcec20f79602be9998bb858feea1189ce1510a6f8c3fcf0858ea8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Half_01.prefab.meta",
+      "sha256": "003f327fd41bc00f8699ffa506d81bf49e15f84b88c75957e217b114fe4b86c0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Hole_01.prefab",
+      "sha256": "613d586ac669a6e1f5454ab5ac274c968ec40bc9317b40f63c173d3e225196fa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Hole_01.prefab.meta",
+      "sha256": "51630342854e229fbed65c5f83d5d9af48da0cb6c7de55a3e30120dbdc599813"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Quarter_Combined_01.prefab",
+      "sha256": "920d57b85ad8249f93f9abc4bb8c8faaaf9c4f63d0ac6c3768b1b645e052034f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Quarter_Combined_01.prefab.meta",
+      "sha256": "93089edbabec11712070b499247aa0898e0497737ffa02ef8266289635fb2ed0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Round_01.prefab",
+      "sha256": "057a8063b425355a922da3e4394e8c07031c66991aed9a33eaf3c2eb907b14b1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Floor_Round_01.prefab.meta",
+      "sha256": "ab53b95490ea31b7ba3dbf926a77d58f47c0ee39941dc2254be9c79866add3a8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_01.prefab",
+      "sha256": "0eed95b682a5ccf398e56b4107b651825b3eab1ee175dec8635f85495b8a66c4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_01.prefab.meta",
+      "sha256": "fcb41ad1d719b68f39f117283e18777a06d4bbd6884af00c81bfcb120da47e50"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_02.prefab",
+      "sha256": "2afafddfb4e9474c123ba4aedec963a1c5ee69630e1830046f291ad22faec934"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_02.prefab.meta",
+      "sha256": "cf6af8fb25e21f260b52526a952b1a1b9f98e377311284e2b48eec5e1a65f3b2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_03.prefab",
+      "sha256": "ade566a56199378c844a472dfb4340541c44b38f1e8b0be4fcff37c0dd447a8e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_03.prefab.meta",
+      "sha256": "b7f722eb3afccbe85bc01d72f984f9067f7723bbd836ec74b8e572ba64363258"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_04.prefab",
+      "sha256": "faae32364537ddfe4b63a50bb592e5345c914efc574748a3a233c4fbe97cf87a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_04.prefab.meta",
+      "sha256": "5b17bd9bbe4094ca73ddb6de849b0db1cdaeae4f21bb2c267efba63d52a9e3b4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_05.prefab",
+      "sha256": "8a5458d0cb5ae516e117394c65aff92adcbae59474ac086e3cbf18cf52b2d6a1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_05.prefab.meta",
+      "sha256": "ce91820dcbe5898c2325dfe4dabe6f81d445af3dbaf09aed6b6a63d87a644ac4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_01.prefab",
+      "sha256": "9964ca4f07b77cfbd1a81927461b4d7d29ad7d810240069bd17e43dbfead83e5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_01.prefab.meta",
+      "sha256": "41f4199abab11ea22195705c3714beefc131216375c57312b778e5966d720ae6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_02.prefab",
+      "sha256": "17ad0a841f0abe51f542bd39defd438607f7ddbd452720e05e7f057ecf0e3034"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_02.prefab.meta",
+      "sha256": "000922af4db143cd1fe7186f58d454b1978f53534b06f1c1e98778c21b9d28b0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_03.prefab",
+      "sha256": "2100625142210b9799b0cb03d5c10e9fd0a3550a3e5c4dffc1fd2d07c6c40cf6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_03.prefab.meta",
+      "sha256": "e29a8525d625d557795d71cbc4a974c87d517e08ded5419b4fcfbf2285ed268a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_04.prefab",
+      "sha256": "5a2ff7984231edd91cfc2159ea6dfb2e1ce89e6d0ff4ce1631246cc1df0083c5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_04.prefab.meta",
+      "sha256": "9c3f67ae77cf236b52d31e89e276caa7fda549037b9edf5e8a864b5c15aed7c6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_05.prefab",
+      "sha256": "903660d90217c585e892c62aa8e9773801579b31a83755ddf93bd2a66156dfe3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Pillar_Half_05.prefab.meta",
+      "sha256": "5204b8eb09eb016e75b729b504a901741f4d1e486850ec405390f9e166968ef9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_01.prefab",
+      "sha256": "7ac13b94b47c5435231a12f3933bd59b74fc49d73c3d14db77b8aa46740565c8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_01.prefab.meta",
+      "sha256": "247a18649ea63f434184f7986d5ac3b410ac0aed90e614000127239e05245b7b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_Angle_01.prefab",
+      "sha256": "6a9e24ada00104089981e310ec6a0724e3ec02f3253c206be2c528fbdd82ee12"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_Angle_01.prefab.meta",
+      "sha256": "207a1efcbda3731dd09d20ca3b6552c501c1359c1a9ee09b9768071559af04c6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_Angle_Half_01.prefab",
+      "sha256": "daf8244ba6d92319a9483c8d7ab8f874a8659b4fb993801f39ab128e91de3665"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_Angle_Half_01.prefab.meta",
+      "sha256": "b93491b669ab1fbe3cc121b663f28b423a490078edfdabd62dc9f825925418e5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_End_01.prefab",
+      "sha256": "5e0a249cbe40b9a44f9474334ce7fc735b9c66a4567f2e4309fee7aeee292906"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_End_01.prefab.meta",
+      "sha256": "ea932044aab1d0655b68e69ba84746648b810818554cbf480facfd8c9e02481f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_Half_01.prefab",
+      "sha256": "822a9ef45d4b211fb5266145419d065bd8dea79779b320af02caa3dd28b537ff"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Cap_Half_01.prefab.meta",
+      "sha256": "51fbab06a4e9a03d3066ce6671c87f39c09b3ce60cf637ea331b3eaed2ce2a70"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Corner_In_01.prefab",
+      "sha256": "e2be5e14d5ba674558e75f243f81ecd07ef148176e1a98fe2d1be150c7035a20"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Corner_In_01.prefab.meta",
+      "sha256": "2e18504799240723b0213f8780ea4815a8f6612d8ff2cc2ffed6016f23b720be"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Corner_Out_01.prefab",
+      "sha256": "200d2cb42227dc174308b5d13b48683e15c266b8baabb2f53a95ac5cc7160883"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Corner_Out_01.prefab.meta",
+      "sha256": "20679cdc2bba52a9ceacd84450eb5b353e226f5d244d34622456cfe5eea55c96"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Half_01.prefab",
+      "sha256": "e40c7cf23c9659120c1fbd69f446053f6564e0fc02d39fccdbaa238151bfb810"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Half_01.prefab.meta",
+      "sha256": "00e9d6e464099b36865f0ca774b46963e99aa6660a64307f5cde1df48137ecf6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Half_02.prefab",
+      "sha256": "112f2e66a7472452e1988897400ef67dd75a7bb72d574e743ba75998babb31ff"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Half_02.prefab.meta",
+      "sha256": "6d60b97301a43905cfb41f785b9780465853d4736c4c311289b040c350589897"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Quarter_01.prefab",
+      "sha256": "7240b9d842001ab66fe005e5366de284d07ae50674a4ac920d082e377a0e7af8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Quarter_01.prefab.meta",
+      "sha256": "76e6b6390771ef4096231c02019a3b92c3cca472aebc6bbb0aacca57f0d60541"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Straight_01.prefab",
+      "sha256": "7e0309d93e66e2d6c6705ed1978135789670dadc373a25cb1158a39c0b99e2c7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Straight_01.prefab.meta",
+      "sha256": "5f34c4a6a4d52c70cdc019e1ba27424e70aeb97db1e42c2c9dbb5fad13d95f85"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Trim_01.prefab",
+      "sha256": "d440f117e7ecec7f1224571bc4050bc75bd3fec5e6831f6369e5bcba7928d153"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Trim_01.prefab.meta",
+      "sha256": "0fec9c7e0a41628eb4578bda206cbb8f6252138eb6b70157aa7bdf8f60e8d3b2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Trim_Corner_01.prefab",
+      "sha256": "0874a27d0de56c7e02a4aed11652870eeb1839ad92bb21a814bae8db6843b087"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Trim_Corner_01.prefab.meta",
+      "sha256": "aa4f870fc32ec070b1e2b996c4c434f1c5c06255b295e47bda061b9e66007bec"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Trim_Half_01.prefab",
+      "sha256": "07a25d2067d8aeda91d04422da006807d364541e9ad07a4316f978aba10950a6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Trim_Half_01.prefab.meta",
+      "sha256": "a4f5a6518f45cd28ba6aeb7bd385ffd9229257560badf124eea52a40aca25ada"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stair_Half_01.prefab",
+      "sha256": "8ceb6f358347c26efcce88cf10e7261a505ac8a680624d96451d9b2e22ef4aea"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stair_Half_01.prefab.meta",
+      "sha256": "d9cd850bf8331a30f7cceb772373d4349442559b014635d22f7c57520cd64a7b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stair_Quarter_01.prefab",
+      "sha256": "6cd0c2fbb81141bf11852d9233a0e30dc2e6979b284eed9b9c126ab37d952207"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stair_Quarter_01.prefab.meta",
+      "sha256": "9b0890a34c20038af8376979c56c65d1004e6b953605f784f7a5cc03d6a1fa6d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stairs_01.prefab",
+      "sha256": "8910e1a3e23204ce4fdbfddb5d6c734577e41dd93cb3a56c40748999f81df87c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stairs_01.prefab.meta",
+      "sha256": "11043ff0ab8a5544eb1d0910b0855dca865e9c17caa4042c01db3b852382f371"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stairs_02.prefab",
+      "sha256": "dad78a148253c87f84da22ca6df6d06d919fdf00b09de70e86fa9f26d164667b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stairs_02.prefab.meta",
+      "sha256": "8d15fc8ac1c544595dd188b537864f5f79057887f10527c9008edd8c8d9930da"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stairwell_Wall_01.prefab",
+      "sha256": "79339f61a3221a8437ae6440d9dc0c642bddf1e5dc0f4da56fac1ee344402857"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Stairwell_Wall_01.prefab.meta",
+      "sha256": "f3bedc0ffa598051e32ab96d1608d414643221d2da80d1f17b6db287b820a2e4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_01.prefab",
+      "sha256": "a21f2530b863f0c341a41a903489b135607bf24dec5ea2c3c06d599d6859d593"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_01.prefab.meta",
+      "sha256": "6b1c4c6c0d3d1563b4738d857e01a1fc462fe431364d7ea32fd0f9d4a605df8b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Angle_01.prefab",
+      "sha256": "c6ccc4783ebdadae92edd053fa6c21d2821f3948b4b56451e8ff71f87085e6cd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Angle_01.prefab.meta",
+      "sha256": "ae0a01b1058f0f36db4da11cad428d1965b79e10f316c82fcef765bc580747f6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Angle_02.prefab",
+      "sha256": "ae8699f31cfb9c7899fa1ea9fc5bba0eb2fd7775939991a4f5c520d1243d7989"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Angle_02.prefab.meta",
+      "sha256": "29b707b018247d5f1c042566f9c724898d53514eed877e81f0143230edc1d1cc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Corner_01.prefab",
+      "sha256": "309fbceecefdef5aa418bcacaa3fc7e0db004d260abe1966041c748ddb49d9ce"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Corner_01.prefab.meta",
+      "sha256": "5306355844e014c0be0352dec3bc19ca0e28f9e7b9c431945c8c9d1c34b7e204"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Destroyed_01.prefab",
+      "sha256": "0561b77bae57b06b50b863ed4ffefc9fb58cfa835e38d5c602691ef5b3157a38"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Destroyed_01.prefab.meta",
+      "sha256": "66da756dab927fc39fb05b373d0e71d80d015905b156c0a9a5e57f6c19b121d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Destroyed_02.prefab",
+      "sha256": "b88be4d9210e89bc662966baa0b0d6c27a6af9d777b8bbfe32945c99ed951e17"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Destroyed_02.prefab.meta",
+      "sha256": "4b94c2308b393b3c24e70c1ee5710c9f41bd17ca4af50ec89b179033f013265e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_01.prefab",
+      "sha256": "0ec0a5caedbeabedbd9258f5cb7b2af384425b1317938b61bff3bc1e8911081d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_01.prefab.meta",
+      "sha256": "45900db71c2d2d7b4ac559051f2ba7bc3dae0e478f899d75c40367cc39bc8434"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_Double_01.prefab",
+      "sha256": "8ed6ba5b893537ce82420f5e36172dc35f8ad1839f214f472dc9181dfb90785e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_Double_01.prefab.meta",
+      "sha256": "9e638a48f4741a76c055810b6d592886e0519633af02a39398af3b7da3a9e1ee"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_Double_Large_01.prefab",
+      "sha256": "6fdc818798d4a7642f0605a062eb4bb9f842b693fafd7e0f08537ebb8e54bd17"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_Double_Large_01.prefab.meta",
+      "sha256": "b364b5e9fd9b4d54985091a8e8eec8623e5ef64f1173405797c554e7b941e1bc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_Large_01.prefab",
+      "sha256": "1406281a72b8d167898fe94b269e62f9c8c68c3bfebcfe03c477262b0a0bf97f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_Large_01.prefab.meta",
+      "sha256": "39eb6299561ad9a770111861f42746fae86694e23412c381f5fd9c8dc70262d1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_01.prefab",
+      "sha256": "c154be76365a8dea53791892efaa5ea7c002132ecacc9f2dbf27c192e72b2f34"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_01.prefab.meta",
+      "sha256": "ec84204894a47e91d2cf48130cbc0d928a8fa03be0e99166f13789e0bfaea088"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_02.prefab",
+      "sha256": "7d5239e13d1b6a7a2b15623bd607a89b879c4a1c860df88412541e68eb2b2bd9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_02.prefab.meta",
+      "sha256": "bff0b2ed29ede3b5044c605d386bc7b320c67a7d32a215540fd2571630be7eff"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_Angle_01.prefab",
+      "sha256": "fc6e7ed2a169939eb645a043ca516f457921a61ea587509f2d5fe8d8c05fa1a8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_Angle_01.prefab.meta",
+      "sha256": "0605459208c1a2f4f58ca86e08855961b879e1c88c5fd4c33b4aa0b232108ee4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_Angle_02.prefab",
+      "sha256": "4e08a8205d282aafef4b08ddb4baab314e275b2788cc3c481966942ae0357a5a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Half_Angle_02.prefab.meta",
+      "sha256": "7180b4342d6f8be3a4444092f36ae86c4d1f33d915e63173aa73f33627a62fc5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Quarter_01.prefab",
+      "sha256": "1c2be38650974768b49d51893e68541a6bed5e7a3066945f6e508c560c2f617a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Quarter_01.prefab.meta",
+      "sha256": "dec87db282d47a8214846579e75637aedc05bd49deb8632a50e9fca9f0582d52"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Round_01.prefab",
+      "sha256": "87716334d5b6e616d3140043c64dd94384c6d3a9adbc88fb5793aa2f8c3daee8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Round_01.prefab.meta",
+      "sha256": "09458235097e002db076babcc8c478f297173f9d4e1a500cf2c8cf1bef8cfff8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Round_Half_01.prefab",
+      "sha256": "73a7081e234def2355314ed11034f44a648f72da0cb8cbaafb73cab56f9b63fe"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Round_Half_01.prefab.meta",
+      "sha256": "2099af4c49b491bbf5b80543b3939a959e4c70196b054a16060a0c90b6a96ec8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_01.prefab",
+      "sha256": "2e38de01a65463e9be838cf11efcc4c9c2bb7b0193e8e9bf5a7ca4f0a666409b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_01.prefab.meta",
+      "sha256": "e7df65983a611728166f4e2b642a9440b805e22185b6cd7616687034e8d97c08"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_Half_01.prefab",
+      "sha256": "690baf5b2cbe0345eefc53dab39411375ae291855a0528dd6a717d39d60c4c8c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_Half_01.prefab.meta",
+      "sha256": "2f5a162aaf33c11cb06b9feeb74709988745bfd5c52ff8313091b28cdd14ae6a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_Half_02.prefab",
+      "sha256": "3926f288bb638183cd565e385a21742fdcacb85e77ff5a67d29058169fffd88c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_Half_02.prefab.meta",
+      "sha256": "7a55acee882074334d50b77d365258681537a4a78b5f0390573c25682b7ccf4a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_Quarter_01.prefab",
+      "sha256": "fd9cc5dcc044d05dd95892835f7962423f5fcc464196a64bfab1cac88d1f2ae4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Thin_Quarter_01.prefab.meta",
+      "sha256": "931c345716a5a7aeb1cc3648d79a6854b50ecf9c30a0aa7958b92cbb21da6a0a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Trim_01.prefab",
+      "sha256": "7decab436d8c9196fc565c11666bd3500c1b7291073dea979ea96559d9faa346"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Trim_01.prefab.meta",
+      "sha256": "9b153a465f2a80e728e5f7cd05b8980205c7e96da96a4a1a910ad29a471315d0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_01.prefab",
+      "sha256": "8b74153dde4317fa437d4a7bdff971a08426b611d709ab5f6984f1b9940b189c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_01.prefab.meta",
+      "sha256": "5152f232643872ef5ed1e9d82a7912e2962a14989e9f411b511c856e63d2652f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_Double_01.prefab",
+      "sha256": "99b51ee56633f92d40b921f0278b58973b6e28516022e9323547dbdf08c15ec1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_Double_01.prefab.meta",
+      "sha256": "c1b8f894b04f5122e7cfc85705b9744840622e56531d0387e03245d513a55dea"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_Half_01.prefab",
+      "sha256": "2e00762828e4cf8d1a5ca4d28368494ddcefb1af9a2405ee7dac0b4014c1e8c9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_Half_01.prefab.meta",
+      "sha256": "46f85a820a79e4e8804f715b019f5934c13fcd7368cbf04e249d246cafc3fe32"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_Half_02.prefab",
+      "sha256": "a85fd4e4cfc782d8195b09c3f812c7c576f638a135191caecd4e9dda442427bd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_Half_02.prefab.meta",
+      "sha256": "962d98484eb86686468bd383c67112c5e6e409a3ae2ebc85118c9a2a2a07e6ea"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Characters/SM_Gen_Chr_Peasent_Female_01.prefab",
+      "sha256": "6f486602973f2a8f667067b69aec6222ebe03f439afcd40a4401634ee3777152"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Characters/SM_Gen_Chr_Peasent_Female_01.prefab.meta",
+      "sha256": "85a46a7519e5e0d399c29cc0716b235c44228bbf6512e0b664bbd91fb66f1f84"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Characters/SM_Gen_Chr_Peasent_Male_01.prefab",
+      "sha256": "e4d3db36ccd20a39ec6494cb104e9ddf5b9ea10671dd5f03d24716cf905c5035"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Characters/SM_Gen_Chr_Peasent_Male_01.prefab.meta",
+      "sha256": "342bcc1a9cf094e368c050049c612496a4a4188823281f1930bef1e3b36b0265"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Characters/SM_Gen_Chr_Skeleton_01.prefab",
+      "sha256": "97021bc7541b64262c810c0f500e3dd6de6f3aca83e41555aaa96cfac65c95ce"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Characters/SM_Gen_Chr_Skeleton_01.prefab.meta",
+      "sha256": "2ac2669d582284e3aef1cc6ffe2b68c2e1b4ddcc5d10464f153784efedbd6a8e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_01.prefab",
+      "sha256": "d99b664eeb9fa60e64bbf6fdcbef95d01ba3a8165417cc9ea19aa1884a23ab07"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_01.prefab.meta",
+      "sha256": "8a01cb90287b8e9d5b90a2c9403e4e56f72c656bd3db875a25d7bd249ae0da11"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_02.prefab",
+      "sha256": "f70886b97ff936afb88a1d0ef48ecc209f0dfb4bf082430621026c9c0107c3ca"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_02.prefab.meta",
+      "sha256": "326f6fa04e8c29afa3827c59690cafc85f2fb5ab0e530226b0ca21214018e238"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_03.prefab",
+      "sha256": "f6754dcceaa2c76b74b573e8662dfe95ef4cae11a199e4c474cec8ecbd6d7505"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_03.prefab.meta",
+      "sha256": "b96cbf60cd073fd65d1fc305f27cdb0c329bc3b6b8e5b648567c4354caa1bdfd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_04.prefab",
+      "sha256": "cc69f81b219832f3e21bf5dc924088e67ec281bf2279a744fbcf6b03ed284f57"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_04.prefab.meta",
+      "sha256": "7ac1ad278b815453ea7ee75b63170207b060cdabd56a197c736caed410297290"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_01.prefab",
+      "sha256": "125f037730b648e52f893929ff50245711bdfbb7121e902151b04b1729355341"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_01.prefab.meta",
+      "sha256": "ad737cf0b5532a7f2dda1efd6377060d0084ce5845cfafc975cdf492baccb250"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_02.prefab",
+      "sha256": "1c957ec53099a42d2ab15a2670cfdbdc837f549caca36e308cbb0002cbca75b8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_02.prefab.meta",
+      "sha256": "52a8a6bc0f433840d9d1e71736615f49966534f83579c11b6866979cf56de6b0"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_03.prefab",
+      "sha256": "331bccaa4be362eb7af02ce1ab8107966b08e6122e629b9ae9e9b0fe0ceb4f94"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_03.prefab.meta",
+      "sha256": "dc95c71beeec88327be2c7a186ce3f11394e2769f8fc68ffb24e4d17919c1459"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_04.prefab",
+      "sha256": "8256775e9b29e6429013212092d7eb413d9dfdd9d3fb3a17f18df03154447c9a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Large_04.prefab.meta",
+      "sha256": "b733f399fa86ad968620fe075bde800c637b681da1a48e65d0e911759e642ef7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_01.prefab",
+      "sha256": "8cfb051e96ad84701c8211c997b2e851ce3cac24756dfd7cda84f629b209ff22"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_01.prefab.meta",
+      "sha256": "55383358cbf3f00bc40c4d46d7e9117ea927fdb4aead11f7444cc80fc8ac74d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_02.prefab",
+      "sha256": "7221743ea80e390a1ee729039484d92a784470ae382b2362d97ac26d425feb96"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_02.prefab.meta",
+      "sha256": "6a5bfd1fa333ed7cdd7bbab2f417c9921dde1c0342036a89dc15f0c659400fc8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_03.prefab",
+      "sha256": "bb8537f1dcefd8b4bc710fc7a4f19e91970c38bbc42961a228d3d79794eaeec7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_03.prefab.meta",
+      "sha256": "61fc1106fce9af99321cc0df807bccecc95dacbd7c8d42e60d5d46384a471279"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_04.prefab",
+      "sha256": "aec49795d6e4819974e1e856ef5742b8338718d2a887ba07ba83fac177f240ba"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_04.prefab.meta",
+      "sha256": "a8ba63f60e0aebd3a1b2423df5233a81e5d6d44f062dd12fb41322fbd5fe2236"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_05.prefab",
+      "sha256": "fc3a94fa1ad10ea3aed4b5fc12da24c5ba18067d9cacda48bd474319e4105ed5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_05.prefab.meta",
+      "sha256": "e827fbbb38e6526e2f600fc26ba1c0298e53bfbdedba04025b336b6d3b5ecf25"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_06.prefab",
+      "sha256": "24d0182256b5d5894307deae02cc7439671ae49eeb91ce6d10f1ec6c060760ad"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Bush_Part_06.prefab.meta",
+      "sha256": "b620c4428798d8f5eb632243cc235385e2849efd5bb353726f650f0552284881"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_01.prefab",
+      "sha256": "d6868c8d9a3c1de0510694570b33535fa776c8f5b56e1bc2a0be3804eea964c2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_01.prefab.meta",
+      "sha256": "d379bbf70d738bb9db1254a428634f9548e3b94de1cb967a6ceab3a7c9907b44"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_02.prefab",
+      "sha256": "e7520ac0b60ac8ada197cea2f5aaf3f909901a35723ea6265a7ebd6841383f84"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_02.prefab.meta",
+      "sha256": "2fbc7bb0e5995a5691e71bd8b6617dfe438120c11df7b7455bb57bd8ee4d8c90"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_03.prefab",
+      "sha256": "e07191eb035fca3c1efeccf1324e448e3e040809ec69c6b848038bc8c625c00a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_03.prefab.meta",
+      "sha256": "3671edfacfa8566d4bb8fe3031d5656a25b648e10fe234688c1f0912a4d11bc9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_04.prefab",
+      "sha256": "4843eddce4301e2986f863d8e896d45184c38d0612540dfaa2b58074c88d7ca7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_04.prefab.meta",
+      "sha256": "c6c47ab43d7ffb815ce0e584e5c399df5a4e7593847198cac797e783704dce89"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_Arch_01.prefab",
+      "sha256": "d8eaa6d2179e3ce19f51b48ec039c8724a45053724063b7951be5df849a7aa3d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_Arch_01.prefab.meta",
+      "sha256": "0b3e9501d1ae4f692a608e8e4770ca125390b24dd5b4c237244ffc220ae70295"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_Arch_02.prefab",
+      "sha256": "d855089388eac65cdd55faddbabe0d4f5b1d415900936e351e49759b21b94f3d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_Arch_02.prefab.meta",
+      "sha256": "30d6c6b92ed62d8eaa72c9d5588c0ecc97039e1de00927f1f3d7d06e40ffef1d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_Pillar_01.prefab",
+      "sha256": "6372570e8c1b9b84967e803e23c6c744fdfa03839570b745a35a414141ffead3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Cliff_Pillar_01.prefab.meta",
+      "sha256": "b51c13b9982e6a14355904a5113289dcaa08b8dc9e3f4363da8b15b750d2a68d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_01.prefab",
+      "sha256": "bd69e5aa89612d776e4c0730639e6f73b99c198915d166ff7cee9157d762a7af"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_01.prefab.meta",
+      "sha256": "0d517c73e7242e0f4543f940805686eb2442cd99e31b99b2e90f41d6fbfac42a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_02.prefab",
+      "sha256": "36d7c8f6a713a66ee1d83a522fc62e0c234a277831ed11d0298ace1ba132d9e5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_02.prefab.meta",
+      "sha256": "1d42c9d0d5ee09debf4241044cf79e39865daccef2e648b4b7f3f96d77e682f1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_03.prefab",
+      "sha256": "bba4107304b2e8c6db4b129a36a35460022883b6a3d90b6b0ceb68129dfebcad"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_03.prefab.meta",
+      "sha256": "79a321e0d102795a2a8811c49162f288e45ca0246f1fefcab77d7def0a1bfbff"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_04.prefab",
+      "sha256": "6c687eecfd2c6c9134708b8e04df0f99f427138531481329beff4b1f03c8c166"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_04.prefab.meta",
+      "sha256": "5d06f1b916899c211b9eee870954d0cfb7df8f0f871bb11d1d76f258a8c8610a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_05.prefab",
+      "sha256": "0657c36ed54a1743e428d46d4e89f53d1599cf19b7ae87b18a64a576eaa08840"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_05.prefab.meta",
+      "sha256": "b903466d64a928cd14d934ddd70086256bed69b70d24ed3e96923980526716c2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_06.prefab",
+      "sha256": "45b70115c1fadd8f70449b6b2c8978292038ead219c516752e62a29def3f9a1a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_06.prefab.meta",
+      "sha256": "fddac99bbb0bdec28812154b4d7ae8c28d2de3693834d816d6d6495d4473a57d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_07.prefab",
+      "sha256": "50f04637d0928617ee991787df41eae83ac649eb0e4b72a572d5664aef2ed6ef"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_07.prefab.meta",
+      "sha256": "65710566e866d8a2e452b5c184e1a83db7a52991bce5eb0e04c0052de9059258"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_08.prefab",
+      "sha256": "019304d0c57d45836b1acdfc413ae778b2a967e905c58482281d944c5a9e958b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Dirt_Cliff_08.prefab.meta",
+      "sha256": "9ca32557346c2dca47902d463f08ac8aa8d9b2082675603c59ad09ed70ad5080"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Fern_01.prefab",
+      "sha256": "78b14b1f3bed20c5ffc9c74ede0cad5e5abd4d4819831e4788d04a35d30993d6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Fern_01.prefab.meta",
+      "sha256": "50b7a5ab6d8b408e2dc4f0ae615c84c7e316e1cf6c5fcb7e888fc932c43aa82a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Fern_02.prefab",
+      "sha256": "de7dce0ef2283d59accb893cd653a6d423e91d1086986b03ddd3af657f43b0ff"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Fern_02.prefab.meta",
+      "sha256": "3e5690292289764d96e0d3eaf01f68a4e595941d836a73624534f344c5ab3f48"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Fern_03.prefab",
+      "sha256": "b8596a9e6d940940c4545cd73c3f121d39364de5902de96766ee352b3f56f7f1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Fern_03.prefab.meta",
+      "sha256": "9957af2adbc76593e533402f66d85673912892b4e6d30bfdcecb067278c0a34f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_01.prefab",
+      "sha256": "67013f8dcdf2f0fab8ef22585c882bb5505fd3c19ea6dd27d6c682baf97ae584"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_01.prefab.meta",
+      "sha256": "1aea12175b329e4beebe496799fb4c2328f906b8c6aebe2db8c4247abbaca9da"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_02.prefab",
+      "sha256": "e65f7de8b99a3db05bbf91d8b413fc0be888e9ec979bcfac982fce55aad4fe37"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_02.prefab.meta",
+      "sha256": "9532b7bfb8ee4fd856e3c3d4e8ac5d9c42357263079932cf79da1235562ef609"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_03.prefab",
+      "sha256": "1bf266ff1ac5422cc57d9a3f3b25a55f3934e1ae58cf63cc036bd06d91845310"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_03.prefab.meta",
+      "sha256": "4bc06ad90c06b22d7c1ab40616e13b89a324c5081eb66928c9f65550d1992212"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_04.prefab",
+      "sha256": "dd9c17a75abe4b2749a92878fabe8e9a40ff9540f396143d763f9dd770c25b92"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_04.prefab.meta",
+      "sha256": "4f6521be787753401c65f7f70977f7dcc578dc42ad816fbb271e2a2b5051b8cf"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_05.prefab",
+      "sha256": "e0714d4b0767cd9e8a1eb8b20cf507d6d212c2f631fc72e7d6c440377b1b6e72"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_05.prefab.meta",
+      "sha256": "a5e1f094260bedeb33018556c6bf561e2426dc05b00fce85a39abd6e62320844"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_06.prefab",
+      "sha256": "7663066a60379e4837a90b0cdd3cff1ce497115a88513bf5f813b9260aecd6dc"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_06.prefab.meta",
+      "sha256": "0f1bbf9c6d27fca6e4eed65b657318f3c2ca482485eec0a45350e2583c37f803"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_07.prefab",
+      "sha256": "626e7fd66f2234b26394e671c78a6c9f631c8d050ccbb8dde48e00322a28430a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Grass_07.prefab.meta",
+      "sha256": "aad4513afb2a8ebcfe9e7c40dd1155fab9db80fc78b16ca02c714a63f470d247"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_01.prefab",
+      "sha256": "37b5ce3e0030fb50d39d1d4e9c8409a41b9f7de2c1fcda21923540067f6b8f7a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_01.prefab.meta",
+      "sha256": "e4288e5ea575fb2395a7b0957edc586f74638c647de02756d4e7ae9102bc4134"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_02.prefab",
+      "sha256": "d68e9cdffd5f4174a9bdd77633b7a5ddcf0e7e3a7fe4dfce1339adae86eb2d80"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_02.prefab.meta",
+      "sha256": "05ee16458c743051df91acad7dd71c50b9a7452ba7f717d4d478c21ba7694f15"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_03.prefab",
+      "sha256": "efd50c26aebd9e73657f27d96fa7d28a9c48da9988067054fd265f8a5e08d94c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_03.prefab.meta",
+      "sha256": "9e8167e1285dbcfcbf8885343dbac0dcfc7a0f03bb669f2f35ba0d39f3f46449"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_04.prefab",
+      "sha256": "4cfd23f830ed9511a5198176bc67e3cf64dee29c9b05a4d5273f6e2d9c4cb6bd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Grass_04.prefab.meta",
+      "sha256": "b9be6a1078d94ac20748b71eb625784f1b8900a15681f0650fc820f1fcf1d02e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_01.prefab",
+      "sha256": "0afd9149ad417c66f84de8cec6090e66ba46d055d8ccafd0751c0bbe2d2ce2cd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_01.prefab.meta",
+      "sha256": "5a8875c1864a66196e89444d6f691ebf62f95501cac507edd251515024dec289"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_02.prefab",
+      "sha256": "da9d82ee556e22ed07a0eae3907f40cd7f63de4483b8c964af4a7da09825422d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_02.prefab.meta",
+      "sha256": "ec8f29f04f847cde3a861b69387cce771682c9d1c13cf3c0145ff5318c4e7dc8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_03.prefab",
+      "sha256": "12b5f066c249d70a7917ba40fb7452cfd4728f4f4452cde13cfa939ed1825d7f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_03.prefab.meta",
+      "sha256": "3a31d2572dfda283635c8444e1d22e7274f97b67ceec250c3660d8613c3accf3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_04.prefab",
+      "sha256": "cc7d5184e3fbcbf8c218eab691265254bb932eec42a8474608aabbc5a83af9c2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_04.prefab.meta",
+      "sha256": "9949f59ca0475e89ad53b2afd310a5391457b43f627eadc41e721d01db070f75"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_05.prefab",
+      "sha256": "f4a6292d1ae8ec591081acd6a7438a1faf890dd208fdc7f1f55f3d8c5ed7525d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_05.prefab.meta",
+      "sha256": "bd1c5fbb7d052b9237713a74495117503f431e4a8e1a4bfc9cdeb04e6c6f2284"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_06.prefab",
+      "sha256": "8c12e098dbdc16467c7adfcd1069d6a22bc07247ffc03658729860b3dd989579"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_06.prefab.meta",
+      "sha256": "5ae4b6346cc69c8081e4b169898a0101dfbf8478e4f25a49d927129d3785292c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_07.prefab",
+      "sha256": "baffd2aa63bbbacf8e6f68c87234bf162e04923e72f1a7b821684514c4411963"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_River_Grass_07.prefab.meta",
+      "sha256": "473844139ec500d9c86dbe0ba049fcd997c19cd4fe7141760e0e8d12a9ae6875"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Slope_Grass_01.prefab",
+      "sha256": "46314c716b57aff7858f8190d033aa3fd5c806e340c63771f20ca364a454f22d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Slope_Grass_01.prefab.meta",
+      "sha256": "89b08fe122c11e13fc81d135dd046702a139150a55f8a1663dbb415df815831b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Slope_Grass_02.prefab",
+      "sha256": "3fa17904bbaf711af686a60fba3804bb40192c853cb320ff86ba2443f21c1ed3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Ground_Slope_Grass_02.prefab.meta",
+      "sha256": "3ad0a2d15349b4674bc41f673b1d1c3691d378a0f7f0ff1499ecd6aa62855544"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_01.prefab",
+      "sha256": "8f70e470a8cc168bba504e7157fd4d2b8432e164cc1bb68144f7100aef92e2f4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_01.prefab.meta",
+      "sha256": "9520a700dfe43851b5577269c374d83ca7771ed957648f2f85fdbd2b8d21b293"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_02.prefab",
+      "sha256": "ba3944e93b366d95ff0011c9550bd571591e73d8d510095ce0ade4aa10b3366d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_02.prefab.meta",
+      "sha256": "7c79a3454f849d6deef6136d8ecdd5478a75b199ae9cbbaafa04c0120eb093d2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_03.prefab",
+      "sha256": "10cda4aa6951e8bc05afd8579d54f61c1680ac8c17f26a4d8dce8eee6ab6cf79"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_03.prefab.meta",
+      "sha256": "4239f9d0af201d973ae6b07b408d64fcccc104dc1ddc62f6b922bc3bae01e46f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_Pile_01.prefab",
+      "sha256": "e936b96f7073bb39626f25a12776fbde208b0382b9a1531c8aac8a6fa618af21"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_Pile_01.prefab.meta",
+      "sha256": "c88ddf698e2eb5ca5eb9ab8f7e4ba8e4ae4145f40d78aef4867fa5065f158e92"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_Pile_02.prefab",
+      "sha256": "638c5b72b385ad66a986418dab61aee4b74c575a08b091501de5be0a5a7161df"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Leaves_Pile_02.prefab.meta",
+      "sha256": "73cf5b097c9530670db25559c57fac1bca6b25df12b3ce57f1e71565f634d681"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Log_01.prefab",
+      "sha256": "e54c87b800044de896d667ea0d32e98b8ed99e5d98ada35e5bc7976d619a8f4b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Log_01.prefab.meta",
+      "sha256": "84881b3611ecd53e339cc454b3be4689895173d965e3c1cf031a4b19eda87ecd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Log_02.prefab",
+      "sha256": "bddf59683b8c8f981b0cb039a96d9da262bc9a9c24a262b4f35896da00516316"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Log_02.prefab.meta",
+      "sha256": "a642f2a68310bf487ce953c5b1cf99c09b3b9c5819b8669d8bcba87a5431c753"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Mushroom_01.prefab",
+      "sha256": "c81a5be7c58af5ddea5c984359c4e6c79817053fdf1dedd72f4fa79d36b59833"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Mushroom_01.prefab.meta",
+      "sha256": "05cb3dd95ea3fb67909855bf956bca676f2a02d1780eb7de3a5ad3e58286f101"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_01.prefab",
+      "sha256": "2ae2b367ad2f0fc522c792eb25a3730401806dda0fe96f213d76dbd89933a632"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_01.prefab.meta",
+      "sha256": "806ea33a1821cbcd8ebc16384f7cd95e80b2a2be4cb62dde78c2b8c5785a305d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_02.prefab",
+      "sha256": "dfc6bf9889e3ca2374a30bc27974331d43eaebed880e83794cf57394da118355"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_02.prefab.meta",
+      "sha256": "b24fb9445ec9582767643a5edd4262824bf97acef7150b73108ea5f7e20fe3a5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_03.prefab",
+      "sha256": "7aa14e87e0a9e54aa427bd117a761356cb5f85ac68f6fbfaa3935861b8a6c215"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_03.prefab.meta",
+      "sha256": "af47aa349ad38b64fb3b6fa82cb11cdb2b077e5eb062a59a0267b06de8828b96"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_04.prefab",
+      "sha256": "6bcd1266189b94c105f4c81dfd91935cb81308f9aa898fb20ac4e570b453950c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_04.prefab.meta",
+      "sha256": "91a9b74f2f5be30112a10b313173659c880ba36be45c41501d306309e3ae823a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_05.prefab",
+      "sha256": "660096c395712628d9214d66b5235acb7bc49af05535252095aea4a014b0e566"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_05.prefab.meta",
+      "sha256": "f16028e86e1a804b3754d82e8a32e7efb3278a0d7378af60bf178c01831fabc4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_06.prefab",
+      "sha256": "2902491244d94dd8ea3828f59fd6712812433bcaab7556b4324bce42be12843b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_06.prefab.meta",
+      "sha256": "306f4f3166422e5544b415fd15358dfd9464ba9bad6da5e6db13042023abf98c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_07.prefab",
+      "sha256": "c61d46b4f6ea90d8e2651f36dd7891de7688b3605b748bea8533750070cda5c5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_07.prefab.meta",
+      "sha256": "cc9e030e0964165dad513506069ae7597901e7119c5cda9b378ac1f0f7d829a5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_08.prefab",
+      "sha256": "a298a3b1d843e8002e0fafb03a2bf981e07177148f82c6725e432e878bddbdc6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_08.prefab.meta",
+      "sha256": "3b718b9cf71bdf0924fefdb3aae50bd374996c7ca0dbb6f4798098ed37bc714d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_09.prefab",
+      "sha256": "70521720994c69293881c8d5568d301d06d02636fdce563e2a5970b15182188e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_09.prefab.meta",
+      "sha256": "a64be0c3db1aa5903f05d91bc0221c1beea3c52d96bf233f84adcc0c79d45daa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_10.prefab",
+      "sha256": "50e82694908f4af1d6d7f448c70cbbaf075e7e12ccc14de1abc1b296f83e9af1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_10.prefab.meta",
+      "sha256": "7def2dbf536ff9d8151340a24cfcd2e3f938e8ba73ec9c29eb29478a81f1555c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_01.prefab",
+      "sha256": "29e0abe84a485fe34a530388dcb657bfd9a7b2c9dc02e6688a669ed7b22a5f38"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_01.prefab.meta",
+      "sha256": "e53b0fcefd13a1117a9532c61d69c3fbd9c37e64527616c63d369e4c851ecd74"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_02.prefab",
+      "sha256": "63a8c435ca849e424745ef55082d1354e11bf4bf09c10732ac9cf8eb3dbbfc9e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_02.prefab.meta",
+      "sha256": "e9d371ce6bd14788a26fa104e6f8fdb39da1c522540bf30443d1e1a6399eb6f4"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_03.prefab",
+      "sha256": "54f0392203b9c06cf062dd78750ca0be85e005d8548200985db81568f2506a42"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_03.prefab.meta",
+      "sha256": "a92cda304a09c553908552ac35277ac1788e6066d6091f3ef0d5b165b611f0e1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_04.prefab",
+      "sha256": "09c9230e98dccc79fcb7874dc7b43a71f6be849db5d864938b4e66f4b7d97a09"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_04.prefab.meta",
+      "sha256": "f082263721b01a1e5b4313a5f49a05b6c0b26a313e81c6d49fdf8fd69e34fd69"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_05.prefab",
+      "sha256": "1b50abca1074091953606367844ee7693c158efb33d963305564e255865c5534"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Rock_Pebbles_05.prefab.meta",
+      "sha256": "7cd326767eb332fbf324d342b6b67a53c242d3b4678e0335492fa2383a1948ad"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Shrub_01.prefab",
+      "sha256": "323ff0565f92c4932f04d658274ceba93afbf0d9e67286345752cc035d22f33f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Shrub_01.prefab.meta",
+      "sha256": "1678efa4d3758011dc3f903334b84a0087ca0dfdc76aa629152cd8d5fe379947"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Shrub_02.prefab",
+      "sha256": "9b31c1c7fb96523c677899f773e7838545036740ab85afff2bf3effcb482dc56"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Shrub_02.prefab.meta",
+      "sha256": "770a401a9654f13a69b4ddc4d40df9f10af89a08d71dadf226843fc283d758ef"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Shrub_03.prefab",
+      "sha256": "ba07dd4a454f050be6e81d3cda6a18fcd45dc6f1d17e2706657a0249e35a528f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Shrub_03.prefab.meta",
+      "sha256": "5f00b6bb58cd47245c5a3bfa141aa79d54bc46f58b341a5ab1c483ab2e97ba43"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Stump_01.prefab",
+      "sha256": "2b6795fbc2b3303025b496bbc0bdda55251d34497696f769eeedecd60a1c368b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Stump_01.prefab.meta",
+      "sha256": "cc5d46225a1e0094edc05039852fc9a54262881c4660f3af3f2facc4a851426b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Stump_02.prefab",
+      "sha256": "bbd0db4f7baff794a6956a4c21c0042ba93c968ef1bcfb353010e139a22e26af"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Stump_02.prefab.meta",
+      "sha256": "78ab085d0a21eb75e2a3a43672b5a94a636bbab4de722f251708ef904d321b63"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Stump_03.prefab",
+      "sha256": "b67f9df8bc5db7c6f433ef287ba486adc384a54253d200e354b640318387ea3c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Stump_03.prefab.meta",
+      "sha256": "58222cb6b9a0e849244a882d07bfe879767ebfc3bbb414368d2af337a34c9ee8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_01.prefab",
+      "sha256": "4bd8d7dd13547264f7c2dca76ecebbd686b2f540666e18bade50c6eda4361aac"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_01.prefab.meta",
+      "sha256": "c6cac0da870697d2fb3c67ca2f89cd1de47790d4171ebb0d7a2a6edf47a0ee62"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_02.prefab",
+      "sha256": "f4426233e1f54ed6407592d408e570f5bac957c1f93905f66cff05e383f607d1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_02.prefab.meta",
+      "sha256": "a4d91d8f5010fac51235a19a6bca5f8f3b01b8abd2fddc45b0a9459283fef4ec"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_03.prefab",
+      "sha256": "c5f1af46cea1ff2a3c780f6d623847fc9cd02dcea96a00a75e6e67f82cfcb603"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_03.prefab.meta",
+      "sha256": "6d671840a4e30e65983eaa2cc9786d0725c40e2f31d7dff819afc3feabb44267"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Dead_01.prefab",
+      "sha256": "ea5eb727dbe975c4f129ff4851277f38a66a18688f03c67986d9938d73bdcdf3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Dead_01.prefab.meta",
+      "sha256": "90f17e200b1fe4f0480c4c4c4ed305f104b189362a2236e609b2df9767515443"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Dead_02.prefab",
+      "sha256": "e5453fd1e4385978da83dff9897c25676d2f07a234db533d17569a762baad354"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Dead_02.prefab.meta",
+      "sha256": "5cdd6f7b0dcbb0f24802d5c708bb0b5a9cdd1dd939dd9c564623cace635aa19d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Dead_03.prefab",
+      "sha256": "202a3546a7737c2c048d85fa3edb2aef544ad972bea45c96e3628fcf3e465114"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Dead_03.prefab.meta",
+      "sha256": "68ab42726f9816ae360d10918aaffef00e79dba72c1e4b5ef14923a8b3f4d588"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Pine_01.prefab",
+      "sha256": "fea5329c310056ea1f590f17e62daea334878762ca936e9e528c3c34db083fdb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Pine_01.prefab.meta",
+      "sha256": "1975f86a8fe61dda0ad7c93e00899c0e7e6d3c9c9bf08f24c492eb319e5b4749"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Pine_02.prefab",
+      "sha256": "a39c8cd90dd12886912df0fc65d66531dc53cce92ce521b001c96225c4f3e43d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Pine_02.prefab.meta",
+      "sha256": "dfaed3743261d22c35e7a4f3e698b10e3d5df895648d8f253aa9f403d25ac0d5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Pine_03.prefab",
+      "sha256": "8532e61ed97c09ee17247f4582dfbdee61fdf536e3297382bfe851260784b657"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Environment/SM_Gen_Env_Tree_Pine_03.prefab.meta",
+      "sha256": "311cbfcb8c14c4338dcedd55b74ad21a375451182c3c41b068fd9ef4555c2c0c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Barrel_Wood_01.prefab",
+      "sha256": "575adfce71b35c9925f5f469ee785f55d57bba6bc3c175f60efd58685ed952da"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Barrel_Wood_01.prefab.meta",
+      "sha256": "abf8ed1e44b765a5f21c6d0d078dcb470820c9e35ac56dd0edf63778dac572de"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Barrel_Wood_02.prefab",
+      "sha256": "8a023480f8644948b86ef18cf0d7f1ba06de503579d08b2b8336e3173e1e15ae"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Barrel_Wood_02.prefab.meta",
+      "sha256": "3d9278fc115b6dd2f6660d475b9c005956cc5492487b7902b9cef0d256e50381"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Barrel_Wood_03.prefab",
+      "sha256": "aa4a5d768674489728b1b85a628d7e906e7c2446296d0d5b61237923c5c280c2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Barrel_Wood_03.prefab.meta",
+      "sha256": "d56e3135f9c041dd68aae05847840c7906613046229a211433a0fdcd65763138"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Chair_01.prefab",
+      "sha256": "ccb8e138248af4b181d7f1936ccfdbbfdedc9a3fc91c13686d7f18a7af480756"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Chair_01.prefab.meta",
+      "sha256": "fc324fef0dbfe7bd9724a9805515a1b085c0760f8383a0311a6988158dcd803d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Chest_01.prefab",
+      "sha256": "c0d243f077bd0f747421166cb874d48bd5784f2471e0b1b18ad9b27c03e13ed7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Chest_01.prefab.meta",
+      "sha256": "b81e04672b6f6b37c122ff35629a221a9dc6f23700595e05af6a8abbf2633da8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Chest_02.prefab",
+      "sha256": "69c998dca5aad7d7d363218325932f488db85b26096fb86f80eaf4286d941844"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Chest_02.prefab.meta",
+      "sha256": "0be0cc660299e1a44460e10316ad93aa3c6d6e469994f3db6126ec9d00962218"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_01.prefab",
+      "sha256": "5785421cd76978d4008d420f761fe230a35550f5a3d8c4605d829699003acbfa"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_01.prefab.meta",
+      "sha256": "b8e889fde30785488cffcbea2266029d4830c9130945cd72c68c450523791bfd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_02.prefab",
+      "sha256": "3cfcd0330ccfa97f4a7de84c06fc040c9df211fd1d544bf454d87138dd2d17cb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_02.prefab.meta",
+      "sha256": "e0c1e5b9c8847a402b737bd596813b89ce3867174e65d6ef50a9678f190eb9c3"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_03.prefab",
+      "sha256": "a6192bcc75a30db3c856116b580cb718394d771e159ce35a00fd84e7c4a43283"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_03.prefab.meta",
+      "sha256": "c6c9e0bb6c2756dd352f40526d4d8e2a81592595ac428e31d2c49eac88ab6c72"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_Preset_01.prefab",
+      "sha256": "9dd24a6de87d75e718356b678ae958523f3abbb998cc11d1c4ae1aeb7f8af538"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Crate_Preset_01.prefab.meta",
+      "sha256": "abf73f0f59ba7d3dc26015c7c7579d3981457328f1b1564232d7ad1e80ade51a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Plank_01.prefab",
+      "sha256": "9ba2c19044015deb3f5c7c2b1bff1d362755bbd2a592dec733f6e43fb34fa29d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Plank_01.prefab.meta",
+      "sha256": "096b330922918cd1ec03a1688f06af8b5850428b26ed03294a37f7cf6969ec8b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Plank_02.prefab",
+      "sha256": "8c2106379d7af243f094e2b94ec7ea953947481beb094fcd3d24d1bd59567724"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Plank_02.prefab.meta",
+      "sha256": "40a0ce6b95c7b3599346968f073ba3ced1bdaa8c9ab354f6c6157fff58d19cc6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_01.prefab",
+      "sha256": "dd81f6109d6a105ceca0b9eb482fb768e739c07242f8e9be0790f9f4bcb97fef"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_01.prefab.meta",
+      "sha256": "fd9f26c3fdb3b9047d803743a9690f9a1d99f5bf9e168ff9281b8e2f3c7a72dd"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_02.prefab",
+      "sha256": "4710841d8baee8bb995dd0ce48cef7b7dd28785e1d43a066dbedfc5efdc04387"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_02.prefab.meta",
+      "sha256": "c391df74a65eba91a805d501068c58565716e3efe21974b5e07f83a6dda08c46"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_03.prefab",
+      "sha256": "287fe61f0146a36550e7089f7d167d1415d711e81b24bb79487613a9d8fa7990"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_03.prefab.meta",
+      "sha256": "cb40e252d0b25eedb5b999749f1fee096abda07f06ceec3a836131a37ffd22d5"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_04.prefab",
+      "sha256": "e270a65be9854e08d7312ab4da0b5f752a89734657b0e83f3b99c8115a12646a"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_04.prefab.meta",
+      "sha256": "a72edc6b777b2cf9fced29156f3869af7ed3c83a596fcc220932ee79ac49d050"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_05.prefab",
+      "sha256": "410afc0d8991500dcb8c64a091c20acf110bc9594c8c066ec45f9044b3e28554"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_05.prefab.meta",
+      "sha256": "536e1b3d0f3d791bee92d6b8b6d67d1c411db900fe6413d399021fe274a59155"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_Stack_01.prefab",
+      "sha256": "bbe044404fe6563ac896690efa4bbf7bd26f311c6bc94bcefd21bf75cde05744"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_Stack_01.prefab.meta",
+      "sha256": "c92bfed0a3c692eab06c503faa7bbefc3a5d9da1be41f67523e8a7571df0aabb"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_Stack_02.prefab",
+      "sha256": "81d20b8683c142b694f23fc1c3eada624982dddb667e9ddb76a103a51b8d269c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Sack_Stack_02.prefab.meta",
+      "sha256": "adc42336f40bf2366a9123901a665476f128a9a2b42daf70944fc09b87cd8677"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Table_01.prefab",
+      "sha256": "a2a8addf2879deddae8d2c501a959a2ce9590c6886a4b6f5ac26a595f4393ea8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Props/SM_Gen_Prop_Table_01.prefab.meta",
+      "sha256": "5f837727c4e91628a84076db8d5a8b65a6f25d227b7a72f8c2e355a60549d133"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Weapons/SM_Gen_Wep_Axe_01.prefab",
+      "sha256": "272ee343e4d5f39e51df957e6f0b71b1c53de652b4b5f662e7da374674cbb8a1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Weapons/SM_Gen_Wep_Axe_01.prefab.meta",
+      "sha256": "89669d5283bbe934f8364b69e0f6eb0bd5d71587c2f45eec2f254996c2345525"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Weapons/SM_Gen_Wep_Pickaxe_01.prefab",
+      "sha256": "2585c07d17b178e298680be99c4a3c6ba6a65ff136c4fa8a4e0b98d702aff65d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Prefabs/Weapons/SM_Gen_Wep_Pickaxe_01.prefab.meta",
+      "sha256": "18d9ce48874b4670fe432670ee32a375283aa172025f4c287686c09fc488e12c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/Generic_Basic.shadergraph",
+      "sha256": "43330cdd0b0074ab148f5785dbb3512d176864816c1ad08d2485521a1eab0182"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/Generic_Basic.shadergraph.meta",
+      "sha256": "9c681f8786e99e3ce8899a097021d52085704474595d5cef5ef28082edaccf17"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/Generic_Standard.shadergraph",
+      "sha256": "4627819eb6e88e7a7095d00fb4dcc86fd198dd32a2bcf59c79b2774afe50e38d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/Generic_Standard.shadergraph.meta",
+      "sha256": "3d21c169b4bfeb6cc568f5bc43ad4b3cbe17b8d3bb4170710ea1f8062054a80e"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/PolygonShader.shadergraph",
+      "sha256": "09a16a9495bdd840589ac542da9e77770751dc801e5a8e40a85bdf6db63a9f93"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/PolygonShader.shadergraph.meta",
+      "sha256": "f462846ea535a70496e8c8a9be4c3793d5fd6fd42a629926aa87da1f50f7bc2b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/Panner.shadersubgraph",
+      "sha256": "38c7774d9ee01f8a96354bc2b5e56a44aac610aaceac03b1d0256896150098c9"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/Panner.shadersubgraph.meta",
+      "sha256": "e095885c08b288a4ec8ad37f9e631dbe0ca99da01595b6822cb773e73c95b927"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/SplitTriplanar.shadersubgraph",
+      "sha256": "b4b863de29cf9303d46e8759190f626771364a62d62bf0ea709b1dad30d8e53f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/SplitTriplanar.shadersubgraph.meta",
+      "sha256": "7939715f8c6755f13d2cc1d3e7036336a317149d32cf96bea58d27d0ee6d8f5d"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/SplitTriplanarNormal.shadersubgraph",
+      "sha256": "913fe1ce5dc032bd1ba4f48658a8b4d1b8299379b713fa02a4704bf76af0cd56"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/SplitTriplanarNormal.shadersubgraph.meta",
+      "sha256": "5573a67dce337592357543d0709c57bfd734c210f21b33b2220340e19d38e9c2"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/UVWithPan.shadersubgraph",
+      "sha256": "ab89032358254510a6758876899242aa3cbd4fe33b3ab45224f88c243c92743c"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Shaders/SubGraphs/UVWithPan.shadersubgraph.meta",
+      "sha256": "75bfee8d49bd9bc977d63a2945927f033967d4b05f0bffd8f27bb6164291f99b"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Alts/Generic_01_A.png",
+      "sha256": "fb6eea4cbdd6d86962739d0bc384fdc605fba7651745c1fd950e1f031eece3f1"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Alts/Generic_01_A.png.meta",
+      "sha256": "15f647432649d47898f6d28f2bb7816c14db7d1409e37e3e408c761cd7d7ac18"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Emissive/Generic_Emissive_01_A.png",
+      "sha256": "a90f6d28c0b889cc582df4a7013c3dd7fa421280b3fcd5063acc780971cb3daf"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Emissive/Generic_Emissive_01_A.png.meta",
+      "sha256": "0553ae1dc40090ca78e99fab9a921efe66d275dceec9f6f571582449ceab7648"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Brick.png",
+      "sha256": "f962f36210e339d597fe037b49d9f624f850f50efc8143f42e6fb8b8aab59112"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Brick.png.meta",
+      "sha256": "df641b3d3a519cca06eecef92834dd92021655bc51ee433e71445ea363c18558"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Concrete.png",
+      "sha256": "8ffc1f0d0208b970eda43a36659014b450d6bd1181d886a3722072ef10403e59"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Concrete.png.meta",
+      "sha256": "41911c14e92de03b8c91ada63228144c15dc7052f2929fc0fb0a98fa559c4327"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Dirt.png",
+      "sha256": "8ccc11b711bd5a25b9a3f62ceb8165936e89b5165db476606e810444608d3b12"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Dirt.png.meta",
+      "sha256": "ebee9c2535747996716158dac832b15cabfd0a1d2547a19bf93ceacc6f864ef8"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Grass.png",
+      "sha256": "325ff8941c068a65392010893fc207d350492ce33edf69950d1c656d5fa4956f"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Grass.png.meta",
+      "sha256": "77bdcd6f9d54821cc64ba612d1385d03fbacb74a90382d269101a5e009dfac80"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Grass_Normals.png",
+      "sha256": "ff38f4ed839c53c5b4fc2b4cc7d33fa18cebb42a26f663e150c009830b3fd4e7"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Grass_Normals.png.meta",
+      "sha256": "a6eb3c950856e415212a10b4f4379760da49e30c6d239e3fea8fb3eb9ac6c4ca"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Normals_01.png",
+      "sha256": "fd5f3e5f33fa9051d7d5ea9abe00a93f4ddd442e97d380bcf6a86907c86b6457"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Normals_01.png.meta",
+      "sha256": "6ff5347a1233fb6b20ed0d65b6f3a43ec472f71b293411298b8ce7f95616e675"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Plaster.png",
+      "sha256": "4e0dd25778b79df4a9c589bfd6181828bdc783c13f87612b7f86975e9b711351"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Plaster.png.meta",
+      "sha256": "20476e1d64330ff908b36856d05b80944c69e91c3c1fb2321bc32684cf79c979"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Wood.png",
+      "sha256": "ec186d2eb4c6dbf9eb353c75e8c04d1c76aab33fbbab9cffdd6d0ddee23b22b6"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/Generic_Wood.png.meta",
+      "sha256": "c591c9672a2ea5bd8b655e1db7893be6a2d4157fee9f349e25ab08b8d4a8e001"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/HairMask.png",
+      "sha256": "3a51ef37b384feed6f59396a05dd598a4c2da5ecd1822242751bb8a70c930701"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/HairMask.png.meta",
+      "sha256": "6fcace498023f3c89f67edc9cf5caf1b8fff538c2d55a599ce487a3b8fe2d842"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/SkinMask.png",
+      "sha256": "93086b081a96a4f9ecfc091b27d68c8b916b12c6a02761cd969ed095b6501073"
+    },
+    {
+      "path": "Assets/Synty/PolygonGeneric/Textures/SkinMask.png.meta",
+      "sha256": "afdce9e3790220cdf8c20f28c1756d58599943aa658a3dc545d7eb91dfe81d44"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Materials/PolygonStarter_01.mat",
+      "sha256": "5c30a7919447f77f63f64e23ab54ed326a218605d82970d82d1c1fca192e24e9"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Materials/PolygonStarter_01.mat.meta",
+      "sha256": "2bab897ed27b3b8bb690d9c9a4159f95c9380fd49f647401a53d24877a600436"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_Bld_Door_01.fbx",
+      "sha256": "f8bf71ccede563e0176788232ee516de757dc5935cf23388544a251ec6d46bf5"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_Bld_Door_01.fbx.meta",
+      "sha256": "ab0411d0d33addfd963325549a8515f5661505c5a25a9eb55870ac66b33d2d56"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_PolygonPrototype_Buildings_DoorFrame_01P.fbx",
+      "sha256": "943e8d6379d9ba32186782cc78e6512e2cf7cada7e81722ed5090e06c42b1134"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_PolygonPrototype_Buildings_DoorFrame_01P.fbx.meta",
+      "sha256": "4ac91b8e035fe0651eb0a178e6b6aaeb77aba9c1887fb6eef70035f962a2c173"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_PolygonPrototype_Prop_Sword_01.fbx",
+      "sha256": "493370b18ca3f84a6d2c99d819f651ee873caa2e4a40a2f3d598d7ae582becc5"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_PolygonPrototype_Prop_Sword_01.fbx.meta",
+      "sha256": "333adcf9fa9e43a79e8333571489b46c53c8c9d56c81cd56098ea6d9985c1021"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_Wep_Shield_04.fbx",
+      "sha256": "ded39e34a971e7d5eee526abd1b79a74e2211eb3bebdbb6987745839e0b9064e"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Models/SM_Wep_Shield_04.fbx.meta",
+      "sha256": "d5335f1da617164201c4c584fd150dddecf1eb2a13dbd0d3037616200e580a90"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_Bld_Door_01.prefab",
+      "sha256": "9cdb70efe3b4e6aa7de83d8ed984234949ff02420edad971f49df56d2c14b5e1"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_Bld_Door_01.prefab.meta",
+      "sha256": "25258a3cfcf2023b9e35e418281b0587e1df0f6183327282e1d539a923644238"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_PolygonPrototype_Buildings_DoorFrame_01P.prefab",
+      "sha256": "538fcc01f6edf089e76857279bfc8e69b9a103680c59b149faa13853cf27d66d"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_PolygonPrototype_Buildings_DoorFrame_01P.prefab.meta",
+      "sha256": "88bfc8632d4d36c56d508253a6c8599fb71e29f1f12680ee89c7878286a29c3d"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_PolygonPrototype_Prop_Sword_01.prefab",
+      "sha256": "fc0e75e62a8f17d978511e662ee5e82e951593d95d2e32060e39f3b49f2defdb"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_PolygonPrototype_Prop_Sword_01.prefab.meta",
+      "sha256": "dc04b3f7d49678224373f3e590767fdb87bf7cd049a7360ed8f25e7fa078fe94"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_Wep_Shield_04.prefab",
+      "sha256": "0d7509b623e0d7808d729c7649527d62c16b78f5606ffc341efc43b32eb980ca"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Prefabs/SM_Wep_Shield_04.prefab.meta",
+      "sha256": "f3864326b765d293d90071cb5618aea07c22f9a5ce0b18f28a8389a124d904ba"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Textures/PolygonStarter_01.png",
+      "sha256": "3d2e6082531252b661294fef86851177b3ab9e87a91184efc5ab16e96213cf12"
+    },
+    {
+      "path": "Assets/Synty/PolygonStarter/Textures/PolygonStarter_01.png.meta",
+      "sha256": "c82eb2897599e7cf9d9a337737f533e907f5204372e0575a830dc665ca2ca951"
+    }
+  ]
+}

@@ -22,7 +22,8 @@ namespace Topaz.Characters
         GameObject toolHead;
         void Start()
         {
-            if (animator != null && animator.runtimeAnimatorController != null) return;
+            if (GetComponent<PrototypeHumanoidMotion>() != null ||
+                (animator != null && animator.runtimeAnimatorController != null)) return;
             session=GetComponentInParent<Topaz.Gameplay.WorldSession>();
             combat=GetComponentInParent<Topaz.Combat.PlayerCombat>();
             if(session!=null && rightHand!=null)

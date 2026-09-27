@@ -26,6 +26,16 @@ namespace Topaz.Generation.Editor
             for(int i=5;i<args.Length;i++)args[i]=parameters[i].DefaultValue;
             Call(node,"AddSlot",ctor.Invoke(args),true,true);
         }
+        public static void ConfigureFoliageObjectSpace()
+        {
+            string path=Root+"Foliage.shadergraph";
+            var graph=New("GraphData");
+            T("Serialization.MultiJson").GetMethod("Deserialize").MakeGenericMethod(T("GraphData")).Invoke(null,new[]{graph,File.ReadAllText(path),null,(object)true});
+            var nodes=(IEnumerable)graph.GetType().GetMethod("GetNodes").MakeGenericMethod(T("PositionNode")).Invoke(graph,null);
+            foreach(var node in nodes)Set(node,"spacePopup",Activator.CreateInstance(T("Drawing.Controls.PopupList"),new object[]{new[]{"Object","View","World","Tangent","Absolute World"},0}));
+            string json=(string)T("Serialization.MultiJson").GetMethod("Serialize").Invoke(null,new[]{graph});
+            File.WriteAllText(path,json);AssetDatabase.ImportAsset(path);
+        }
         [MenuItem("Topaz/Migration/Configure Shader Graph Templates")]
         public static void Apply()
         {

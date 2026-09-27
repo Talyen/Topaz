@@ -19,7 +19,8 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator GraphicsMenuAppliesAndSavesSelectionsImmediately()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return null;
             var controller=GameObject.Find("Visual Study").GetComponent("VisualLookController");
             var menu=GameObject.Find("Loop HUD").GetComponent("VisualOptionsMenu");Call(menu,"Toggle");yield return null;
             var panel=GameObject.Find("Loop HUD").transform.Find("Graphics");
@@ -37,7 +38,8 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator NightKeepsMoonAndAmbientLightingAndRestFadeRecovers()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return null;
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return null;
             var controller=GameObject.Find("Visual Study").GetComponent("VisualLookController");Call(controller,"SetWorldHours",0d);
             Assert.That(GameObject.Find("Moon").GetComponent<Light>().intensity,Is.GreaterThan(.1f));
             Assert.That(RenderSettings.ambientSkyColor.maxColorComponent,Is.GreaterThan(.03f));
@@ -47,7 +49,8 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator DodgeEmitsBoundedVfxAndCleansUp()
         {
-            var keyboard=InputSystem.AddDevice<Keyboard>();yield return SceneManager.LoadSceneAsync("Bootstrap");yield return new WaitForSeconds(.1f);
+            var keyboard=InputSystem.AddDevice<Keyboard>();yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return new WaitForSeconds(.1f);
             var effects=Effects();Press(keyboard.leftShiftKey);yield return new WaitForSeconds(.08f);Release(keyboard.leftShiftKey);
             Assert.That((int)Get(effects,"ActiveBurstCount"),Is.InRange(1,8));yield return new WaitForSeconds(2.2f);
             Assert.That(Get(effects,"ActiveBurstCount"),Is.EqualTo(0));
@@ -55,7 +58,8 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator SwordSwingEmitsVfxWithoutChangingCombatAuthority()
         {
-            var gamepad=InputSystem.AddDevice<Gamepad>();yield return SceneManager.LoadSceneAsync("Bootstrap");yield return new WaitForSeconds(.1f);
+            var gamepad=InputSystem.AddDevice<Gamepad>();yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();yield return new WaitForSeconds(.1f);
             var effects=Effects();Set(gamepad.rightTrigger,1f);yield return new WaitForSeconds(.4f);Set(gamepad.rightTrigger,0f);
             Assert.That((int)Get(effects,"ActiveBurstCount"),Is.InRange(1,8));
         }

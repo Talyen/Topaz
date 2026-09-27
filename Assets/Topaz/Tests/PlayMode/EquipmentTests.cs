@@ -16,6 +16,7 @@ namespace Topaz.Tests
         public IEnumerator StarterAndHomeSidegradeStayWithCharacterAndClaimOncePerWorld()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -55,17 +56,19 @@ namespace Topaz.Tests
         {
             Mouse mouse = InputSystem.AddDevice<Mouse>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             Component vitality = player.GetComponent("PlayerVitality");
             Component movement = player.GetComponent("PlayerController");
             yield return TopazTestTravel.EnterWoodland(player);
-            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
+            Component enemy = TopazTestTravel.Scout().GetComponent("EnemyCombatant");
             Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right,
                 Vector3.up).normalized;
-            Teleport(player, GameObject.Find("Scout A").transform.position - screenRight * 1.35f);
+            Teleport(player, TopazTestTravel.Scout().transform.position - screenRight * 1.35f);
             Set(mouse.rightButton, 1f);
+            yield return null; // Let the Input System hold reach the combat update before measuring raise time.
             yield return new WaitForSeconds(.18f);
             Vector3 aim = (Vector3)Property(movement, "AimDirection");
             Component combat = player.GetComponent("PlayerCombat");
@@ -91,6 +94,7 @@ namespace Topaz.Tests
         public IEnumerator EmptySlotsDisableTheirActionsAndKeepGearInBackpack()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             System.Type slot = System.Type.GetType("Topaz.Gameplay.EquipmentSlot, Assembly-CSharp");
@@ -110,6 +114,7 @@ namespace Topaz.Tests
         public IEnumerator FullBackpackLeavesRackRewardAndUnequipDoesNotLoseGear()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -130,6 +135,7 @@ namespace Topaz.Tests
         public IEnumerator TwoHandedEquipMovesShieldAtomicallyAndReverseSwapKeepsEveryItem()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -172,6 +178,7 @@ namespace Topaz.Tests
         public IEnumerator SpareGearTransfersThroughChestOneItemAtATime()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -204,6 +211,7 @@ namespace Topaz.Tests
         public IEnumerator EquipmentJournalOpensWithPortraitAndControllerFocus()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject canvas = GameObject.Find("Loop HUD");
             Component hud = canvas.GetComponent("LoopHud");
@@ -223,6 +231,7 @@ namespace Topaz.Tests
         public IEnumerator EveryAppearanceHasAVisibleLeftHandShield()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component appearance = player.GetComponent("PlayerAppearance");
@@ -241,6 +250,7 @@ namespace Topaz.Tests
         public IEnumerator SidegradesChangeSwingAndTravelTimingWithoutChangingOtherStats()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");

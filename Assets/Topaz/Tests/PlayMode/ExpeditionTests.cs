@@ -1,8 +1,7 @@
-using System.Collections;
 using System;
-using System.IO;
-using System.Reflection;
+using System.Collections;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
@@ -12,395 +11,125 @@ using UnityEngine.TestTools;
 
 namespace Topaz.Tests
 {
+    /// <summary>Continuous-world replacements for the former scene-transition scenarios.</summary>
     public sealed class ExpeditionTests : TopazInputTestFixture
     {
-        [UnityTest]
-        public IEnumerator WalkingThroughTrailLoadsWoodlandAndReturnsHome()
+        const BindingFlags Flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance;
+        static object Get(object o,string n)=>o.GetType().GetProperty(n,Flags)?.GetValue(o)??o.GetType().GetField(n,Flags).GetValue(o);
+        static object Call(object o,string n,params object[] args)=>o.GetType().GetMethods(Flags).Single(m=>m.Name==n&&m.GetParameters().Length==args.Length).Invoke(o,args);
+        static void SetField(object o,string n,object value)=>o.GetType().GetField(n,Flags).SetValue(o,value);
+        static Component Session=>GameObject.Find("Player").GetComponent("WorldSession");
+        static IEnumerator Boot(){yield return SceneManager.LoadSceneAsync("Bootstrap");yield return WaitForWilderness();}
+        static IEnumerator Move(Component session,Vector3 point)
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            float deadline = Time.realtimeSinceStartup + 5f;
-            while (!(bool)session.GetType().GetProperty("HasActivePair").GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline) yield return null;
-            Transform gate = GameObject.Find("Woodland Trail").transform;
-            Assert.That(gate.position.z, Is.GreaterThan(30f));
-            Teleport(player, gate.position - Vector3.forward * 2f);
-            player.GetComponent<CharacterController>().Move(Vector3.forward * 2f);
-            yield return WaitForRegion(session, "expedition.clearing");
-            Assert.That(SceneManager.GetSceneByName("Woodland").isLoaded, Is.True);
-            Assert.That(Terrain.activeTerrains.Length, Is.EqualTo(2));
-            Transform scout = GameObject.Find("Scout A").transform;
-            Assert.That(NavMesh.SamplePosition(scout.position,out NavMeshHit destination,2f,NavMesh.AllAreas), Is.True);
-            var route=new NavMeshPath();
-            Assert.That(NavMesh.CalculatePath(player.transform.position,destination.position,NavMesh.AllAreas,route),Is.True);
-            Assert.That(route.status,Is.EqualTo(NavMeshPathStatus.PathComplete));
-            Transform returnTrail=GameObject.Find("Home Trail").transform;
-            deadline = Time.realtimeSinceStartup + 5f;
-            FieldInfo ready = session.GetType().GetField("_trailReadyAt",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            while (Time.time < (float)ready.GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline) yield return null;
-            Teleport(player, returnTrail.position + Vector3.forward * 2f);
-            player.GetComponent<CharacterController>().Move(Vector3.back * 2f);
-            yield return WaitForRegion(session, "home");
-            yield return WaitForScene(false);
+            var stream=Get(Get(session,"ActiveRegion"),"Streaming");
+            yield return (IEnumerator)Call(stream,"PrepareDestination",point);
+            var terrain=Terrain.activeTerrains.First(t=>point.x>=t.transform.position.x&&point.x<=t.transform.position.x+128&&point.z>=t.transform.position.z&&point.z<=t.transform.position.z+128);
+            point.y=terrain.SampleHeight(point);BuildingTestActions.Teleport(session.gameObject,point);yield return null;
         }
-
-        [UnityTest]
-        public IEnumerator ClearingTreesAndRocksBindAsGatherableNodes()
+        static object[] Actors()=>UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).Where(c=>c.GetType().Name=="EnemyCombatant").Cast<object>().ToArray();
+        static IEnumerator WaitRecovery(Component session)
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            yield return CrossTrail(session, "expedition.clearing");
-
-            GameObject clearing = GameObject.Find("Woodland");
-            Component[] trees = clearing.GetComponentsInChildren<MonoBehaviour>()
-                .Where(value => value.GetType().Name == "HarvestTree").Cast<Component>().ToArray();
-            Component[] rocks = clearing.GetComponentsInChildren<MonoBehaviour>()
-                .Where(value => value.GetType().Name == "MiningRock").Cast<Component>().ToArray();
-            Assert.That(trees.Length, Is.EqualTo(12));
-            Assert.That(rocks.Length, Is.EqualTo(4));
-            foreach (Component tree in trees)
+            float end=Time.realtimeSinceStartup+20;while((bool)Get(session,"IsRecovering")&&Time.realtimeSinceStartup<end)yield return null;
+            Assert.That(Get(session,"IsRecovering"),Is.False);
+        }
+        [UnityTest]
+        public IEnumerator WalkingAcrossAChunkEdgeKeepsOneContinuousScene()
+        {
+            var pad=InputSystem.AddDevice<Gamepad>();yield return Boot();var s=Session;
+            yield return Move(s,new Vector3(126,0,16));
+            Vector3 point=s.transform.position;bool found=false;
+            for(float z=16;z<112;z+=8)
             {
-                Assert.That((bool)tree.GetType().GetProperty("IsAvailable").GetValue(tree), Is.True);
-                Assert.That((string)tree.GetType().GetProperty("StableObjectId").GetValue(tree),
-                    Does.StartWith("expedition.clearing.tree."));
+                var candidate=new Vector3(126,0,z);var region=Get(s,"ActiveRegion");var plan=Get(region,"Wilderness");candidate.y=(float)Call(plan,"Height",candidate.x,candidate.z);
+                if(Physics.OverlapBox(candidate+new Vector3(3,.9f,0),new Vector3(4,.7f,.45f)).Any(c=>!(c is TerrainCollider)&&!c.transform.IsChildOf(s.transform)))continue;
+                point=candidate;found=true;break;
             }
-            foreach (Component rock in rocks)
-            {
-                Assert.That((bool)rock.GetType().GetProperty("IsAvailable").GetValue(rock), Is.True);
-                Assert.That((string)rock.GetType().GetProperty("StableObjectId").GetValue(rock),
-                    Does.StartWith("expedition.clearing.rock."));
-            }
-            yield return CrossTrail(session, "home");
-            yield return WaitForScene(false);
+            Assert.That(found,Is.True);BuildingTestActions.Teleport(s.gameObject,point);AimAt(point+Vector3.forward*10);yield return null;
+            Set(pad.leftStick,Vector2.right);yield return new WaitForSeconds(1);Set(pad.leftStick,Vector2.zero);
+            Assert.That(s.transform.position.x,Is.GreaterThan(128));
+            Assert.That(Get(s,"CurrentRegionId"),Is.EqualTo("wilderness"));Assert.That(SceneManager.GetSceneByName("Woodland").isLoaded,Is.False);
         }
-
         [UnityTest]
-        public IEnumerator SwordCanDamageAnExpeditionScout()
+        public IEnumerator HarvestedNodesKeepTheirStableStateAfterUnloadingAndReturning()
         {
-            Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            yield return CrossTrail(session, "expedition.clearing");
-
-            Transform scout = GameObject.Find("Woodland").transform.Find("Scout A");
-            float deadline = Time.realtimeSinceStartup + 5f;
-            while (!scout.gameObject.activeSelf && Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That(scout.gameObject.activeSelf, Is.True);
-            Component combatant = scout.GetComponent("EnemyCombatant");
-            int before = (int)combatant.GetType().GetProperty("CurrentHealth").GetValue(combatant);
-            Vector3 screenRight = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
-            Teleport(player, scout.position - screenRight * 1.35f);
-            AimAt(GameObject.Find("Scout A").transform.position);
-            Set(gamepad.rightStick, Vector2.zero);
-            yield return null;
-            Set(gamepad.rightTrigger, 1f);
-            yield return new WaitForSeconds(.35f);
-            Set(gamepad.rightTrigger, 0f);
-            Assert.That((int)combatant.GetType().GetProperty("CurrentHealth").GetValue(combatant),
-                Is.LessThan(before), "The sword should hit enemies in the loaded clearing.");
-
-            yield return CrossTrail(session, "home");
-            yield return WaitForScene(false);
+            yield return Boot();var s=Session;var node=FindResource("HarvestTree").GetComponent("HarvestTree");
+            string id=(string)Get(node,"StableObjectId");Vector3 position=node.transform.position;
+            for(int i=0;i<4&&(bool)Get(node,"IsAvailable");i++)Assert.That(Call(node,"TryChop",position+Vector3.back*1.3f,Vector3.forward,2.1f,90f),Is.True);
+            Assert.That(Get(node,"IsAvailable"),Is.False);double deadline=(double)Get(Call(s,"GetOrCreateNodeState",id),"readyAtWorldHours");
+            yield return Move(s,new Vector3(350,0,350));yield return new WaitForSeconds(.8f);
+            Assert.That(node==null,Is.True,"The original chunk instance must actually unload.");
+            yield return Move(s,position);
+            var restored=FindResource("HarvestTree","StableObjectId",id).GetComponent("HarvestTree");
+            Assert.That(Get(restored,"IsAvailable"),Is.False);Assert.That(Get(Call(s,"GetOrCreateNodeState",id),"readyAtWorldHours"),Is.EqualTo(deadline));
         }
-
         [UnityTest]
-        public IEnumerator AxeStaggersScoutButGuardianResists()
+        public IEnumerator StreamedEnemyDefeatStoresAWorldDeadlineAndDropsRewardsOnce()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            yield return CrossTrail(session, "expedition.clearing");
-            Transform clearing = GameObject.Find("Woodland").transform;
-            Component scout = clearing.Find("Scout A").GetComponent("EnemyCombatant");
-            Component guardian = clearing.Find("Wide-Sweep Guardian").GetComponent("EnemyCombatant");
-            float deadline = Time.realtimeSinceStartup + 5f;
-            while ((!scout.gameObject.activeSelf || !guardian.gameObject.activeSelf) &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-
-            scout.GetType().GetMethod("StaggerFromWeapon").Invoke(scout, new object[] { .3f });
-            guardian.GetType().GetMethod("StaggerFromWeapon")
-                .Invoke(guardian, new object[] { .3f });
-            FieldInfo timer = scout.GetType().GetField("_guardStaggerUntil",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.That((float)timer.GetValue(scout), Is.GreaterThan(Time.time));
-            Assert.That((float)timer.GetValue(guardian), Is.LessThanOrEqualTo(Time.time));
-
-            yield return CrossTrail(session, "home");
-            yield return WaitForScene(false);
+            yield return Boot();var s=Session;yield return TopazTestTravel.EnterWoodland(s.gameObject);
+            var enemy=TopazTestTravel.Scout().GetComponent("EnemyCombatant");string id=(string)Get(enemy,"SpawnId");
+            int before=(int)Get(s,"PickupCount");Call(enemy,"TakeDamage",100);yield return null;
+            var records=((IEnumerable)Get(Get(s,"ActiveWorld"),"enemyRespawns")).Cast<object>().Where(r=>(string)Get(r,"spawnId")==id).ToArray();
+            Assert.That(records.Length,Is.EqualTo(1));Assert.That((double)Get(records[0],"readyAtWorldHours"),Is.GreaterThan((double)Get(s,"WorldHours")));
+            int after=(int)Get(s,"PickupCount");Assert.That(after,Is.GreaterThan(before));Call(enemy,"TakeDamage",100);Assert.That(Get(s,"PickupCount"),Is.EqualTo(after));
         }
-
         [UnityTest]
-        public IEnumerator DefeatRecoversAtLastCampfireAndAdvancesEightHours()
+        public IEnumerator StreamedScoutsStaggerWhileGuardianDefencesRemainDistinct()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            yield return CrossTrail(session, "expedition.clearing");
-
-            GameObject campfire = GameObject.Find("Clearing Campfire");
-            Assert.That(campfire, Is.Not.Null);
-            Assert.That((string)session.GetType().GetProperty("ReturnCampfireId").GetValue(session),
-                Is.EqualTo("campfire.home"));
-            Teleport(player, campfire.transform.position + Vector3.right * 2f);
-            yield return null;
-            Assert.That((string)session.GetType().GetProperty("ReturnCampfireId").GetValue(session),
-                Is.EqualTo("campfire.home"), "Passing outside the hearth must not activate it.");
-            Teleport(player, campfire.transform.position);
-            yield return null;
-            Assert.That((string)session.GetType().GetProperty("ReturnCampfireId").GetValue(session),
-                Is.EqualTo("campfire.expedition.clearing"));
-
-            Transform scout = GameObject.Find("Woodland").transform.Find("Scout A");
-            float readyDeadline = Time.realtimeSinceStartup + 5f;
-            while (!scout.gameObject.activeSelf && Time.realtimeSinceStartup < readyDeadline)
-                yield return null;
-            Component enemy = scout.GetComponent("EnemyCombatant");
-            enemy.GetType().GetMethod("TakeDamage").Invoke(enemy, new object[] { 1 });
-            Assert.That((int)enemy.GetType().GetProperty("CurrentHealth").GetValue(enemy),
-                Is.EqualTo(9));
-
-            Transform guardian = GameObject.Find("Woodland").transform
-                .Find("Wide-Sweep Guardian");
-            Component guardianCombatant = guardian.GetComponent("EnemyCombatant");
-            guardianCombatant.GetType().GetMethod("TakeDamage")
-                .Invoke(guardianCombatant, new object[] { 99 });
-            Assert.That((int)session.GetType().GetProperty("PickupCount").GetValue(session),
-                Is.EqualTo(2), "Guardian defeat should leave Bone Fragments and one gear item.");
-            Teleport(player, GameObject.Find("Guarded Supply Cache").transform.position);
-            Interact(session);
-            int wood = (int)session.GetType().GetProperty("WoodCount").GetValue(session);
-            Assert.That(wood, Is.EqualTo(3));
-            Assert.That((bool)session.GetType().GetProperty("ExpeditionCacheClaimed")
-                .GetValue(session), Is.True);
-            Teleport(player, campfire.transform.position);
-            yield return null;
-
-            session.GetType().GetMethod("RecordSwordHit").Invoke(session, new object[] { 2 });
-            int experience = (int)session.GetType().GetProperty("SwordsExperience").GetValue(session);
-            double before = (double)session.GetType().GetProperty("WorldHours").GetValue(session);
-
-            Component vitality = player.GetComponent("PlayerVitality");
-            Teleport(player, GameObject.Find("Clearing Campfire").transform.position + Vector3.right * 20f);
-            for (int i = 0; i < 3; i++)
-                vitality.GetType().GetMethod("TryTakeDamage").Invoke(vitality, new object[] { 4 });
-            Assert.That((bool)session.GetType().GetProperty("IsRecovering").GetValue(session), Is.True);
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while ((bool)session.GetType().GetProperty("IsRecovering").GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That((bool)session.GetType().GetProperty("IsRecovering").GetValue(session), Is.False);
-            Assert.That(Region(session), Is.EqualTo("expedition.clearing"));
-            Assert.That(SceneManager.GetSceneByName("Woodland").isLoaded, Is.True);
-            Assert.That((int)vitality.GetType().GetProperty("CurrentHealth").GetValue(vitality),
-                Is.EqualTo(6));
-            Vector3 arrival = campfire.transform.Find("Safe Arrival").position;
-            Assert.That(Vector3.Distance(player.transform.position, arrival), Is.LessThan(.2f));
-            Assert.That((double)session.GetType().GetProperty("WorldHours").GetValue(session) - before,
-                Is.EqualTo(8d).Within(.05d));
-            Assert.That((int)enemy.GetType().GetProperty("CurrentHealth").GetValue(enemy),
-                Is.EqualTo(9), "Recovery must preserve damage until an enemy is defeated.");
-            Assert.That((int)guardianCombatant.GetType().GetProperty("CurrentHealth")
-                .GetValue(guardianCombatant), Is.Zero,
-                "A defeated guardian waits for its 24-hour deadline.");
-            Assert.That((int)session.GetType().GetProperty("WoodCount").GetValue(session),
-                Is.EqualTo(wood), "The claimed reward must not be lost or duplicated.");
-            Assert.That((bool)session.GetType().GetProperty("ExpeditionCacheClaimed")
-                .GetValue(session), Is.True);
-            Assert.That((int)session.GetType().GetProperty("SwordsExperience").GetValue(session),
-                Is.EqualTo(experience));
-            Assert.That((string)session.GetType().GetProperty("ReturnCampfireId").GetValue(session),
-                Is.EqualTo("campfire.expedition.clearing"));
-
-            yield return CrossTrail(session, "home");
-            yield return WaitForScene(false);
+            yield return Boot();var s=Session;yield return TopazTestTravel.EnterWoodland(s.gameObject);
+            var scout=TopazTestTravel.Scout().GetComponent("EnemyCombatant");
+            var guardian=Actors().First(e=>Get(e,"LootRole").ToString()=="Warrior");
+            Assert.That(scout.GetComponent<NavMeshAgent>().isOnNavMesh,Is.True);
+            Call(scout,"StaggerFromWeapon",.4f);Call(guardian,"StaggerFromWeapon",.4f);
+            Assert.That(Get(scout,"HasHitReaction"),Is.True);Assert.That(Get(guardian,"HasHitReaction"),Is.False);
         }
-
         [UnityTest]
-        public IEnumerator MissingSavedCampfireFallsBackHomeWithoutLosingExperience()
+        public IEnumerator DefeatReturnsToTheDiscoveredBuiltCampAndAdvancesEightHours()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            object visit = session.GetType().GetField("_visit",
-                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
-            visit.GetType().GetField("lastCampfireId").SetValue(visit, "campfire.removed");
-            var discovered = (System.Collections.IList)visit.GetType()
-                .GetField("discoveredCampfireIds").GetValue(visit);
-            discovered.Add("campfire.removed");
-            session.GetType().GetMethod("RecordSwordHit").Invoke(session, new object[] { 2 });
-            int experience = (int)session.GetType().GetProperty("SwordsExperience").GetValue(session);
-            yield return TopazTestTravel.EnterWoodland(player);
-            double before = (double)session.GetType().GetProperty("WorldHours").GetValue(session);
-
-            Component vitality = player.GetComponent("PlayerVitality");
-            Teleport(player, GameObject.Find("Clearing Campfire").transform.position + Vector3.right * 20f);
-            for (int i = 0; i < 3; i++)
-                vitality.GetType().GetMethod("TryTakeDamage").Invoke(vitality, new object[] { 4 });
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while ((bool)session.GetType().GetProperty("IsRecovering").GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That((bool)session.GetType().GetProperty("IsRecovering").GetValue(session), Is.False);
-            Assert.That((string)session.GetType().GetProperty("ReturnCampfireId").GetValue(session),
-                Is.EqualTo("campfire.home"));
-            Assert.That(player.transform.position.x, Is.EqualTo(0f).Within(.2f));
-            Assert.That(player.transform.position.z, Is.EqualTo(.35f).Within(.2f));
-            Assert.That((int)session.GetType().GetProperty("SwordsExperience").GetValue(session),
-                Is.EqualTo(experience));
-            Assert.That((double)session.GetType().GetProperty("WorldHours").GetValue(session) - before,
-                Is.EqualTo(8d).Within(.05d));
+            yield return Boot();var s=Session;yield return Move(s,new Vector3(160,0,20));
+            var pack=Get(s,"_backpack");Call(pack,"Add",Get(s,"WoodItem"),20);Call(pack,"Add",Get(s,"StoneItem"),20);
+            Vector3 point=BuildingTestActions.Place(s,"structure.campfire");BuildingTestActions.Teleport(s.gameObject,point+Vector3.forward);yield return null;
+            string camp=(string)Get(s,"ReturnCampfireId");Assert.That(camp,Is.Not.EqualTo("campfire.home"));
+            double hours=(double)Get(s,"WorldHours");BuildingTestActions.Teleport(s.gameObject,point+Vector3.right*16);yield return null;
+            var health=s.GetComponent("PlayerVitality");Assert.That(Call(health,"TryTakeDamage",100),Is.True);yield return WaitRecovery(s);
+            Assert.That(Get(s,"ReturnCampfireId"),Is.EqualTo(camp));Assert.That(Vector3.Distance(s.transform.position,point),Is.LessThan(4));
+            Assert.That(Get(health,"CurrentHealth"),Is.EqualTo(Get(health,"MaximumHealth")));Assert.That((double)Get(s,"WorldHours")-hours,Is.InRange(8,8.15));
         }
-
         [UnityTest]
-        public IEnumerator DefeatLoadsTheLastCampfireInAnotherRegion()
+        public IEnumerator DefeatReloadsAnUnloadedBuiltCampBeforeRevealingThePlayer()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            yield return CrossTrail(session, "expedition.clearing");
-            Teleport(player, GameObject.Find("Clearing Campfire").transform.position);
-            yield return null;
-            Assert.That((string)session.GetType().GetProperty("ReturnCampfireId").GetValue(session),
-                Is.EqualTo("campfire.expedition.clearing"));
-
-            yield return CrossTrail(session, "home");
-            yield return WaitForScene(false);
-            Assert.That((string)session.GetType().GetProperty("ReturnCampfireId").GetValue(session),
-                Is.EqualTo("campfire.expedition.clearing"));
-            yield return TopazTestTravel.EnterWoodland(player);
-            double before = (double)session.GetType().GetProperty("WorldHours").GetValue(session);
-            Component vitality = player.GetComponent("PlayerVitality");
-            Teleport(player, GameObject.Find("Clearing Campfire").transform.position + Vector3.right * 20f);
-            for (int i = 0; i < 3; i++)
-                vitality.GetType().GetMethod("TryTakeDamage").Invoke(vitality, new object[] { 4 });
-
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while ((bool)session.GetType().GetProperty("IsRecovering").GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That((bool)session.GetType().GetProperty("IsRecovering").GetValue(session), Is.False);
-            Assert.That(Region(session), Is.EqualTo("expedition.clearing"));
-            Assert.That(SceneManager.GetSceneByName("Woodland").isLoaded, Is.True);
-            Vector3 arrival = GameObject.Find("Clearing Campfire").transform
-                .Find("Safe Arrival").position;
-            Assert.That(Vector3.Distance(player.transform.position, arrival), Is.LessThan(.2f));
-            Assert.That((double)session.GetType().GetProperty("WorldHours").GetValue(session) - before,
-                Is.EqualTo(8d).Within(.05d));
-
-            yield return CrossTrail(session, "home");
-            yield return WaitForScene(false);
+            yield return Boot();var s=Session;
+            var pack=Get(s,"_backpack");Call(pack,"Add",Get(s,"WoodItem"),20);Call(pack,"Add",Get(s,"StoneItem"),20);
+            var point=BuildingTestActions.Place(s,"structure.campfire");BuildingTestActions.Teleport(s.gameObject,point+Vector3.forward);yield return null;
+            string id=(string)Get(s,"ReturnCampfireId");Assert.That(id,Is.Not.EqualTo("campfire.home"));
+            yield return Move(s,new Vector3(350,0,350));yield return new WaitForSeconds(1);
+            Assert.That(((IEnumerable)Get(Get(s,"homeBuilds"),"Campfires")).Cast<object>().Any(c=>(string)Get(c,"StableId")==id),Is.False);
+            var health=s.GetComponent("PlayerVitality");Assert.That(Call(health,"TryTakeDamage",100),Is.True);yield return WaitRecovery(s);
+            Assert.That(Get(s,"ReturnCampfireId"),Is.EqualTo(id));Assert.That(Vector3.Distance(s.transform.position,point),Is.LessThan(4));
+            Assert.That(Call(Get(Get(s,"ActiveRegion"),"Streaming"),"IsReadyAt",s.transform.position),Is.True);
         }
-
         [UnityTest]
-        public IEnumerator WoodlandCacheOpensWithoutGuardianAndRefillsAfterSeventyTwoHours()
+        public IEnumerator MissingRecoveryCampFallsBackToTheStartingFireWithoutLosingExperience()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return null;
-            GameObject player = GameObject.Find("Player");
-            Component session = player.GetComponent("WorldSession");
-            yield return CrossTrail(session, "expedition.clearing");
-            Transform guardian = GameObject.Find("Woodland").transform
-                .Find("Wide-Sweep Guardian");
-            ((Behaviour)guardian.GetComponent("EnemyCombatant")).enabled = false;
-            Transform cache = GameObject.Find("Guarded Supply Cache").transform;
-            Teleport(player, cache.position+Vector3.back*1.2f);
-            AimAt(cache.position);
-            yield return null;
-            object[] cue = { null, null };
-            Assert.That((bool)session.GetType().GetMethod("TryGetInteraction")
-                .Invoke(session, cue), Is.True);
-            Assert.That(cue[1], Is.EqualTo("Open cache"));
-            Interact(session);
-            Assert.That((int)session.GetType().GetProperty("WoodCount").GetValue(session),
-                Is.EqualTo(3));
-            Assert.That(cache.GetChild(0).gameObject.activeSelf, Is.True);
-            Interact(session);
-            Assert.That((int)session.GetType().GetProperty("WoodCount").GetValue(session),
-                Is.EqualTo(3));
-
-            yield return CrossTrail(session, "home");
-            yield return WaitForScene(false);
-            yield return CrossTrail(session, "expedition.clearing");
-            Assert.That((bool)session.GetType().GetProperty("ExpeditionCacheClaimed")
-                .GetValue(session), Is.True);
-            object data = session.GetType().GetField("_data",
-                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(session);
-            FieldInfo clock = data.GetType().GetField("worldHours");
-            clock.SetValue(data, (double)clock.GetValue(data) + 72.1d);
-            yield return null;
-            Assert.That((bool)session.GetType().GetProperty("ExpeditionCacheClaimed")
-                .GetValue(session), Is.False);
-            Teleport(player, GameObject.Find("Guarded Supply Cache").transform.position);
-            Interact(session);
-            Assert.That((int)session.GetType().GetProperty("WoodCount").GetValue(session),
-                Is.EqualTo(6));
-            yield return CrossTrail(session, "home");
+            yield return Boot();var s=Session;Call(s,"RecordSkillCompletion","logging",50,1);int experience=(int)Get(s,"LoggingExperience");
+            var visit=Get(s,"_visit");((IList)Get(visit,"discoveredCampfireIds")).Add("missing-camp");SetField(visit,"lastCampfireId","missing-camp");
+            yield return Move(s,new Vector3(150,0,20));var health=s.GetComponent("PlayerVitality");Assert.That(Call(health,"TryTakeDamage",100),Is.True);yield return WaitRecovery(s);
+            Assert.That(Get(s,"ReturnCampfireId"),Is.EqualTo("campfire.home"));Assert.That(Get(s,"LoggingExperience"),Is.EqualTo(experience));
         }
-
-        static IEnumerator WaitForRegion(Component session, string expected)
+        [UnityTest]
+        public IEnumerator DiscoveryCachesRefillOnWorldTimeAndRemainIndependent()
         {
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while (Region(session) != expected && Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That(Region(session), Is.EqualTo(expected));
-            while ((bool)session.GetType().GetProperty("BlockMovement").GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-        }
-
-        static IEnumerator CrossTrail(Component session, string destination)
-        {
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while (!(bool)session.GetType().GetProperty("HasActivePair").GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-            FieldInfo ready = session.GetType().GetField("_trailReadyAt",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            while (Time.time < (float)ready.GetValue(session) &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-            session.GetType().GetMethod("RequestTrailCrossing")
-                .Invoke(session, new object[] { destination });
-            yield return WaitForRegion(session, destination);
-        }
-
-        static IEnumerator WaitForScene(bool loaded)
-        {
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while (SceneManager.GetSceneByName("Woodland").isLoaded != loaded &&
-                   Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That(SceneManager.GetSceneByName("Woodland").isLoaded, Is.EqualTo(loaded));
-        }
-
-        static string Region(Component session) =>
-            (string)session.GetType().GetProperty("CurrentRegionId").GetValue(session);
-
-        static void Interact(Component session) =>
-            session.GetType().GetMethod("TryInteract").Invoke(session, null);
-
-        static void Teleport(GameObject player, Vector3 destination)
-        {
-            CharacterController controller = player.GetComponent<CharacterController>();
-            controller.enabled = false;
-            player.transform.position = destination;
-            controller.enabled = true;
-            Physics.SyncTransforms();
-            controller.Move(Vector3.down*.02f);
+            yield return Boot();var s=Session;
+            var sites=((IEnumerable)Get(Get(Get(s,"ActiveRegion"),"Wilderness"),"Discoveries")).Cast<object>().OrderBy(site=>(float)Get(site,"X")*(float)Get(site,"X")+(float)Get(site,"Z")*(float)Get(site,"Z")).Take(2).ToArray();
+            yield return Move(s,new Vector3(((float)Get(sites[0],"X")+(float)Get(sites[1],"X"))*.5f,0,((float)Get(sites[0],"Z")+(float)Get(sites[1],"Z"))*.5f));
+            var caches=UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).Where(c=>c.GetType().Name=="DiscoveryCache").Take(2).ToArray();
+            Assert.That(caches.Length,Is.EqualTo(2));int wood=(int)Get(s,"WoodCount");
+            Assert.That(Call(caches[0],"Open"),Is.True);Assert.That(Get(s,"WoodCount"),Is.EqualTo(wood+3));Assert.That(Call(caches[0],"Open"),Is.False);
+            Assert.That(Call(caches[1],"Open"),Is.True);
+            var data=Get(s,"_data");SetField(data,"worldHours",(double)Get(s,"WorldHours")+72.1);
+            Assert.That(Call(caches[0],"Open"),Is.True);Call(s,"FlushCurrent");
+            var saved=Call(Call(Get(s,"_repository"),"Load"),"World",Get(s,"ActiveWorldId"));
+            Assert.That(((IEnumerable)Get(saved,"nodes")).Cast<object>().Any(n=>(string)Get(n,"objectId")== (string)Get(caches[0],"StableId") && (double)Get(n,"readyAtWorldHours")>(double)Get(s,"WorldHours")),Is.True);
         }
     }
 }

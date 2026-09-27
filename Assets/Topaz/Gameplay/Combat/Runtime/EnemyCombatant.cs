@@ -52,6 +52,7 @@ namespace Topaz.Combat
 
         public int CurrentHealth { get; private set; }
         public string SpawnId => spawnId;
+        public void SetGeneratedId(string id) => spawnId = id;
         public SkeletonLootRole LootRole => lootRole;
         public event Action<EnemyCombatant> Defeated;
         public int SourceLevel => definition != null ? definition.SourceLevel : 1;
@@ -74,6 +75,7 @@ namespace Topaz.Combat
         {
             target = player;
             safeZone = home;
+            rangedPositions = rangedPositions == null ? Array.Empty<Transform>() : Array.FindAll(rangedPositions, p => p != null);
         }
 
         void Awake()
@@ -129,11 +131,6 @@ namespace Topaz.Combat
             if (!_agent.isOnNavMesh) return;
             if (CampSafety.IsProtected(target.transform.position) || CampSafety.IsProtected(_agent.nextPosition))
             { ReturnToSpawn(); return; }
-            if (target.GetComponent<Topaz.Gameplay.WorldSession>()?.IsAtHome == true)
-            {
-                ReturnToSpawn();
-                return;
-            }
 
             switch (_state)
             {
@@ -339,7 +336,6 @@ namespace Topaz.Combat
                 _castingGroundSpell = false;
                 return; // The shared spell resolves its own radius and damage.
             }
-            if (target.GetComponent<Topaz.Gameplay.WorldSession>()?.IsAtHome == true) return;
 
             if (definition.CrossbowAttack != null)
             {

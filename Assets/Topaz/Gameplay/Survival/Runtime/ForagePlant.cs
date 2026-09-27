@@ -14,8 +14,10 @@ namespace Topaz.Gameplay
 
         public string StableObjectId => stableObjectId;
         public bool Mushrooms => mushrooms;
+        public void SetGeneratedId(string id) => stableObjectId = id;
         public bool IsAvailable => _state != null &&
-            (_state.readyAtWorldHours == 0d || _session.WorldHours >= _state.readyAtWorldHours);
+            (_state.readyAtWorldHours == 0d || _session.WorldHours >= _state.readyAtWorldHours) &&
+            !(_session?.HomeBlocksResource(transform.position,.3f) ?? false);
 
         public void Bind(WorldSession session)
         {
@@ -29,7 +31,7 @@ namespace Topaz.Gameplay
             if (_state == null) return;
             if (_state.readyAtWorldHours > 0d && _session.WorldHours >= _state.readyAtWorldHours)
                 _state.readyAtWorldHours = 0d;
-            if (harvestVisual != null) harvestVisual.SetActive(_state.readyAtWorldHours == 0d);
+            if (harvestVisual != null) harvestVisual.SetActive(IsAvailable);
         }
 
         public bool TryForage()

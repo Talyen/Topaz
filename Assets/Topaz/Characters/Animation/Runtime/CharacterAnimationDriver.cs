@@ -12,7 +12,7 @@ namespace Topaz.Characters
         enum Pose
         {
             None, Locomotion, DodgeForward, DodgeBackward, DodgeLeft, DodgeRight,
-            Jump, Sword, Axe, CombatAxe, Staff, Crossbow, CrossbowReload, Hit, Attack, Death
+            Jump, Sword, Axe, Pickaxe, CombatAxe, Staff, Crossbow, CrossbowReload, Hit, Attack, Death, Guard
         }
 
         [SerializeField] PlayerController player;
@@ -26,6 +26,11 @@ namespace Topaz.Characters
         [SerializeField] AnimationClip jumpClip;
         [SerializeField] AnimationClip swordClip;
         [SerializeField] AnimationClip axeClip;
+        [SerializeField] AnimationClip pickaxeClip;
+        [SerializeField] AnimationClip combatAxeClip;
+        [SerializeField] AnimationClip staffClip;
+        [SerializeField] AnimationClip crossbowClip;
+        [SerializeField] AnimationClip reloadClip;
         [SerializeField] AnimationClip hitClip;
         [SerializeField] AnimationClip enemyAttackClip;
         [SerializeField] GameObject swordVisual;
@@ -43,17 +48,21 @@ namespace Topaz.Characters
         const float EnemyAttackContact = 0.5f;
         Animator _animator;
         Pose _pose;
+        Transform leftFoot, rightFoot;
+        PlayerVitality vitality;
 
         void Awake()
         {
             player = GetComponentInParent<PlayerController>();
             playerCombat = GetComponentInParent<PlayerCombat>();
+            vitality=GetComponentInParent<PlayerVitality>();
             enemy = GetComponentInParent<EnemyCombatant>();
             enemyAgent = enemy != null ? enemy.GetComponent<NavMeshAgent>() : null;
             _animator = GetComponent<Animator>();
             // Standalone visual prefabs also serve menu previews, without gameplay owners.
             if (player == null && enemy == null) { enabled = false; return; }
             _animator.applyRootMotion = false;
+            leftFoot=_animator.GetBoneTransform(HumanBodyBones.LeftFoot);rightFoot=_animator.GetBoneTransform(HumanBodyBones.RightFoot);
             SyncHeldTool();
             if (_animator.runtimeAnimatorController == null ||
                 (player == null && enemy == null))
@@ -73,7 +82,9 @@ namespace Topaz.Characters
         {
             if (player != null)
             {
-                if (player.IsDodging)
+                if (vitality!=null && vitality.CurrentHealth==0)
+                    Show(Pose.Death);
+                else if (player.IsDodging)
                     ShowDodge();
                 else if (playerCombat != null && playerCombat.IsAttackLocked)
                 {
@@ -81,14 +92,13 @@ namespace Topaz.Characters
                     if (tool == "crossbow")
                         Show(playerCombat.IsCrossbowAiming ? Pose.Crossbow : Pose.CrossbowReload,
                             playerCombat.IsCrossbowAiming
-                                ? playerCombat.CurrentWeapon?.AttackClip
-                                : playerCombat.CurrentWeapon?.ReloadClip,
+                                ? crossbowClip
+                                : reloadClip,
                             playerCombat.AttackAnimationSeconds);
-                    else Show(tool == "axe" || tool == "pickaxe" ? Pose.Axe : tool == "combat-axe" ?
+                    else Show(tool == "pickaxe" ? Pose.Pickaxe : tool == "axe" ? Pose.Axe : tool == "combat-axe" ?
                             Pose.CombatAxe : tool == "staff" ? Pose.Staff : Pose.Sword,
-                        tool == "axe" || tool == "pickaxe" ? axeClip :
-                            tool == "combat-axe" || tool == "staff" ?
-                            playerCombat.CurrentWeapon?.AttackClip : swordClip,
+                        tool == "pickaxe" ? pickaxeClip : tool == "axe" ? axeClip :
+                            tool == "combat-axe" ? combatAxeClip : tool == "staff" ? staffClip : swordClip,
                         playerCombat.AttackAnimationSeconds);
                 }
                 else if (player.HasHitReaction)
@@ -97,6 +107,8 @@ namespace Topaz.Characters
                     ShowDodge();
                 else if (player.IsAirborne)
                     Show(Pose.Jump, jumpClip, player.JumpSeconds);
+                else if (playerCombat != null && playerCombat.IsGuarding)
+                    Show(Pose.Guard);
                 else
                     Show(Pose.Locomotion);
                 Vector3 right = Vector3.Cross(Vector3.up, player.AimDirection);
@@ -125,8 +137,27 @@ namespace Topaz.Characters
                 0.08f, Time.deltaTime);
         }
 
+        void OnAnimatorIK(int layer)
+        {
+            if(_animator==null || (player==null && enemy==null))return;
+            float speed=player!=null?player.PlanarSpeed:enemyAgent!=null&&enemyAgent.enabled?enemyAgent.velocity.magnitude:0;
+            float weight=(_pose==Pose.Locomotion || _pose==Pose.Guard) && (player==null || !player.IsAirborne) ? (speed<.2f?.9f:.35f):0;
+            GroundFoot(AvatarIKGoal.LeftFoot,leftFoot,weight);GroundFoot(AvatarIKGoal.RightFoot,rightFoot,weight);
+        }
+        void GroundFoot(AvatarIKGoal goal,Transform bone,float weight)
+        {
+            _animator.SetIKPositionWeight(goal,0);
+            if(weight<=0 || bone==null)return;
+            if(Physics.Raycast(bone.position+Vector3.up*.4f,Vector3.down,out var hit,.85f,~(1<<2),QueryTriggerInteraction.Ignore))
+            {_animator.SetIKPosition(goal,hit.point+Vector3.up*.035f);_animator.SetIKPositionWeight(goal,weight);}
+        }
+
         void ShowEnemyAttack()
         {
+            if(enemy.LootRole==SkeletonLootRole.Mage)
+            { Show(Pose.Staff,staffClip,enemy.AttackAnimationSeconds); return; }
+            if(enemy.LootRole==SkeletonLootRole.Rogue)
+            { Show(enemy.IsWindingUp?Pose.Crossbow:Pose.CrossbowReload,enemy.IsWindingUp?crossbowClip:reloadClip,enemy.IsWindingUp?enemy.AttackWindupSeconds:enemy.AttackRecoverySeconds); return; }
             Show(Pose.Attack, enemyAttackClip, enemy.AttackAnimationSeconds);
             if (enemyAttackClip == null) return;
             float section = enemy.IsWindingUp ? EnemyAttackContact : 1f - EnemyAttackContact;
@@ -155,16 +186,10 @@ namespace Topaz.Characters
 
         void SyncHeldTool()
         {
-            bool sword = player != null && playerCombat != null && playerCombat.EquippedToolId == "sword";
-            bool axe = player != null && playerCombat != null && playerCombat.EquippedToolId == "axe";
-            bool pickaxe = player != null && playerCombat != null &&
-                playerCombat.EquippedToolId == "pickaxe";
-            bool combatAxe = player != null && playerCombat != null &&
-                playerCombat.EquippedToolId == "combat-axe";
-            bool staff = player != null && playerCombat != null &&
-                playerCombat.EquippedToolId == "staff";
-            bool crossbow = player != null && playerCombat != null &&
-                playerCombat.EquippedToolId == "crossbow";
+            string tool = playerCombat != null ? playerCombat.EquippedToolId : enemy != null
+                ? enemy.LootRole == SkeletonLootRole.Mage ? "staff" : enemy.LootRole == SkeletonLootRole.Rogue ? "crossbow" : "sword" : "";
+            bool sword = tool == "sword", axe = tool == "axe", pickaxe = tool == "pickaxe";
+            bool combatAxe = tool == "combat-axe", staff = tool == "staff", crossbow = tool == "crossbow";
             if (swordVisual != null && swordVisual.activeSelf != sword) swordVisual.SetActive(sword);
             if (axeVisual != null && axeVisual.activeSelf != axe) axeVisual.SetActive(axe);
             if (pickaxeVisual != null && pickaxeVisual.activeSelf != pickaxe)
@@ -185,7 +210,7 @@ namespace Topaz.Characters
             if (_pose == pose) return;
             _pose = pose;
             _animator.speed = clip != null && duration > 0.01f
-                ? clip.length / duration : 1f;
+                ? clip.length / duration : pose == Pose.Locomotion ? (player != null ? player.TravelSpeed : enemy.TravelSpeed) / 4f : 1f;
             _animator.CrossFadeInFixedTime(pose.ToString(), pose == Pose.Death ? 0.02f : 0.06f);
         }
     }

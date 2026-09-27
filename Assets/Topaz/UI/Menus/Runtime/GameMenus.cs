@@ -42,7 +42,7 @@ namespace Topaz.Menus
 
         static readonly int[] Widths = { 1280, 1600, 1920 };
         static readonly int[] Heights = { 720, 900, 1080 };
-        static readonly float[] CameraSizes = { 2.5f, 4.5f, 6.5f };
+        static readonly float[] CameraSizes = { 4.5f, 6.5f, 8f };
         static readonly float[] UiScales = { 1f, 1.25f, 1.5f };
         static readonly Vector2 UiReferenceResolution = new Vector2(1920f, 1080f);
 

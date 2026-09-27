@@ -55,6 +55,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -82,7 +83,7 @@ namespace Topaz.Tests
                 Is.Not.EqualTo(initialFocus), "Gamepad navigation must move through the Skills page.");
             Call(hud, "ClosePanels");
 
-            Component rock = GameObject.Find("Mining Rock 01").GetComponent("MiningRock");
+            Component rock = FindResource("MiningRock").GetComponent("MiningRock");
             Vector3 strikePosition = rock.transform.position + Vector3.back * 1.25f;
             Assert.That((bool)Call(rock, "TryStrike", strikePosition, Vector3.forward, 2.1f, 80f),
                 Is.True);
@@ -92,9 +93,10 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator ThirdTalentWaitsForHomeBeforeItCanReplaceAnActiveTalent()
+        public IEnumerator ThirdTalentWaitsForCampProtectionBeforeItCanReplaceAnActiveTalent()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -112,14 +114,12 @@ namespace Topaz.Tests
             controller.enabled = false;
             player.transform.position = homePosition + Vector3.right * 30f;
             controller.enabled = true;
-            SetField(Field(session, "_data"), "regionId", "expedition.clearing");
             Assert.That((bool)Property(session, "IsAtHome"), Is.False);
             Assert.That((bool)Call(session, "TrySetTalentActive", "swords", "swords.flow", false),
                 Is.False);
             controller.enabled = false;
             player.transform.position = homePosition;
             controller.enabled = true;
-            SetField(Field(session, "_data"), "regionId", "home");
             Assert.That((bool)Property(session, "IsAtHome"), Is.True);
             Assert.That((bool)Call(session, "TrySetTalentActive", "swords", "swords.flow", false),
                 Is.True);
@@ -132,11 +132,12 @@ namespace Topaz.Tests
         public IEnumerator BleedDamagesEnemyWithoutGrantingWeaponXp()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             yield return TopazTestTravel.EnterWoodland(player);
-            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
+            Component enemy = TopazTestTravel.Scout().GetComponent("EnemyCombatant");
             int before = (int)Property(enemy, "CurrentHealth");
             Call(enemy, "ApplyBleed", 1, 2f, 1.5f);
             yield return new WaitForSeconds(1.6f);
@@ -148,6 +149,7 @@ namespace Topaz.Tests
         public IEnumerator AxeBleedTriggeredByAHitKeepsTickDamageOutOfSkillXp()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -155,7 +157,7 @@ namespace Topaz.Tests
             Call(session, "RecordSkillCompletion", "axes", 10, 1);
             Assert.That((bool)Call(session, "TryLearnTalent", "axes", "axes.bleed"), Is.True);
             yield return TopazTestTravel.EnterWoodland(player);
-            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
+            Component enemy = TopazTestTravel.Scout().GetComponent("EnemyCombatant");
             Vector3 safePosition = player.transform.position;
             Teleport(player, enemy.transform.position + Vector3.back * 1.3f);
             EquipAxeForTest(session, combat, enemy);
@@ -175,6 +177,7 @@ namespace Topaz.Tests
         public IEnumerator DamageTriggeredRageIncreasesOnlyTheNextAxeHit()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -183,7 +186,7 @@ namespace Topaz.Tests
             Call(session, "RecordSkillCompletion", "axes", 10, 1);
             Assert.That((bool)Call(session, "TryLearnTalent", "axes", "axes.rage"), Is.True);
             yield return TopazTestTravel.EnterWoodland(player);
-            Component enemy = GameObject.Find("Scout A").GetComponent("EnemyCombatant");
+            Component enemy = TopazTestTravel.Scout().GetComponent("EnemyCombatant");
             Teleport(player, enemy.transform.position + Vector3.back * 1.3f);
             EquipAxeForTest(session, combat, enemy);
             Assert.That((bool)Call(vitality, "TryTakeDirectedDamage", 4,
@@ -201,9 +204,10 @@ namespace Topaz.Tests
         public IEnumerator StewardshipChangesOnlyTheFelledTreesWorldDeadline()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
-            Component tree = GameObject.Find("Authored Tree 01").GetComponent("HarvestTree");
+            Component tree = FindResource("HarvestTree").GetComponent("HarvestTree");
             Call(session, "RecordSkillCompletion", "logging", 10, 1);
             Assert.That((bool)Call(session, "TryLearnTalent", "logging", "logging.stewardship"),
                 Is.True);

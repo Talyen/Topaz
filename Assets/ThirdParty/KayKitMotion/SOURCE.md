@@ -1,0 +1,15 @@
+# KayKit Character Animations 1.1
+
+Source: https://kaylousberg.itch.io/kaykit-animations
+
+License: CC0; see License.txt. Animation only; Synty visible art.
+
+Rig_Medium_CombatMelee.fbx 018ba1c4f2ad30e9d4b051f12c46eb3fa3da01c1d4cba3603f673dca3bf899ca
+
+Rig_Medium_CombatRanged.fbx b70e1d5ef64fafaad5c50ca2225c238f33ec9622876014f38478deeb10ee2ba4
+
+Rig_Medium_MovementAdvanced.fbx 09a2462f554fae1f36ef083b3ea089626e60f258b09aabdad4be2c38012a4f07
+
+Rig_Medium_Tools.fbx 83fe62f77d03caa1b221d3ce1e7b9377f486cff978204061784f9944caa00a32
+
+Rig_Medium_General.fbx 0a3420d6cbbf00694e625d84e55c2afbf0a7284c4280c46642f62f066dbd3950

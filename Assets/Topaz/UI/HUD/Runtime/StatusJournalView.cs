@@ -161,6 +161,7 @@ namespace Topaz.Gameplay
             outline.effectColor = new Color32(239, 199, 132, 255);
             outline.enabled = false;
             obj.AddComponent<TopazFocusIndicator>();
+            Topaz.UI.JournalInk.Apply(button);
             return button;
         }
     }

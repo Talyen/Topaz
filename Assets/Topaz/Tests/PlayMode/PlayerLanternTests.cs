@@ -16,6 +16,7 @@ namespace Topaz.Tests
         public IEnumerator BackpackLanternTogglesTheWorldLightWithoutUsingAStackSlot()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
 
             GameObject player = GameObject.Find("Player");

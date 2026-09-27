@@ -40,6 +40,7 @@ namespace Topaz.Tests
         public IEnumerator RainOverrideChangesTheLookAndAmbienceThenRestoresTheSchedule()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             if (!(bool)session.GetType().GetProperty("HasActivePair").GetValue(session))
@@ -53,7 +54,7 @@ namespace Topaz.Tests
             MethodInfo region = session.GetType().GetMethod("SetRegionWeatherOverride");
             MethodInfo tick = weather.GetType().GetMethod("Tick");
 
-            Assert.That(region.Invoke(session, new object[] { "home", "cloudy" }), Is.True);
+            Assert.That(region.Invoke(session, new object[] { "wilderness", "cloudy" }), Is.True);
             Assert.That(session.GetType().GetProperty("CurrentWeather").GetValue(session),
                 Is.EqualTo("cloudy"));
             Assert.That(story.Invoke(session, new object[] { "rain" }), Is.True);
@@ -88,7 +89,7 @@ namespace Topaz.Tests
             Assert.That(story.Invoke(session, new object[] { null }), Is.True);
             Assert.That(session.GetType().GetProperty("CurrentWeather").GetValue(session),
                 Is.EqualTo("cloudy"));
-            Assert.That(region.Invoke(session, new object[] { "home", null }), Is.True);
+            Assert.That(region.Invoke(session, new object[] { "wilderness", null }), Is.True);
             tick.Invoke(weather, new object[] { 30f });
             Assert.That(session.GetType().GetProperty("CurrentWeather").GetValue(session),
                 Is.EqualTo("clear"));

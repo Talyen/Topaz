@@ -29,6 +29,7 @@ namespace Topaz.Tests
         public IEnumerator HomeIsSafeBeyondTheOldCircle()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -50,6 +51,7 @@ namespace Topaz.Tests
         public IEnumerator TwoBuiltChestsHaveIndependentSavedRecords()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             object backpack = Field(session, "_backpack");
@@ -75,6 +77,7 @@ namespace Topaz.Tests
         public IEnumerator HomeJournalActionsFitAtEveryUiScale()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component hud = GameObject.Find("Loop HUD").GetComponent("LoopHud");
             Component home = hud.GetComponent("BuildingJournalView");
@@ -111,6 +114,7 @@ namespace Topaz.Tests
         public IEnumerator MovingAndRemovingAFullChestPreservesContentsAsPickups()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             object backpack = Field(session, "_backpack");
@@ -150,6 +154,7 @@ namespace Topaz.Tests
         public IEnumerator AnvilForgesGearFromHomeMaterialsWithoutLosingIt()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
@@ -175,6 +180,7 @@ namespace Topaz.Tests
         public IEnumerator BuiltBedRestsEightHoursWithoutAnIndoorRequirement()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");

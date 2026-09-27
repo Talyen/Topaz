@@ -19,6 +19,7 @@ namespace Topaz.Tests
         {
             Gamepad gamepad = InputSystem.AddDevice<Gamepad>();
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             Component session = GameObject.Find("Player").GetComponent("WorldSession");
             yield return WaitForActive(session);
             Component fire = (Component)session.GetType().GetField("homeCampfire",
@@ -35,7 +36,7 @@ namespace Topaz.Tests
             Assert.That(Time.timeScale, Is.Zero);
             Transform rows = panel.Find("Campfire Journal/Destinations/Viewport/Content");
             Assert.That(rows.childCount, Is.EqualTo(1));
-            Assert.That(rows.GetChild(0).name, Is.EqualTo("Travel to Home"));
+            Assert.That(rows.GetChild(0).name, Is.EqualTo("Travel to First Hearth"));
             Assert.That(rows.GetChild(0).GetComponent<UnityEngine.UI.Button>().interactable,
                 Is.False);
             Assert.That(rows.GetChild(0).Find("Campfire Icon")
@@ -70,18 +71,24 @@ namespace Topaz.Tests
         public IEnumerator WoodlandTravelPreservesHealthAndClockAndSetsReturnFire()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
+            yield return WaitForWilderness();
             GameObject player = GameObject.Find("Player");
             Component session = player.GetComponent("WorldSession");
             yield return TopazTestTravel.EnterWoodland(player);
-            Teleport(player, GameObject.Find("Clearing Campfire").transform.position);
+            var pack=session.GetType().GetField("_backpack",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance).GetValue(session);
+            pack.GetType().GetMethod("Add").Invoke(pack,new[]{session.GetType().GetProperty("WoodItem").GetValue(session),(object)20});
+            pack.GetType().GetMethod("Add").Invoke(pack,new[]{session.GetType().GetProperty("StoneItem").GetValue(session),(object)20});
+            Vector3 campPosition=BuildingTestActions.Place(session,"structure.campfire");
+            Teleport(player,campPosition+Vector3.forward);
             yield return null;
-            Assert.That(Get<string>(session, "ReturnCampfireId"),
-                Is.EqualTo("campfire.expedition.clearing"));
+            Assert.That(Get<string>(session, "ReturnCampfireId"), Is.Not.EqualTo("campfire.home"));
             Component vitality = player.GetComponent("PlayerVitality");
             var firePosition = player.transform.position;
             Teleport(player, firePosition + Vector3.right * 20f);
             Assert.That(Call<bool>(vitality, "TryTakeDamage", 2), Is.True);
             Teleport(player, firePosition);
+            AimAt(campPosition+Vector3.up*.5f);
+            yield return new WaitForSeconds(.5f);
             int health = Get<int>(vitality, "CurrentHealth");
             Assert.That(health, Is.LessThan(Get<int>(vitality, "MaximumHealth")));
             Assert.That(Call<bool>(session, "TryInteract"), Is.True);
@@ -90,9 +97,9 @@ namespace Topaz.Tests
             double hours = Get<double>(session, "WorldHours");
             Assert.That(Call<bool>(vitality, "TryTakeDamage", 1), Is.False,
                 "The open Travel menu pauses damage during combat.");
-            TravelPanel().Find("Campfire Journal/Destinations/Viewport/Content/Travel to Home")
+            TravelPanel().Find("Campfire Journal/Destinations/Viewport/Content/Travel to First Hearth")
                 .GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
-            yield return WaitForTravel(session, "home");
+            yield return WaitForTravel(session, "wilderness");
             Assert.That(Get<int>(vitality, "CurrentHealth"), Is.EqualTo(health));
             Assert.That(Get<double>(session, "WorldHours") - hours,
                 Is.LessThan(.05d));

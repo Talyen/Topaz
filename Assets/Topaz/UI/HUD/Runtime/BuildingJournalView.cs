@@ -25,11 +25,13 @@ namespace Topaz.Gameplay
         TMP_Text _heading;
         TMP_Text _summary;
         TMP_Text _forgeHeading;
+        TMP_Text _forgeHint;
         Button _moveButton;
         Button _removeButton;
         Button _backButton;
         Button _forgeBack;
         RectTransform _pageRect;
+        CanvasGroup _pageGroup;
         Vector2 _layoutSize;
         public bool IsOpen => _page != null && _page.activeSelf;
 
@@ -47,7 +49,8 @@ namespace Topaz.Gameplay
         {
             Canvas canvas = GetComponentInParent<Canvas>();
             if (canvas == null) return;
-            _page = new GameObject("Home Journal", typeof(RectTransform), typeof(Image));
+            _page = new GameObject("Home Journal", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+            _pageGroup=_page.GetComponent<CanvasGroup>();
             _page.transform.SetParent(canvas.transform, false);
             _pageRect = (RectTransform)_page.transform;
             _pageRect.anchorMin = Vector2.zero;
@@ -58,6 +61,7 @@ namespace Topaz.Gameplay
 
             _heading = Label(_page.transform, "BUILD", 52, new Vector2(0f, 440f),
                 new Vector2(950f, 70f), Ink);
+            if(_hud.JournalHeadingFont!=null)_heading.font=_hud.JournalHeadingFont;
             _summary = Label(_page.transform, "", 29, new Vector2(0f, 362f),
                 new Vector2(950f, 60f), Ink);
             for (int i = 0; i < BuildCatalog.Entries.Length; i++)
@@ -99,6 +103,9 @@ namespace Topaz.Gameplay
             SetBackdrop(_forgePanel.GetComponent<Image>(), background);
             _forgeHeading = Label(_forgePanel.transform, "BLACKSMITH'S ANVIL", 48,
                 new Vector2(0f, 340f), new Vector2(950f, 70f), Ink);
+            if(_hud.JournalHeadingFont!=null)_forgeHeading.font=_hud.JournalHeadingFont;
+            _forgeHeading.enableAutoSizing=true;_forgeHeading.fontSizeMin=30;_forgeHeading.fontSizeMax=48;
+            _forgeHint=Label(_forgePanel.transform,"FORGE & EQUIP\n\nCraft using your backpack and\nchests within 30 m.\n\nEquip new gear from the\nEquipment page.",28,Vector2.zero,new Vector2(500,350),Ink);
             for (int i = 0; i < HomeForgeCatalog.Recipes.Length; i++)
             {
                 HomeForgeCatalog.Recipe recipe = HomeForgeCatalog.Recipes[i];
@@ -138,6 +145,7 @@ namespace Topaz.Gameplay
 
         void Update()
         {
+            if(IsOpen && _pageGroup!=null)_pageGroup.alpha=Mathf.MoveTowards(_pageGroup.alpha,1,Time.unscaledDeltaTime/.12f);
             if (IsOpen && _pageRect != null && _pageRect.rect.size != _layoutSize)
                 Layout();
         }
@@ -148,41 +156,42 @@ namespace Topaz.Gameplay
             _layoutSize = _pageRect.rect.size;
             float width = Mathf.Max(800f, _layoutSize.x);
             float height = Mathf.Max(600f, _layoutSize.y);
-            Place(_heading.rectTransform, 0f, height * .5f - 70f,
-                Mathf.Min(950f, width * .8f), 70f);
-            Place(_summary.rectTransform, 0f, height * .5f - 150f,
-                Mathf.Min(950f, width * .8f), 60f);
-            float top = Mathf.Min(300f, height * .5f - 240f);
-            float bottom = Mathf.Max(-240f, -height * .5f + 150f);
+            Place(_heading.rectTransform, -width*.19f, height * .5f - 100f,
+                width*.33f, 70f);
+            Place(_summary.rectTransform, width*.19f, height * .5f - 110f,
+                width*.33f, 70f);
+            float top = Mathf.Min(300f, height * .5f - 180f);
+            float bottom = Mathf.Max(-240f, -height * .5f + 190f);
             float step = (top - bottom) / 5f;
-            float buttonWidth = Mathf.Min(490f, width * .43f);
+            float buttonWidth = Mathf.Min(490f, width * .31f);
             float buttonHeight = Mathf.Min(96f, step - 10f);
             for (int i = 0; i < _rows.Count; i++)
             {
                 int column = i / 6;
                 int row = i % 6;
                 Place(_rows[i].button.GetComponent<RectTransform>(),
-                    (column == 0 ? -1f : 1f) * width * .24f,
+                    (column == 0 ? -1f : 1f) * width * .19f,
                     top - row * step, buttonWidth, buttonHeight);
                 _rows[i].text.rectTransform.sizeDelta = new Vector2(buttonWidth, buttonHeight);
             }
-            float footerY = -height * .5f + 54f;
-            float footerWidth = Mathf.Min(250f, width * .22f);
-            Place(_moveButton.GetComponent<RectTransform>(), -width * .12f,
+            float footerY = -height * .34f;
+            float footerWidth = Mathf.Min(250f, width * .15f);
+            Place(_moveButton.GetComponent<RectTransform>(), -width * .26f,
                 footerY, footerWidth, 64f);
-            Place(_removeButton.GetComponent<RectTransform>(), width * .12f,
+            Place(_removeButton.GetComponent<RectTransform>(), -width * .10f,
                 footerY, footerWidth, 64f);
-            Place(_backButton.GetComponent<RectTransform>(), width * .36f,
+            Place(_backButton.GetComponent<RectTransform>(), width * .19f,
                 footerY, footerWidth, 64f);
 
-            Place(_forgeHeading.rectTransform, 0f, height * .5f - 80f,
-                Mathf.Min(950f, width * .82f), 70f);
-            float forgeWidth = Mathf.Min(760f, width * .76f);
+            Place(_forgeHeading.rectTransform, -width*.19f, height * .5f - 100f,
+                width*.33f, 70f);
+            Place(_forgeHint.rectTransform,width*.19f,10,width*.31f,Mathf.Min(350,height*.5f));
+            float forgeWidth = Mathf.Min(600f, width * .31f);
             for (int i = 0; i < _forgeRows.Count; i++)
-                Place(_forgeRows[i].button.GetComponent<RectTransform>(), 0f,
+                Place(_forgeRows[i].button.GetComponent<RectTransform>(), -width*.19f,
                     height * .5f - 190f - i * Mathf.Min(125f, height * .15f),
                     forgeWidth, 86f);
-            Place(_forgeBack.GetComponent<RectTransform>(), 0f, footerY,
+            Place(_forgeBack.GetComponent<RectTransform>(), width*.19f, footerY,
                 Mathf.Min(350f, width * .35f), 68f);
 
 
@@ -202,11 +211,13 @@ namespace Topaz.Gameplay
             if (_session == null || _page == null) return;
             _hud.ClosePanels();
             _page.SetActive(true);
+            _pageGroup.alpha=0;
             _forgePanel.SetActive(false);
             Canvas.ForceUpdateCanvases();
             Layout();
             Refresh();
-            if (_rows.Count > 0) EventSystem.current?.SetSelectedGameObject(_rows[0].button.gameObject);
+            Button first=_rows.Find(row=>row.button.interactable).button;
+            EventSystem.current?.SetSelectedGameObject(first!=null?first.gameObject:_backButton.gameObject);
         }
 
         public void ShowSmithing()
@@ -230,17 +241,18 @@ namespace Topaz.Gameplay
             if (_tab != null) _tab.gameObject.SetActive(_session.HasActivePair);
             if (_summary != null)
                 _summary.text = $"{_session.HomeWoodCount} Wood   {_session.StoneCount} Stone   " +
-                    $"{_session.IronCount} Iron";
+                    $"{_session.IronCount} Iron\n<size=70%>Backpack + nearby chests · 30 m</size>";
             foreach (var row in _rows)
             {
                 BuildCatalog.Entry entry = row.entry;
-                row.text.text = entry.Label + "\n" +
-                    CostText(entry.Wood, entry.Stone, entry.Iron);
+                row.text.text = "<b>" + entry.Label + "</b>\n<size=80%>" +
+                    CostText(entry.Wood, entry.Stone, entry.Iron) + "</size>";
                 bool available = _session.HomeWoodCount >= entry.Wood &&
                     _session.StoneCount >= entry.Stone &&
                     _session.IronCount >= entry.Iron;
                 row.button.interactable = available;
-                row.text.color = available ? Paper : new Color(.76f, .73f, .68f);
+                row.text.color = available ? Topaz.UI.JournalInk.Text : Topaz.UI.JournalInk.Muted;
+                if(!available)row.text.text=row.text.text.Replace("</size>"," — need materials</size>");
             }
             foreach (var row in _forgeRows)
                 row.button.interactable = _session.CanForge(row.recipe);
@@ -276,7 +288,7 @@ namespace Topaz.Gameplay
             rect.sizeDelta = dimensions;
             rect.anchoredPosition = position;
             UnityEngine.UI.Image image = obj.GetComponent<UnityEngine.UI.Image>();
-            image.color = new Color(.21f, .17f, .14f, 1f);
+            image.color = new Color(.12f, .20f, .15f, 1f);
             Button button = obj.GetComponent<Button>();
             var outline = obj.AddComponent<Outline>();
             outline.effectColor = Brass;
@@ -284,11 +296,14 @@ namespace Topaz.Gameplay
             outline.enabled = false;
             obj.AddComponent<HomeFocusFrame>();
             ColorBlock colors = button.colors;
-            colors.highlightedColor = new Color(.42f, .31f, .19f);
+            colors.highlightedColor = new Color(1.3f, 1.3f, 1.15f);
+            colors.pressedColor = new Color(.8f,.9f,.8f);
             colors.selectedColor = colors.highlightedColor;
-            colors.disabledColor = new Color(.16f, .15f, .14f, 1f);
+            colors.disabledColor = new Color(.75f, .75f, .75f, .85f);
             button.colors = colors;
-            label = Label(obj.transform, "", 27, Vector2.zero, dimensions, Paper);
+            label = Label(obj.transform, "", 27, Vector2.zero, dimensions, Topaz.UI.JournalInk.Text);
+            label.enableAutoSizing=true;label.fontSizeMin=22.5f;label.fontSizeMax=27;
+            Topaz.UI.JournalInk.Apply(button);
             return button;
         }
 

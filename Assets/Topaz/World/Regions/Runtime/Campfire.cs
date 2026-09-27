@@ -24,7 +24,7 @@ namespace Topaz.Gameplay
         public void Configure(string id, string region, string label)
         {
             stableId = id; regionId = region; travelLabel = string.IsNullOrEmpty(label) ? "Camp " + id.Substring(0, 6) : label;
-            if (arrival == null) { arrival = new GameObject("Arrival").transform; arrival.SetParent(transform, false); arrival.localPosition = Vector3.forward * 2f; }
+            if (arrival == null) { arrival = new GameObject("Arrival").transform; arrival.SetParent(transform, false); arrival.localPosition = Vector3.forward * 1.25f; }
         }
 
         public Vector3 ArrivalPosition => arrival != null ? arrival.position : transform.position;
