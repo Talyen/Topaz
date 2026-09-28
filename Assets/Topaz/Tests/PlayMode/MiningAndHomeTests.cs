@@ -64,7 +64,7 @@ namespace Topaz.Tests
             Set(gamepad.rightTrigger, 0f);
             Assert.That((int)Property(rock, "StrikesRemaining"), Is.EqualTo(1));
             Assert.That((string)Property(session, "EquippedToolName"), Is.EqualTo("Pickaxe"));
-            yield return new WaitForSeconds(.55f);
+            yield return WaitForAttackCompletion(player);
             Assert.That((string)Property(session, "EquippedToolName"), Is.EqualTo("Sword"));
         }
 
@@ -113,6 +113,7 @@ namespace Topaz.Tests
             Assert.That((string)Property(session, "EquippedToolName"), Is.EqualTo("Pickaxe"));
             yield return new WaitForSeconds(1.05f);
             Assert.That((int)Property(rock, "StrikesRemaining"), Is.EqualTo(1));
+            yield return WaitForAttackCompletion(player);
             Assert.That((string)Property(session, "EquippedToolName"), Is.EqualTo("Sword"));
             Assert.That((bool)Invoke(combat, "TryStartMining", rock), Is.True,
                 "Ready="+Property(combat,"CanStartHarvest")+" available="+Property(rock,"IsAvailable")+" airborne="+Property(player.GetComponent("PlayerController"),"IsAirborne")+" distance="+Vector3.Distance(player.transform.position,rock.transform.position));
@@ -212,6 +213,12 @@ namespace Topaz.Tests
                 (string)Field(value, "definitionId") == "structure.stone_path"), Is.EqualTo(1));
         }
 
+        static IEnumerator WaitForAttackCompletion(GameObject player)
+        {
+            var combat=player.GetComponent("PlayerCombat");float deadline=Time.realtimeSinceStartup+3;
+            while((bool)Property(combat,"IsAttackLocked") && Time.realtimeSinceStartup<deadline)yield return null;
+            Assert.That((bool)Property(combat,"IsAttackLocked"),Is.False,"The tool attack must finish within the bounded completion window.");
+        }
         static void Teleport(GameObject player, Vector3 position)
         {
             CharacterController controller = player.GetComponent<CharacterController>();
@@ -223,7 +230,10 @@ namespace Topaz.Tests
                     position.y=terrain.SampleHeight(position)+terrain.transform.position.y+.01f;
             }
             player.transform.position = position;
+            player.GetComponent("PlayerController").GetType().GetMethod("ResetMotion").Invoke(player.GetComponent("PlayerController"),null);
             if (controller != null) controller.enabled = true;
+            Physics.SyncTransforms();
+            controller?.Move(Vector3.down*.02f);
         }
 
         static object Property(object target, string name) =>

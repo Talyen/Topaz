@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Mushroom Stew
   maxStack: 10
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 9143944524045584234, guid: b236999d65bd34c3693b7be65dfd2740, type: 3}
   equipmentSlot: 0
   weapon: {fileID: 0}
   attack: 0

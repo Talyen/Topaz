@@ -54,6 +54,7 @@ namespace Topaz.Combat
         public string SpawnId => spawnId;
         public void SetGeneratedId(string id) => spawnId = id;
         public SkeletonLootRole LootRole => lootRole;
+        public EnemySpecies Species => definition != null ? definition.Species : EnemySpecies.Skeleton;
         public event Action<EnemyCombatant> Defeated;
         public int SourceLevel => definition != null ? definition.SourceLevel : 1;
         public int MaximumHealth => definition != null ? definition.Health : 0;

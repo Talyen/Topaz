@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Reinforced Axe
   maxStack: 1
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 8260413026486875261, guid: ab8899c05dda841e7880adbda903cb4d, type: 3}
   equipmentSlot: 2
   weapon: {fileID: 0}
   attack: 0

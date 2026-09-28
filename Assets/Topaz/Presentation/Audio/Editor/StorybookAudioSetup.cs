@@ -14,35 +14,79 @@ namespace Topaz.Editor
     public static class StorybookAudioSetup
     {
         const string Root="Assets/ThirdParty/Sonniss/Derived/Storybook/";
-        const string Grass="Assets/ThirdParty/Sonniss/Selected/Movement/2017/Tovusound - Edward – Foleyart Co-d2064c/169_Foley_Footsteps_Grass_Sneaker_Walk_Fast_Run_Jog_Close.wav";
-        const string Gravel="Assets/ThirdParty/Sonniss/Selected/Movement/2019/Studio 23 - Ultimate Footstep Co-35e37a/S23_SFX_Footsteps_Gravel_Loafers_Loops_Walk_Normal.wav";
-        const string Birds="Assets/ThirdParty/Sonniss/Selected/Creatures/2016/Mindful Audio - Woodland Atmosph-e28f65/MAFX001 dew drops wind birds woodpecker.wav";
-        const string Wind="Assets/ThirdParty/Sonniss/Selected/World/2015/Soundopolis - Natures Fury_Wind_-21131f/Wind_Forest_Fienup_001.wav";
+        const string TemporaryRoot="Assets/ThirdParty/Sonniss/EditorTemp";
+        const string GrassSource="Selected/Movement/2017/Tovusound - Edward – Foleyart Co-d2064c/169_Foley_Footsteps_Grass_Sneaker_Walk_Fast_Run_Jog_Close.wav";
+        const string GravelSource="Selected/Movement/2019/Studio 23 - Ultimate Footstep Co-35e37a/S23_SFX_Footsteps_Gravel_Loafers_Loops_Walk_Normal.wav";
+        const string Birds="Assets/ThirdParty/Sonniss/Runtime/Woodland Birds.wav";
+        const string Wind="Assets/ThirdParty/Sonniss/Runtime/Woodland Wind.wav";
+
+        static string RawSourceRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),"Documents","Raw Asset Library","Sounds","SonnissGDC","ActiveSources");
+
         [MenuItem("Topaz/Audio/Configure Storybook Sound")]
         public static void Apply()
         {
+            CleanupTemporarySources();
             Directory.CreateDirectory(Root);AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-            var provenance=new StringBuilder("# Storybook sound derivatives\n\nSonniss GDC license v2; private game assets, no raw redistribution. Original files and archives are unchanged.\n\n");
-            var grass=Steps(Grass,"Grass",provenance);var gravel=Steps(Gravel,"Gravel",provenance);
-            var birds=Import(Birds,true);var wind=Import(Wind,true);
-            File.WriteAllText(Root+"SOURCE.md",provenance.ToString());
-            var scene=EditorSceneManager.OpenScene("Assets/Topaz/World/Scenes/Bootstrap.unity");
-            var player=GameObject.Find("Player");var audio=player.GetComponent<WildernessAudio>()??player.AddComponent<WildernessAudio>();
-            audio.grassSteps=grass;audio.gravelSteps=gravel;audio.woodlandDay=birds;audio.woodlandWind=wind;
-            EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
+            Directory.CreateDirectory(TemporaryRoot);AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            try
+            {
+                var provenance=new StringBuilder("# Storybook sound derivatives\n\nSonniss GDC license v2; private game assets, no raw redistribution. Original masters and source archives are preserved outside Topaz in Documents/Raw Asset Library/Sounds/SonnissGDC.\n\n");
+                var grassSource=ExternalSourcePath(GrassSource);var gravelSource=ExternalSourcePath(GravelSource);
+                var grass=Steps(StageRawSource(GrassSource,"Grass Generator Input.wav"),grassSource,GrassSource,"Grass",provenance);
+                var gravel=Steps(StageRawSource(GravelSource,"Gravel Generator Input.wav"),gravelSource,GravelSource,"Gravel",provenance);
+                var birds=Import(Birds,true);var wind=Import(Wind,true);
+                provenance.AppendLine("Runtime ambience working copies:\n- "+Birds+": 48 kHz, 24-bit, stereo PCM source; Streaming Vorbis q0.65, preserved sample rate, background load, no preload.\n- "+Wind+": 48 kHz, 24-bit, stereo PCM source; Streaming Vorbis q0.65, preserved sample rate, background load, no preload.\nRaw master hashes and Unity metadata are recorded in ~/Documents/Raw Asset Library/Sounds/SonnissGDC/ActiveSources/active_source_manifest.json.\n");
+                File.WriteAllText(Root+"SOURCE.md",provenance.ToString());
+                var scene=EditorSceneManager.OpenScene("Assets/Topaz/World/Scenes/Bootstrap.unity");
+                var player=GameObject.Find("Player");var audio=player.GetComponent<WildernessAudio>()??player.AddComponent<WildernessAudio>();
+                audio.grassSteps=grass;audio.gravelSteps=gravel;audio.woodlandDay=birds;audio.woodlandWind=wind;
+                EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
+            }
+            finally
+            {
+                CleanupTemporarySources();
+            }
         }
+
+        static void CleanupTemporarySources()
+        {
+            foreach(string name in new[]{"Grass Generator Input.wav","Gravel Generator Input.wav"})
+            {
+                string path=TemporaryRoot+"/"+name;
+                if((File.Exists(path)||AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path)!=null)&&!AssetDatabase.DeleteAsset(path))
+                    Debug.LogError("Could not remove temporary Storybook audio import: "+path);
+            }
+            if(AssetDatabase.IsValidFolder(TemporaryRoot)&&Directory.GetFileSystemEntries(TemporaryRoot).Length==0&&!AssetDatabase.DeleteAsset(TemporaryRoot))
+                Debug.LogError("Could not remove temporary Storybook audio folder: "+TemporaryRoot);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        }
+
+        static string ExternalSourcePath(string relativePath)=>Path.Combine(RawSourceRoot,relativePath.Replace('/',Path.DirectorySeparatorChar));
+
+        static string StageRawSource(string relativePath,string temporaryName)
+        {
+            var source=ExternalSourcePath(relativePath);
+            if(!File.Exists(source))throw new FileNotFoundException("Restore the private Sonniss source in Documents/Raw Asset Library/Sounds/SonnissGDC/ActiveSources before regenerating Storybook sound.",source);
+            var assetPath=TemporaryRoot+"/"+temporaryName;
+            File.Copy(source,assetPath,true);AssetDatabase.ImportAsset(assetPath,ImportAssetOptions.ForceSynchronousImport);
+            return assetPath;
+        }
+
         static AudioClip Import(string path,bool streaming)
         {
             if(!File.Exists(path))throw new InvalidOperationException("Restore owned sound library: "+path);
             var importer=(AudioImporter)AssetImporter.GetAtPath(path);var settings=importer.defaultSampleSettings;
-            importer.forceToMono=!streaming;importer.loadInBackground=false;
+            importer.forceToMono=!streaming;importer.loadInBackground=streaming;
             settings.loadType=streaming?AudioClipLoadType.Streaming:AudioClipLoadType.DecompressOnLoad;
             settings.compressionFormat=streaming?AudioCompressionFormat.Vorbis:AudioCompressionFormat.PCM;
-            settings.quality=.65f;settings.sampleRateSetting=AudioSampleRateSetting.OverrideSampleRate;settings.sampleRateOverride=22050;
+            settings.preloadAudioData=false;
+            settings.quality=.65f;
+            settings.sampleRateSetting=streaming?AudioSampleRateSetting.PreserveSampleRate:AudioSampleRateSetting.OverrideSampleRate;
+            settings.sampleRateOverride=streaming?48000u:22050u;
             importer.defaultSampleSettings=settings;importer.SaveAndReimport();
             return AssetDatabase.LoadAssetAtPath<AudioClip>(path);
         }
-        static AudioClip[] Steps(string source,string label,StringBuilder provenance)
+        static AudioClip[] Steps(string source,string originalSource,string sourceLabel,string label,StringBuilder provenance)
         {
             var clip=Import(source,false);clip.LoadAudioData();
             var samples=new float[clip.samples*clip.channels];
@@ -58,7 +102,7 @@ namespace Topaz.Editor
             }
             if(selected.Count!=4)throw new InvalidOperationException("Not enough isolated footstep transients.");
             selected.Sort();var result=new List<AudioClip>();
-            using(var sha=SHA256.Create())provenance.AppendLine(source+"\nSHA-256: "+BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(source))).Replace("-","").ToLowerInvariant());
+            using(var sha=SHA256.Create())provenance.AppendLine("~/Documents/Raw Asset Library/Sounds/SonnissGDC/ActiveSources/"+sourceLabel+"\nSHA-256: "+BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(originalSource))).Replace("-","").ToLowerInvariant());
             foreach(int peak in selected)
             {
                 int start=Math.Max(0,peak-(int)(clip.frequency*.06f));int length=Math.Min((int)(clip.frequency*.32f),samples.Length-start);

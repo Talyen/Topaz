@@ -125,7 +125,7 @@ namespace Topaz.Editor
             Set(view, "portrait", portrait);
             Sprite[] portraits = CharacterLooks.All.Select(id =>
                 AssetDatabase.LoadAssetAtPath<Sprite>(
-                    "Assets/Topaz/UI/Art/EquipmentPortraits/" + id.Replace('.', '-') + ".png"))
+                    "Assets/Topaz/UI/Art/VikingPortraits/" + id.Replace('.', '-') + ".png"))
                 .ToArray();
             SetArray(view, "portraits", portraits);
             SetArray(view, "slotButtons", slots);

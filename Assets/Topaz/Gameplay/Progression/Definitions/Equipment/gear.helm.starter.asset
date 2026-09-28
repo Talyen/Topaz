@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Field Helm
   maxStack: 1
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 2850631406627405955, guid: 0bf5fecb36f9745058ca862535f3a3b1, type: 3}
   equipmentSlot: 4
   weapon: {fileID: 0}
   attack: 0

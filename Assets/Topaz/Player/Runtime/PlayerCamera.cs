@@ -22,9 +22,16 @@ namespace Topaz.Player
         CinemachineCamera rig;
         CinemachineThirdPersonFollow follow;
         WorldSession session;
+        Vector3 previousTargetPosition;
+        bool hasTargetPosition;
         InputAction mouseLook, stickLook, wheel, zoomIn, zoomOut;
         public float CurrentZoom => distance;
         public void SetZoom(float value) => distance = Mathf.Clamp(value, minimumZoom, maximumZoom);
+        public void SetVisibilityDistance(float value)
+        {
+            GetComponent<Camera>().farClipPlane=value;
+            if(rig!=null)rig.Lens.FarClipPlane=value;
+        }
         public void ConfigureLook(float mouse, float stick, bool inverted)
         {
             mouseSensitivity = Mathf.Clamp(mouse, .01f, 1); stickSensitivity = Mathf.Clamp(stick, 20, 300); invertY = inverted;
@@ -41,7 +48,7 @@ namespace Topaz.Player
         void Awake()
         {
             if (target == null || controls == null) { enabled=false; return; }
-            var camera = GetComponent<Camera>(); camera.orthographic=false; camera.fieldOfView=58; camera.nearClipPlane=.1f; camera.farClipPlane=900;
+            var camera = GetComponent<Camera>(); camera.orthographic=false; camera.fieldOfView=58; camera.nearClipPlane=.1f; camera.farClipPlane=3000;
             if (!TryGetComponent<CinemachineBrain>(out _)) gameObject.AddComponent<CinemachineBrain>();
             session = target.GetComponent<WorldSession>();
             var map = controls.FindActionMap("Player", true);
@@ -76,7 +83,18 @@ namespace Topaz.Player
         void UpdatePivot()
         {
             if(pivot==null || target==null) return;
-            pivot.SetPositionAndRotation(target.transform.position+Vector3.up*1.55f,Quaternion.Euler(pitch,yaw,0));
+            Vector3 position=target.transform.position;
+            Vector3 delta=position-previousTargetPosition;
+            if(hasTargetPosition && delta.sqrMagnitude>16*16)
+            {
+                rig.OnTargetObjectWarped(pivot,delta);
+                rig.PreviousStateIsValid=false; // Old collision/damping history belongs to the departed terrain.
+                if(TryGetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(out var data))data.resetHistory=true;
+            }
+            hasTargetPosition=true;previousTargetPosition=position;
+            // Looking above the horizon must not drive the follow camera below the grass.
+            float rise=Mathf.Max(0,-Mathf.Sin(pitch*Mathf.Deg2Rad))*distance;
+            pivot.SetPositionAndRotation(position+Vector3.up*(1.55f+rise),Quaternion.Euler(pitch,yaw,0));
             follow.CameraDistance=distance;
         }
         void OnDestroy()

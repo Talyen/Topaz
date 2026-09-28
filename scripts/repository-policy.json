@@ -1,0 +1,43 @@
+{
+  "documents": {
+    "docs/BASELINE.md": "Product rules and supported gameplay scope",
+    "docs/ROADMAP.md": "Current capabilities, acceptance gaps and next work",
+    "docs/ARCHITECTURE.md": "System ownership, state and persistent data boundaries",
+    "docs/UNITY_REFERENCE_GUIDE.md": "Pinned versions and task-to-source/test navigation",
+    "docs/AGENT_WORKFLOW.md": "Development commands, validation and artifact lifecycle",
+    "docs/PERFORMANCE.md": "Measurement scenarios and platform acceptance targets",
+    "docs/PROCEDURAL_WORLDS.md": "World, rendering and diagnostic operational contracts",
+    "docs/UI_DESIGN_SYSTEM.md": "Current UI behavior and authoring rules",
+    "docs/UI_UX_RESEARCH.md": "Design sources supporting current accessibility and interaction decisions",
+    "docs/UNITY_FEATURE_POLICY.md": "Maintained Unity systems and justified custom adapters",
+    "docs/ASSET_SOURCING.md": "Acquisition and redistribution requirements",
+    "docs/THIRD_PARTY_ASSETS.md": "Active and retained asset provenance and restoration",
+    "docs/AUDIO_ASSET_POLICY.md": "Audio source storage, formats and import rules",
+    "docs/SYNTY_LIBRARY.md": "Private Synty library and restoration workflow",
+    "README.md": "Project entrypoint and opening instructions",
+    "AGENTS.md": "Agent working agreement and task boundaries",
+    "RIGHTS.md": "Repository redistribution boundaries",
+    "LICENSE.md": "Repository license terms"
+  },
+  "retention_days": 14,
+  "retention_count": 10,
+  "forbidden_doc_roots": [
+    "docs/history",
+    "docs/studies",
+    "docs/design"
+  ],
+  "generated_roots": [
+    "Build",
+    "Builds",
+    "Library",
+    "Temp",
+    "Obj",
+    "Logs",
+    "TestResults",
+    "PerformanceReports",
+    "MemoryCaptures",
+    "Recordings",
+    "UserSettings",
+    "LocalSourceArchives"
+  ]
+}

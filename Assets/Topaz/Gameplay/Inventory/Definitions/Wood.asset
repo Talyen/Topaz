@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Wood
   maxStack: 20
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 4919145985767761134, guid: e592e713faabe4dd6aa3ff6063248984, type: 3}
   equipmentSlot: 0
   weapon: {fileID: 0}
   attack: 0

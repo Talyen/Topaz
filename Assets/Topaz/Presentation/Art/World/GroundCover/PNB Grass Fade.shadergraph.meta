@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 797d30cd7640c456598be25d3162425e
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: Topaz foliage source CA-67-A2-68-58-C2-87-5E-B0-9D-E3-9B-69-89-B1-FC-12-FA-DF-2D-FB-F2-05-B0-ED-84-14-63-75-3A-37-8D grass=True
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+  useAsTemplate: 0
+  exposeTemplateAsShader: 0
+  indexedData: {fileID: -3424247175808206760, guid: 797d30cd7640c456598be25d3162425e, type: 3}
+  template:
+    name: 
+    category: 
+    description: 
+    icon: {instanceID: 0}
+    thumbnail: {instanceID: 0}
+    order: 0

@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Two-Handed Axe
   maxStack: 1
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 8260413026486875261, guid: ab8899c05dda841e7880adbda903cb4d, type: 3}
   equipmentSlot: 1
   weapon: {fileID: 11400000, guid: aa9d0527cb18c4de9944ea88f26f82b7, type: 2}
   attack: 2

@@ -8,11 +8,12 @@ using UnityEngine;
 namespace Topaz
 {
     /// <summary>Opt-in standalone review capture. Uses a fresh temporary profile and never runs in normal play.</summary>
-    public sealed class WoodlandSmokeCapture : MonoBehaviour
+    public sealed partial class WoodlandSmokeCapture : MonoBehaviour
     {
         [Serializable] sealed class Report
         {
-            public string unity, platform, graphics, pipeline, status, lightState, mainLight, keywords, graphicsSettingsPath;
+            public string unity, platform, graphics, pipeline, status, lightState, mainLight, keywords, graphicsSettingsPath, preparationStage, failure;
+            public Topaz.Rendering.SurfaceCacheLighting.Status globalIllumination;
             public double captureWorldHours;
             public int seed, frames, enemies, width, height, errors;
             public double refreshHz;
@@ -25,7 +26,7 @@ namespace Topaz
         }
         int runtimeErrors;
         void Awake()=>Application.logMessageReceived+=ObserveLog;
-        void OnDestroy()=>Application.logMessageReceived-=ObserveLog;
+        void OnDestroy(){StopAlpineRenderLoop();Application.logMessageReceived-=ObserveLog;}
         void ObserveLog(string message,string stack,LogType type)
         {if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)runtimeErrors++;}
 
@@ -42,16 +43,37 @@ namespace Topaz
             string directory=Path.Combine(Application.persistentDataPath,"Diagnostics");
             foreach(var arg in System.Environment.GetCommandLineArgs())if(arg.StartsWith("--topaz-capture-dir="))directory=arg.Substring(20);
             Directory.CreateDirectory(directory);
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-alpine-review"))StartAlpineRenderLoop();
             var report=new Report{unity=Application.unityVersion,platform=Application.platform.ToString(),graphics=SystemInfo.graphicsDeviceName,pipeline=UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.GetType().Name,status="starting"};
-            WorldSession session=null;float deadline=Time.realtimeSinceStartup+30;
+            WorldSession session=null;float deadline=Time.realtimeSinceStartup+180;
             while(Time.realtimeSinceStartup<deadline)
             {
                 session=FindAnyObjectByType<WorldSession>();if(session!=null&&session.HasActivePair&&session.ActiveRegion.Streaming.InitialReady)break;yield return null;
             }
-            if(session==null||!session.HasActivePair){report.status="world creation failed";File.WriteAllText(Path.Combine(directory,"smoke.json"),JsonUtility.ToJson(report,true));yield break;}
+            if(session==null||!session.HasActivePair||!session.ActiveRegion.Streaming.InitialReady){
+                report.status="world creation failed";report.errors=runtimeErrors;
+                report.preparationStage=session?.ActiveRegion?.Streaming?.PreparationStage;report.failure=session?.ActiveRegion?.Streaming?.Failure;
+                File.WriteAllText(Path.Combine(directory,"smoke.json"),JsonUtility.ToJson(report,true));
+                if(System.Environment.GetCommandLineArgs().Contains("--topaz-smoke-quit"))Application.Quit(1);
+                yield break;
+            }
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-stability"))
+            {yield return TerrainStability(session,directory);if(System.Environment.GetCommandLineArgs().Contains("--topaz-smoke-quit"))Application.Quit();yield break;}
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-alpine-review"))
+            {yield return CaptureAlpineViews(session,directory);if(System.Environment.GetCommandLineArgs().Contains("--topaz-smoke-quit"))Application.Quit();yield break;}
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-traversal"))
+            {yield return TraversalReview(session,directory);yield break;}
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-hardening"))
+            {yield return HardeningReview(session,directory,report);yield break;}
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-m0"))
+            {
+                yield return ReviewM0(session,directory);
+                yield break;
+            }
             report.width=Screen.width;report.height=Screen.height;report.refreshHz=Screen.currentResolution.refreshRateRatio.value;
             report.seed=session.ActiveWorld.seed;report.homeGenerationMs=FindObjectsByType<WoodlandRegion>().First(r=>r.regionId==TopazSaveData.WildernessRegion).GenerationMilliseconds;
             yield return new WaitForSecondsRealtime(8);
+            report.globalIllumination=FindAnyObjectByType<Topaz.Rendering.VisualLookController>().GlobalIllumination;
             report.captureWorldHours=session.WorldHours;
             report.graphicsSettingsPath=FindAnyObjectByType<Topaz.Rendering.VisualLookController>().SettingsPath;
             report.lightState=string.Join(";",FindObjectsByType<Light>().Where(l=>l.type==LightType.Directional).Select(l=>l.name+":"+l.enabled+"/"+l.intensity+"/"+l.transform.eulerAngles+"/"+l.bakingOutput.isBaked));

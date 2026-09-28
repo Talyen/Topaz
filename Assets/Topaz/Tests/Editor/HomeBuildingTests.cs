@@ -22,6 +22,18 @@ namespace Topaz.Tests
             .GetMethod(name).Invoke(value, args);
 
         [Test]
+        public void FoundationVisibleSurfaceMatchesItsWalkingCollider()
+        {
+            var root=UnityEditor.PrefabUtility.LoadPrefabContents("Assets/Topaz/Presentation/Art/World/Stone Foundation.prefab");
+            try
+            {
+                var collider=root.GetComponent<BoxCollider>();
+                float walking=collider.transform.TransformPoint(collider.center+Vector3.up*collider.size.y*.5f).y;
+                Assert.That(root.GetComponentsInChildren<Renderer>().Max(r=>r.bounds.max.y),Is.EqualTo(walking).Within(.001f),"A planar foundation must sit on its collider top, above Terrain, rather than intersect the ground.");
+            }
+            finally { UnityEditor.PrefabUtility.UnloadPrefabContents(root); }
+        }
+        [Test]
         public void TwoChestRecordsKeepSeparateContentsAndUnknownIds()
         {
             object first = New("StructureStateRecord");

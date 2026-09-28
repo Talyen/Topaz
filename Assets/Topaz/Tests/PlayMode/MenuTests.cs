@@ -39,24 +39,7 @@ namespace Topaz.Tests
         }
 
         [UnityTest]
-        public IEnumerator TitleAndOptionsPanelsAreWired()
-        {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
-            yield return null;
-            GameObject hud = GameObject.Find("Loop HUD");
-            Component menus = hud.GetComponent("GameMenus");
-            Assert.That(hud.transform.Find("Desktop Menus/Title Screen"), Is.Not.Null);
-            Assert.That(hud.transform.Find("Desktop Menus/Pause Screen"), Is.Not.Null);
-            Assert.That(hud.transform.Find("Desktop Menus/Options Screen"), Is.Not.Null);
-            menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
-            Assert.That((bool)menus.GetType().GetProperty("IsTitle").GetValue(menus), Is.True);
-            menus.GetType().GetMethod("Continue").Invoke(menus, null);
-            Assert.That((bool)menus.GetType().GetProperty("IsTitle").GetValue(menus), Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator TitleUsesTheCampfireCameraAndGameRestoresTheWorldCamera()
+        public IEnumerator TitleUsesNeutralPreviewAndGameRestoresTheWorldCamera()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return WaitForWilderness();
@@ -66,12 +49,14 @@ namespace Topaz.Tests
             menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
             Camera menuCamera = GameObject.Find("Main Menu Camera").GetComponent<Camera>();
             Camera worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+            Assert.That(menuCamera.orthographic, Is.False);
+            Assert.That(GameObject.Find("Main Menu Stage").transform.childCount, Is.EqualTo(3), "The old camp diorama must not remain in the preview.");
             Assert.That(menuCamera.enabled, Is.True);
             Assert.That(worldCamera.enabled, Is.False);
             Component cameraData = menuCamera.GetComponent("UniversalAdditionalCameraData");
             Assert.That(cameraData, Is.Not.Null);
             Assert.That((bool)cameraData.GetType().GetProperty("renderPostProcessing")
-                .GetValue(cameraData), Is.True);
+                .GetValue(cameraData), Is.False);
             menus.GetType().GetMethod("Continue").Invoke(menus, null);
             Assert.That(menuCamera.enabled, Is.False);
             Assert.That(worldCamera.enabled, Is.True);
@@ -80,8 +65,7 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator GraphicsMenuTemporarilyReplacesOptionsCard()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -103,8 +87,7 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator UiScaleCyclesThroughThreeSizesAndKeepsOptionsFocus()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -171,8 +154,7 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator LargeUiScaleKeepsTitleAndOptionsControlsReachable()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -222,8 +204,7 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator LargeUiScaleKeepsGraphicsAndCharacterSelectionVisible()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -398,8 +379,8 @@ namespace Topaz.Tests
                 .onClick.Invoke();
             yield return null;
             Transform lookList = selection.Find("Looks/Look List/Viewport/Content");
-            Assert.That(lookList.childCount, Is.EqualTo(6));
-            lookList.GetChild(2).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That(lookList.childCount, Is.EqualTo(10));
+            lookList.GetChild(4).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             selection.Find("Looks/Create Character").GetComponent<UnityEngine.UI.Button>()
                 .onClick.Invoke();
             selection.Find("Worlds/New World").GetComponent<UnityEngine.UI.Button>()
@@ -412,7 +393,7 @@ namespace Topaz.Tests
             Assert.That(knightId, Is.Not.EqualTo(firstCharacter));
             Assert.That(secondWorld, Is.Not.EqualTo(firstWorld));
             Assert.That((string)appearance.GetType().GetProperty("CurrentId").GetValue(appearance),
-                Is.EqualTo("knight"));
+                Is.EqualTo("viking.warrior.male.1"));
             Assert.That((double)session.GetType().GetProperty("WorldHours").GetValue(session),
                 Is.LessThan(9d), "A fresh World begins on its own first day.");
             Assert.That((int)session.GetType().GetProperty("LoggingExperience").GetValue(session),
@@ -438,7 +419,7 @@ namespace Topaz.Tests
             Assert.That((string)session.GetType().GetProperty("ActiveWorldId").GetValue(session),
                 Is.EqualTo(firstWorld));
             Assert.That((string)appearance.GetType().GetProperty("CurrentId").GetValue(appearance),
-                Is.EqualTo("rogue"));
+                Is.EqualTo("viking.villager.male.1"));
             Assert.That((double)session.GetType().GetProperty("WorldHours").GetValue(session),
                 Is.GreaterThanOrEqualTo(32d));
             Assert.That((int)session.GetType().GetProperty("LoggingExperience").GetValue(session),
@@ -470,8 +451,7 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator BackFromDraftDoesNotCreateCharacterOrWorld()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -501,15 +481,13 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator EveryOfferedLookHasAPlayableBodyAndLivePreview()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             Component appearance = GameObject.Find("Player").GetComponent("PlayerAppearance");
             Component menus = GameObject.Find("Loop HUD").GetComponent("GameMenus");
             menus.GetType().GetMethod("ShowTitle").Invoke(menus, null);
             Transform stage = GameObject.Find("Character Preview Stage").transform;
-            foreach (string look in new[] { "rogue", "rogue.hooded", "knight", "ranger",
-                         "mage", "barbarian" })
+            foreach (string look in (string[])Type.GetType("Topaz.Gameplay.CharacterLooks, Assembly-CSharp",true).GetField("All").GetValue(null))
             {
                 Assert.That((bool)appearance.GetType().GetMethod("Apply")
                     .Invoke(appearance, new object[] { look }), Is.True, look);
@@ -531,8 +509,7 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator PreviewStaysOnChosenLookWhilePointerMovesAndModelRotates()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             GameObject hud = GameObject.Find("Loop HUD");
             Component menus = hud.GetComponent("GameMenus");
@@ -550,21 +527,21 @@ namespace Topaz.Tests
             choices.GetChild(0).GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
             string selected = (string)picker.GetType().GetField("_selectedLookId",
                 BindingFlags.Instance | BindingFlags.NonPublic).GetValue(picker);
-            Assert.That(selected, Is.EqualTo("rogue"));
+            Assert.That(selected, Is.EqualTo("viking.villager.male.1"));
             var hover = new PointerEventData(EventSystem.current);
             ExecuteEvents.Execute<IPointerEnterHandler>(choices.GetChild(5).gameObject,
                 hover, ExecuteEvents.pointerEnterHandler);
             Assert.That((string)picker.GetType().GetField("_selectedLookId",
                 BindingFlags.Instance | BindingFlags.NonPublic).GetValue(picker),
-                Is.EqualTo("rogue"), "Passing over another row must not swap models.");
+                Is.EqualTo("viking.villager.male.1"), "Passing over another row must not swap models.");
             GameObject preview = (GameObject)stage.GetType().GetProperty("CurrentModel")
                 .GetValue(stage);
-            Assert.That(preview.name, Does.Contain("Rogue"));
+            Assert.That(preview.name, Does.Contain("Villager I (Male)"));
             selection.Find("Looks/Rotate").GetComponent<UnityEngine.UI.Button>()
                 .onClick.Invoke();
             Assert.That((string)picker.GetType().GetField("_selectedLookId",
                 BindingFlags.Instance | BindingFlags.NonPublic).GetValue(picker),
-                Is.EqualTo("rogue"));
+                Is.EqualTo("viking.villager.male.1"));
             Assert.That(preview.transform.localEulerAngles.y, Is.EqualTo(225f).Within(1f));
         }
 

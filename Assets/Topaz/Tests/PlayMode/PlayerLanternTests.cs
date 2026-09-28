@@ -42,12 +42,14 @@ namespace Topaz.Tests
             Assert.That(light, Is.Not.Null);
             Assert.That(light.type, Is.EqualTo(LightType.Point));
             Assert.That(light.cookie, Is.Null);
-            Assert.That(light.transform.localPosition.x, Is.EqualTo(0f).Within(.001f));
-            Assert.That(light.transform.localPosition.z, Is.EqualTo(0f).Within(.001f));
             Assert.That(light.range, Is.EqualTo(8.5f).Within(.001f));
             Transform carried = player.GetComponentsInChildren<Transform>(true)
                 .FirstOrDefault(candidate => candidate.name == "Carried Lantern");
             Assert.That(carried, Is.Not.Null);
+            var visual=carried.GetComponent("LanternVisual");
+            var flame=(Vector3)visual.GetType().GetProperty("LightPosition").GetValue(visual);
+            Assert.That(Vector3.Distance(light.transform.position,flame),Is.LessThan(.03f),"Warm light must originate from the visible flame, not inside the body.");
+            Assert.That(carried.position.y-player.transform.position.y,Is.InRange(.65f,1.35f),"The lamp must hang at the hip, not at the feet.");
             Renderer lanternBody = carried.GetComponentsInChildren<Renderer>(true)
                 .FirstOrDefault();
             Assert.That(lanternBody, Is.Not.Null);
@@ -55,8 +57,16 @@ namespace Topaz.Tests
                 Is.LessThan(.3f), "The lantern mesh should hang at its mount, not beside the player.");
             Assert.That(light.color.r, Is.GreaterThan(light.color.g));
             Assert.That(light.color.g, Is.GreaterThan(light.color.b));
-            Assert.That((bool)session.GetType().GetProperty("LanternOn").GetValue(session), Is.False);
-            Assert.That(light.enabled, Is.False);
+            Assert.That((bool)session.GetType().GetProperty("LanternOn").GetValue(session), Is.True);
+            Assert.That(light.enabled, Is.True);
+            // Midday suppresses radiance, never the saved manual toggle; evening restores it.
+            lantern.GetType().GetMethod("SetWorldHours").Invoke(lantern,new object[]{12d});
+            Assert.That(light.enabled,Is.False);
+            Assert.That((bool)session.GetType().GetProperty("LanternOn").GetValue(session),Is.True);
+            lantern.GetType().GetMethod("SetWorldHours").Invoke(lantern,new object[]{18d});
+            Assert.That(light.enabled,Is.True);Assert.That(light.intensity,Is.GreaterThan(0));
+            // Start the existing two-click journal test from an explicit off choice.
+            session.GetType().GetMethod("ToggleLantern").Invoke(session,null);
             var stacks = (IEnumerable)session.GetType().GetProperty("BackpackSlots")
                 .GetValue(session);
             foreach (object stack in stacks)

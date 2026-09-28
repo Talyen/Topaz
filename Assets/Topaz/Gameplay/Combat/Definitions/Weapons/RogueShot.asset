@@ -18,6 +18,6 @@ MonoBehaviour:
   recoverySeconds: 1.1
   damage: 3
   boltPrefab: {fileID: 8104081484704916613, guid: 78b694e3233a9412081715d58417cba7, type: 3}
-  fireClip: {fileID: 8300000, guid: 7650ac0a7ad9f48098c3aa6870bb5337, type: 3}
-  readyClip: {fileID: 8300000, guid: fdfc71c47809a48b5b0d1f76f34c03b3, type: 3}
-  impactClip: {fileID: 8300000, guid: 7f627c44c8bb845d68170938bde0ae74, type: 3}
+  fireClip: {fileID: 0}
+  readyClip: {fileID: 0}
+  impactClip: {fileID: 0}

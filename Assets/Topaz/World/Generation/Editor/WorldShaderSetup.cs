@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Topaz.Generation.Editor
 {
     /// <summary>Author standard Shader Graph assets through the installed 17.6 graph model.</summary>
-    public static class WorldShaderSetup
+    public static partial class WorldShaderSetup
     {
         const string Root="Assets/Topaz/Presentation/Rendering/Environment/";
         static Type T(string name)=>AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("UnityEditor.ShaderGraph."+name)).First(t=>t!=null);

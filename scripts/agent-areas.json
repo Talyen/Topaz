@@ -11,7 +11,8 @@
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/PERFORMANCE.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Bootstrap.unity"
@@ -32,7 +33,8 @@
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/ROADMAP.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Bootstrap.unity"
@@ -48,7 +50,6 @@
     ],
     "tests": {
       "PlayMode": [
-        "ProfilePersistenceTests",
         "WorldLoopTests",
         "EquipmentTests",
         "MiningAndHomeTests",
@@ -58,12 +59,14 @@
       ],
       "EditMode": [
         "ProgressionRulesTests",
-        "SurvivalRulesTests"
+        "SurvivalRulesTests",
+        "ProfilePersistenceTests"
       ]
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/PROCEDURAL_WORLDS.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Bootstrap.unity"
@@ -80,7 +83,8 @@
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/PROCEDURAL_WORLDS.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Woodland.unity"
@@ -95,12 +99,15 @@
         "MenuTests",
         "ProgressionPlayTests",
         "CampfireTravelTests",
-        "SurvivalPlayTests"
+        "SurvivalPlayTests",
+        "VisualStudyTests",
+        "AudioOptionsTests"
       ]
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/UI_DESIGN_SYSTEM.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Bootstrap.unity"
@@ -114,15 +121,22 @@
       "PlayMode": [
         "VisualStudyTests",
         "WeatherTests",
-        "PlayerLanternTests"
+        "PlayerLanternTests",
+        "SpatialShelterTests",
+        "OutdoorPresentationTests",
+        "AudioOptionsTests"
       ],
       "EditMode": [
-        "OwnedPrefabTests"
+        "OwnedPrefabTests",
+        "EnvironmentRulesTests"
       ]
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/PROCEDURAL_WORLDS.md",
+      "docs/UNITY_FEATURE_POLICY.md",
+      "docs/AUDIO_ASSET_POLICY.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Bootstrap.unity"
@@ -140,7 +154,9 @@
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/AGENT_WORKFLOW.md",
+      "docs/UNITY_REFERENCE_GUIDE.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Bootstrap.unity"
@@ -155,7 +171,8 @@
       "PlayMode": [
         "RegionalBaselineTests",
         "HomeBuildingPlayTests",
-        "CampfireTravelTests"
+        "CampfireTravelTests",
+        "SpatialShelterTests"
       ],
       "EditMode": [
         "BaselineRulesTests",
@@ -164,11 +181,37 @@
     },
     "docs": [
       "docs/BASELINE.md",
-      "docs/ARCHITECTURE.md"
+      "docs/ARCHITECTURE.md",
+      "docs/PROCEDURAL_WORLDS.md",
+      "docs/UI_DESIGN_SYSTEM.md"
     ],
     "scenes": [
       "Assets/Topaz/World/Scenes/Bootstrap.unity",
       "Assets/Topaz/World/Scenes/Woodland.unity"
+    ]
+  },
+  "generation": {
+    "paths": [
+      "Assets/Topaz/World/Generation/"
+    ],
+    "tests": {
+      "EditMode": [
+        "OutdoorFoundationTests",
+        "WoodlandGenerationTests",
+        "WildernessGenerationTests"
+      ],
+      "PlayMode": [
+        "OutdoorTraversalTests",
+        "WildernessStreamingTests",
+        "OutdoorPresentationTests"
+      ]
+    },
+    "docs": [
+      "docs/PROCEDURAL_WORLDS.md",
+      "docs/PERFORMANCE.md"
+    ],
+    "scenes": [
+      "Assets/Topaz/World/Scenes/Bootstrap.unity"
     ]
   }
 }

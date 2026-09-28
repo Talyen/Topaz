@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 from datetime import datetime, timezone
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -16,6 +16,12 @@ import sys
 import time
 import uuid
 import xml.etree.ElementTree as ET
+
+# Also support importlib-based tool tests.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import topaz_hygiene as housekeeping
+import topaz_verification as validation
+import topaz_iteration as iteration
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "TestResults"
@@ -33,20 +39,6 @@ def project_paths() -> list[str]:
                             cwd=ROOT, capture_output=True, check=True)
     return sorted(set(path.decode("utf-8", errors="surrogateescape")
                       for path in result.stdout.split(b"\0") if path))
-
-
-def input_fingerprint() -> str:
-    digest = hashlib.sha256()
-    for name in project_paths():
-        path = ROOT / name
-        if not path.is_file():
-            continue
-        digest.update(name.encode("utf-8", errors="surrogateescape") + b"\0")
-        with path.open("rb") as source:
-            for chunk in iter(lambda: source.read(1024 * 1024), b""):
-                digest.update(chunk)
-        digest.update(b"\0")
-    return digest.hexdigest()
 
 
 def changed_paths() -> list[str]:
@@ -68,15 +60,6 @@ def matching_areas(path: str, areas: dict) -> list[str]:
             or path in area["docs"] or path in area["scenes"]
             or any(path.endswith("/" + test + ".cs")
                    for tests in area["tests"].values() for test in tests)]
-
-
-def selection_for_changes(paths: list[str], areas: dict) -> tuple[list[str], list[str]]:
-    matched = sorted(set(name for path in paths for name in matching_areas(path, areas)))
-    # An unmapped source, scene, package, or settings change can affect every test.
-    unknown = [path for path in paths if not matching_areas(path, areas)
-               and (path.startswith("Assets/") or path.startswith("Packages/")
-                    or path.startswith("ProjectSettings/"))]
-    return matched, unknown
 
 
 def append_observation(entry: dict) -> None:
@@ -110,7 +93,7 @@ def summarize_xml(path: Path) -> bool:
             print(f"       {stack[:220]}")
     if len(failures) > 10:
         print(f"  … {len(failures) - 10} more failures in {path.relative_to(ROOT)}")
-    return not failures and bool(cases)
+    return not failures and len(cases) > skipped
 
 
 def summarize_log(path: Path) -> None:
@@ -135,8 +118,12 @@ def run(command: list[str], label: str, directory: Path,
     print(f"Running {label}…", flush=True)
     started = time.monotonic()
     with log.open("w", encoding="utf-8", errors="replace") as output:
-        result = subprocess.run(command, cwd=ROOT, stdout=output, stderr=subprocess.STDOUT,
-                                check=False)
+        try:
+            with validation.unity_operation(ROOT) if command[0] == "unity" else nullcontext():
+                result = subprocess.run(command, cwd=ROOT, stdout=output, stderr=subprocess.STDOUT, check=False)
+        except RuntimeError as error:
+            output.write(str(error) + "\n")
+            result = subprocess.CompletedProcess(command, 1)
     report_ok = summarize_xml(report) if report and report.is_file() else False
     if result.returncode or (report and not report_ok):
         summarize_log(log)
@@ -163,12 +150,12 @@ def run(command: list[str], label: str, directory: Path,
 
 
 def record(directory: Path, kind: str, ok: bool, details: str,
-           fingerprint: str | None = None, started: float | None = None) -> None:
+           fingerprint: str | None = None, started: float | None = None, **extra) -> None:
     (directory / "result.json").write_text(json.dumps({
         "time": datetime.now(timezone.utc).isoformat(), "kind": kind,
         "passed": ok, "details": details, "task": task_id(),
         "fingerprint": fingerprint,
-        "duration_seconds": round(time.monotonic() - started, 3) if started else None},
+        "duration_seconds": round(time.monotonic() - started, 3) if started else None, **extra},
         indent=2) + "\n")
 
 
@@ -192,7 +179,7 @@ def build_platform(platform: str, directory: Path | None = None) -> int:
     if directory is None:
         directory = new_run()
     started = time.monotonic()
-    before = input_fingerprint() if own_run else None
+    before = current_fingerprints()["build"] if own_run else None
     profile, output = PROFILES[platform]
     (ROOT / "Builds").mkdir(exist_ok=True)
     command = ["unity", "build", str(ROOT), "--target",
@@ -215,101 +202,140 @@ def build_platform(platform: str, directory: Path | None = None) -> int:
         if not ok:
             print("Build did not produce a successful BuildReport receipt; an older output is not proof of success.")
     if own_run:
-        after = input_fingerprint()
+        after = current_fingerprints()["build"]
         if before != after:
             print("Project inputs changed during the build; result is not reusable")
             ok = False
-        record(directory, f"build-{platform}", ok, output, after, started)
+        record(directory, f"build-{platform}", ok, output, started=started, fingerprint_version=validation.SCHEMA,
+               fingerprints={"build": after}, stages={"build": {"domain": "build", "fingerprint": before, "passed": ok, "reusable": ok}})
     return 0 if ok else 1
 
 
-def verify(args: argparse.Namespace) -> int:
-    if shutil.which("unity") is None:
-        print("Unity CLI is required", file=sys.stderr)
-        return 1
-    if (args.filter or args.mode or args.area or args.changed) and not args.quick:
-        print("--filter, --mode, --area and --changed require --quick", file=sys.stderr)
-        return 2
-    if args.filter and not args.mode:
-        print("--filter requires --mode EditMode or --mode PlayMode", file=sys.stderr)
-        return 2
-    if (args.area or args.changed) and (args.filter or args.mode):
-        print("Choose an area/changed selection or an explicit mode/filter", file=sys.stderr)
-        return 2
-    if args.area and args.changed:
-        print("Choose --area or --changed", file=sys.stderr)
-        return 2
-    areas = load_areas()
-    if any(area not in areas for area in args.area):
-        print("Unknown area. Choose: " + ", ".join(areas), file=sys.stderr)
-        return 2
-    selected_areas = list(args.area)
-    unknown = []
-    if args.changed:
-        selected_areas, unknown = selection_for_changes(changed_paths(), areas)
-        if unknown:
-            print("Unmapped project inputs; selecting both complete test suites: " +
-                  ", ".join(unknown[:6]))
-    tests: dict[str, list[str | None]] = {}
-    if not args.quick or unknown or (args.quick and not args.filter and not selected_areas and not args.changed):
-        tests = {"EditMode": [None], "PlayMode": [None]}
-    elif args.filter:
-        tests = {args.mode: [args.filter]}
-    else:
-        for area in selected_areas:
-            for mode, names in areas[area]["tests"].items():
-                tests.setdefault(mode, []).extend(names)
-        tests = {mode: sorted(set(names)) for mode, names in tests.items()}
-    selection = ", ".join(f"{mode}: {', '.join(names if names != [None] else ['all'])}"
-                           for mode, names in tests.items()) or "asset checks only"
-    print(f"Selected areas: {', '.join(selected_areas) or 'none'}; tests: {selection}")
+def current_fingerprints():
+    return validation.fingerprints(validation.snapshot(ROOT, project_paths()))
+
+
+def begin_task(name):
+    if not name or name == "unassigned":
+        raise ValueError("Choose a task ID: begin --task <name> or set TOPAZ_AGENT_TASK")
     directory = new_run()
-    started = time.monotonic()
-    before = input_fingerprint()
-    kind = "quick" if args.quick else "full"
-    tool_ok = run([sys.executable, "-m", "unittest", "discover", "-s", "scripts",
-                   "-p", "test_*.py"], "tool-tests", directory)
-    if not tool_ok or not re.search(r"Ran [1-9]\d* tests?\b",
-                                    (directory / "tool-tests.log").read_text()):
-        print("Tool tests failed or no tests were discovered")
-        record(directory, kind, False, "tool tests", before, started)
-        return 1
-    for name in ("check-assets.py",):
-        if not run([sys.executable, str(ROOT / "scripts" / name)],
-                   name.removesuffix(".py"), directory):
-            record(directory, kind, False, name, before, started)
-            return 1
-    for mode, names in tests.items():
-        for index, name in enumerate(names):
-            label = f"{mode.lower()}-{index + 1}-{re.sub('[^A-Za-z0-9_-]', '_', name) if name else 'all'}"
-            report = directory / f"{label}.xml"
-            command = ["unity", "test", str(ROOT), "--mode", mode, "--report-format", "junit",
-                       "--output", str(report), "--timeout", "900", "--no-banner"]
-            if name:
-                command.extend(("--filter", name))
-            if not run(command, label, directory, report):
-                record(directory, kind, False, f"{mode} tests: {name or 'all'}", before, started)
-                return 1
-    if not args.quick and build_platform("mac", directory):
-        record(directory, kind, False, "Mac build", before, started)
-        return 1
-    diff = subprocess.run(["git", "diff", "--check"], cwd=ROOT, capture_output=True,
-                          text=True, check=False)
-    if diff.returncode:
-        print(diff.stdout or diff.stderr)
-        record(directory, kind, False, "git diff --check", before, started)
-        return 1
-    after = input_fingerprint()
-    if before != after:
-        print("Project inputs changed during verification; result is not reusable")
-        record(directory, kind, False, "inputs changed during run", after, started)
-        return 1
-    record(directory, kind, True, selection, after, started)
-    print(f"Topaz {kind} verification: PASS")
+    (directory / "baseline.json").write_text(json.dumps(validation.snapshot(ROOT, project_paths())))
+    record(directory, "baseline", True, "Task input snapshot", task=name)
+    print(f"Task baseline: {directory.relative_to(ROOT)}; use TOPAZ_AGENT_TASK={name} for verification")
     return 0
 
 
+def task_changes():
+    name = task_id()
+    baselines = []
+    for path in RUNS.glob("*/result.json"):
+        try:
+            data = json.loads(path.read_text())
+            if data.get("kind") == "baseline" and data.get("task") == name:
+                baselines.append((data["time"], path.parent))
+        except (OSError, ValueError, KeyError):
+            continue
+    if baselines:
+        before = json.loads((max(baselines)[1] / "baseline.json").read_text())
+        return validation.delta(before, validation.snapshot(ROOT, project_paths()))
+    print("No task baseline; selecting against all Git changes. Use begin before the next task or --path for explicit scope.")
+    return changed_paths()
+
+
+def verify(args: argparse.Namespace) -> int:
+    full, stress = getattr(args, "full", False), getattr(args, "stress", False)
+    paths = getattr(args, "path", [])
+    if args.filter and not args.mode:
+        raise ValueError("--filter requires --mode EditMode or --mode PlayMode")
+    if sum(bool(x) for x in (args.area, paths, args.changed, args.filter or args.mode)) > 1:
+        raise ValueError("Choose --area, --path, --changed, or --mode/--filter")
+    if full and (args.area or paths or args.changed or args.filter or args.mode):
+        raise ValueError("--full runs both complete suites; omit selectors")
+    areas = load_areas()
+    if any(area not in areas for area in args.area):
+        raise ValueError("Unknown area. Choose: " + ", ".join(areas))
+    for name in paths:
+        if Path(name).is_absolute() or ".." in Path(name).parts:
+            raise ValueError("--path requires repository-relative paths")
+    selected, unknown, changed = [], [], []
+    if full or (stress and not (args.area or paths or args.changed or args.mode)):
+        tests = {"EditMode": [None], "PlayMode": [None]}
+    elif args.mode:
+        tests = {args.mode: [args.filter] if args.filter else [None]}
+    elif args.area:
+        selected = args.area
+        tests = {}
+        for area in selected:
+            for mode, names in areas[area]["tests"].items():
+                tests.setdefault(mode, []).extend(names)
+        tests = {mode: sorted(set(names)) for mode, names in tests.items()}
+    else:
+        changed = paths or task_changes()
+        tests, selected, unknown = validation.selected_tests(changed, areas, {p for p in project_paths() if (ROOT / p).is_file()})
+    if unknown:
+        print("Shared/unmapped Unity inputs; running both non-stress suites: " + ", ".join(unknown[:6]))
+    category = None if full else "Stress" if stress else "!Stress"
+    selection = {mode: {"names": names, "category": category} for mode, names in tests.items()}
+    print("Selection: " + (json.dumps(selection) if selection else "Python, hygiene and static checks only"))
+    risk = validation.windows_reasons(changed, ROOT)
+    if risk:
+        print("Windows cross-build recommended for these inputs (explicit build command): " + ", ".join(risk[:6]))
+    if getattr(args, "dry_run", False):
+        for mode, names in tests.items():
+            print("Unity batch: " + json.dumps(validation.test_command(ROOT, mode, names, category, Path("<report>"))))
+        return 0
+    if tests and shutil.which("unity") is None:
+        raise RuntimeError("Unity CLI is required for the selected Unity tests")
+    directory = new_run()
+    started = time.monotonic()
+    kind = "full" if full else "stress" if stress else "fast"
+    stages = {}
+    def stage(label, domain, action):
+        before = current_fingerprints()[domain]
+        passed = action()
+        after = current_fingerprints()[domain]
+        stages[label] = {"domain": domain, "fingerprint": before, "passed": bool(passed), "reusable": bool(passed and before == after)}
+        if before != after:
+            print(f"{label}: relevant inputs changed; this stage is not reusable")
+        return stages[label]["reusable"]
+    def finish(ok, detail):
+        now = current_fingerprints()
+        for item in stages.values():
+            item["reusable"] = item["reusable"] and item["fingerprint"] == now[item["domain"]]
+        ok = ok and all(item["reusable"] for item in stages.values())
+        record(directory, kind, ok, detail if ok else detail + "; inspect stage evidence", started=started,
+               fingerprint_version=validation.SCHEMA, fingerprints=now, stages=stages, selection=selection)
+        print(f"Topaz {kind} verification: {'PASS' if ok else 'FAIL'} (no player build requested)")
+        return 0 if ok else 1
+    def tool_checks():
+        return run([sys.executable, "-m", "unittest", "discover", "-s", "scripts", "-p", "test_*.py"], "tool-tests", directory) and bool(re.search(r"Ran [1-9]\d* tests?\b", (directory / "tool-tests.log").read_text()))
+    if not stage("tooling", "tooling", tool_checks):
+        return finish(False, "tooling")
+    if not stage("documentation", "documentation", lambda: housekeeping.hygiene(ROOT) == 0):
+        return finish(False, "documentation")
+    if tests and not stage("asset-metadata", "editmode", lambda: run([sys.executable, str(ROOT / "scripts/check-assets.py")], "check-assets", directory)):
+        return finish(False, "asset metadata")
+    for mode, names in tests.items():
+        label = mode.lower() + "-batch"
+        report = directory / (label + ".xml")
+        command = validation.test_command(ROOT, mode, names, category, report)
+        if not stage(label, mode.lower(), lambda: run(command, label, directory, report)):
+            return finish(False, mode + " tests")
+    # Documentation changes don't invalidate runtime tests. Recheck only the cheap owning stage.
+    if stages["documentation"]["fingerprint"] != current_fingerprints()["documentation"]:
+        print("Documentation changed; refreshing documentation checks only")
+        if not stage("documentation", "documentation", lambda: housekeeping.hygiene(ROOT) == 0):
+            return finish(False, "documentation")
+    diff = subprocess.run(["git", "diff", "--check"], cwd=ROOT, capture_output=True, text=True)
+    if diff.returncode:
+        print(diff.stdout or diff.stderr)
+        return finish(False, "git diff --check")
+    return finish(True, "Selected " + ", ".join(tests) + " checks passed" if tests else "Static checks only")
+
+
 def doctor() -> int:
+    housekeeping.hygiene(ROOT)
+    housekeeping.summary(ROOT)
     version = (ROOT / "ProjectSettings/ProjectVersion.txt").read_text().splitlines()[0]
     packages = json.loads((ROOT / "Packages/manifest.json").read_text())["dependencies"]
     print(f"Topaz: {version.removeprefix('m_EditorVersion: ')}")
@@ -334,18 +360,20 @@ def doctor() -> int:
            if paths else ""))
     lock_changed = any(line[3:] == "Packages/packages-lock.json" for line in paths)
     print(f"Package lock: {'changed' if lock_changed else 'clean'}")
-    current = None
-    for kind, title in (("full", "Full gate"), ("build-windows", "Windows build")):
+    current = current_fingerprints()
+    for kind, title in (("fast", "Fast checks"), ("full", "Full regression"), ("stress", "Stress tests"), ("build-mac", "Mac build"), ("build-windows", "Windows build")):
         last = latest_record(kind)
-        if last:
-            if current is None:
-                current = input_fingerprint()
-            freshness = ("current" if last.get("fingerprint") == current else
-                         "stale" if last.get("fingerprint") else "unknown freshness")
-            print(f"{title}: {'PASS' if last['passed'] else 'FAIL'} "
-                  f"at {last['time']} ({freshness}; {last['details']})")
-        else:
+        if not last:
             print(f"{title}: none recorded")
+            continue
+        if last.get("fingerprint_version") == validation.SCHEMA:
+            stages = last.get("stages", {})
+            fresh = bool(stages) and all(s["reusable"] and s["fingerprint"] == current[s["domain"]] for s in stages.values())
+            stale = sorted({s["domain"] for s in stages.values() if not s["reusable"] or s["fingerprint"] != current[s["domain"]]})
+            freshness = "current" if fresh else "refresh " + ", ".join(stale or ["unknown stages"]) + "; other recorded domains remain current"
+        else:
+            freshness = "legacy receipt; domain freshness unknown"
+        print(f"{title}: {'PASS' if last['passed'] else 'FAIL'} at {last['time']} ({freshness}; {last['details']})")
     return 0
 
 
@@ -508,6 +536,17 @@ def metrics(task: str | None) -> int:
           f"observed tool bytes: {sum(entry['output_bytes'] for entry in observations):,} | "
           f"shown bytes: {sum(entry['shown_bytes'] for entry in observations):,}")
     print(f"Failure-to-pass cycles: {cycles} | unresolved failed runs: {failures_before_pass}")
+    timings = []
+    for step in steps:
+        report = ROOT / step["report"] if step.get("report") else None
+        if report and report.is_file():
+            try:
+                for case in ET.parse(report).getroot().findall(".//testcase"):
+                    timings.append((float(case.get("time", "0")), case.get("classname", "") + "." + case.get("name", "")))
+            except (OSError, ValueError, ET.ParseError):
+                continue
+    for seconds, name in sorted(timings, reverse=True)[:5]:
+        print(f"Slow test: {seconds:.2f}s {name}")
     print("Repeated annotated reads: " +
           (", ".join(f"{path} ({count})" for count, path in repeats[:10]) if repeats else "none"))
     return 0
@@ -516,12 +555,26 @@ def metrics(task: str | None) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    check = commands.add_parser("verify", help="Full gate, or focused tests without a build")
-    check.add_argument("--quick", action="store_true")
+    check = commands.add_parser("verify", help="Affected non-stress tests by default; player builds are explicit")
+    check.add_argument("--quick", action="store_true", help="Compatibility alias for the default fast checks")
+    suite = check.add_mutually_exclusive_group()
+    suite.add_argument("--full", action="store_true", help="Both complete suites including stress; no player build")
+    suite.add_argument("--stress", action="store_true", help="Only exhaustive/stress cases")
+    check.add_argument("--path", action="append", default=[], help="Task-owned changed path; repeatable")
+    check.add_argument("--dry-run", action="store_true", help="Print selection/commands without running checks")
+    loop = commands.add_parser("iterate", help="Bounded Editor status; no implicit tests or builds")
+    loop.add_argument("--refresh", action="store_true", help="Explicitly refresh changed assets/scripts in the connected Editor")
+    loop.add_argument("--path", action="append", default=[], help="Task-owned path for scope warnings; repeatable")
+    loop.add_argument("--batch", action="store_true", help="Explicit named tests in batch mode; only with the Editor closed")
+    loop.add_argument("--mode", choices=("EditMode", "PlayMode"))
+    loop.add_argument("--filter", help="Named test/fixture; required with --batch and --mode")
+    loop.add_argument("--dry-run", action="store_true", help="Show scope without contacting Unity")
+    begin = commands.add_parser("begin", help="Snapshot the current checkout before starting a task")
+    begin.add_argument("--task", default=task_id(), help="Task label, also set TOPAZ_AGENT_TASK for later checks")
     check.add_argument("--mode", choices=("EditMode", "PlayMode"))
-    check.add_argument("--filter", help="Unity test name filter; requires --quick")
-    check.add_argument("--area", action="append", default=[], help="Mapped area; repeatable; requires --quick")
-    check.add_argument("--changed", action="store_true", help="Select mapped tests for dirty paths")
+    check.add_argument("--filter", help="Unity test name filter; ")
+    check.add_argument("--area", action="append", default=[], help="Mapped area; repeatable; ")
+    check.add_argument("--changed", action="store_true", help="Select changes since task baseline, falling back to Git changes")
     build = commands.add_parser("build", help="Build a desktop player")
     build.add_argument("platform", choices=tuple(PROFILES), nargs="?", default="mac")
     commands.add_parser("doctor", help="Summarize local project and tool state")
@@ -538,22 +591,66 @@ def main() -> int:
     measured.add_argument("command_args", nargs=argparse.REMAINDER)
     report = commands.add_parser("metrics", help="Summarize run and observed-command costs")
     report.add_argument("--task", help="Limit to one task ID")
+    commands.add_parser("hygiene", help="Check current documentation and repository inputs without Unity")
+    clean = commands.add_parser("cleanup", help="Preview expired managed local output")
+    clean.add_argument("--apply", action="store_true", help="Delete only eligible managed output")
+    artifacts = commands.add_parser("artifact", help="Register completed artifacts or change retention pins")
+    ops = artifacts.add_subparsers(dest="operation", required=True)
+    register = ops.add_parser("register")
+    register.add_argument("path", help="Repository-relative completed artifact directory")
+    register.add_argument("--category", required=True, choices=sorted(housekeeping.ARTIFACT_KINDS))
+    register.add_argument("--run", action="append", default=[], help="Related completed run ID; repeatable")
+    register.add_argument("--pin", help="Reason for retaining this artifact indefinitely")
+    pin = ops.add_parser("pin")
+    pin.add_argument("path")
+    pin.add_argument("--reason", required=True)
+    unpin = ops.add_parser("unpin")
+    unpin.add_argument("path")
     args = parser.parse_args()
-    if args.command == "verify":
+    if args.command == "iterate":
+        with housekeeping.output_lock(ROOT):
+            return iteration.iterate(args, argparse.Namespace(**globals()))
+    if args.command == "begin":
+        with housekeeping.output_lock(ROOT):
+            return begin_task(args.task)
+    if args.command == "hygiene":
+        return housekeeping.hygiene(ROOT)
+    if args.command == "cleanup":
+        return housekeeping.cleanup(ROOT, args.apply)
+    if args.command == "artifact":
+        if args.operation == "register":
+            housekeeping.register(ROOT, args.path, args.category, args.run, args.pin)
+        else:
+            housekeeping.set_pin(ROOT, args.path, args.reason if args.operation == "pin" else None)
+        return 0
+    if args.command == "verify" and args.dry_run:
         return verify(args)
-    if args.command == "build":
-        return build_platform(args.platform)
+    if args.command in ("verify", "build"):
+        try:
+            with housekeeping.output_lock(ROOT):
+                result = verify(args) if args.command == "verify" else build_platform(args.platform)
+        finally:
+            try:
+                housekeeping.cleanup(ROOT, apply=True, quiet=True)
+            except Exception as error:
+                print(f"Retention warning (verification result unchanged): {error}")
+        return result
     if args.command == "context":
         return context(args.area, max(1, min(100, args.max)))
     if args.command == "triage":
         return triage(args.run, max(1, min(50, args.max)))
     if args.command == "observe":
         args.max_bytes = max(0, min(10000, args.max_bytes))
-        return observe(args)
+        with housekeeping.output_lock(ROOT):
+            return observe(args)
     if args.command == "metrics":
         return metrics(args.task)
     return doctor()
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (ValueError, OSError, RuntimeError) as error:
+        print(f"Topaz tools: {error}", file=sys.stderr)
+        raise SystemExit(1)

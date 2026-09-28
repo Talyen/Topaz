@@ -12,6 +12,7 @@ namespace Topaz.Gameplay
         [SerializeField] string displayName = "Wood";
         [SerializeField, Min(1)] int maxStack = 20;
         [SerializeField] Sprite journalIcon;
+        [SerializeField] GameObject worldVisual;
         [SerializeField] EquipmentSlot equipmentSlot;
         [SerializeField] WeaponDefinition weapon;
         [SerializeField, Min(0)] int attack;
@@ -25,6 +26,7 @@ namespace Topaz.Gameplay
         public string DisplayName => displayName;
         public int MaxStack => maxStack;
         public Sprite JournalIcon => journalIcon;
+        public GameObject WorldVisual => worldVisual;
         public EquipmentSlot EquipmentSlot => equipmentSlot;
         public WeaponDefinition Weapon => equipmentSlot == EquipmentSlot.Weapon ? weapon : null;
         public EquipmentStats Stats => new EquipmentStats(attack, attackSpeed, armor,

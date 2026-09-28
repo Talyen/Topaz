@@ -16,6 +16,7 @@ namespace Topaz.Menus
         [SerializeField] Transform actorAnchor;
         [SerializeField] PlayerAppearance appearance;
 
+        Topaz.Rendering.VisualLookController look;
         GameObject _actor;
         string _lookId;
         float _yaw;
@@ -33,6 +34,7 @@ namespace Topaz.Menus
                 enabled = false;
                 return;
             }
+            look=FindAnyObjectByType<Topaz.Rendering.VisualLookController>();
             menuCamera.enabled = false;
         }
 
@@ -46,6 +48,7 @@ namespace Topaz.Menus
             if (!enabled) return;
             if (visible && !gameObject.activeSelf) gameObject.SetActive(true);
             if (visible) SyncEffects();
+            look?.SetFocusSubject(visible?actorAnchor:null,visible?menuCamera:null);
             menuCamera.enabled = visible;
             gameplayCamera.enabled = !visible;
             if (!visible && gameObject.activeSelf) gameObject.SetActive(false);
@@ -70,6 +73,8 @@ namespace Topaz.Menus
             _lookId = id;
             if (_actor == null) return;
             _actor.transform.localScale *= 1.45f;
+            foreach (var renderer in _actor.GetComponentsInChildren<Renderer>(true))
+                renderer.renderingLayerMask = 4u; // Dedicated neutral preview light.
             ApplyRotation();
         }
 
@@ -94,7 +99,8 @@ namespace Topaz.Menus
         void SyncEffects()
         {
             menuCameraData.antialiasing = gameplayCameraData.antialiasing;
-            menuCameraData.volumeLayerMask = gameplayCameraData.volumeLayerMask;
+            menuCameraData.volumeLayerMask = 0;
+            menuCameraData.renderPostProcessing = false; // Preview colors must not inherit the world time/weather grade.
             menuCameraData.volumeTrigger = volumeTrigger;
             menuCameraData.dithering = gameplayCameraData.dithering;
             menuCamera.allowHDR = gameplayCamera.allowHDR;

@@ -10,7 +10,7 @@ namespace Topaz.Tests.Editor
         [Test]
         public void StorybookHumanoidControllerContainsOnlyFiniteAnimationValues()
         {
-            var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Topaz/Presentation/Rendering/SyntySample/Storybook Knight.prefab");
+            var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Topaz/Presentation/Art/Characters/Storybook Knight.prefab");
             Assert.That(prefab,Is.Not.Null);
             var animator=prefab.GetComponent<Animator>();
             Assert.That(animator.avatar.isHuman && animator.avatar.isValid,Is.True);

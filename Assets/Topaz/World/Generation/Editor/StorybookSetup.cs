@@ -12,7 +12,7 @@ namespace Topaz.Generation.Editor
 {
     public static class StorybookSetup
     {
-        const string Root="Assets/Topaz/Presentation/Rendering/SyntySample/";
+        const string Root=SyntySampleSetup.WorldRoot;
         const string Vendor="Assets/Synty/PolygonGeneric/Prefabs/";
         static T[] All<T>(Scene scene)where T:Component=>scene.GetRootGameObjects().SelectMany(g=>g.GetComponentsInChildren<T>(true)).ToArray();
         [MenuItem("Topaz/Generation/Configure Storybook Wilderness")]

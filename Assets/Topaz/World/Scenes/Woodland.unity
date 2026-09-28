@@ -2183,7 +2183,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1077041369}
   m_Layer: 0
-  m_Name: KayKit Clearing Art
+  m_Name: Storybook Clearing Art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3653,7 +3653,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2078977069}
   m_Layer: 0
-  m_Name: KayKit Ground Art
+  m_Name: Storybook Ground Art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4372,7 +4372,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8092679435341267336}
   m_Layer: 0
-  m_Name: KayKit Supply Chest
+  m_Name: Storybook Supply Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

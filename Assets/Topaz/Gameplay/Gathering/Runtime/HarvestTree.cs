@@ -23,6 +23,7 @@ namespace Topaz.Gameplay
         float _flashUntil;
 
         public string StableObjectId => stableObjectId;
+        public HarvestDefinition Definition => definition;
         public void SetGeneratedId(string id) => stableObjectId = id;
         public string RequiredToolId => definition != null ? definition.RequiredToolId : null;
         public bool IsAvailable => _state != null && _state.readyAtWorldHours == 0d &&

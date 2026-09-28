@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Practice Sword
   maxStack: 1
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 2071964271703586111, guid: d1424612da4d84f908120c19c22782d4, type: 3}
   equipmentSlot: 1
   weapon: {fileID: 11400000, guid: 7eb02c46140504f9a83a02473e63ad08, type: 2}
   attack: 1

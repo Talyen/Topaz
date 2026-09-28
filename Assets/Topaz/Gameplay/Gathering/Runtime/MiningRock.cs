@@ -16,6 +16,7 @@ namespace Topaz.Gameplay
         NodeStateRecord _state;
 
         public string StableObjectId => stableObjectId;
+        public MiningDefinition Definition => definition;
         public void SetGeneratedId(string id) => stableObjectId = id;
         public bool IsAvailable => _state != null && _state.readyAtWorldHours == 0d &&
             !(_session?.HomeBlocksResource(transform.position, .75f) ?? false);

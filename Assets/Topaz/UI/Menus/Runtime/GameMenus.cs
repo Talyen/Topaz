@@ -11,6 +11,10 @@ namespace Topaz.Menus
     /// <summary>Title, pause, display, and graphics navigation for the desktop study.</summary>
     public sealed class GameMenus : MonoBehaviour
     {
+#if UNITY_EDITOR
+        /// <summary>Title/options fixtures exercise authored UI without generating an unused wilderness.</summary>
+        public static bool EditorTestStartAtTitle { get; set; }
+#endif
         enum ScreenState { Title, Selection, Game, Pause, OptionsFromTitle, OptionsFromPause }
 
         [SerializeField] LoopHud loopHud;
@@ -94,7 +98,10 @@ namespace Topaz.Menus
                 value => (value.Equals("-runTests", StringComparison.OrdinalIgnoreCase) || value == "--topaz-smoke"));
             if (editorTest)
             {
-                session.EnterEditorTestPair();
+#if UNITY_EDITOR
+                if (!EditorTestStartAtTitle)
+#endif
+                    session.EnterEditorTestPair();
                 SetState(session.HasActivePair ? ScreenState.Game : ScreenState.Title);
                 return;
             }

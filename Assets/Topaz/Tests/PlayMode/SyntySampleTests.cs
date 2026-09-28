@@ -39,7 +39,7 @@ namespace Topaz.Tests
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
             yield return WaitForWilderness();yield return null;
-            Assert.That(Terrain.activeTerrain.materialTemplate.shader.name,Is.EqualTo("Universal Render Pipeline/Terrain/Lit"));
+            Assert.That(Terrain.activeTerrain.materialTemplate.shader.name,Is.EqualTo("Topaz/Sheltered Terrain"));
             var session=GameObject.Find("Player").GetComponent("WorldSession");
             var flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance;
             var pack=session.GetType().GetField("_backpack",flags).GetValue(session);
@@ -47,9 +47,9 @@ namespace Topaz.Tests
             pack.GetType().GetMethod("Add").Invoke(pack,new object[]{wood,20});
             BuildingTestActions.Place(session,"structure.home.table");yield return null;
             var table=Object.FindObjectsByType<BoxCollider>(FindObjectsSortMode.None).First(c=>c.name.StartsWith("structure.home.table "));
-            Assert.That(table.size,Is.EqualTo(new Vector3(1.2f,.9f,.8f)));
-            Assert.That(table.center,Is.EqualTo(Vector3.up*.45f));
-            Assert.That(table.GetComponentsInChildren<MeshRenderer>().Any(r=>r.name.Contains("SM_Gen_Prop_Table")),Is.True);
+            Assert.That(table.size,Is.EqualTo(new Vector3(1.2f,.75f,.7f)));
+            Assert.That(table.center,Is.EqualTo(Vector3.up*.375f));
+            Assert.That(table.GetComponentsInChildren<MeshRenderer>().Any(r=>r.name.Contains("SM_Prop_Table_01")),Is.True);
             session.GetType().GetMethod("FlushCurrent").Invoke(session,null);
         }
     }

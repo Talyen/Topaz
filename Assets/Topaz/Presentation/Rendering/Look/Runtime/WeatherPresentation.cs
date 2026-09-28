@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace Topaz.Rendering
 {
-    /// <summary>Small camera-area rain effect and ambience over the shared outdoor look.</summary>
+    /// <summary>Single fog-compatible rain emitter and ambience; driven only by active World time.</summary>
     public sealed class WeatherPresentation : MonoBehaviour
     {
         const float TransitionSeconds = 30f;
-        const float RainRate = 290f;
-        VisualLookController _look;
+        const float RainRate=180f;
         Transform _follow;
         ParticleSystem _rainParticles;
-        AudioSource _rainAudio;
-        TopazAudioOutput _rainOutput;
         Material _rainMaterial;
         Texture2D _rainTexture;
+        VisualLookController _look;
+        AudioSource _rainAudio;
+        TopazAudioOutput _rainOutput;
         AudioClip _rainClip;
         float _cloudiness;
         float _rain;
@@ -24,13 +24,19 @@ namespace Topaz.Rendering
 
         public float Cloudiness => _cloudiness;
         public float Rain => _rain;
+        public void SetActiveWorld(bool active)
+        {
+            if(_rainParticles==null)return;
+            if(active && _rainParticles.isPaused)_rainParticles.Play();
+            else if(!active && _rainParticles.isPlaying)_rainParticles.Pause();
+            if(!active)_look?.FreezePresentation();
+        }
 
         public void Initialize(VisualLookController look, Transform follow)
         {
             if (_look != null) return;
             _look = look;
-            _follow = follow;
-            CreateRain();
+            _follow=follow;CreateRain();
             CreateAudio();
             _look.SetWeather(0f, 0f);
         }
@@ -53,33 +59,26 @@ namespace Topaz.Rendering
             float step = activeSeconds / TransitionSeconds;
             float clouds = Mathf.MoveTowards(_cloudiness, _targetCloudiness, step);
             float rain = Mathf.MoveTowards(_rain, _targetRain, step);
-            if (Mathf.Approximately(clouds, _cloudiness) &&
-                Mathf.Approximately(rain, _rain)) return;
             _cloudiness = clouds;
             _rain = rain;
+            _look.AdvancePresentation(activeSeconds, rain);
             Apply();
         }
 
         void LateUpdate()
         {
-            if (_follow != null && _rainParticles != null)
-                _rainParticles.transform.position = _follow.position + Vector3.up * 15f;
+            if(_follow!=null && _rainParticles!=null)_rainParticles.transform.position=_follow.position+Vector3.up*15;
         }
-
         void Apply()
         {
             _look.SetWeather(_cloudiness, _rain);
-            if (_rainParticles != null)
-            {
-                var emission = _rainParticles.emission;
-                emission.rateOverTime = RainRate * _rain;
-            }
+            if(_rainParticles!=null){var emission=_rainParticles.emission;emission.rateOverTime=RainRate*_rain;}
             if (_rainOutput != null) _rainOutput.SetBaseVolume(.18f * _rain);
         }
 
         void CreateRain()
         {
-            Material source = Resources.Load<Material>("TopazEffectsParticles");
+            Material source = Resources.Load<Material>("TopazOutdoorRain");
             if (source == null)
             {
                 Debug.LogError("[Topaz] Weather particle material is missing.", this);
@@ -111,8 +110,8 @@ namespace Topaz.Rendering
             main.startLifetime = 1.2f;
             main.startSpeed = 0f;
             main.startSize = .055f;
-            main.startColor = new Color(.74f, .84f, 1f, .45f);
-            main.maxParticles = 700;
+            main.startColor = new Color(.48f, .59f, .67f, .28f);
+            main.maxParticles = 500;
             var emission = _rainParticles.emission;
             emission.rateOverTime = 0f;
             var shape = _rainParticles.shape;
@@ -123,11 +122,19 @@ namespace Topaz.Rendering
             velocity.space = ParticleSystemSimulationSpace.World;
             velocity.x = 1.2f;
             velocity.y = -18f;
+            var collision = _rainParticles.collision;
+            collision.enabled = true;
+            collision.type = ParticleSystemCollisionType.World;
+            collision.mode = ParticleSystemCollisionMode.Collision3D;
+            collision.quality = ParticleSystemCollisionQuality.High;
+            collision.enableDynamicColliders = true;
+            collision.lifetimeLoss = 1f;
+            collision.collidesWith = ~0;
             var renderer = go.GetComponent<ParticleSystemRenderer>();
             renderer.material = _rainMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Stretch;
-            renderer.lengthScale = 2.5f;
-            renderer.velocityScale = .03f;
+            renderer.lengthScale = 1f;
+            renderer.velocityScale = .015f;
             _rainParticles.Play();
         }
 
@@ -171,8 +178,8 @@ namespace Topaz.Rendering
 
         void OnDestroy()
         {
-            if (_rainMaterial != null) Destroy(_rainMaterial);
-            if (_rainTexture != null) Destroy(_rainTexture);
+            if(_rainMaterial!=null)Destroy(_rainMaterial);
+            if(_rainTexture!=null)Destroy(_rainTexture);
             if (_rainClip != null) Destroy(_rainClip);
         }
     }

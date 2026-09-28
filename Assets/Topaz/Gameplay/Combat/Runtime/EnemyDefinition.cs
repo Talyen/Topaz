@@ -2,11 +2,14 @@ using UnityEngine;
 
 namespace Topaz.Combat
 {
+    public enum EnemySpecies { Skeleton, Goblin, Raider, Troll }
+
     /// <summary>Static values for the single combat practice enemy.</summary>
     [CreateAssetMenu(menuName = "Topaz/Combat/Enemy")]
     public sealed class EnemyDefinition : ScriptableObject
     {
         [SerializeField] string stableId = "enemy.practice";
+        [SerializeField] EnemySpecies species = EnemySpecies.Skeleton;
         [SerializeField, Min(1)] int sourceLevel = 1;
         [SerializeField, Min(1)] int health = 3;
         [SerializeField, Min(0.1f)] float detectionRange = 9f;
@@ -22,6 +25,7 @@ namespace Topaz.Combat
         [SerializeField] CrossbowAttackDefinition crossbowAttack;
 
         public string StableId => stableId;
+        public EnemySpecies Species => species;
         public int SourceLevel => sourceLevel;
         public int Health => health;
         public float DetectionRange => detectionRange;

@@ -16,6 +16,19 @@ namespace Topaz.Gameplay
         public const string Lantern = "structure.home.lantern";
         public const string Table = "structure.home.table";
 
+        public const string TimberFloor = "structure.viking.floor";
+        public const string HalfWall = "structure.viking.half-wall";
+        public const string Beam = "structure.viking.beam";
+        public const string Fence = "structure.viking.fence";
+        public const string Bench = "structure.viking.bench";
+        public const string Chair = "structure.viking.chair";
+        public const string Shelf = "structure.viking.shelf";
+        public const string WeaponRack = "structure.viking.weapon-rack";
+        public static bool IsFloor(string id) => id == Floor || id == TimberFloor;
+        public static bool IsWall(string id) => id == Wall || id == Doorway || id == HalfWall;
+        public static bool IsRoofSupport(string id) => id == Wall || id == Doorway || id == Beam;
+        public static bool IsShelter(string id) => IsWall(id) || id == Roof;
+
         public readonly struct Entry
         {
             public readonly string Id;
@@ -39,6 +52,14 @@ namespace Topaz.Gameplay
 
         public static Entry[] Entries => new[]
         {
+            new Entry(TimberFloor, "Timber floor", 1, 0, 0, true),
+            new Entry(HalfWall, "Log half-wall", 1, 0, 0, true),
+            new Entry(Beam, "Timber pillar", 1, 0, 0, true),
+            new Entry(Fence, "Timber fence", 1, 0, 0),
+            new Entry(Bench, "Bench", 2, 0, 0),
+            new Entry(Chair, "Chair", 1, 0, 0),
+            new Entry(Shelf, "Shelf", 2, 0, 0),
+            new Entry(WeaponRack, "Weapon rack", 2, 0, 0),
             new Entry(Camp, "Campfire", BuildingSettings.Current.campWood, BuildingSettings.Current.campStone, 0),
             new Entry(Bedroll, "Bedroll", 2, 0, 0),
             new Entry(Floor, "Stone floor", 0, 1, 0, true),

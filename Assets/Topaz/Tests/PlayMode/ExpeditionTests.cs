@@ -57,8 +57,11 @@ namespace Topaz.Tests
             string id=(string)Get(node,"StableObjectId");Vector3 position=node.transform.position;
             for(int i=0;i<4&&(bool)Get(node,"IsAvailable");i++)Assert.That(Call(node,"TryChop",position+Vector3.back*1.3f,Vector3.forward,2.1f,90f),Is.True);
             Assert.That(Get(node,"IsAvailable"),Is.False);double deadline=(double)Get(Call(s,"GetOrCreateNodeState",id),"readyAtWorldHours");
-            yield return Move(s,new Vector3(350,0,350));yield return new WaitForSeconds(.8f);
-            Assert.That(node==null,Is.True,"The original chunk instance must actually unload.");
+            yield return Move(s,new Vector3(350,0,350));
+            // Retirement/pooling is deliberately spread across frames; verify completion, not a frame-rate-dependent delay.
+            float unloadDeadline=Time.realtimeSinceStartup+15;
+            while(node!=null && Time.realtimeSinceStartup<unloadDeadline)yield return null;
+            Assert.That(node==null,Is.True,"The original chunk instance must actually unload within the bounded wait.");
             yield return Move(s,position);
             var restored=FindResource("HarvestTree","StableObjectId",id).GetComponent("HarvestTree");
             Assert.That(Get(restored,"IsAvailable"),Is.False);Assert.That(Get(Call(s,"GetOrCreateNodeState",id),"readyAtWorldHours"),Is.EqualTo(deadline));

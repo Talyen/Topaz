@@ -61,14 +61,6 @@ class SummaryTests(unittest.TestCase):
             finally:
                 tools.ROOT, tools.RUNS = original_root, original_runs
 
-    def test_changed_selection_fails_open_for_unmapped_unity_input(self):
-        areas = tools.load_areas()
-        selected, unknown = tools.selection_for_changes([
-            "Assets/Topaz/Gameplay/Combat/Runtime/EnemyCombatant.cs",
-            "Packages/manifest.json"], areas)
-        self.assertIn("combat", selected)
-        self.assertEqual(unknown, ["Packages/manifest.json"])
-
     def test_area_map_points_to_existing_tests_docs_and_scenes(self):
         for area in tools.load_areas().values():
             for path in area["docs"] + area["scenes"]:
@@ -78,20 +70,6 @@ class SummaryTests(unittest.TestCase):
                 for name in names:
                     self.assertTrue((tools.ROOT / "Assets/Topaz/Tests" / folder /
                                      f"{name}.cs").is_file(), name)
-
-    def test_fingerprint_includes_untracked_content_not_only_names(self):
-        with tempfile.TemporaryDirectory() as folder:
-            original_root, original_paths = tools.ROOT, tools.project_paths
-            try:
-                tools.ROOT = Path(folder)
-                target = tools.ROOT / "new.cs"
-                target.write_text("first")
-                tools.project_paths = lambda: ["new.cs"]
-                first = tools.input_fingerprint()
-                target.write_text("second")
-                self.assertNotEqual(first, tools.input_fingerprint())
-            finally:
-                tools.ROOT, tools.project_paths = original_root, original_paths
 
     def test_triage_gives_bounded_failure_and_source(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -112,6 +90,19 @@ class SummaryTests(unittest.TestCase):
                 self.assertIn("Assets/Topaz/Tests/SaveTests.cs:42", output.getvalue())
             finally:
                 tools.ROOT, tools.RUNS = original_root, original_runs
+
+
+    def test_retention_failure_does_not_change_verify_or_build_result(self):
+        from unittest.mock import patch
+        from contextlib import nullcontext
+        for command, expected in ((["verify"], 1), (["build", "windows"], 0)):
+            with patch.object(sys, "argv", ["topaz-tools.py"] + command), \
+                 patch.object(tools, "verify", return_value=expected), \
+                 patch.object(tools, "build_platform", return_value=expected), \
+                 patch.object(tools.housekeeping, "output_lock", return_value=nullcontext()), \
+                 patch.object(tools.housekeeping, "cleanup", side_effect=RuntimeError("busy")), \
+                 redirect_stdout(io.StringIO()):
+                self.assertEqual(tools.main(), expected)
 
 
 if __name__ == "__main__":

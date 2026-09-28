@@ -20,6 +20,7 @@ namespace Topaz.Gameplay
     {
 #if UNITY_EDITOR
         public static string EditorTestSaveDirectory { get; set; }
+        public static int? EditorTestSeed { get; set; }
 #endif
         [SerializeField] ItemDefinition wood;
         [SerializeField] ItemDefinition stone;
@@ -266,11 +267,17 @@ namespace Topaz.Gameplay
                 (arg.Equals("-runTests", StringComparison.OrdinalIgnoreCase) || arg == "--topaz-smoke"));
             string directory = runningTests
                 ? Path.Combine(Application.temporaryCachePath, "TopazTest-" + Guid.NewGuid().ToString("N"))
-                : Path.Combine(Application.persistentDataPath, "Storybook-v2");
+                : Path.Combine(Application.persistentDataPath, "Alpine-v6");
 #if UNITY_EDITOR
             if (runningTests && !string.IsNullOrEmpty(EditorTestSaveDirectory))
                 directory = EditorTestSaveDirectory;
 #endif
+            if(Environment.GetCommandLineArgs().Contains("--topaz-smoke"))
+            {
+                string key=Environment.GetCommandLineArgs().FirstOrDefault(a=>a.StartsWith("--topaz-smoke-profile="))?.Substring(22);
+                if(!string.IsNullOrEmpty(key) && key.All(c=>char.IsLetterOrDigit(c)||c=='-'))
+                    directory=Path.Combine(Application.temporaryCachePath,"TopazDiagnostic-"+key);
+            }
             _repository = new ProfileRepository(directory);
             try
             {
@@ -394,7 +401,7 @@ namespace Topaz.Gameplay
                 }
             _spawnedPickups.Clear();
             chest.Bind(null);
-            hud.ShowStatus("Preparing woodland…");
+            hud.ShowStatus("Preparing alpine wilderness…");
             yield return null;
             BindPair(character, world, visit);
             if (_generationFailed) { completed?.Invoke(false); yield break; }
@@ -456,7 +463,9 @@ namespace Topaz.Gameplay
             _regionWeatherOverride = null;
             _regionWeatherId = null;
             ApplyIsolatedWeatherPreview();
+            look.BeginWorldPresentation(_data.worldHours);
             look.SetWorldHours(_data.worldHours);
+            lantern.SetWorldHours(_data.worldHours);
             UpdateWeather(true);
             foreach(var actor in ActiveRegion.Streaming.GetComponentsInChildren<EnemyCombatant>(true)) RegisterEnemy(actor);
             hud.Bind(this);
@@ -513,6 +522,7 @@ namespace Topaz.Gameplay
             }
             if (_data == null)
             {
+                _weatherPresentation?.SetActiveWorld(false);
                 if (_cancelRequested) menus.HandleEscape();
                 _placeRequested = _cancelRequested = _inventoryRequested = false;
                 return;
@@ -554,6 +564,7 @@ namespace Topaz.Gameplay
             bool active = (ActiveRegion?.Streaming == null || ActiveRegion.Streaming.InitialReady) && !_applicationPaused && !_traveling && !_resting && !_recovering &&
                 !MenuOpen &&
                 Time.timeScale > 0f;
+            _weatherPresentation?.SetActiveWorld(active);
             if (!active)
             {
                 if (_clockWasActive) Commit();
@@ -569,6 +580,7 @@ namespace Topaz.Gameplay
                 SurvivalRules.Refill(_character, Time.deltaTime);
             TickEnemyReturns();
             look.SetWorldHours(_data.worldHours);
+            lantern.SetWorldHours(_data.worldHours);
             UpdateWeather(false);
             _weatherPresentation?.Tick(Time.deltaTime);
             _activeSecondsSinceSave += Time.deltaTime;
@@ -973,6 +985,9 @@ namespace Topaz.Gameplay
             _foragePlants.RemoveAll(p => p == null || p.transform.IsChildOf(root.transform));
             loadedTrees.RemoveAll(p => p == null || p.transform.IsChildOf(root.transform));
             loadedRocks.RemoveAll(p => p == null || p.transform.IsChildOf(root.transform));
+            // Terrain residency is removed before this callback; retire independent loot visuals
+            // now rather than waiting through scenery pooling and the next navigation refresh.
+            RefreshPickupVisibility();
         }
 
         void RefreshGatherables()
@@ -1050,8 +1065,23 @@ namespace Topaz.Gameplay
             }
             pending.readyAtWorldHours = WorldHours + EnemyReturnHours;
             Vector3 position = enemy.transform.position;
-            DropItem(boneFragments, 1, position + Vector3.left * .35f);
+            switch(enemy.Species)
+            {
+                case EnemySpecies.Skeleton:
+                    DropItem(boneFragments,1,position+Vector3.left*.35f);
+                    break;
+                case EnemySpecies.Goblin:
+                    DropItem(UnityEngine.Random.value<.7f?wood:stone,1,position+Vector3.left*.35f);
+                    break;
+                case EnemySpecies.Raider:
+                    if(UnityEngine.Random.value<.4f)DropItem(iron,1,position+Vector3.left*.35f);
+                    break;
+                case EnemySpecies.Troll:
+                    DropItem(iron,2,position+Vector3.left*.35f);
+                    break;
+            }
             ItemDefinition extra = null;
+            if(enemy.Species==EnemySpecies.Skeleton || enemy.Species==EnemySpecies.Raider)
             switch (enemy.LootRole)
             {
                 case SkeletonLootRole.Warrior:
@@ -1129,7 +1159,9 @@ namespace Topaz.Gameplay
             instance.name = $"{item.DisplayName} Pickup";
             WorldPickup pickup = instance.GetComponent<WorldPickup>();
             pickup.Bind(this, record, item);
-            if (item == staff || item == crossbow)
+            if (item.WorldVisual != null)
+                pickup.OverrideVisual(item.WorldVisual);
+            else if (item == staff || item == crossbow)
                 pickup.OverrideVisual(item.Weapon?.HeldModel);
             else if (item == boneFragments)
                 pickup.OverrideVisual(bonePickupVisual);
@@ -1386,6 +1418,9 @@ namespace Topaz.Gameplay
 
         void InitializeGeneration(TopazWorldData world)
         {
+#if UNITY_EDITOR
+            if(Application.isEditor && EditorTestSeed.HasValue)world.seed=EditorTestSeed.Value;
+#endif
             foreach(var root in SceneManager.GetSceneByName("Bootstrap").GetRootGameObjects())
             foreach(var region in root.GetComponentsInChildren<Topaz.Generation.WoodlandRegion>(true))
                 if(region.preset!=null)world.generationSettings=region.preset.settings.Copy();
@@ -1624,6 +1659,7 @@ namespace Topaz.Gameplay
             ResetLocalAreaAfterRest();
             RefreshGatherables();
             look.SetWorldHours(_data.worldHours);
+            lantern.SetWorldHours(_data.worldHours);
             UpdateWeather(true);
             Commit();
             for (float elapsed = 0f; elapsed < fadeSeconds; elapsed += Time.unscaledDeltaTime)

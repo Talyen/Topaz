@@ -129,7 +129,7 @@ InitTestScene*.unity*
 # Unity terrain sample raw assets are a private, separately restored dependency.
 /Assets/ThirdParty/UnityTerrainSample/
 
-# Owned Synty Starter Pack sources; restore with scripts/restore-synty-starter.py.
+# Owned Synty sources; restore Starter and downloaded packs using the scripts in docs/SYNTY_LIBRARY.md.
 /Assets/Synty/
 /Assets/Synty.meta
 
@@ -140,3 +140,17 @@ InitTestScene*.unity*
 # Licensed humanoid motion, restored through scripts/restore-storybook-assets.py.
 /Assets/Kevin Iglesias/
 /Assets/Kevin Iglesias.meta
+
+# Local portraits rendered from private Viking models; retain metadata for stable bindings.
+/Assets/Topaz/UI/Art/VikingPortraits/*.png
+
+# Locally normalized Synty detail meshes; preserve metadata and regenerate via LuminousAlpineSetup.
+/Assets/Topaz/Presentation/Art/World/GroundCover/*.asset
+
+# Locally generated shader derivative of the private PNB source.
+/Assets/Topaz/Presentation/Art/World/GroundCover/PNB Native Fade.shadergraph
+
+# Locally baked backdrop pixels derived from owned Alpine mountain geometry.
+/Assets/Topaz/Presentation/Effects/Resources/TopazAlpineBackdrop.asset
+
+/Assets/Topaz/Presentation/Art/World/GroundCover/PNB Grass Fade.shadergraph

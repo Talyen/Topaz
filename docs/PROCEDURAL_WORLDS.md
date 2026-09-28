@@ -1,99 +1,107 @@
-# Continuous Storybook wilderness
+# Procedural world and presentation reference
 
-The active implementation now uses a 1024 m continuous wilderness, 128 m chunks,
-Unity Terrain, URP, and a local asynchronous AI Navigation surface. See
-[implementation/evidence ledger](STORYBOOK_IMPLEMENTATION.md), [baseline](BASELINE.md)
-and [architecture](ARCHITECTURE.md). The former two-region description below is
-historical context while its remaining test/settings adapters are retired; it is
-not the current player-facing world contract.
+Current contracts for the continuous wilderness. [BASELINE.md](BASELINE.md) owns world dimensions and gameplay rules; [ARCHITECTURE.md](ARCHITECTURE.md) owns state/persistence; [ROADMAP.md](ROADMAP.md) owns acceptance and remaining work. Historical plans are not additional implementation mandates.
 
-# Previous procedural woodland foundation
+## Deterministic world data
 
-Topaz uses Unity 6000.6.2f1, URP 17.6, VFX Graph 17.6, Cinemachine 6.6,
-Input System 1.20, and AI Navigation 2.0.14. HDRP was evaluated and removed.
-Unity's [2026 render pipeline strategy](https://unity.com/topics/render-pipelines-strategy-for-2026)
-focuses new feature development on URP. Surface Cache GI remains a future-version
-candidate, not a dependency or a claim about current lighting.
+`WildernessPlan` is plain data/arithmetic independent of loaded Terrain. It supplies height/normal/slope, normalized biome weights, moisture, water surface/depth, routes/traversal cost, reservations, resources and destination ownership. The current generator is version 6; supported profile/content settings are validated before realization. The native terrain lattice uses 65 height samples per chunk and a bounded 2 m final-height field prepared before world entry.
 
-## World contract
+Independent integer-mixed random streams prevent decorative-density or quality changes from moving gameplay resources. IDs use logical coordinates/roles before rejection, invariant formatting, floor-based negative-coordinate conversion and half-open ownership. They never depend on instance IDs, process hashes or asynchronous completion order. Shared edges sample the same global coordinates; cross-cell placement checks include neighboring footprints. Promise tested logical reproducibility, not untested bit-identical simulation on every CPU.
 
-Each World record stores a seed, generator version, and a copy of generation
-settings. WoodlandPlan is plain C# data generation with independent layout,
-resource, and decoration random streams. A home clearing, route, encounter area,
-and exits are reserved before terrain is shaped. Changing decoration density does
-not move resources or terrain. Terrain is fixed after generation.
+Geography establishes alpine ridges/valleys, biome fields, river courses and shallow ponds, reserves required destinations/resources, then shapes and validates approaches before optional ecology. Required roles fail explicitly when unavailable; optional decoration may be skipped. `WoodlandPreset` holds configured role bindings, anchors, footprints, slope/clearance and collision intent. Read recipe costs and resource yields from their existing definitions, not a duplicate economy table.
 
-Bootstrap owns the home region; Woodland is now the generated woodland expedition
-(scene and saved region identifiers are retained to preserve the existing systems).
-WorldSession remains the authority for inventories, progress, storage, harvesting,
-time, and travel. WoodlandRegion composes Terrain, collisions, decoration and runtime
-navigation during loading. Generated resources use stable region-local IDs. Existing
-worlds must not be regenerated with a different generator version or settings.
-New standalone data is isolated under `Baseline-v1` in persistentDataPath.
+Required routes need actual controller/collider/navigation checks as well as data validation. Ponds share bank/surface/depth records with shaping and exclusions; the ground remains the walking surface. Generated abandoned camps are not safe zones unless they contain a campfire governed by normal rules.
 
-The first slice has finite connected regions. Seamless streaming, digging, rivers,
-and generated dungeons are deferred. Old authored studies are not the current world
-layout contract; their reusable game rules and save tests remain valuable.
+## Viking Alpine content
 
-## Rendering
+`AlpineAssetSetup.Apply` authors the owned environment, character, item and building wrappers from the purchased library. It preserves vendor assets and existing gameplay definitions. Alpine tree wrappers retain their authored LODs and trunk/leaf materials; distant canopies use the final authored LOD without gameplay colliders. Rivers expose a globally sampled surface/bed, reserved ford approaches and bridge records. Deep sections reject walking and contribute navigation exclusions. Trail height blending includes neighboring segments so corners do not introduce discontinuities.
 
-The desktop URP asset uses Forward+, Render Graph, HDR, four shadow cascades,
-reflection-probe blending/box projection, SSAO, decals, and GPU Resident Drawer.
-GPU occlusion is configured as a separate option and starts disabled pending a
-representative comparison. Standard Terrain and instanced terrain details remain
-separate from MeshRenderer GPU Resident Drawer coverage.
+New worlds use `viking-alpine-v6` content and the 2048 m profile; the 1024 m profile remains a supported test profile without the two megastructures. The collection is `Alpine-v6`; older collections remain intact and are not regenerated under the new geography.
 
-Cinemachine owns third-person follow and collision. Input actions supply mouse and
-stick rotation. Graphics offers Balanced/High and native TAA or optional STP.
-The small URP scale adapter only reacts to valid GPU timings, clamps scale to
-70–100%, and leaves native resolution unchanged. No GPU timing means no automatic
-scale adjustment. CPU bottlenecks cannot be fixed by scaling resolution.
+Alpine-v6 composition settings are copied into each World with `WoodlandSettings`. Shared world-space canopy, ground-cover, trail-width and landmark-approach fields guide vegetation, ground painting and placement independently of loaded chunks. Four instanced detail channels (low Alpine grass, upright PNB core grass, taller shade grass and sparse Alpine flowers) use dense habitat patches and continuous grass with varied height; construction suppresses and restores every channel. Near and distant trees share deterministic scale. Ground-detail samples use cell centers. Terrain layers bind owned Alpine grass, dirt, river-stone and pine-floor albedo/normal textures. Native layer tints turn the autumn pine texture into a mossy floor and coordinate meadow ground with the grass; distant terrain uses the same tinted linear texture average without runtime CPU texture readback. A 128 m spatial lookup limits height stamping to nearby route segments while preserving their original accumulation order. Medium-scale terrain relief is applied before route/water/pad constraints, and approaches reserve visual space without moving required resources.
 
-The world uses real-time sun/moon lighting, a procedural sky, ambient lighting,
-distance fog and day/night/weather-driven material parameters. APV and the Compute
-Light Baker are for the fixed RenderingLab, not newly generated terrain. HDRP-only
-volumetric cloud/fog, hardware ray tracing and HDRP water are not enabled.
+`Topaz/Generation/Configure Luminous Alpine` authors the existing foliage, materials and older discovery wrappers. `Topaz/Generation/Author Synty Destinations` and `Topaz/Generation/Author Synty Wilderness Enemies` author additional owned site and actor wrappers from the private library. These are restoration/authoring operations, not routine iteration commands. See [asset provenance](THIRD_PARTY_ASSETS.md) before regenerating private dependencies.
 
-WorldEffects binds VFX Graph rain, campfire embers and weapon-hit bursts to game
-state/events. Particle state never controls damage or saves. Graphs have bounded
-particle capacity and explicit bounds. Shader Graph templates expose wetness, wind,
-emission and dissolve controls; the graph authoring adapter is pinned to Unity 17.6
-and should be revalidated when upgrading packages.
+Version 6 reserves Titan's Grave and Split Sky Peak before up to sixteen optional sites from the twenty-asset catalog. A separate deterministic stream chooses optional types and positions; candidate clearance, water, grade and route checks prevent forced placements. Shore compositions face the sampled pond or river centerline, while encounter slots face their landward trail approach. Construction excludes site footprints even when visual chunks are unloaded. The peak rise and switchback use the same immutable height field as the rest of the world. Non-colliding grave and summit silhouettes remain at their world positions while near geometry streams. Site-owned enemy groups use stable slot IDs and WorldSession's saved return deadlines; typical groups contain one to three skeletons, goblins or raiders. Living enemies use species-appropriate existing drops rather than skeleton bones.
 
-## Current Synty review sample
+## Streaming and construction
 
-The active preset now uses the owned Synty Starter Pack subset and matte Topaz terrain layers. See [sample inventory and restore instructions](SYNTY_SAMPLE.md). The Unity Terrain Sample below is preserved as a retired source dependency; it is no longer the active woodland binding. Procedural layout and save contracts are unchanged.
+`WoodlandRegion` composes `StreamedWilderness` in Bootstrap. A detailed 3 × 3 neighborhood uses Unity Terrain, separate bounded coarse-horizon/canopy residency, staged managed preparation and asynchronous local AI Navigation. Terrain neighbor links accompany residency changes; they do not repair mismatched samples.
 
-## Previous private art dependency
+Initial entry prepares an exclusively owned plain-data plan on a cancellable worker before publishing it. Height samples and placement records are then read-only during streaming; worker tasks prepare chunk paint/density arrays without touching Unity objects. Native Terrain height, paint/detail upload and activation are separate main-thread stages. Five spare Terrain/TerrainData slots are prepared during entry; retirement retains at most eight inactive slots for reuse. One immutable prepared plan is cached across visits with matching seed and complete generation settings. Matching graphics-API/platform state collections warm progressively during entry, before gameplay readiness. The Metal collection is captured from the standalone development player; mismatched platforms are skipped. Scenery uses bounded pools (32 inactive objects per selected prefab) and staged retirement; gameplay resources retain their existing ownership and lifecycle. Incoming chunks are prioritized up to 48 m ahead from player velocity, with a ready neighborhood retained around that point. Gravity is frozen while initial collision is unavailable.
 
-The account-owned Unity URP Terrain Sample (product 213197, downloaded version 1.0.3)
-is licensed under the standard Asset Store EULA according to its included
-ThirdPartyNotices.txt. Selected source assets stay under ignored
-`Assets/ThirdParty/UnityTerrainSample/`. We import no demo scene, scripts, TerrainData,
-package manifest or rendering settings. The selected set supplies pines, a rock,
-grass/fern detail and ground textures; player and building visuals remain placeholders.
+Readiness includes populated collision and completed local navigation. Movement/dodge check upcoming space; teleports serialize, prepare the destination and retain a valid origin until arrival. Request epochs prevent cancelled work from publishing. Boundary hysteresis reduces churn; engaged encounters remain pinned where unloading would reset combat. Camera warps reset temporal history.
 
-Restore with `python3 scripts/restore-terrain-sample.py [path-to-unitypackage]` after
-acquiring the package through Unity Package Manager. The source manifest validates
-all selected file hashes before writing. Public wrapper prefabs reference the private
-art by GUID. Do not commit the raw package or its textures/models.
+Saved structures, pickups, resources, chest stock and encounter deadlines outlive loaded visuals. Apply saved state before interaction; rendering quality must not alter identity, required resources or collision. Construction invalidates navigation and shelter from committed geometry. Teardown releases TerrainData, meshes, materials, textures, navigation, registrations and pending work. Measure residency over repeated routes using [PERFORMANCE.md](PERFORMANCE.md).
 
-## Agent entry points
+## Clock, weather and rendering
 
-- `WoodlandPlan.Generate(seed, regionId, settings)` creates and validates data.
-- `WoodlandGenerationTools.ValidateBatch` supports `--topaz-seed=N` and `--topaz-count=N`; writes an ignored JSON report under TestResults/Generation.
-- Standalone `--topaz-smoke --topaz-seed=42 --topaz-capture-dir=<directory>` uses temporary saves and captures home/expedition plus timing; add `--topaz-smoke-quit` for unattended runs.
-- `Topaz/Generation/Bind Unity Terrain Sample` rebuilds the owned art bindings.
-- `Topaz/Rendering/Configure Modern URP` configures the rendering baseline.
-- `Topaz/Migration/Configure Shader Graph Templates` rebuilds graph templates.
-- `./scripts/verify.sh` is the full handoff check; targeted runs use `--quick`.
-- `./scripts/build.sh mac` and `./scripts/build.sh windows` produce review builds.
+`WorldSession.TickWorldClock` advances/commits the gameplay clock; `WeatherSchedule` resolves conditions. `VisualLookController` derives one presentation state, runtime Volume/sky, sun/moon, ambient fill, gradual wetness and current/previous wind. No renderer owns a second saved clock. Chunk crossings and camp travel do not reset time; isolated capture overrides must not rewrite owner saves.
 
-Keep source audio archives, curated imports and all review records intact. Audio
-curation may continue independently during this migration. Audio review remains independent of visual asset cleanup.
+`WeatherPresentation` smooths weather over 30 active seconds and owns the sole fog-compatible Particle System rain emitter. `WorldEffects` retains bounded VFX Graph embers/impacts. Wetness accumulates/dries with active-world time and bounded rest skips; reload begins dry and blends from current conditions without a per-prop wetness database. Rain/wind pause with active-world time.
 
-Windows 60–120 FPS is a target pending named Windows hardware and representative
-standalone measurements, not an Editor performance claim.
+The desktop renderer uses Forward+, Render Graph, HDR, native Surface Cache GI, shadow cascades, SSAO, decals and GPU Resident Drawer. GPU occlusion remains disabled pending comparison. Native non-instanced Terrain is the current Metal workaround; grass and ordinary meshes still instance. See [Unity feature policy](UNITY_FEATURE_POLICY.md) for rationale and revalidation.
 
+Golden / Silver uses selective warm sunlight, cool readable fill and a silver-blue moon. Clear daylight is the palette calibration state; warmth increases toward the horizon at dawn and dusk. Natural lighting is selectable. The stronger directional owns shadows. Native post-processing uses an assigned PostProcessData resource, ACES, an original 32-cubed half-float color LUT, restrained grading/bloom, TAA and configurable lens effects. Player-tracked bokeh remains enabled intentionally; motion blur, chromatic aberration and vignette default to zero. Isolated smoke reviews use temporary graphics settings and never read or overwrite the owner's preferences. Linear sky/fog radiance is uploaded without a second color conversion. The adaptive STP scale adapter responds only to valid GPU timings, clamps to 70–100%, and uses a 60 Hz budget; native mode retains full resolution.
 
-See [the baseline](BASELINE.md) for regional construction and dynamic camp travel. RenderingLab is excluded from normal player builds. Historical save migration chains and authored dungeon fixtures have been removed.
+**Fog contract:** the native full-screen feature blends height/distance fog over opaque color before transparents, using depth without a scene-color copy and skipping sky-depth pixels. Native distance fog is disabled. Water and rain apply the same analytic function to their surface color before blending over the fogged background; do not fog that background twice. This is analytic atmosphere, not volumetric lighting.
+
+Foliage retains Lit Shader Graph, root-anchored wind and explicit previous-frame deformation. Preserve palette UVs, normals, rigs and native shadow/depth/motion passes. Water meshes consume plan records and own no gameplay collision. Runtime outdoor baking/APV is not used; RenderingLab remains a fixed-scene experiment.
+
+## Spatial shelter
+
+`RegionBuildings` owns a bounded local `SpatialShelter` field from committed roof/wall/doorway colliders. Placement previews do not register. Building changes, door state and streamed reconstruction invalidate nearby exposure/sky-visibility samples; roof cutaways retain collision and ShadowsOnly participation.
+
+Separate rain exposure from environmental fill. Sampled fill attenuates ambient reflections in owned Lit/Terrain shells, while SCGI supplies diffuse visibility and bounce from actual geometry. Lit graphs bypass artificial shelter occlusion when receiving SCGI. Direct torches, emission, camera exposure and gameplay stats remain independent; bright exteriors stay bright through openings. Rain uses native particle collision plus shelter sampling. Outside the local volume, rendering falls back to open sky. The shelter field is a local approximation; the native SCGI cache owns bounced diffuse lighting. Current supported integration is Forward+, with generated owned Lit/Terrain shells and graph occlusion inputs; regenerate owned shells with `Topaz.Generation.Editor.WorldShaderSetup.ConfigureShelter` after URP upgrades and validate both desktop builds. The upstream package remains unmodified. Deferred/APV, simultaneous world cameras, tall reflection-occlusion interiors beyond the local field, and side-blown rain are unsupported. Unlit/additive effects have no indirect response. Transparent water remains analytically shaded and uses rendering-layer mask 2 to exclude its non-Meta geometry from the SCGI world while remaining visible. Native Unity tracking handles streamed terrain and committed construction, including enabled ShadowsOnly roofs.
+
+## Player-facing quality
+
+Judge terrain silhouettes and routes from the normal moving camera; props should feel grounded and composed, with convincing scale, transitions and purposeful density. Keep a coherent palette/material treatment and lighting hierarchy that makes characters and actions readable. Inspect character feet/grips, animation transitions, camera occlusion/response and impact/gathering feedback in context. Fix the largest visible weaknesses in a coherent pass, then inspect again. A valid generator, imported pack or error-free image is not proof of attractive results.
+
+## Diagnostics and authoring
+
+These commands are a toolbox for specific questions, not a per-task checklist. Use the [everyday loop](AGENT_WORKFLOW.md#iterate-and-hand-off) for art/feel work; retain the following heavier diagnostics for actual correctness, compatibility or performance risks.
+
+From the repository root, use the existing tools; see [workflow](AGENT_WORKFLOW.md) for verification:
+
+- `new WildernessPlan(seed, settings)` and `Validate()` construct/check data. `WoodlandGenerationTools.ValidateBatch` accepts process arguments `--topaz-seed=N` and `--topaz-count=N`, writing under `TestResults/Generation`.
+- Standalone `--topaz-smoke --topaz-seed=42 --topaz-capture-dir=<absolute-directory> --topaz-smoke-quit` uses isolated review data. Add `--topaz-m0 --topaz-outdoor` for fixed views/routes, `--topaz-motion` for dense AA frames, `--topaz-shelter` for the shelter fixture, or `--topaz-lighting-review` for the lighting matrix.
+- `--topaz-hardening` exercises the complete loop and repeated circuits. A second process with the same `--topaz-smoke-profile=<alphanumeric-key>` and capture directory plus `--topaz-hardening-resume` checks saved identity. These options require smoke mode. Use the same capture directory in both processes. The isolated profile lives in the application temporary cache, separate from the owner collection.
+- `Topaz/Generation/Export Outdoor Maps` emits seed-42 diagnostics. Setup methods `OutdoorFoundationSetup.Apply`, `WorldShaderSetup.ConfigureOutdoorMotion`, `WorldShaderSetup.ConfigureShelter` and `FantasyPresentationSetup.Apply` author owned assets through the connected Editor. They mutate assets and are not audit/open-project commands.
+
+Historical baseline setup commands can replace newer configuration; use them only for a deliberate authoring task and reapply the relevant current setup. The source proposals' `worldgen_*` commands do not exist. Restore private dependencies through [the asset register](THIRD_PARTY_ASSETS.md#restoring-current-private-dependencies), not old art-binding commands.
+
+For ordinary presentation work, inspect the changed experience and relevant boundary only. Generator/traversal correctness changes warrant discovered regression seeds and representative controller coverage; use the retained 100-seed data coverage and controller seeds `0, 1, 7, 42, 63, 99` at relevant exhaustive/integration checkpoints. Test unload/restart, destinations and cleanup when their behavior changes. Review day/night/rain, AA, water or shelter when the change can affect them. Captures establish only the states actually inspected; use uninstrumented runs for performance claims.
+
+`--topaz-smoke --topaz-traversal --topaz-traversal-seconds=180 --topaz-smoke-quit` records continuous controller input along an out-and-back route, without capture IO during sampling. The report distinguishes readiness stops, frame intervals and native terrain/navigation peaks. A batch player can exercise CPU-side streaming while the display is locked, but its uncapped intervals are not rendered presentation timings. Use a foreground standalone run for smoothness acceptance. `AlpineCaptureTests.RenderAlpineReviewAndTraceGraphicsStates` explicitly renders review views and checks bridge walking. A development player with `--topaz-smoke --topaz-alpine-review --topaz-smoke-quit` keeps an offscreen render loop active during preparation and exports player graphics states. Use `-weather-preview=clear -weather-preview-hour=12` for the fixed daylight review. Tracing requires a development build (`-topazDevelopment` through `PlayerBuild`); release builds can render views but do not record PSOs. These captures are not a presentation-timing benchmark.
+
+Use an absolute `--topaz-capture-dir` under `TestResults/artifacts/`, with `--topaz-smoke-quit` for automated completion. Register the completed capture folder through the artifact command in [workflow](AGENT_WORKFLOW.md#artifact-retention).
+
+- Standard fixed/moving review: `--topaz-smoke --topaz-m0 --topaz-outdoor --topaz-motion`.
+- Alpine explicit review: `--topaz-alpine-review --topaz-visual-matrix --topaz-review-width=2560` records four generated locations at noon, golden hour, rain and night, including pose/settings metadata. Omit the matrix flag for daylight only; `--topaz-review-view=forest` limits repeated seed checks to that view. `--topaz-dof-gentle` previews an 8 aperture/45 mm alternative without changing the default bokeh; `--topaz-tone-neutral` is a diagnostic ACES comparison. `--topaz-material-study` compares the stock character with softened-normal native Lit treatments and terrain-normal strength; these options do not change normal-play assets. These renders are not frame-pacing evidence.
+- Fixed lighting/settings matrix: add `--topaz-lighting-review` to smoke/M0; compare actual 1600×900 and 2560×1440 outputs.
+- Isolated quality controls and stationary High/Balanced samples: add `--topaz-look-check` to smoke/M0. The instancing comparison deliberately exercises a broken path.
+- Shelter fixture: `--topaz-smoke --topaz-m0 --topaz-shelter --topaz-seed=42`; creates committed diagnostic geometry and records rain/night views plus shelter samples. Fixture material costs are bypassed; normal construction rules are unchanged.
+- Native allocation investigation: add Unity's `-diag-job-temp-memory-leak-validation` to the hardening route. The intermittent JobTempAlloc warning remains unresolved even when a rerun does not reproduce it.
+
+Production Terrain uses the non-instanced native path because native terrain instancing produced black terrain on the tested Metal setup, including stock Terrain/Lit. `--topaz-terrain-instancing` is diagnostic-only; mesh/grass instancing remains enabled. Do not revert this workaround without player evidence. Shelter samples are bounded local visual approximations with open-sky fallback, not physical interior GI.
+
+Capture IO, teleport-heavy soaks, focus loss and simultaneous validation affect timings. Do not infer normal foreground FPS or Windows targets from them. The retained native-allocation run tests warning recurrence, not clean performance. Physical gamepad feel and the complete manual display/UI-scale matrix remain outstanding.
+
+### Surface Cache GI diagnostics
+
+Run `Topaz/Rendering/Configure Surface Cache GI` after installing or reimporting source art to retain readable mesh data on contributing model dependencies. The build validator checks this requirement. SCGI is always enabled in normal desktop builds. Existing Balanced/High settings select Low/Medium native GI presets without resizing the 128 m / 16-resolution / four-cascade cache. `VisualLookController` owns the runtime Volume configuration; authored default/world profiles also retain the visual-only exclusion mask during loading, menus and teardown. `SurfaceCacheSetup.ConfigureVolumeDefaults` maintains that baseline. No cache enters saves. The 17.6 preview produced invalid cached irradiance during fresh procedural-world startup; the controller recreates the native cache once initial geometry is ready. Ordinary chunk streaming remains native. Revalidate this startup workaround on an engine upgrade. Smoke, M0, residency and foreground performance reports record the GI preset, backend and cache dimensions. Development builds alone accept `--topaz-scgi-off` for matched controls; build them explicitly with `-topazDevelopment` passed to `Topaz.Editor.PlayerBuild.BuildConfiguredProfile`. Release builds ignore that switch. Keep comparison build type, seed, time, weather, resolution and render scale identical.
+
+Changes to SCGI integration or shader compatibility require Mac shader/runtime review and a Windows cross-build once at the completed integration checkpoint; ordinary artistic parameter tuning uses focused Editor/player inspection. Windows device performance remains deferred; an engine/visual/performance failure is an adoption blocker. The existing shelter, outdoor, lighting, hardening and foreground diagnostics cover geometry changes, time/weather transitions, streaming and residency.
+
+### Luminous Alpine visibility and LODs
+
+The v5 composition uses deterministic 14 m trail meander, smoothed candidate bends, and 3.5 m local relief plus broader shoulders before the existing route, river and destination stamps. The same final height query serves terrain, collision, placement and navigation. Native terrain details retain their instance density while using authored reduced grass/flower geometry.
+
+Owned tree wrappers discard intermediate LODs that remove less than 30 percent of vertices. Remaining 3D geometry transitions to the authored tree cards at 32 percent screen height, with a 20 percent transition band and quality LOD bias 1.1/0.85. The private PNB shader derivative enables URP signed dither crossfading and time-based wind motion vectors. Ground cover fades in stable per-clump order over 55–80 m on High and 38–56 m on Balanced, before native detail culling at 85/60 m. Near density is retained. One 3D tree LOD contributes to native GI, avoiding overlapping copies; distant cards remain visual-only. These derivatives are regenerated locally, never copied into the public repository.
+
+Shared analytic fog adds a smooth distance envelope reaching full haze by at most 350 m, beyond the separate lowland height fog. Camera clipping follows 32 m behind that limit; the far fog color converges to the same analytic sky function, including clouds and the mountain backdrop. Distant terrain residency is four chunk rings rather than eight; far canopy retains three rings. Every planned tree is represented in the distant canopy, rather than the former first-48 prefix. Individual proxies remain until their nearby replacements are ready, and return atomically on unload; canceled construction removes partial canopy roots. This preserves nearby grass and gameplay clearance while concealing the outer visibility limit. This remains analytic atmosphere, not volumetric fog.
+
+`--topaz-stability --topaz-stability-moving` captures matched camera movement with frozen world animation for terrain-flicker diagnosis. Native frames preserve the Metal render-texture orientation; adjacent-frame metrics include geometric motion and are not flicker scores. `--topaz-shadow-budget` and `--topaz-gi-medium` remain development-only controls matching the adopted High budget. Native High uses 70 m directional shadows, two cascades, a 2048 atlas and Medium soft filtering; Balanced uses 50 m, two cascades, 1024 and Low filtering. `--topaz-stp` selects adaptive STP only for isolated smoke diagnostics. Traversal receipts record actual GI, shadows, DoF and render-scale ranges. `--topaz-traversal-motion` adds bounded asynchronous frame capture and marks timing as instrumented.
+
+The mountain skyline uses the private `TopazAlpineBackdrop` cubemap, baked from the owned mountain wrappers with `Topaz/Generation/Bake Alpine Sky Backdrop`. Its channels encode shaded form, height and coverage; sky time/weather colors provide the final appearance. The backdrop requires no distant terrain expansion or extra runtime camera. `Configure Luminous Alpine` regenerates it with graphics enabled.

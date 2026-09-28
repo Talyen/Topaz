@@ -12,42 +12,550 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b956caa3d74c41108503f0bdd47bf19, type: 3}
   m_Name: Woodland
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.Generation.WoodlandPreset
+  warmupCollections:
+  - {fileID: 2233906009837495740, guid: e9c74bf8cd76e42e6b588a5843e19241, type: 2}
   settings:
-    version: 2
+    version: 6
+    profileId: alpine-2048-v6
+    contentId: viking-alpine-v6
+    worldSize: 2048
     resolution: 65
     size: 128
     relief: 13
     decorationCount: 560
+    groveScale: 48
+    groveCoverage: 0.72
+    groundCoverDensity: 1.2
+    localRelief: 3.5
+    trailMeander: 14
+    trailMinimumHalfWidth: 1
+    trailMaximumHalfWidth: 1.8
+    landmarkApproachLength: 44
+    landmarkApproachWidth: 8
   grass: {fileID: 8574412962073106934, guid: 9bb8f1c281bf4418281a3f99cef60d58, type: 2}
   path: {fileID: 8574412962073106934, guid: 908c9aa0630e44d88b400a7e6eec7fde, type: 2}
   rockLayer: {fileID: 8574412962073106934, guid: b546ef41285e44c67a88614f09ce4bc8, type: 2}
   forestLayer: {fileID: 8574412962073106934, guid: b28f705abc62841d19a5b3c0253ca8e0, type: 2}
   distantMaterial: {fileID: 2100000, guid: a4d2114ea14ef4aca9c43aa7614400e0, type: 2}
+  distantGroundColors:
+  - {r: 0.064876884, g: 0.110404015, b: 0.017773438, a: 1}
+  - {r: 0.22414303, g: 0.1577282, b: 0.10313702, a: 1}
+  - {r: 0.07857704, g: 0.07112789, b: 0.06456947, a: 1}
+  - {r: 0.0400049, g: 0.059025764, b: 0.016409112, a: 1}
   trees:
-  - {fileID: 835550654800859958, guid: 2ae1d8901443e429697f6d230e5ae06b, type: 3}
-  - {fileID: 6227791589494779584, guid: ec49649445f90490381a5e6e7427440a, type: 3}
-  - {fileID: 3012380642336582535, guid: 8f31d3198d00f424b93d0ac74a74ea38, type: 3}
-  - {fileID: 2068827974591931629, guid: e656186de85f14c78bccbc4c9bac359b, type: 3}
-  - {fileID: 8080424910602766967, guid: 3737df40244ea4e658da4e2b3ee1d702, type: 3}
+  - {fileID: 1534915113196993060, guid: 173f4b49cd94346e5a557987fc3100c5, type: 3}
+  - {fileID: 1334811009633193287, guid: 5d8a30b345b36429896d8788082a3ca8, type: 3}
+  - {fileID: 74848724372277899, guid: 717f8d61f3b7f4a46b579139d324a381, type: 3}
+  - {fileID: 8157019488325774012, guid: 03e7245d5ea90446083a7d25ad2b8c8e, type: 3}
+  - {fileID: 1748208016667492084, guid: 3b1440cbdecf94c6c832781541a6476d, type: 3}
+  backgroundMountains:
+  - {fileID: 3625030408783384418, guid: 5874bed120ef74e26a91ed9c3d5325d8, type: 3}
+  - {fileID: 4005433193605672933, guid: 0ef26660e18c84e628334854bdfe0bcf, type: 3}
+  - {fileID: 5651269106688493167, guid: 519e9bffb56b24b5ea34dfd4134d3ea5, type: 3}
+  - {fileID: 1523032530313258479, guid: 4f2fa5954d4bc4f8da0c2ffe1b125c50, type: 3}
+  snowRocks:
+  - {fileID: 6168351605265906959, guid: a02315f7ec42440ecb96d5a1460f2de4, type: 3}
+  - {fileID: 6493171389276776690, guid: b9cbed467f2f74e17a7ed81590c3c7dd, type: 3}
+  - {fileID: 1522805871768609231, guid: ac48084e7948f460cb56b425f57ba358, type: 3}
+  distantTrees:
+  - {fileID: 7867255090042178291, guid: 7a97065d50f4d4786811644aae88c9bb, type: 3}
+  - {fileID: 3691024170691514814, guid: 9a2c7462e7da643f9a14fe71b9dc3aa2, type: 3}
+  - {fileID: 6294967897478548725, guid: 185b907186b414133bf72d4f334b0018, type: 3}
+  - {fileID: 1291999122640870810, guid: e451003a8de4e4d849540f7954205676, type: 3}
+  - {fileID: 8753031815434170485, guid: 7990976941beb47c981779d6981797c4, type: 3}
+  cliffs:
+  - {fileID: 6502184865137203372, guid: ad3f2fb0f4e6b46e59f372e086c6a7fb, type: 3}
+  - {fileID: 177135040525947707, guid: 9cce0d74989c847c6a7ad77733f8ca03, type: 3}
+  - {fileID: 1500011736451583013, guid: 8c047965568094004935195025b00b73, type: 3}
+  - {fileID: 776341293398178520, guid: 8007dbf55baa84f4793645437fe1c630, type: 3}
   rocks:
-  - {fileID: 5022091010394590963, guid: 3f6b6169af4ed455dbfc706099e8e331, type: 3}
-  - {fileID: 565394168084077101, guid: 14ae24c2970d54e02948c20d22a19997, type: 3}
-  - {fileID: 8820056103899385487, guid: 96ad828a5a48444138a7ceab21d18389, type: 3}
+  - {fileID: 2744741529678579239, guid: de76ea02c20d1465d80d2a726477768f, type: 3}
+  - {fileID: 2691145423057589894, guid: e938c94ae8b7d404d974a7fb3933f436, type: 3}
+  - {fileID: 2609714807496386911, guid: a7813ea0c8d60444bb153a5ffb3b7dab, type: 3}
+  - {fileID: 6043505252461806977, guid: 1f8fcc2c5859340f581c748a0988c463, type: 3}
+  - {fileID: 4278089468814142477, guid: a77332e4e97384b66acb9a8b9378c0c8, type: 3}
+  - {fileID: 14807141939719224, guid: 73093d0d583e6445c9ba9b0156f199e8, type: 3}
+  - {fileID: 1158140531357500896, guid: 222f5d37f51e5431a8bbcdd84db002cb, type: 3}
   undergrowth:
-  - {fileID: 3834310259915888531, guid: 6fe6d993e855f4f2991b584949cee8a4, type: 3}
-  - {fileID: 6168463711117121936, guid: cf5867c9f9a694abd8d9815592812fcf, type: 3}
-  - {fileID: 8618261082863526011, guid: f137e131a2ea947569fb6e96ba08e7f8, type: 3}
-  - {fileID: 6484899192440205495, guid: 7aa1278ec95104e7fbf8c076d99746e8, type: 3}
+  - {fileID: 2322462508547184984, guid: eecb67e5418974ba0ba006325e5fc929, type: 3}
+  - {fileID: 7104016853695053638, guid: dacef8420ab254e038834d3a6a982acd, type: 3}
+  - {fileID: 3472254895210342471, guid: 1f41e002c900147f0a51fb7ad8e654a4, type: 3}
+  - {fileID: 2724423275565277082, guid: fa8eece96bbee43e3b57f8b94d0f6842, type: 3}
+  - {fileID: 9086022771474120900, guid: 1f47d84ba295f42d8bdb23d4b16aa3ce, type: 3}
+  - {fileID: 158102355015344448, guid: 393e3bea883e24704b283abbdcf1e276, type: 3}
+  - {fileID: 2033734253728791833, guid: 512d274aa5d2f491cb4b5853c790a394, type: 3}
+  - {fileID: 3003322278694804268, guid: 83e6c4f19a0d74f99ad2ce8f385e2995, type: 3}
+  - {fileID: 1282296520864515451, guid: 46579e69fdec5457eb63e00a80929cc1, type: 3}
+  - {fileID: 6799614291898815902, guid: 6568f491210724e2b9811959ab9bf772, type: 3}
+  - {fileID: 3529820070285899215, guid: 9c2e4730c6ee04f0ca48f1dcfb3b30ec, type: 3}
+  bridge: {fileID: 7905633554265035218, guid: b328d88cfde5244b18396396f0a6f74b, type: 3}
   discoveryCache: {fileID: 1600480940528917322, guid: b77e3dab04e9c473eb14ada366b41158, type: 3}
   discoveries:
-  - {fileID: 7069491063704433567, guid: 0b8a290f246834c36931d84e9d1aae1f, type: 3}
-  - {fileID: 7443173758583403981, guid: f8d8575ba38624cbe9bfcd6e7e0a7648, type: 3}
-  - {fileID: 7649265448815151388, guid: 4091db25f01bd49c28fc99d9c31b9568, type: 3}
+  - {fileID: 455929872872768663, guid: 55138ae2073684b1ba3079ecf39e64a6, type: 3}
+  - {fileID: 1303602001767276051, guid: 1fcea0b6ad8c042a5962ce6182d22c80, type: 3}
+  - {fileID: 857592422127827128, guid: cf6ec9e3345a94c6d9237744e026efb0, type: 3}
+  destinations:
+  - {fileID: 8769707962581674357, guid: dd6f4d11edbd0467ba39dc8fb36d6369, type: 3}
+  - {fileID: 6693188025596444832, guid: b05db01d207114a1faf0d0ba0a58c41b, type: 3}
+  - {fileID: 7408414644234522774, guid: 7c28190baeb9749569a6b2bf2029ecd4, type: 3}
+  - {fileID: 6344473518679095930, guid: d06d5aac33c624a5ea1c481549cc4c77, type: 3}
+  - {fileID: 745750198240555449, guid: 973183b82aac84f6ebb3f77c93eb5dbf, type: 3}
+  - {fileID: 4126180880875567205, guid: 798b8cbbbac684dbaab2868b5b161f5e, type: 3}
+  - {fileID: 4361629181201843669, guid: 4efb27310a5ee42c98cc2f9622a73680, type: 3}
+  - {fileID: 6249131211015621423, guid: 9b5601309331f468393d79c0ae5f8c2f, type: 3}
+  - {fileID: 2189135835818189515, guid: a555b8680873041e68d9255c5c485f37, type: 3}
+  - {fileID: 4529625735371657107, guid: 3a02d7912dc054d678715b344d955612, type: 3}
+  - {fileID: 7851875567529461618, guid: 64929240363a84e86a611d95aaf25c9a, type: 3}
+  - {fileID: 3590034613305498315, guid: 8f12c855adfdd4f788585624c6dd1b92, type: 3}
+  - {fileID: 4932970250156320189, guid: 2cd8e3cdaf96a4ea6b76bdafb7887101, type: 3}
+  - {fileID: 8724994431091324394, guid: c9f2dcd4d6f2644b99d3cb5672b15856, type: 3}
+  - {fileID: 1604680379383950696, guid: fb78400fee5964533a2ca5ea2a9bfc2b, type: 3}
+  - {fileID: 9108569870855096963, guid: 615b81ff5288c4713abfe176f26f6ff8, type: 3}
+  - {fileID: 6078807034197741964, guid: 578f264791aa34e14a1087b3cb9ae349, type: 3}
+  - {fileID: 7417332469171099656, guid: d007c7a0ac3b942d7980771dc0c27157, type: 3}
+  - {fileID: 7330743572087799411, guid: d29c8addd59e24b5f9c3627907f1f9fa, type: 3}
+  - {fileID: 90508051555742969, guid: 352ea9858ef5b49e38aa413ba4f4f65b, type: 3}
+  - {fileID: 4895713878094500907, guid: fbe71de10501341229d15108b6339703, type: 3}
+  - {fileID: 3329138559597865615, guid: 0ca8767dc444b406d937e07233c03941, type: 3}
+  titansGraveDistant: {fileID: 2720968968579004983, guid: 5ad3b7a07aace4eaf9982cb4c980e6b6, type: 3}
+  splitPeakDistant: {fileID: 936621696297590689, guid: 68a86b895bcfb4ae7916ed3955696ed1, type: 3}
   enemies:
   - {fileID: 5826282059846889464, guid: 3ff0b1af964524764bb00095a340f7da, type: 3}
   - {fileID: 7220008274385331759, guid: 9420585507e3848f7a4cf44f1379d33c, type: 3}
+  goblins:
+  - {fileID: 4414188877313424184, guid: 75847f25b29ea4512b3bb3ad8d9835ff, type: 3}
+  - {fileID: 1526692825273423743, guid: 202e40d28522848f391612ba2e629533, type: 3}
+  - {fileID: 4312593651577877197, guid: e3d465dcd538d473fa4d66e5cb02a0d7, type: 3}
+  - {fileID: 538910750710048222, guid: f96b27798c4ad433db9a1632d0a9732f, type: 3}
+  raiders:
+  - {fileID: 4735654126747871722, guid: 83bcec26e0c4449eba1297a565deac00, type: 3}
+  - {fileID: 9179804166820639547, guid: cfb37e52fc252432783ea5975f73275c, type: 3}
+  - {fileID: 5021347682051912150, guid: a05d03b89012b4edfa62ff898ccf09af, type: 3}
+  troll: {fileID: 451272943210366737, guid: a38ca9fd0e4744dacb58b898d40f7000, type: 3}
   terrainMaterial: {fileID: 2100000, guid: 480dee5c884ca43019337d92bd802d21, type: 2}
-  treeVisual: {fileID: 2068827974591931629, guid: e656186de85f14c78bccbc4c9bac359b, type: 3}
-  rockVisual: {fileID: 5022091010394590963, guid: 3f6b6169af4ed455dbfc706099e8e331, type: 3}
-  treeVariant: {fileID: 8080424910602766967, guid: 3737df40244ea4e658da4e2b3ee1d702, type: 3}
+  treeVisual: {fileID: 1534915113196993060, guid: 173f4b49cd94346e5a557987fc3100c5, type: 3}
+  rockVisual: {fileID: 2744741529678579239, guid: de76ea02c20d1465d80d2a726477768f, type: 3}
+  treeVariant: {fileID: 1334811009633193287, guid: 5d8a30b345b36429896d8788082a3ca8, type: 3}
   detail: {fileID: 6809944013612058936, guid: a4037385712174cf9972975a24442b42, type: 3}
+  groundCover:
+  - prefab: {fileID: 2930679771849452511, guid: 3877ae56661914ab8b3c6c1809100e67, type: 3}
+    width: {x: 0.85, y: 1.25}
+    height: {x: 0.38, y: 0.6}
+  - prefab: {fileID: 902531046833006268, guid: 696e803212e96498e9ff87e6dd3d28c5, type: 3}
+    width: {x: 0.4, y: 0.7}
+    height: {x: 0.65, y: 1.05}
+  - prefab: {fileID: 7323543205671878194, guid: c93751a3a041843259df2b9e1e51218a, type: 3}
+    width: {x: 0.65, y: 1}
+    height: {x: 0.55, y: 0.85}
+  - prefab: {fileID: 7634312360330745946, guid: d4d8dfc733415423e9390554e1071603, type: 3}
+    width: {x: 0.45, y: 0.75}
+    height: {x: 0.3, y: 0.5}
+  roles:
+  - role: 0
+    prefab: {fileID: 1534915113196993060, guid: 173f4b49cd94346e5a557987fc3100c5, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 3.8146937, y: 10, z: 3.018263}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 0
+    prefab: {fileID: 1334811009633193287, guid: 5d8a30b345b36429896d8788082a3ca8, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 4.891222, y: 11, z: 5.3346753}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 0
+    prefab: {fileID: 74848724372277899, guid: 717f8d61f3b7f4a46b579139d324a381, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 6.1069007, y: 12, z: 7.161223}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 0
+    prefab: {fileID: 8157019488325774012, guid: 03e7245d5ea90446083a7d25ad2b8c8e, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 8.258554, y: 13, z: 8.884385}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 0
+    prefab: {fileID: 1748208016667492084, guid: 3b1440cbdecf94c6c832781541a6476d, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 8.353713, y: 14, z: 8.397637}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 2744741529678579239, guid: de76ea02c20d1465d80d2a726477768f, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 3.5172575, y: 1.32, z: 1.6039551}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 2691145423057589894, guid: e938c94ae8b7d404d974a7fb3933f436, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 4.9442277, y: 1.54, z: 1.8842833}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 2609714807496386911, guid: a7813ea0c8d60444bb153a5ffb3b7dab, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 3.1336443, y: 1.76, z: 1.7371968}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 6043505252461806977, guid: 1f8fcc2c5859340f581c748a0988c463, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 2.8223069, y: 1.9800001, z: 1.8467447}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 4278089468814142477, guid: a77332e4e97384b66acb9a8b9378c0c8, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 5.34149, y: 2.2, z: 3.5715096}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 14807141939719224, guid: 73093d0d583e6445c9ba9b0156f199e8, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 5.039918, y: 2.42, z: 3.012842}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 1158140531357500896, guid: 222f5d37f51e5431a8bbcdd84db002cb, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 4.3248696, y: 2.64, z: 3.275514}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 6502184865137203372, guid: ad3f2fb0f4e6b46e59f372e086c6a7fb, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 6.5341725, y: 3, z: 2.6817114}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 177135040525947707, guid: 9cce0d74989c847c6a7ad77733f8ca03, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 7.0935163, y: 3, z: 3.4924438}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 1500011736451583013, guid: 8c047965568094004935195025b00b73, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 3.7809122, y: 3, z: 3.630965}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 2
+    prefab: {fileID: 776341293398178520, guid: 8007dbf55baa84f4793645437fe1c630, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 2.6464264, y: 3, z: 3.010958}
+    footprint: 3
+    clearance: 1
+    maximumSlope: 0.8
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 1
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 6168351605265906959, guid: a02315f7ec42440ecb96d5a1460f2de4, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.6789961, y: 0.8, z: 0.9433426}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 6493171389276776690, guid: b9cbed467f2f74e17a7ed81590c3c7dd, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.4870595, y: 0.8, z: 0.80670536}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 1522805871768609231, guid: ac48084e7948f460cb56b425f57ba358, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.7923064, y: 0.8, z: 1.6772927}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 2322462508547184984, guid: eecb67e5418974ba0ba006325e5fc929, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.7478397, y: 0.8, z: 1.6789074}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 7104016853695053638, guid: dacef8420ab254e038834d3a6a982acd, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0.5557391, y: 0.8, z: 0.5432648}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 3472254895210342471, guid: 1f41e002c900147f0a51fb7ad8e654a4, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.562991, y: 0.8, z: 1.6362828}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 2724423275565277082, guid: fa8eece96bbee43e3b57f8b94d0f6842, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.0476809, y: 0.3, z: 0.8627713}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 9086022771474120900, guid: 1f47d84ba295f42d8bdb23d4b16aa3ce, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0.72642565, y: 0.3, z: 0.628175}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 158102355015344448, guid: 393e3bea883e24704b283abbdcf1e276, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0.9689636, y: 0.3, z: 0.82076037}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 2033734253728791833, guid: 512d274aa5d2f491cb4b5853c790a394, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.0056895, y: 0.3, z: 0.84731454}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 3003322278694804268, guid: 83e6c4f19a0d74f99ad2ce8f385e2995, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.2534345, y: 0.3, z: 0.9285815}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 1282296520864515451, guid: 46579e69fdec5457eb63e00a80929cc1, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0.49896297, y: 0.3, z: 2.3557293}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 6799614291898815902, guid: 6568f491210724e2b9811959ab9bf772, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 1.2417525, y: 0.3, z: 1.8472832}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 1
+    prefab: {fileID: 3529820070285899215, guid: 9c2e4730c6ee04f0ca48f1dcfb3b30ec, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0.12341798, y: 0.3, z: 0.12082812}
+    footprint: 1
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 0.85, y: 1.15}
+    randomYaw: 1
+    collision: 0
+    developmentProxy: 0
+  - role: 3
+    prefab: {fileID: 455929872872768663, guid: 55138ae2073684b1ba3079ecf39e64a6, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0, y: 0, z: 0}
+    footprint: 8
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 1, y: 1}
+    randomYaw: 0
+    collision: 1
+    developmentProxy: 0
+  - role: 4
+    prefab: {fileID: 1303602001767276051, guid: 1fcea0b6ad8c042a5962ce6182d22c80, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0, y: 0, z: 0}
+    footprint: 8
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 1, y: 1}
+    randomYaw: 0
+    collision: 1
+    developmentProxy: 0
+  - role: 5
+    prefab: {fileID: 857592422127827128, guid: cf6ec9e3345a94c6d9237744e026efb0, type: 3}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0, y: 0, z: 0}
+    footprint: 8
+    clearance: 1
+    maximumSlope: 0.35
+    scaleRange: {x: 1, y: 1}
+    randomYaw: 0
+    collision: 1
+    developmentProxy: 0
+  - role: 6
+    prefab: {fileID: 0}
+    groundAnchor: {x: 0, y: 0, z: 0}
+    interactionAnchor: {x: 0, y: 0, z: 0}
+    visualSize: {x: 0, y: 0, z: 0}
+    footprint: 17
+    clearance: 10
+    maximumSlope: 0.35
+    scaleRange: {x: 0.8, y: 1.2}
+    randomYaw: 1
+    collision: 3
+    developmentProxy: 0

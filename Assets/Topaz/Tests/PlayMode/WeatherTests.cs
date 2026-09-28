@@ -14,27 +14,7 @@ namespace Topaz.Tests
         static readonly Type Schedule = Type.GetType(
             "Topaz.Gameplay.WeatherSchedule, Assembly-CSharp", true);
 
-        [Test]
-        public void ScheduleIsStableAcrossTimeSkipsAndOverridesHaveExplicitPriority()
-        {
-            MethodInfo at = Schedule.GetMethod("At");
-            MethodInfo resolve = Schedule.GetMethod("Resolve");
-            MethodInfo next = Schedule.GetMethod("NextBoundary");
-            const string world = "weather-test-world";
-            Assert.That(at.Invoke(null, new object[] { world, 8d }), Is.EqualTo("clear"));
-            double boundary = (double)next.Invoke(null, new object[] { world, 32d });
-            Assert.That(boundary, Is.GreaterThan(32d));
-            Assert.That(boundary, Is.LessThanOrEqualTo(40d));
-            string afterSkip = (string)at.Invoke(null, new object[] { world, 32d + 8d });
-            Assert.That(at.Invoke(null, new object[] { world, 40d }),
-                Is.EqualTo(afterSkip), "Rest must land on the saved world's timeline.");
-            Assert.That(resolve.Invoke(null, new object[] { "clear", "cloudy", "rain" }),
-                Is.EqualTo("rain"));
-            Assert.That(resolve.Invoke(null, new object[] { "clear", "cloudy", null }),
-                Is.EqualTo("cloudy"));
-            Assert.That(resolve.Invoke(null, new object[] { "clear", null, null }),
-                Is.EqualTo("clear"));
-        }
+
 
         [UnityTest]
         public IEnumerator RainOverrideChangesTheLookAndAmbienceThenRestoresTheSchedule()

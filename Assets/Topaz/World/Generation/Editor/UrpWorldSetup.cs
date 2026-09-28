@@ -26,6 +26,7 @@ namespace Topaz.Generation.Editor
             var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(Root+"Woodland Renderer.asset");
             if(renderer==null){renderer=ScriptableObject.CreateInstance<UniversalRendererData>();AssetDatabase.CreateAsset(renderer,Root+"Woodland Renderer.asset");}
             renderer.renderingMode=RenderingMode.ForwardPlus;
+            renderer.postProcessData=AssetDatabase.LoadAssetAtPath<PostProcessData>("Packages/com.unity.render-pipelines.universal/Runtime/Data/PostProcessData.asset");
             var ao=renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().FirstOrDefault();
             if(ao==null){ao=ScriptableObject.CreateInstance<ScreenSpaceAmbientOcclusion>();ao.name="Woodland Ambient Occlusion";AssetDatabase.AddObjectToAsset(ao,renderer);renderer.rendererFeatures.Add(ao);}
             var decal=renderer.rendererFeatures.OfType<DecalRendererFeature>().FirstOrDefault();
@@ -66,7 +67,7 @@ namespace Topaz.Generation.Editor
                 foreach(var cam in All<Camera>(scene))
                 {
                     var data=cam.GetComponent<UniversalAdditionalCameraData>();if(data==null)data=cam.gameObject.AddComponent<UniversalAdditionalCameraData>();
-                    data.renderPostProcessing=true;data.antialiasing=AntialiasingMode.TemporalAntiAliasing;data.dithering=true;data.volumeLayerMask=~0;
+                    data.renderPostProcessing=true;data.antialiasing=AntialiasingMode.TemporalAntiAliasing;data.dithering=false;data.volumeLayerMask=~0;
                     cam.allowHDR=true;cam.allowMSAA=false;cam.clearFlags=CameraClearFlags.Skybox;
                 }
                 foreach(var light in All<Light>(scene))
@@ -81,7 +82,7 @@ namespace Topaz.Generation.Editor
                     var look=All<VisualLookController>(scene).Single();Set(look,"cameraData",Camera.main.GetComponent<UniversalAdditionalCameraData>());Set(look,"painterlyVolume",env);Set(look,"ambientOcclusionFeature",ao);
                     if(Camera.main.GetComponent<UrpRenderScaleController>()==null)Camera.main.gameObject.AddComponent<UrpRenderScaleController>();
                     var stage=All<MainMenuStage>(scene).First();Set(stage,"menuCameraData",Get<Camera>(stage,"menuCamera").GetComponent<UniversalAdditionalCameraData>());Set(stage,"gameplayCameraData",Camera.main.GetComponent<UniversalAdditionalCameraData>());
-                    var lantern=All<Topaz.Player.PlayerLantern>(scene).First();var so=new SerializedObject(lantern);so.FindProperty("lightIntensity").floatValue=3;so.ApplyModifiedPropertiesWithoutUndo();
+                    var lantern=All<Topaz.Player.PlayerLantern>(scene).First();var so=new SerializedObject(lantern);so.FindProperty("lightIntensity").floatValue=2f;so.ApplyModifiedPropertiesWithoutUndo();
                 }
                 foreach(var go in scene.GetRootGameObjects())if(go.name=="Water Reference")Object.DestroyImmediate(go);
                 EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);

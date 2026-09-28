@@ -28,7 +28,7 @@ namespace Topaz.Tests.Editor
             try
             {
                 object profile=Activator.CreateInstance(T("TopazProfileData"));
-                object character=Call(profile,"CreateCharacter","rogue"), world=Call(profile,"CreateWorld");
+                object character=Call(profile,"CreateCharacter","viking.villager.male.1"), world=Call(profile,"CreateWorld");
                 Call(profile,"GetOrCreateVisit",Get(character,"id"),Get(world,"id"));
                 var structures=(IList)Get(world,"structures");
                 foreach(float worldX in new[]{4.5f,132.75f})
@@ -71,7 +71,7 @@ namespace Topaz.Tests.Editor
             {
                 var material=data.FindProperty(name).objectReferenceValue as Material;
                 Assert.That(material,Is.Not.Null,name);
-                Assert.That(material.shader.name,Does.StartWith("Universal Render Pipeline/"));
+                Assert.That(material.shader.name, Is.EqualTo(name == "surfaceMaterial" ? "Topaz/Sheltered Lit" : "Universal Render Pipeline/Unlit"));
             }
         }
     }

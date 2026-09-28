@@ -43,9 +43,10 @@ namespace Topaz.Editor
             SetRef(lantern, "visualRoot", visualRoot);
             SetRef(lantern, "movement", movement);
             SetRef(lantern, "lanternModel", AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Topaz/Player/Prefabs/Visuals/Carried Lantern.prefab"));
+                "Assets/Topaz/Presentation/Rendering/Environment/Prototype Lantern.prefab"));
             SetVector(lantern, "lightOffset", new Vector3(0f, 1.05f, 0f));
             SetFloat(lantern, "lightRange", 8.5f);
+            SetFloat(lantern, "lightIntensity", 2f);
             SetRef(appearance, "lantern", lantern);
             SetRef(session, "lantern", lantern);
 

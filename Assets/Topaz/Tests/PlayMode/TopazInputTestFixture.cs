@@ -4,6 +4,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 namespace Topaz.Tests
 {
     /// <summary>Failed coroutine fixtures must not leak their save-directory override into another test.</summary>
@@ -13,9 +14,11 @@ namespace Topaz.Tests
         public override void Setup()
         {
             base.Setup();
+            TitleOnly(false);
             TopazTestTravel.Reset();
             Type.GetType("Topaz.Gameplay.WorldSession, Assembly-CSharp",true)
                 .GetProperty("EditorTestSaveDirectory").SetValue(null,null);
+            Type.GetType("Topaz.Gameplay.WorldSession, Assembly-CSharp",true).GetProperty("EditorTestSeed").SetValue(null,42);
             Time.timeScale=1;
         }
         [TearDown]
@@ -23,8 +26,28 @@ namespace Topaz.Tests
         {
             Type.GetType("Topaz.Gameplay.WorldSession, Assembly-CSharp",true)
                 .GetProperty("EditorTestSaveDirectory").SetValue(null,null);
+            Type.GetType("Topaz.Gameplay.WorldSession, Assembly-CSharp",true).GetProperty("EditorTestSeed").SetValue(null,null);
+            TitleOnly(false);
             base.TearDown();
         }
+        static void TitleOnly(bool value) => Type.GetType("Topaz.Menus.GameMenus, Assembly-CSharp",true)
+            .GetProperty("EditorTestStartAtTitle").SetValue(null,value);
+
+        protected static IEnumerator LoadTitleWithoutWorld()
+        {
+            TitleOnly(true);
+            try
+            {
+                yield return SceneManager.LoadSceneAsync("Bootstrap");
+                yield return null;
+                var session=GameObject.Find("Player").GetComponent("WorldSession");
+                Assert.That(session.GetType().GetProperty("HasActivePair").GetValue(session),Is.False,
+                    "Title-only fixtures must not create a Character/World pair.");
+                Assert.That(Terrain.activeTerrains,Is.Empty,"Title-only fixtures must not populate wilderness terrain.");
+            }
+            finally { TitleOnly(false); }
+        }
+
         internal static IEnumerator WaitForWilderness()
         {
             float deadline=Time.realtimeSinceStartup+40;

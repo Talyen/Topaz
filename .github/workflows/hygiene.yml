@@ -1,0 +1,16 @@
+name: Repository hygiene
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+permissions:
+  contents: read
+jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check repository structure and links
+        run: python3 scripts/topaz-tools.py hygiene
+      - name: Test repository tooling
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'

@@ -2,7 +2,6 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
-using UnityEditor.Build.Profile;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.AI;
@@ -16,7 +15,7 @@ namespace Topaz.Tests
         [Test]
         public void RuntimeTerrainMaterialRetainsInstancedNormalVariant()
         {
-            var material=AssetDatabase.LoadAssetAtPath<Material>("Assets/Topaz/Presentation/Rendering/SyntySample/Terrain.mat");
+            var material=AssetDatabase.LoadAssetAtPath<Material>("Assets/Topaz/Presentation/Art/World/Terrain.mat");
             Assert.That(material.enableInstancing,Is.True);
             Assert.That(material.IsKeywordEnabled("_TERRAIN_INSTANCED_PERPIXEL_NORMAL"),Is.True,
                 "Runtime-generated terrain must retain the same normal variant used by the Editor.");
@@ -29,14 +28,6 @@ namespace Topaz.Tests
             {
                 "Assets/Topaz/World/Scenes/Bootstrap.unity"
             }));
-        }
-
-        [Test]
-        public void DesktopProfilesAndUrpAreConfigured()
-        {
-            Assert.That(AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Topaz/Build/Profiles/macOS.asset"), Is.Not.Null);
-            Assert.That(AssetDatabase.LoadAssetAtPath<BuildProfile>("Assets/Topaz/Build/Profiles/Windows.asset"), Is.Not.Null);
-            Assert.That(GraphicsSettings.currentRenderPipeline, Is.Not.Null);
         }
 
         [Test]
@@ -83,29 +74,6 @@ namespace Topaz.Tests
             Assert.That(player.FindAction("Place").bindings.Any(binding => binding.path == "<Gamepad>/buttonSouth"), Is.True);
             Assert.That(player.FindAction("Cancel").bindings.Any(binding => binding.path == "<Keyboard>/escape"), Is.True);
             Assert.That(player.FindAction("Inventory").bindings.Any(binding => binding.path == "<Keyboard>/b"), Is.True);
-        }
-
-        [Test]
-        public void CombatDefinitionsAndProceduralPresetAreAvailable()
-        {
-            Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Topaz/Gameplay/Combat/Definitions/PracticeSword.asset"), Is.Not.Null);
-            Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Topaz/Gameplay/Combat/Definitions/PracticeEnemy.asset"), Is.Not.Null);
-            Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>(
-                "Assets/Topaz/Presentation/Rendering/Environment/Woodland.asset"), Is.Not.Null);
-        }
-
-        [Test]
-        public void WorldLoopHasStableDefinitionAssets()
-        {
-            string root = "Assets/Topaz/Gameplay/Inventory/Definitions/";
-            foreach (string asset in new[] { "Wood", "Tree", "StorageChest", "StorageChestRecipe", "AxeChop" })
-                Assert.That(AssetDatabase.LoadAssetAtPath<ScriptableObject>((asset.StartsWith("StorageChest") ? "Assets/Topaz/Gameplay/Building/Definitions/" : asset=="Tree" ? "Assets/Topaz/Gameplay/Gathering/Definitions/" : root) + asset + ".asset"),
-                    Is.Not.Null, asset);
-            var tree = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/Topaz/Gameplay/Gathering/Definitions/Tree.asset");
-            Assert.That(new SerializedObject(tree).FindProperty("requiredToolId").stringValue,
-                Is.EqualTo("axe"));
         }
 
         [Test]

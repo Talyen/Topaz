@@ -13,7 +13,7 @@ namespace Topaz.Generation.Editor
 {
     public static class StorybookCharacterSetup
     {
-        const string Root="Assets/Topaz/Presentation/Rendering/SyntySample/";
+        const string Root=SyntySampleSetup.CharacterRoot;
         const string Motion="Assets/ThirdParty/KayKitMotion/";
         const string ClipRoot="Assets/Topaz/Characters/Animation/Clips/";
         const string Basic="Assets/Kevin Iglesias/Human Animations/Animations/Male/";
@@ -203,7 +203,7 @@ namespace Topaz.Generation.Editor
             foreach(var renderer in model.GetComponentsInChildren<Renderer>())
             {
                 var originalMaterial=renderer.sharedMaterial;
-                string target=Root+"Prop "+originalMaterial.name+".mat";
+                string target=SyntySampleSetup.WorldRoot+"Prop "+originalMaterial.name+".mat";
                 var material=AssetDatabase.LoadAssetAtPath<Material>(target);
                 if(material==null)
                 {

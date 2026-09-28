@@ -235,8 +235,7 @@ namespace Topaz.Tests
             yield return null;
             GameObject player = GameObject.Find("Player");
             Component appearance = player.GetComponent("PlayerAppearance");
-            foreach (string look in new[] { "rogue", "rogue.hooded", "knight", "ranger",
-                "mage", "barbarian" })
+            foreach (string look in (string[])System.Type.GetType("Topaz.Gameplay.CharacterLooks, Assembly-CSharp",true).GetField("All").GetValue(null))
             {
                 Assert.That((bool)Invoke(appearance, "Apply", look), Is.True, look);
                 yield return null;

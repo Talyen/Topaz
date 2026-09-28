@@ -263,13 +263,13 @@ namespace Topaz.Tests
             for (int rest = 1; rest <= 8; rest++)
             {
                 Assert.That(Call<bool>(session, "TryInteract"), Is.True);
-                yield return new WaitForSecondsRealtime(.7f);
+                yield return WaitForRestCompletion(session);
                 Assert.That(Read<double>(session, "WorldHours"),
                     Is.EqualTo(harvestedAt + rest * 8d).Within(.1d));
                 Assert.That(Read<bool>(harvest, "IsAvailable"), Is.False);
             }
             Assert.That(Call<bool>(session, "TryInteract"), Is.True);
-            yield return new WaitForSecondsRealtime(.7f);
+            yield return WaitForRestCompletion(session);
             Assert.That(Read<bool>(harvest, "IsAvailable"), Is.True);
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
             Assert.That(Call<bool>(harvest, "TryChop", player.transform.position,
@@ -389,6 +389,17 @@ namespace Topaz.Tests
         static T Call<T>(Component target, string method, params object[] arguments) => (T)target.GetType()
             .GetMethod(method, BindingFlags.Instance | BindingFlags.Public).Invoke(target, arguments);
 
+        static IEnumerator WaitForRestCompletion(Component session)
+        {
+            Assert.That(Read<bool>(session,"IsResting"),Is.True,"The interaction must start a new rest.");
+            float deadline=Time.realtimeSinceStartup+3;
+            while(Read<bool>(session,"IsResting") && Time.realtimeSinceStartup<deadline)yield return null;
+            Assert.That(Read<bool>(session,"IsResting"),Is.False,"Both rest fades must complete before another interaction.");
+            // Resume an active clock update between rests. Nine chained +8 additions can land
+            // one double ULP below a separately computed +72 deadline in the completion frame.
+            yield return null;
+            yield return null;
+        }
         static void Teleport(GameObject player, Vector3 position)
         {
             CharacterController controller = player.GetComponent<CharacterController>();

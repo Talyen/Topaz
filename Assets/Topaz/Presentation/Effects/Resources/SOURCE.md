@@ -1,0 +1,3 @@
+# Alpine mountain sky backdrop
+
+Generated locally by `Topaz.Generation.Editor.AlpineBackdropSetup.Apply` from the four owned Alpine mountain wrappers. The cubemap stores shaded form, height and silhouette coverage; the sky shader supplies time/weather color. It preserves a distant mountain skyline without extending live terrain visibility or adding another gameplay camera. The `.asset` pixel payload is a derivative of restricted Synty geometry and remains ignored; retain its metadata for stable identity. Restore the owned packs and run `Topaz/Generation/Bake Alpine Sky Backdrop` with graphics enabled to regenerate it. Vendor files are unchanged.

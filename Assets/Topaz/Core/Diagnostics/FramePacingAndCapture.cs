@@ -111,6 +111,7 @@ namespace Topaz
                 processor = SystemInfo.processorType,
                 processorCores = SystemInfo.processorCount,
                 systemMemoryMb = SystemInfo.systemMemorySize,
+                globalIllumination = FindAnyObjectByType<Topaz.Rendering.VisualLookController>()?.GlobalIllumination,
                 gpu = SystemInfo.graphicsDeviceName,
                 graphicsMemoryMb = SystemInfo.graphicsMemorySize,
                 graphicsApi = SystemInfo.graphicsDeviceType.ToString(),
@@ -165,6 +166,7 @@ namespace Topaz
             public string gpu;
             public int graphicsMemoryMb;
             public string graphicsApi;
+            public Topaz.Rendering.SurfaceCacheLighting.Status globalIllumination;
             public string resolution;
             public double refreshHz;
             public string qualityLevel;

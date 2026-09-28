@@ -1,4 +1,5 @@
 using TMPro;
+using System.Collections.Generic;
 using Topaz.Menus;
 using Topaz.Audio;
 using UnityEngine;
@@ -33,6 +34,14 @@ namespace Topaz.Rendering
         TopazAudioSettings _audio;
         GameMenus _menus;
         bool _bound;
+        GameObject effectsScroll;
+        ScrollRect effectsScroller;
+        RectTransform effectsContent;
+        TMP_Dropdown focusDropdown,lightingDropdown;
+        readonly List<Slider> effectSliders=new List<Slider>();
+        readonly List<TMP_Text> effectLabels=new List<TMP_Text>();
+        GameObject lastSelection;
+        readonly Vector3[] focusCorners=new Vector3[4];
         bool _audioTab;
 
         public bool IsOpen => panel != null && panel.activeSelf;
@@ -74,6 +83,7 @@ namespace Topaz.Rendering
             ambienceSlider.onValueChanged.AddListener(OnAmbienceChanged);
             effectsSlider.onValueChanged.AddListener(OnEffectsChanged);
             muteInBackgroundToggle.onValueChanged.AddListener(OnMuteInBackgroundChanged);
+            BuildEffectsControls();
             _bound = true;
             ShowTab(false);
             Refresh();
@@ -144,6 +154,7 @@ namespace Topaz.Rendering
         {
             _audioTab = audio;
             foreach (GameObject row in graphicsRows) row.SetActive(!audio);
+            if(effectsScroll!=null)effectsScroll.SetActive(!audio);
             foreach (GameObject row in audioRows) row.SetActive(audio);
             graphicsTabButton.GetComponent<Image>().color = audio
                 ? new Color32(49, 37, 30, 255) : new Color32(239, 199, 132, 255);
@@ -226,6 +237,13 @@ namespace Topaz.Rendering
             cameraZoomDropdown.SetValueWithoutNotify(_menus.CurrentCameraZoomIndex);
             antiAliasingDropdown.SetValueWithoutNotify(_controller.CurrentAa);
             depthOfFieldDropdown.SetValueWithoutNotify(_controller.CurrentLook);
+            focusDropdown.SetValueWithoutNotify(_controller.CurrentFocusMode);
+            lightingDropdown.SetValueWithoutNotify(_controller.CurrentLightingStyle);
+            for(int i=0;i<effectSliders.Count;i++)
+            {
+                effectSliders[i].SetValueWithoutNotify(_controller.GetSetting(i));
+                effectLabels[i].text=_controller.GetSettingName(i)+"  "+_controller.FormatSetting(i);
+            }
             bloomToggle.SetIsOnWithoutNotify(_controller.BloomEnabled);
             ambientOcclusionToggle.SetIsOnWithoutNotify(_controller.AmbientOcclusionEnabled);
             masterSlider.SetValueWithoutNotify(_audio.Master);
@@ -233,6 +251,66 @@ namespace Topaz.Rendering
             ambienceSlider.SetValueWithoutNotify(_audio.Ambience);
             effectsSlider.SetValueWithoutNotify(_audio.Effects);
             muteInBackgroundToggle.SetIsOnWithoutNotify(_audio.MuteInBackground);
+        }
+
+        void BuildEffectsControls()
+        {
+            effectsScroll=new GameObject("Graphics Effects",typeof(RectTransform),typeof(ScrollRect));
+            var rect=(RectTransform)effectsScroll.transform;rect.SetParent(panel.transform,false);
+            rect.anchorMin=rect.anchorMax=new Vector2(.5f,1);rect.pivot=new Vector2(.5f,1);
+            rect.anchoredPosition=new Vector2(0,-164);rect.sizeDelta=new Vector2(840,458);
+            var viewport=new GameObject("Viewport",typeof(RectTransform),typeof(Image),typeof(Mask));
+            var view=(RectTransform)viewport.transform;view.SetParent(rect,false);view.anchorMin=Vector2.zero;view.anchorMax=Vector2.one;view.offsetMin=view.offsetMax=Vector2.zero;
+            viewport.GetComponent<Image>().color=Color.white;viewport.GetComponent<Mask>().showMaskGraphic=false;
+            effectsContent=(RectTransform)new GameObject("Content",typeof(RectTransform),typeof(VerticalLayoutGroup),typeof(ContentSizeFitter)).transform;
+            effectsContent.SetParent(view,false);effectsContent.anchorMin=new Vector2(0,1);effectsContent.anchorMax=Vector2.one;effectsContent.pivot=new Vector2(.5f,1);effectsContent.sizeDelta=Vector2.zero;
+            var layout=effectsContent.GetComponent<VerticalLayoutGroup>();layout.spacing=10;layout.padding=new RectOffset(22,22,8,8);layout.childControlHeight=true;layout.childControlWidth=true;layout.childForceExpandHeight=false;
+            effectsContent.GetComponent<ContentSizeFitter>().verticalFit=ContentSizeFitter.FitMode.PreferredSize;
+            effectsScroller=effectsScroll.GetComponent<ScrollRect>();effectsScroller.viewport=view;effectsScroller.content=effectsContent;effectsScroller.horizontal=false;effectsScroller.movementType=ScrollRect.MovementType.Clamped;effectsScroller.scrollSensitivity=35;
+            void Row(GameObject row){row.transform.SetParent(effectsContent,false);var size=row.GetComponent<LayoutElement>()??row.AddComponent<LayoutElement>();size.preferredHeight=76;size.minHeight=76;}
+            foreach(var row in graphicsRows)Row(row);
+            var qualityLabel=depthOfFieldDropdown.transform.parent.GetComponentInChildren<TMP_Text>();qualityLabel.text="Quality";
+            var focusRow=Instantiate(depthOfFieldDropdown.transform.parent.gameObject,effectsContent);focusRow.name="Depth of field mode";Row(focusRow);
+            focusDropdown=focusRow.GetComponentInChildren<TMP_Dropdown>();focusDropdown.onValueChanged=new TMP_Dropdown.DropdownEvent();
+            focusRow.GetComponentInChildren<TMP_Text>().text="Depth of field";SetOptions(focusDropdown,"Off","Distant softness","Cinematic bokeh");
+            focusDropdown.onValueChanged.AddListener(value=>Change(()=>_controller.SetDepthMode(value)));
+            var lightingRow=Instantiate(depthOfFieldDropdown.transform.parent.gameObject,effectsContent);lightingRow.name="Lighting style";Row(lightingRow);
+            lightingDropdown=lightingRow.GetComponentInChildren<TMP_Dropdown>();lightingDropdown.onValueChanged=new TMP_Dropdown.DropdownEvent();
+            lightingRow.GetComponentInChildren<TMP_Text>().text="Lighting style";SetOptions(lightingDropdown,"Natural cycle","Golden / Silver");
+            lightingDropdown.onValueChanged.AddListener(value=>Change(()=>_controller.SetLightingStyle(value)));
+            for(int i=0;i<VisualLookController.SettingNames.Length;i++)
+            {
+                int setting=i;var row=Instantiate(masterSlider.transform.parent.gameObject,effectsContent);row.name="Effect "+_controller.GetSettingName(i);row.SetActive(true);Row(row);
+                var slider=row.GetComponentInChildren<Slider>();slider.onValueChanged=new Slider.SliderEvent();slider.minValue=_controller.GetMinimum(i);slider.maxValue=_controller.GetMaximum(i);slider.wholeNumbers=false;
+                var label=row.GetComponentInChildren<TMP_Text>();effectLabels.Add(label);effectSliders.Add(slider);
+                slider.onValueChanged.AddListener(value=>Change(()=>_controller.SetSetting(setting,value)));
+            }
+            foreach(var selectable in effectsContent.GetComponentsInChildren<Selectable>(true))
+            {var navigation=selectable.navigation;navigation.mode=Navigation.Mode.Automatic;selectable.navigation=navigation;}
+            var explanation=panel.transform.Find("Explanation")?.GetComponent<TMP_Text>();
+            if(explanation!=null)
+            {
+                explanation.text="Shape the world’s look. Scroll for lighting, lens and foliage controls.";
+                explanation.fontSize=18;explanation.rectTransform.sizeDelta=new Vector2(780,32);explanation.rectTransform.anchoredPosition=new Vector2(0,-91);
+            }
+        }
+        void Update()
+        {
+            if(!IsOpen || _audioTab || effectsContent==null)return;
+            var selected=UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
+            if(selected==null || selected==lastSelection)return;lastSelection=selected;
+            if(!selected.transform.IsChildOf(effectsContent))return;
+            Canvas.ForceUpdateCanvases();
+            var row=selected.transform;
+            while(row.parent!=effectsContent)row=row.parent;
+            ((RectTransform)row).GetWorldCorners(focusCorners);
+            float rowBottom=effectsScroller.viewport.InverseTransformPoint(focusCorners[0]).y;
+            float rowTop=effectsScroller.viewport.InverseTransformPoint(focusCorners[1]).y;
+            float top=effectsScroller.viewport.rect.yMax,bottom=effectsScroller.viewport.rect.yMin;
+            float offset=rowTop>top?rowTop-top:rowBottom<bottom?rowBottom-bottom:0;
+            var position=effectsContent.anchoredPosition;
+            position.y=Mathf.Clamp(position.y-offset,0,Mathf.Max(0,effectsContent.rect.height-effectsScroller.viewport.rect.height));
+            effectsContent.anchoredPosition=position;
         }
 
         void SetStatus(string message)

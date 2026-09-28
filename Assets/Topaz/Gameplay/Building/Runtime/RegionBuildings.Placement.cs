@@ -33,7 +33,12 @@ namespace Topaz.Gameplay
             _session.RefreshBuiltGround(previous,Footprint(record.definitionId));
             _session.RefreshBuiltGround(position,Footprint(record.definitionId));
             if (_visuals.TryGetValue(record.instanceId,out var visual))
+            {
+                _shelter.Unregister(visual);
                 visual.transform.SetPositionAndRotation(position,Quaternion.Euler(0,turns*90,0));
+                Physics.SyncTransforms();
+                if (BuildCatalog.IsShelter(record.definitionId)) _shelter.Register(visual);
+            }
             _session.RefreshHomeGatherables();
             _session.RebuildRegionNavigation();
         }
@@ -54,9 +59,9 @@ namespace Topaz.Gameplay
         float PlacementHeight(Vector3 point, string id)
         {
             float height = WoodlandRegion.GroundHeight(point);
-            if (id != BuildCatalog.Floor && id != BuildCatalog.Camp)
+            if (!BuildCatalog.IsFloor(id) && id != BuildCatalog.Camp)
                 foreach (var floor in _records)
-                    if (floor.definitionId == BuildCatalog.Floor &&
+                    if (BuildCatalog.IsFloor(floor.definitionId) &&
                         Mathf.Abs(Position(floor).x-point.x) <= .8f && Mathf.Abs(Position(floor).z-point.z) <= .8f)
                         return Position(floor).y;
             return height;
@@ -66,13 +71,16 @@ namespace Topaz.Gameplay
             if (region == null || region.Wilderness == null || !region.Streaming.IsReadyAt(position)) return false;
             var settings = BuildingSettings.Current;
             Vector3 local = position - Origin;
-            float extent = WildernessPlan.HalfSize - radius - 8;
+            float extent = region.Wilderness.Extent - radius - 8;
+            if(region.Wilderness.WaterDepth(local.x,local.z)>.05f)return false;
             if (Mathf.Abs(local.x) > extent || Mathf.Abs(local.z) > extent) return false;
             float reserved = id == BuildCatalog.Camp ? settings.campRadius + settings.enemyClearance : radius + 2;
             foreach (var site in region.Wilderness.Discoveries)
                 if (Vector2.Distance(new Vector2(local.x,local.z),new Vector2(site.X,site.Z)) < reserved + 9) return false;
-            bool supported = id != BuildCatalog.Floor && id != BuildCatalog.Camp && _records.Any(r =>
-                r != moving && r.definitionId == BuildCatalog.Floor &&
+            foreach (var site in region.Wilderness.Destinations)
+                if (Vector2.Distance(new Vector2(local.x,local.z),new Vector2(site.X,site.Z)) < reserved + site.Radius + 2) return false;
+            bool supported = !BuildCatalog.IsFloor(id) && id != BuildCatalog.Camp && _records.Any(r =>
+                r != moving && BuildCatalog.IsFloor(r.definitionId) &&
                 Mathf.Abs(Position(r).x-position.x) <= .8f && Mathf.Abs(Position(r).z-position.z) <= .8f);
             if (!supported)
             {

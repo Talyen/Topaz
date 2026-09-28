@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Round Shield
   maxStack: 1
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 5210409999397077912, guid: 920454010a8f94662847d5951ce4fe7e, type: 3}
   equipmentSlot: 3
   weapon: {fileID: 0}
   attack: 0

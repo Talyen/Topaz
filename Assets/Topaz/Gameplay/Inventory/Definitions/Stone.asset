@@ -16,6 +16,7 @@ MonoBehaviour:
   displayName: Stone
   maxStack: 20
   journalIcon: {fileID: 0}
+  worldVisual: {fileID: 2699578741889254649, guid: 1e0274900697b4ffbbad4c42f5a65f69, type: 3}
   equipmentSlot: 0
   weapon: {fileID: 0}
   attack: 0

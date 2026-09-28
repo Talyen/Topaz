@@ -94,7 +94,9 @@ namespace Topaz.Characters
                     driver.enabled = false;
                 foreach (ShieldGuardPose guard in instance.GetComponentsInChildren<ShieldGuardPose>(true))
                     guard.enabled = false;
-                instance.GetComponentInChildren<CharacterVisual>(true).Animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+                var animator=instance.GetComponentInChildren<CharacterVisual>(true).Animator;
+                animator.updateMode=AnimatorUpdateMode.UnscaledTime;animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;
+                animator.Rebind();animator.Update(0);
                 instance.SetActive(true);
             }
             return instance;

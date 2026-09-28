@@ -14,14 +14,18 @@ namespace Topaz.Generation.Editor
     /// <summary>Repeatable Starter Pack sample binding. Vendor files remain a private dependency.</summary>
     public static class SyntySampleSetup
     {
-        const string Root = "Assets/Topaz/Presentation/Rendering/SyntySample/";
+        internal const string WorldRoot = "Assets/Topaz/Presentation/Art/World/";
+        internal const string CharacterRoot = "Assets/Topaz/Presentation/Art/Characters/";
+        const string Root = WorldRoot;
         const string Vendor = "Assets/Synty/PolygonGeneric/Prefabs/";
         const string Env = "Assets/Topaz/Presentation/Rendering/Environment/";
         static Material wood, steel;
         [MenuItem("Topaz/Generation/Bind Synty Starter Sample")]
         public static void Apply()
         {
-            if (!AssetDatabase.IsValidFolder(Root.TrimEnd('/'))) AssetDatabase.CreateFolder("Assets/Topaz/Presentation/Rendering", "SyntySample");
+            if (!AssetDatabase.IsValidFolder("Assets/Topaz/Presentation/Art")) AssetDatabase.CreateFolder("Assets/Topaz/Presentation", "Art");
+            if (!AssetDatabase.IsValidFolder(Root.TrimEnd('/'))) AssetDatabase.CreateFolder("Assets/Topaz/Presentation/Art", "World");
+            if (!AssetDatabase.IsValidFolder(CharacterRoot.TrimEnd('/'))) AssetDatabase.CreateFolder("Assets/Topaz/Presentation/Art", "Characters");
             wood = Material("Wood", new Color(.32f,.21f,.12f));
             steel = Material("Steel", new Color(.48f,.53f,.55f));
             var tree = Wrap("Pine", "Environment/SM_Gen_Env_Tree_Pine_01.prefab", 7, true);
@@ -158,7 +162,13 @@ namespace Topaz.Generation.Editor
             layer.diffuseTexture=texture;layer.normalMapTexture=null;layer.tileSize=Vector2.one*8;layer.smoothness=0;EditorUtility.SetDirty(layer);return layer;
         }
         internal static GameObject Save(GameObject go,string name)
-        {var prefab=PrefabUtility.SaveAsPrefabAsset(go,Root+name+".prefab");Object.DestroyImmediate(go);return prefab;}
+        {var prefab=PrefabUtility.SaveAsPrefabAsset(go,ArtPath(name,".prefab"));Object.DestroyImmediate(go);return prefab;}
+        internal static string ArtPath(string name,string extension)
+        {
+            bool character=name=="Wanderer"||name=="Wanderer Female"||name=="Skeleton"||
+                name=="Storybook Knight"||name.StartsWith("Wilderness Skeleton ",StringComparison.Ordinal);
+            return (character?CharacterRoot:WorldRoot)+name+extension;
+        }
         internal static GameObject Wrap(string name,string source,float height,bool tree,bool collision=true)
         {
             var original=AssetDatabase.LoadAssetAtPath<GameObject>(Vendor+source);if(original==null)throw new InvalidOperationException("Restore Synty Starter: "+source);

@@ -14,6 +14,71 @@ namespace Topaz.Tests
         static object Property(object obj,string name)=>obj.GetType().GetProperty(name,Flags).GetValue(obj);
         static object Field(object obj,string name)=>obj.GetType().GetField(name,Flags).GetValue(obj);
         [UnityTest]
+        public IEnumerator LoadingCollisionFreezesGravityUntilTheWorldIsReady()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");
+            var player=GameObject.Find("Player");var session=player.GetComponent("WorldSession");
+            Component stream=null;float deadline=Time.realtimeSinceStartup+5;
+            while(stream==null && Time.realtimeSinceStartup<deadline)
+            {
+                var region=Property(session,"ActiveRegion");stream=region==null?null:(Component)Property(region,"Streaming");
+                if(stream==null)yield return null;
+            }
+            Assert.That(stream,Is.Not.Null);
+            Assert.That(Property(stream,"InitialReady"),Is.False);
+            BuildingTestActions.Teleport(player,new Vector3(40,10,40));var start=player.transform.position;
+            for(int i=0;i<10;i++)yield return null;
+            Assert.That(Vector3.Distance(player.transform.position,start),Is.LessThan(.01f),"Loading must not accumulate gravity over absent terrain.");
+            yield return WaitForWilderness();
+        }
+        [UnityTest]
+        public IEnumerator InvalidDestinationPreservesPlayableOriginAndRepeatedRoutesBoundResidency()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return WaitForWilderness();
+            var player=GameObject.Find("Player");var session=player.GetComponent("WorldSession");
+            var stream=(MonoBehaviour)Property(Property(session,"ActiveRegion"),"Streaming");
+            var prepare=stream.GetType().GetMethod("PrepareDestination");
+            Vector3 origin=player.transform.position;
+            yield return (IEnumerator)prepare.Invoke(stream,new object[]{new Vector3(5000,0,5000)});
+            Assert.That(stream.GetType().GetMethod("IsReadyAt").Invoke(stream,new object[]{origin}),Is.True);
+            Assert.That(stream.GetType().GetMethod("CanMoveTo").Invoke(stream,new object[]{new Vector3(5000,0,5000),.5f}),Is.False);
+            int[] counts=new int[4];
+            for(int lap=0;lap<4;lap++)
+            {
+                foreach(var point in new[]{new Vector3(780,0,650),origin})
+                {
+                    yield return (IEnumerator)prepare.Invoke(stream,new object[]{point});
+                    var terrain=Terrain.activeTerrains.First(t=>point.x>=t.transform.position.x&&point.x<t.transform.position.x+128&&point.z>=t.transform.position.z&&point.z<t.transform.position.z+128);
+                    BuildingTestActions.Teleport(player,new Vector3(point.x,terrain.SampleHeight(point)+.1f,point.z));
+                    yield return new WaitForSecondsRealtime(1.5f);
+                }
+                counts[lap]=(int)Property(stream,"OwnedMeshCount");
+                Assert.That(Property(stream,"DistantCount"),Is.LessThanOrEqualTo(49));
+                Assert.That(Property(stream,"DistantTerrainCount"),Is.LessThanOrEqualTo(81));
+                int canopyRoots=stream.transform.Cast<Transform>().Count(t=>t.name.EndsWith(" far canopy",System.StringComparison.Ordinal));
+                Assert.That(canopyRoots,Is.EqualTo((int)Property(stream,"DistantCount")),"Unloaded canopy roots must not survive outside the residency registry.");
+                Assert.That(Property(stream,"LoadedCount"),Is.LessThanOrEqualTo(25));
+                Assert.That(Property(stream,"PreloadedCount"),Is.LessThanOrEqualTo(25));
+                Assert.That(Property(stream,"PooledTerrainCount"),Is.LessThanOrEqualTo(8));
+            }
+            Assert.That(counts[3],Is.EqualTo(counts[2]));
+            Assert.That(Property(stream,"Failure"),Is.Null);
+        }
+        [UnityTest]
+        public IEnumerator OverlappingDestinationRequestsDoNotDestroyEachOthersPopulation()
+        {
+            yield return SceneManager.LoadSceneAsync("Bootstrap");yield return WaitForWilderness();
+            var session=GameObject.Find("Player").GetComponent("WorldSession");
+            var stream=(MonoBehaviour)Property(Property(session,"ActiveRegion"),"Streaming");
+            var method=stream.GetType().GetMethod("PrepareDestination");
+            var first=stream.StartCoroutine((IEnumerator)method.Invoke(stream,new object[]{new Vector3(270,0,130)}));
+            var second=stream.StartCoroutine((IEnumerator)method.Invoke(stream,new object[]{new Vector3(-270,0,-130)}));
+            yield return first;yield return second;
+            Assert.That(Property(stream,"Failure"),Is.Null);
+            Assert.That(Property(stream,"InitialReady"),Is.True);
+            Assert.That(Property(stream,"NavigationReady"),Is.True);
+        }
+        [UnityTest]
         public IEnumerator OnlyCampfireRadiusProtectsAndEnteringCampDoesNotHeal()
         {
             yield return SceneManager.LoadSceneAsync("Bootstrap");
@@ -51,6 +116,14 @@ yield return WaitForWilderness();
             BuildingTestActions.Teleport(player,destination);
             yield return null;
             Assert.That(player.transform.position.y,Is.GreaterThanOrEqualTo(terrain.SampleHeight(destination)-.15f));
+            yield return null;
+            Assert.That(Vector3.Distance(Camera.main.transform.position,player.transform.position),Is.LessThan(12),"Teleport must warp the follow camera instead of sweeping across unloaded terrain.");
+            // The retained row already exists on this reversal; navigation still has to recenter.
+            var back=new Vector3(120,0,20);back.y=Terrain.activeTerrains.First(t=>t.transform.position.x==0&&t.transform.position.z==0).SampleHeight(back)+.1f;
+            BuildingTestActions.Teleport(player,back);
+            var ready=stream.GetType().GetMethod("IsReadyAt");float limit=Time.realtimeSinceStartup+10;
+            while(!(bool)ready.Invoke(stream,new object[]{new Vector3(-1,0,20)}) && Time.realtimeSinceStartup<limit)yield return null;
+            Assert.That(ready.Invoke(stream,new object[]{new Vector3(-1,0,20)}),Is.True,"Reversing into retained terrain must update navigation coverage before the next boundary.");
             Assert.That(SceneManager.GetSceneByName("Woodland").isLoaded,Is.False);
         }
         [UnityTest]
@@ -68,7 +141,10 @@ yield return WaitForWilderness();
             yield return (IEnumerator)Call(stream,"PrepareDestination",far);
             far.y=Terrain.activeTerrains.First(t=>t.transform.position.x==256&&t.transform.position.z==256).SampleHeight(far);
             BuildingTestActions.Teleport(player,far);
-            float end=Time.realtimeSinceStartup+10;while(pickup!=null&&Time.realtimeSinceStartup<end)yield return null;
+            float end=Time.realtimeSinceStartup+20;
+            while((bool)Call(stream,"HasTerrainAt",drop)&&Time.realtimeSinceStartup<end)yield return null;
+            Assert.That(Call(stream,"HasTerrainAt",drop),Is.False,"The departing terrain must retire within the bounded streaming wait.");
+            yield return null; // Deferred destruction completes on the terrain-retirement frame.
             Assert.That(pickup==null,Is.True,"Distant loot must release its scene object.");Assert.That(Property(session,"PickupCount"),Is.EqualTo(saved));
             yield return (IEnumerator)Call(stream,"PrepareDestination",drop);BuildingTestActions.Teleport(player,drop+Vector3.back*5);
             Call(session,"RefreshPickupVisibility");yield return null;

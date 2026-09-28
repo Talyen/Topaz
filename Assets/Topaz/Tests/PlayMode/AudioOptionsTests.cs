@@ -14,8 +14,7 @@ namespace Topaz.Tests
         [UnityTest]
         public IEnumerator AudioTabChangesSourcesPersistsValuesAndMutesInBackground()
         {
-            yield return SceneManager.LoadSceneAsync("Bootstrap");
-            yield return WaitForWilderness();
+            yield return LoadTitleWithoutWorld();
             yield return null;
             GameObject canvas = GameObject.Find("Loop HUD");
             Component preferences = canvas.GetComponent("TopazAudioSettings");
@@ -37,7 +36,7 @@ namespace Topaz.Tests
                 Assert.That(panel.gameObject.activeSelf, Is.True);
                 panel.Find("Audio Tab").GetComponent<Button>().onClick.Invoke();
                 Assert.That(panel.Find("Master Volume").gameObject.activeSelf, Is.True);
-                Assert.That(panel.Find("Camera Zoom").gameObject.activeSelf, Is.False);
+                Assert.That(panel.Find("Graphics Effects/Viewport/Content/Camera Zoom").gameObject.activeSelf, Is.False);
 
                 Call(preferences, "SetMuteInBackground", false);
                 panel.Find("Master Volume/Master Volume Slider").GetComponent<Slider>().value = .6f;

@@ -1,53 +1,42 @@
 # Third-party asset register
 
-## JaggedStone crypt audio
+## Restoring current private dependencies
 
-Three original CC0 Ogg files from JaggedStone's [Magic Spell SFX](https://opengameart.org/content/magic-spell-sfx) and [Loopable Dungeon Ambience](https://opengameart.org/node/29778) are under `Assets/ThirdParty/JaggedStone/CryptAudio/`. The exact file URLs, SHA-256 digests, acquisition date, and license evidence are in that folder's `SOURCE.md`. The files may be publicly redistributed and used commercially under CC0; credit is voluntary.
+A public clone omits restricted vendor art and Sonniss media. Obtain the exact owned versions listed below through Unity Package Manager/My Assets, then run from the repository root:
 
-## Sonniss #GameAudioGDC audition set, 2015–2019 (local only)
+```sh
+python3 scripts/restore-synty-starter.py
+python3 scripts/restore-storybook-assets.py
+python3 scripts/import-synty-downloads.py restore
+```
 
-The original import staged 1,028 unchanged WAV clips (923 genre-fit
-selections and 105 additional unique review-queue clips) from Sonniss's
-[#GameAudioGDC archive](https://sonniss.com/gameaudiogdc/). The original 32 ZIPs
-are in ignored `LocalSourceArchives/SonnissGDC/`; Unity audition files are in
-ignored `Assets/ThirdParty/Sonniss/Selected/` and
-`Assets/ThirdParty/Sonniss/NeedsReview/`. Four review-queue records are
-byte-identical to already selected clips. The owner subsequently approved all
-138 clips in [current baseline](BASELINE.md), 57 in
-[current baseline](BASELINE.md), and 49 in
-[current baseline](BASELINE.md). All 244 WAVs and
-their Unity metadata were removed, leaving **784 clips (15.14 GB)**. The import
-CSVs remain historical records; the three completed deletion lists record which
-paths are no longer staged.
+The first script restores the selected POLYGON Starter dependency closure from `scripts/synty-starter-files.json`; it accepts an optional `.unitypackage` path. The second restores Sidekick and BasicMotion selections from `scripts/storybook-assets.json`; `--cache <directory>` overrides its Unity download-cache root. The third restores eight owner-supplied Synty packages from `~/Downloads/` (or `--downloads <directory>`) using `scripts/synty-downloads.json`. All validate hashes before writing. They restore vendor dependencies, not Topaz scene bindings. Let Unity import them; do not rebind the retired terrain sample or regenerate the world merely to open the project.
 
-The owner accepted Sonniss's official [#GameAudioGDC license v2.0](https://sonniss.com/gdc-bundle-license/),
-effective 2026-08-27, before the downloads on 2026-09-25. It permits commercial
-use and modification in synchronized games without attribution, prohibits
-publishing or supplying the sounds as standalone assets or libraries, and
-prohibits AI training use. The official license page and its version archive are
-the source of record; a dated summary and download hashes/URLs are in the local
-`LocalSourceArchives/SonnissGDC/SOURCE.md` and `download_manifest.csv`. Because
-Topaz's Git repository is public, neither the archives nor audio files are
-redistributable here; the source directories and generated Unity metadata are
-ignored. The tracked
-[current baseline](BASELINE.md)
-and [current baseline](BASELINE.md)
-record source names, hashes, category paths, and duplicate mappings without
-audio data. Selection was based on metadata, not listening. Existing audio
-libraries and in-game wiring are unchanged.
+For audio, restore the private `Runtime/` ambience working copies and `Derived/Storybook/` clips with their existing `.meta` files under `Assets/ThirdParty/Sonniss/`. Raw masters and hashes live in `~/Documents/Raw Asset Library/Sounds/SonnissGDC/ActiveSources/`. The [audio policy](AUDIO_ASSET_POLICY.md) defines working formats and import settings. There is no unified audio restore script: the agent must restore the licensed working files/metadata or reconstruct them from the recorded source manifest, then check references through Unity. `Topaz/Audio/Configure Storybook Sound` regenerates footsteps from external Grass/Gravel inputs but requires the two ambience working files to exist; it also updates Bootstrap. It is an authoring command, not a read-only prerequisite check. A missing private source must be reported, not silently replaced with unrelated media.
 
-Unity's packages and the Universal 3D template remain under their respective Unity terms. The world loop UI imports the TextMesh Pro Essential Resources distributed with Unity's `com.unity.ugui` package.
+Alpine-v5 terrain details include locally normalized Synty mesh derivatives under `Assets/Topaz/Presentation/Art/World/GroundCover/`. Their `.asset` geometry is ignored; metadata and wrapper bindings remain tracked. After restoring the owned sources, run `Topaz/Generation/Configure Luminous Alpine` to regenerate the derivatives and required native GI mesh-readability imports. The adjacent `SOURCE.md` records their provenance. The generated PNB canopy/grass Shader Graph payloads also remain private; owned authoring code regenerates them from the restored vendor graph. `Assets/Topaz/Presentation/Effects/Resources/TopazAlpineBackdrop.asset` is an ignored cubemap derivative of the four owned Alpine mountain models. `AlpineBackdropSetup.Apply` regenerates its form/height/coverage channels using native cubemap capture; the adjacent resource `SOURCE.md` describes the encoding.
 
-## Kenney weapon sounds
+The Unity URP Terrain Sample below is retained provenance, not an active-world restoration requirement. Preserve its archive and manifest. The checked-in restore manifests define the current selected files.
 
-The weapon and crossbow slices use six unmodified CC0 clips from Kenney's free
-[RPG Audio](https://kenney.nl/assets/rpg-audio) and
-[Impact Sounds](https://kenney.nl/assets/impact-sounds) packs. The exact archive
-licenses, archive SHA-256 digests, dates, and selected filenames are recorded in
-`Assets/ThirdParty/Kenney/RpgAudio/SOURCE.md` and
-`Assets/ThirdParty/Kenney/ImpactSounds/SOURCE.md`. Kenney is credited voluntarily.
+## Retired JaggedStone crypt audio
 
-For candidate free 3D pack families, licensing pitfalls, and the import process, see [Finding 3D art for Topaz](ASSET_SOURCING.md). A candidate listed there is not approved or imported merely because it is free to download.
+Two former CC0 spell Ogg clips were disconnected from Bootstrap and removed from Unity. Their files, metadata and source record are preserved under ignored `LocalSourceArchives/RetiredAudio/JaggedStone/`. The earlier unused `dungeon_ambient_1.ogg` remains in the external raw library. Spell cues are unwired pending Sonniss selection.
+
+## Sonniss #GameAudioGDC audio, 2015–2019 (local only)
+
+The original 32 ZIPs, manifests, license notes, and review records are preserved outside Topaz under `~/Documents/Raw Asset Library/Sounds/SonnissGDC/`. The approved review cuts removed 244 WAVs. The later use audit moved 780 unreferenced staged WAVs with their `.meta` files to `Staged/`; the four original WAVs required by current ambience and editor footstep generation moved to `ActiveSources/Selected/`, also with their source metadata. `ActiveSources/active_source_manifest.json` records hashes and working-copy transforms.
+
+Topaz now contains two 48 kHz, 24-bit stereo ambience working WAVs under `Assets/ThirdParty/Sonniss/Runtime/`, imported as Streaming Vorbis at quality 0.65, plus eight short derived footsteps under `Assets/ThirdParty/Sonniss/Derived/Storybook/`. The Storybook setup command temporarily imports Grass/Gravel masters from the Raw Asset Library to regenerate those clips. Combat and spell cues formerly sourced from Kenney and JaggedStone are unwired pending Sonniss selections.
+
+The owner accepted Sonniss's official [#GameAudioGDC license v2.0](https://sonniss.com/gdc-bundle-license/), effective 2026-08-27, before the 2026-09-25 download. It permits commercial synchronized-game use and modification without attribution, but prohibits supplying audio as a standalone asset/library and prohibits AI training use. Raw Sonniss media and unused candidates remain outside the public repository. The selection/review CSVs and deletion reports are historical acquisition records; see [the audio asset policy](AUDIO_ASSET_POLICY.md) for the current workflow.
+
+## Retired Kenney weapon sounds
+
+Six former CC0 weapon clips were disconnected and removed from Unity. Their
+files, metadata, licenses and source records are preserved under ignored
+`LocalSourceArchives/RetiredAudio/Kenney/`. The associated weapon cues are unwired.
+
+Follow [asset sourcing](ASSET_SOURCING.md) before acquiring or importing additional content.
 
 Before adding a free placeholder, record:
 
@@ -62,16 +51,16 @@ For each imported pack, also retain its exact license text or a dated copy of th
 
 ## Retired KayKit imports
 
-The former CC0 KayKit imports, derived animation clips, tracked art archive and review gallery were removed in the baseline cleanup. Original local downloads remain preserved under LocalSourceArchives. No current visual depends on those imports. Historical source/attribution records remain recoverable in Git and the cleanup snapshot.
+The former CC0 KayKit imports, derived animation clips, tracked art archive and review gallery were removed in the baseline cleanup. Original local downloads remain preserved under LocalSourceArchives. No current visual depends on those imports. Earlier tracked source/attribution records remain recoverable in Git.
 
-## Unity URP Terrain Sample — private dependency (2026-09-26)
+## Unity URP Terrain Sample — retired private dependency (2026-09-26)
 
 - Source: https://assetstore.unity.com/packages/3d/environments/landscapes/unity-urp-terrain-terrain-sample-project-213197
 - Acquired through Unity Package Manager from the owner's existing entitlement; downloaded version 1.0.3.
-- Included ThirdPartyNotices.txt assigns the art to the standard Unity Asset Store EULA. Raw files remain ignored under `Assets/ThirdParty/UnityTerrainSample/`.
+- Included ThirdPartyNotices.txt assigns the art to the standard Unity Asset Store EULA. Its ignored Unity import was removed after rebinding the remaining wrapper prefabs and menu ground to Synty art.
 - Selected 72 source assets (144 files with metadata): two pine variants and dependencies, a rock, grass/fern prefabs, and two terrain layers with textures. No supplied scene layouts, TerrainData, scripts or settings are imported.
-- `scripts/terrain-sample-files.json` records exact paths and original SHA-256 hashes; `scripts/restore-terrain-sample.py` restores this selection.
-- Runtime wrappers and configuration: `Assets/Topaz/Presentation/Rendering/Environment/`. Original files are staged outside Assets in ignored `LocalSourceArchives/UnityTerrainURP/`.
+- `scripts/terrain-sample-files.json` and `scripts/restore-terrain-sample.py` remain for historical provenance; do not run the restore for current project setup.
+- The original package and extracted staging remain in ignored `LocalSourceArchives/UnityTerrainURP/`.
 
 ## Unity graph authoring templates
 
@@ -79,7 +68,17 @@ The generated VFX and Shader Graph assets begin with Unity 17.6 package template
 
 ## Synty POLYGON Starter Pack 1.2.1 — private dependency
 
-Acquired through Unity Package Manager on 2026-09-26, product 156819. Standard Unity Asset Store EULA; raw files are ignored under `Assets/Synty/`. Selected files, source and license evidence, restore workflow and presentation changes are recorded in [SYNTY_SAMPLE.md](SYNTY_SAMPLE.md) and `scripts/synty-starter-files.json`. Original downloads and all existing audio archives remain preserved.
+Acquired through Unity Package Manager on 2026-09-26, product 156819. Standard Unity Asset Store EULA; raw files are ignored under `Assets/Synty/`. The current selected files and hashes are in `scripts/synty-starter-files.json`; use [the restoration workflow above](#restoring-current-private-dependencies). Original downloads and all existing audio archives remain preserved.
+
+## Owner-supplied Synty production library (2026-09-27)
+
+Eight owned Unity packages from the owner's Downloads folder were imported under
+ignored `Assets/Synty/`. The production selection includes models, textures,
+materials, prefabs, animation and effects with dependencies; demo scenes and
+unneeded helper code are excluded. Exact archive and file hashes are in
+`scripts/synty-downloads.json`. See [the library map](SYNTY_LIBRARY.md).
+Original downloads and raw source-file folders remain unchanged outside Unity.
+The import alone does not place assets. The Viking Alpine authoring step binds the selected wrappers into gameplay. Derived Viking journal portrait PNGs remain private under `Assets/Topaz/UI/Art/VikingPortraits/`; paired metadata and regeneration instructions are retained in that folder and [the library map](SYNTY_LIBRARY.md#viking-journal-portraits).
 
 ## Storybook wilderness additions (2026-09-26)
 
@@ -107,14 +106,10 @@ https://kaylousberg.itch.io/kaykit-animations . The selected Rig_Medium CombatMe
 CombatRanged, MovementAdvanced, Tools and General FBXs and original license are under
 Assets/ThirdParty/KayKitMotion. No KayKit visible characters or environment art are used.
 Topaz configures humanoid retargeting in Unity; original source archives remain intact.
+The owner chose to retain these animation-only files for now. No KayKit meshes,
+textures or sounds remain in the active project.
 
-Storybook sound uses the existing private Sonniss library: Tovusound grass footsteps,
-Studio 23 gravel footsteps, Mindful Audio woodland birds and Soundopolis forest wind.
-`Topaz/Audio/Configure Storybook Sound` derives short normalized/faded footstep clips
-using Unity's audio decoder, records original hashes and sample ranges in the private
-`Assets/ThirdParty/Sonniss/Derived/Storybook/SOURCE.md`, and streams the ambience beds.
-Original WAV files and all source archives remain unchanged. The existing Sonniss
-license applies; derived audio remains excluded from public source redistribution.
+Storybook audio uses two 48 kHz / 24-bit ambience working copies and eight short derived footsteps. `Topaz/Audio/Configure Storybook Sound` reads the Grass and Gravel masters from `~/Documents/Raw Asset Library/Sounds/SonnissGDC/ActiveSources/`, temporarily imports them for decoding, and removes the temporary assets after generating the footstep clips. Source hashes and sample ranges are recorded in `Assets/ThirdParty/Sonniss/Derived/Storybook/SOURCE.md`; source-to-working-copy hashes and importer settings are in `~/Documents/Raw Asset Library/Sounds/SonnissGDC/ActiveSources/active_source_manifest.json`. The ambience beds use Streaming Vorbis at quality 0.65 with background loading and preserved 48 kHz stereo. Original masters stay outside Topaz, and derived Sonniss audio remains excluded from public source redistribution.
 
 The validated humanoid `Hit_A` and `Death_A` clips are now saved as standalone CC0
 `.anim` assets under Assets/Topaz/Characters/Animation/Clips. Their original General

@@ -152,6 +152,12 @@ namespace Topaz.Player
             float deltaTime = Time.deltaTime;
             if (deltaTime <= 0f) return;
 
+            var streaming=_worldSession?.ActiveRegion?.Streaming;
+            // No physics step may run before the destination collision exists.
+            // Background world preparation can span many frames behind the loading screen.
+            if(streaming!=null && (!streaming.InitialReady || !streaming.HasTerrainAt(transform.position)))
+            { ResetMotion(); return; }
+
             Vector2 moveInput = Vector2.ClampMagnitude(_move.ReadValue<Vector2>(), 1f);
             if (_worldSession != null && _worldSession.BlockMovement) moveInput = Vector2.zero;
             Vector3 moveDirection = ScreenRelative(moveInput);
@@ -193,6 +199,7 @@ namespace Topaz.Player
             else
                 _verticalVelocity -= 24f * deltaTime;
             Vector3 beforeMove = transform.position;
+            if(streaming!=null && !streaming.CanMoveTo(beforeMove+horizontal*deltaTime,_controller.radius+.1f))horizontal=Vector3.zero;
             CollisionFlags collisions = _controller.Move((horizontal + Vector3.up * _verticalVelocity) * deltaTime);
             if ((collisions & CollisionFlags.Above) != 0 && _verticalVelocity > 0f)
                 _verticalVelocity = 0f;

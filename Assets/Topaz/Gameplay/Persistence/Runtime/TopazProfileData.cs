@@ -7,29 +7,17 @@ namespace Topaz.Gameplay
     /// <summary>Stable look IDs are independent of menu labels and model asset paths.</summary>
     public static class CharacterLooks
     {
-        public const string Rogue = "rogue";
-        public const string HoodedRogue = "rogue.hooded";
-        public const string Knight = "knight";
-        public const string Ranger = "ranger";
-        public const string Mage = "mage";
-        public const string Barbarian = "barbarian";
-
-        public static readonly string[] All =
-            { Rogue, HoodedRogue, Knight, Ranger, Mage, Barbarian };
-
-        public static string Label(string id)
-        {
-            switch (id)
-            {
-                case HoodedRogue: return "Hooded Rogue";
-                case Knight: return "Knight";
-                case Ranger: return "Ranger";
-                case Mage: return "Mage";
-                case Barbarian: return "Barbarian";
-                default: return "Rogue";
-            }
-        }
-
+        public const string Rogue = "viking.villager.male.1";
+        public const string HoodedRogue = "viking.villager.female.1";
+        public const string Knight = "viking.warrior.male.1";
+        public const string Ranger = "viking.warrior.female.1";
+        public const string Mage = "viking.chieftain.female";
+        public const string Barbarian = "viking.chieftain.male";
+        public static readonly string[] All = { Rogue, HoodedRogue, "viking.villager.male.2", "viking.villager.female.2",
+            Knight, Ranger, "viking.warrior.male.2", "viking.warrior.female.2", Barbarian, Mage };
+        static readonly string[] Labels = { "Villager I (Male)", "Villager I (Female)", "Villager II (Male)", "Villager II (Female)",
+            "Warrior I (Male)", "Warrior I (Female)", "Warrior II (Male)", "Warrior II (Female)", "Chieftain (Male)", "Chieftain (Female)" };
+        public static string Label(string id) { int index = Array.IndexOf(All,id); return Labels[index < 0 ? 0 : index]; }
         public static string SupportedOrRogue(string id) => All.Contains(id) ? id : Rogue;
     }
 
@@ -37,7 +25,7 @@ namespace Topaz.Gameplay
     [Serializable]
     public sealed class TopazProfileData
     {
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
         public int version = CurrentVersion;
         public List<TopazCharacterData> characters = new List<TopazCharacterData>();
         public List<TopazWorldData> worlds = new List<TopazWorldData>();
@@ -263,7 +251,7 @@ namespace Topaz.Gameplay
         public string selectedTool = "sword";
         public string equippedTool = "sword";
         public EquipmentState equipment = new EquipmentState();
-        public bool lanternOn; // Missing in older collections, so the lantern starts off.
+        public bool lanternOn = true; // Permanent equipment starts lit; explicit saved off choices are retained.
         public bool pendingChest;
         public float stamina = SurvivalRules.BaseStamina;
         public double restedHours;

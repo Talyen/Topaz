@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Topaz.Player
 {
-    /// <summary>Presentation for the player's permanent, manually switched lantern.</summary>
+    /// <summary>Presentation for the player's permanent lantern; the saved switch is independent of midday light attenuation.</summary>
     public sealed class PlayerLantern : MonoBehaviour
     {
         [SerializeField] Transform visualRoot;
@@ -11,13 +11,14 @@ namespace Topaz.Player
         [SerializeField] GameObject lanternModel;
         [SerializeField] Vector3 lightOffset = new Vector3(0f, 1.05f, 0f);
         [SerializeField] float lightRange = 8.5f;
-        [SerializeField] float lightIntensity = 5f;
+        [SerializeField] float lightIntensity = 2f;
 
         Light _light;
         Transform _mount;
         Transform _sway;
         LanternVisual _visual;
         bool _isOn;
+        float _timeStrength = 1f;
 
         public bool IsOn => _isOn;
 
@@ -68,18 +69,32 @@ namespace Topaz.Player
             _visual = model.GetComponent<LanternVisual>();
             if (_visual == null)
                 Debug.LogError("Carried lantern prefab is missing its visual binding.", model);
-            else _visual.SetLit(_isOn);
+            else ApplyLight();
         }
 
         public void SetLit(bool lit)
         {
             _isOn = lit;
-            if (_light != null) _light.enabled = lit;
-            _visual?.SetLit(lit);
+            ApplyLight();
         }
 
+        public void SetWorldHours(double hours)
+        {
+            float hour=(float)((hours%24+24)%24);
+            // Full warmth through morning/evening/night; blend down 10-11 and back up 14-15.
+            _timeStrength=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(10,11,hour))*(1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(14,15,hour)));
+            ApplyLight();
+        }
+        void ApplyLight()
+        {
+            bool visible=_isOn && _timeStrength>.001f;
+            if(_light!=null){_light.intensity=lightIntensity*_timeStrength;_light.enabled=visible;}
+            _visual?.SetLit(visible);
+            if(_light!=null && _visual!=null)_light.transform.position=_visual.LightPosition;
+        }
         void LateUpdate()
         {
+            if(_light!=null && _visual!=null)_light.transform.position=_visual.LightPosition;
             if (_sway == null || movement == null || Time.deltaTime <= 0f) return;
             float amount = Mathf.Clamp01(movement.PlanarSpeed / Mathf.Max(0.01f, movement.TravelSpeed));
             float swing = Mathf.Sin(Time.time * 8f) * 6f * amount;

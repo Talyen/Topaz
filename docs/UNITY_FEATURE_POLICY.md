@@ -1,38 +1,41 @@
 # Unity feature policy
 
-Use Unity's maintained first-party features before adding custom infrastructure. Installed baseline: Unity 6000.6.2f1; URP/Shader Graph/VFX Graph 17.6; Cinemachine 6.6; AI Navigation 2.0.14; Input System 1.20; uGUI/TMP.
+Use maintained first-party systems before custom infrastructure. The [reference guide](UNITY_REFERENCE_GUIDE.md) owns the pinned versions and documentation links. Check installed source/API behavior before changing integration; no package upgrade is implied by a feature request.
 
-Unity Terrain renders generated ground; Cinemachine owns camera follow/collision; NavMeshSurface/Obstacle provide navigation and camp exclusion; Input Actions support keyboard/mouse/gamepad. URP owns lighting and rendering. No HDRP dependency remains. Visual Scripting and Unity Version Control integrations were unused and removed; retain Git/LFS and existing CLI tooling.
+## Retained systems
 
-Custom code is limited to deterministic layout, stable identity/persistence, region transitions, terrain-aware placement, camp protection, and game-specific inventory/combat/progression rules. Unity does not supply those product rules. Keep conventional GameObjects first; consider Jobs/Burst/ECS or custom rendering only for measured bottlenecks.
+Unity Surface Cache GI, Terrain/TerrainData, AI Navigation, Cinemachine, Input Actions, Mecanim, uGUI/TMP and URP supply the foundations. Keep ordinary GameObjects, Git/LFS and existing CLI tooling. HDRP, Visual Scripting and Unity Version Control are not dependencies. Jobs/Burst/ECS, Addressables or another rendering/loading framework need a measured bottleneck or clear content-loading requirement.
 
-RenderingLab retains fixed-scene lighting experiments. Its baked lighting is not a runtime solution for procedural worlds. Maintain private art restore manifests and asset licenses. On package upgrades, revalidate graph authoring adapters and URP tests.
+Topaz owns seeded layout and stable identity, save transactions, construction/camps, inventory/combat/progression, and bounded streaming scheduling. Unity does not provide these game rules. Rendering consumes world data and owns no independent simulation or saves; see [architecture](ARCHITECTURE.md) and [world contracts](PROCEDURAL_WORLDS.md).
 
-References: [AssetDatabase moves](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/AssetDatabase.MoveAsset.html), [AI Navigation](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/index.html), [reference guide](UNITY_REFERENCE_GUIDE.md).
+## Custom adapters and upgrade checks
 
-## Synty Starter sample
+Apply these checks when the adapter/API behavior or engine version changes. They are not a requirement to recapture graphics states or cross-build after every material/artistic adjustment. Batch required standalone/platform checks at the integration checkpoint; use [workflow](AGENT_WORKFLOW.md#iterate-and-hand-off) during iteration.
 
-Keep Unity Terrain and URP Terrain/Lit for smooth generated ground; no custom terrain renderer is needed. Use Mecanim humanoid avatars with temporary owned procedural poses because Starter Pack includes no clips. Future licensed humanoid clips can replace PrototypeHumanoidMotion without changing gameplay timing. Use prefab visual overrides for building art while retaining placement and collision contracts. See SYNTY_SAMPLE.md.
+| Adapter | Why it exists | Revalidate when changing/upgrading |
+| --- | --- | --- |
+| Deterministic plan and streamer | Seeded geography, required resources, saved identity and bounded realization | Shared seams, logical IDs, controller/navigation readiness, cancellation and residency; keep native Terrain/NavMesh APIs |
+| Analytic height fog, sky and shallow water | Coordinate height-aware opaque/transparent atmosphere and plan-derived water; share the sky function at the outer fog limit | Native full-screen feature placement, depth/sky handling, transparent fog parity and standalone shader availability |
+| Single Particle System rain | Existing VFX output did not expose the shared fog/shelter contract | No competing rain emitter; particle collision, audio ownership, pause and teardown; retain VFX Graph embers/impacts |
+| Shelter field and owned Lit/Terrain shader shells | Local rain exposure, wetness and ambient reflection occlusion remain separate from geometry-resolved SCGI diffuse | Regenerate shells against installed URP; retain native Meta/SCGI/pass/property layouts, SRP/GRD compatibility and both desktop builds |
+| Foliage Shader Graph authoring | Root-anchored deformation with current/previous wind for temporal rendering | GeometryNode position space, custom motion vectors, shadows and instanced details; vertex output uses object space |
+| Graphics-state warmup and visual-only rendering layer | Reduce first-use graphics work; keep analytic water/backdrops visible outside diffuse GI geometry | Recapture graphics states at relevant shader/pipeline integration checkpoints on each target API; validate entry, cancellation and memory |
+| Post-processing and scale adapter | Coordinated artistic controls and valid-timing-based adaptive scale | PostProcessData wiring, active Volume stripping, camera history/focus, linear sky uploads and native-resolution invariance |
 
-The standalone Synty sample exposed stripped instancing variants that Editor
-rendering did not reveal. Graphics Settings retain BatchRendererGroup variants
-(required by the existing GPU Resident Drawer) and instancing variants (Terrain
-and details are created at runtime, absent from static scene analysis). Other URP
-variant stripping remains enabled. Review standalone visuals after changing this.
+Shelter uses collider ray queries, Texture3D sampling, native particle collision and ShadowsOnly roofs. Package sources remain unmodified; owned shells derive from native Lit/Terrain under the Unity Companion License. Keep the supported Forward+ contract; do not infer Deferred/APV or multi-camera support. See [shelter limits](PROCEDURAL_WORLDS.md#spatial-shelter).
 
-## Storybook continuous world (2026-09-26)
+Unity 6.6's [GraphicsStateCollection](https://docs.unity3d.com/6000.6/Documentation/ScriptReference/Rendering.GraphicsStateCollection.html) is used directly, without an additional shader-warmup package. The current collection is traced from inspected Metal development-player views; its retained capture records the state count. It does not establish complete variant coverage or Windows parity. Progressive warmup is bounded and stops if no states complete, so stripped or unsupported recorded states cannot cause an unbounded entry loop; remaining states compile on use. Graphics-state collection records are asset references and render-state descriptions, not a portable driver cache.
 
-Use Unity Terrain neighbor links, instanced mesh details, NavMeshSurface asynchronous
-updates, Mecanim humanoid retargeting, Cinemachine, uGUI/TMP and the installed URP
-Volume/Shader Graph stack. Topaz-specific code owns deterministic ecology/layout,
-chunk scheduling, stable resource IDs and saved-state transactions; first-party
-authoring/rendering systems do not supply those game rules. No Burst/Jobs/ECS or
-Addressables dependency has been introduced. Measure activation/navigation spikes
-before adding parallel generation or another loading framework.
+Rendering-layer bit 1 (mask value 2) is reserved for visual-only water and distant mountain backdrops. They remain visible and receive directional lighting, while the SCGI volume excludes this bit. A zero rendering mask is not used as a visibility-preserving exclusion. Water has no Meta pass and uses a small analytic ambient floor for readability; it does not become opaque bounce geometry. Native package code remains unchanged. Tree LOD wrappers designate one stable 3D level as GI geometry; the other visual LODs and distant cards use visual-only rendering layer 2. The installed SCGI adapter registers enabled renderers independently of LOD selection, so admitting all levels would trace overlapping copies. Native LOD selection still controls camera and shadow presentation.
 
-The pinned Shader Graph adapter now sets foliage input positions to Object space
-through the installed GeometryNode spacePopup API; feeding World positions into
-the Vertex Position output would offset instances incorrectly. Terrain mesh details
-use a root MeshFilter/Renderer rather than an empty wrapper. Revalidate these
-assumptions when upgrading Unity/URP. Current evidence and unfinished validation are
-in STORYBOOK_IMPLEMENTATION.md.
+## Standalone rendering constraints
+
+Matched Metal captures showed black terrain with native instancing, including stock Terrain/Lit. Keep Terrain non-instanced while retaining grass/mesh instancing. Re-enable it only after a diagnosed fix or supported update passes matched standalone controls. `--topaz-terrain-instancing` is diagnostic-only; the lower-level cause is unresolved and Windows parity is unverified.
+
+Retain BatchRendererGroup and instancing variants for dynamically realized content; other URP stripping remains enabled. Mesh details need their root MeshFilter/Renderer. Validate native shader buffers and actual players after adapter changes, not only Editor rendering.
+
+Keep owned palette textures/normals and humanoid retargeting; gameplay timing is independent of art. Fixed RenderingLab baking is not a runtime procedural-world solution. SSR and outdoor baked lightmaps remain outside the baseline. SCGI uses the installed native preview with `SURFACE_CACHE`, Forward+, Render Graph and desktop static batching disabled. Imported model dependencies of Topaz prefabs and enabled scenes must retain readable mesh data for Unity compute ray tracing. `Topaz/Rendering/Configure Surface Cache GI` applies this import policy; build validation rejects unreadable dependencies after new art imports. This retains CPU mesh data and needs later memory review. Restricted source assets remain unversioned. Native resource/Meta-pass stripping remains enabled; the active renderer feature retains its required resources. Balanced uses Low and High uses Medium native GI quality with a camera-following 128 m / 16-resolution / four-cascade cache, matching the shorter fog-bounded visibility range. The authored default and world volume profiles carry the same visual-only exclusion mask and cache dimensions before runtime setup, so loading, menus and scene teardown cannot temporarily admit transparent water into GI. The controller recreates the native cache once per world entry after initial streaming readiness to discard invalid startup irradiance observed on 17.6; do not reset it on ordinary chunk crossings. There is no shipping fallback; preview defects or unacceptable performance block adoption. A separate Unity 6.7 evaluation is allowed if a reproducible engine defect blocks the pinned version. Current acceptance lives in [ROADMAP.md](ROADMAP.md).
+
+The distant mountain skyline is baked locally from owned Alpine models into a private cubemap containing form, height and coverage. The analytic sky shades it for current time/weather; it is a backdrop with no gameplay geometry or extra runtime camera. It preserves landscape scale while live terrain remains bounded by fog and streaming. Clouds remain analytic rather than volumetric.
+
+The owned PNB grass graph uses a root-anchored two-wave bend and explicit previous-frame motion in native Shader Graph passes. It retains the curated meshes, palette UVs, alpha masks and normals; it does not introduce a separate indirect renderer. Canopy/bush wind retains the source graph treatment. Native depth priming is enabled after a player comparison, with depth/shadow/motion shader passes preserved.

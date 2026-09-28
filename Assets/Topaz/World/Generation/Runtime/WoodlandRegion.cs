@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Topaz.Gameplay;
 using Unity.AI.Navigation;
 using UnityEngine;
@@ -35,6 +36,7 @@ namespace Topaz.Generation
             Ready = false;
             if (world.generatorVersion != WildernessPlan.Version)
                 throw new InvalidOperationException("Unsupported wilderness generator version.");
+            ValidateStarterBudget();
             if (Streaming != null) { Streaming.gameObject.SetActive(false); Destroy(Streaming.gameObject); }
             foreach (var tree in trees) if (tree != null) tree.gameObject.SetActive(false);
             foreach (var rock in rocks) if (rock != null) rock.gameObject.SetActive(false);
@@ -50,6 +52,16 @@ namespace Topaz.Generation
             }
             catch(Exception error) { Failure=error.Message;throw; }
             finally {GenerationMilliseconds=watch.Elapsed.TotalMilliseconds;}
+        }
+        void ValidateStarterBudget()
+        {
+            if(trees.Length==0 || rocks.Length==0 || trees[0].Definition==null || rocks[0].Definition==null)
+                throw new InvalidOperationException("Required starter wood/stone bindings are missing.");
+            var entries=BuildCatalog.Entries;
+            int wood=entries.Sum(e=>e.Wood),stone=entries.Sum(e=>e.Stone),iron=entries.Sum(e=>e.Iron);
+            // The first sixteen reserved nodes alternate tree/rock. Costs and yields stay in their authored owners.
+            if(trees[0].Definition.YieldCount*8<wood || rocks[0].Definition.StoneYield*8<stone || rocks[0].Definition.IronYield*8<iron)
+                throw new InvalidOperationException($"Starter resource budget cannot supply the build catalog: required {wood} wood, {stone} stone, {iron} iron.");
         }
         public static float GroundHeight(Vector3 position)
         {

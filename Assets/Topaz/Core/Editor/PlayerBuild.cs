@@ -31,7 +31,9 @@ namespace Topaz.Editor
                 if(string.IsNullOrWhiteSpace(output))throw new BuildFailedException("Missing -buildOutput.");
                 var profile=AssetDatabase.LoadAssetAtPath<BuildProfile>(profilePath);
                 if(profile==null)throw new BuildFailedException("Missing or invalid -topazBuildProfile.");
-                var report=BuildPipeline.BuildPlayer(new BuildPlayerWithProfileOptions { buildProfile=profile,locationPathName=output,options=BuildOptions.None });
+                // Explicitly requested diagnostic builds only; release ignores development-only switches.
+                var options=Array.IndexOf(args,"-topazDevelopment")>=0 ? BuildOptions.Development : BuildOptions.None;
+                var report=BuildPipeline.BuildPlayer(new BuildPlayerWithProfileOptions { buildProfile=profile,locationPathName=output,options=options });
                 var summary=report.summary;
                 var receipt=new Receipt {result=summary.result.ToString(),output=summary.outputPath,platform=summary.platform.ToString(),completedUtc=DateTime.UtcNow.ToString("O"),bytes=summary.totalSize,errors=(int)summary.totalErrors};
                 File.WriteAllText(output+".build-report.json",JsonUtility.ToJson(receipt,true));

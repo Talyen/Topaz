@@ -32,6 +32,8 @@ namespace Topaz.Gameplay
         readonly Dictionary<string, StorageChest> _chests = new Dictionary<string, StorageChest>();
         readonly List<HarvestTree> _trees = new List<HarvestTree>();
         readonly List<MiningRock> _rocks = new List<MiningRock>();
+        SpatialShelter _shelter;
+        public SpatialShelter Shelter => _shelter;
         WorldSession _session;
         TopazWorldData _world;
         List<StructureStateRecord> _records;
@@ -64,6 +66,9 @@ namespace Topaz.Gameplay
         public void Bind(WorldSession session, TopazWorldData world, string regionId)
         {
             Cancel();
+            if (_shelter != null) { _shelter.enabled = false; Destroy(_shelter); }
+            _shelter = gameObject.AddComponent<SpatialShelter>();
+            _shelter.Initialize(player.transform);
             foreach (GameObject visual in _visuals.Values)
                 if (visual != null && visual != chest.gameObject && visual != restPoint.gameObject)
                 { visual.SetActive(false); Destroy(visual); }
@@ -122,6 +127,7 @@ namespace Topaz.Gameplay
                     {
                         _chests.Remove(record.instanceId);stored.Bind(null);_session.OnChestRemoved(stored);
                     }
+                    _shelter.Unregister(visual);
                     visual.SetActive(false);
                     if(visual!=chest.gameObject && visual!=restPoint.gameObject)Destroy(visual);
                     _visuals.Remove(record.instanceId);
@@ -290,28 +296,27 @@ namespace Topaz.Gameplay
             foreach (MiningRock rock in _rocks)
                 if (rock != null && rock.IsAvailable && Near(position, rock.transform, radius + .7f))
                     return false;
-            if (id == BuildCatalog.Wall || id == BuildCatalog.Doorway)
+            if (BuildCatalog.IsWall(id))
             {
                 bool supported = _records.Any(record => record != moving &&
-                    record.definitionId == BuildCatalog.Floor &&
+                    BuildCatalog.IsFloor(record.definitionId) &&
                     WallAtFloorEdge(position, quarterTurns, record));
                 if (!supported) return false;
             }
             if (id == BuildCatalog.Roof && !_records.Any(record => record != moving &&
-                (record.definitionId == BuildCatalog.Wall ||
-                 record.definitionId == BuildCatalog.Doorway) &&
+                BuildCatalog.IsRoofSupport(record.definitionId) &&
                 (Position(record) - position).sqrMagnitude <= 2.5f))
                 return false;
             foreach (StructureStateRecord record in _records)
             {
                 if (record == moving || !Known(record.definitionId)) continue;
                 float separation = (position - Position(record)).magnitude;
-                if (id == BuildCatalog.Floor || id == BuildCatalog.Roof)
+                if (BuildCatalog.IsFloor(id) || id == BuildCatalog.Roof)
                 {
-                    if (record.definitionId == id && separation < 1.4f) return false;
+                    if ((record.definitionId == id || BuildCatalog.IsFloor(id) && BuildCatalog.IsFloor(record.definitionId)) && separation < 1.4f) return false;
                     continue;
                 }
-                if (record.definitionId == BuildCatalog.Floor ||
+                if (BuildCatalog.IsFloor(record.definitionId) ||
                     record.definitionId == BuildCatalog.Roof) continue;
                 if (separation < radius + Footprint(record.definitionId)) return false;
             }
@@ -399,6 +404,7 @@ namespace Topaz.Gameplay
             }
             if (_visuals.TryGetValue(record.instanceId, out GameObject visual) && visual != null)
             {
+                _shelter.Unregister(visual);
                 if (visual == restPoint.gameObject) visual.SetActive(false);
                 else if (visual != chest.gameObject) { visual.SetActive(false); Destroy(visual); }
             }
@@ -461,6 +467,12 @@ namespace Topaz.Gameplay
             visual.SetActive(true);
             if (record.definitionId == BuildCatalog.Camp) visual.GetComponent<Campfire>().Configure(record.instanceId, RegionId, record.label);
             _visuals.Add(record.instanceId, visual);
+            if (BuildCatalog.IsShelter(record.definitionId))
+            {
+                Physics.SyncTransforms();
+                _shelter.Register(visual);
+                foreach (var door in visual.GetComponentsInChildren<HomeDoor>()) door.BindShelter(_shelter, visual);
+            }
         }
 
         public StorageChest NearestChest(Vector3 position, float radius)
@@ -517,7 +529,7 @@ namespace Topaz.Gameplay
         }
 
         public bool IsFloorCollider(Collider collider) => _records!=null && _records.Any(record=>
-            record.definitionId==BuildCatalog.Floor && _visuals.TryGetValue(record.instanceId,out var visual) && visual!=null && collider.transform.IsChildOf(visual.transform));
+            BuildCatalog.IsFloor(record.definitionId) && _visuals.TryGetValue(record.instanceId,out var visual) && visual!=null && collider.transform.IsChildOf(visual.transform));
 
         public bool BlocksResource(Vector3 position, float radius) => _records != null &&
             _records.Any(record => record.definitionId != PathId &&
@@ -527,9 +539,10 @@ namespace Topaz.Gameplay
         static bool Known(string id) => id == BuildCatalog.Bedroll ||
             BuildCatalog.Find(id).HasValue;
 
-        static float Footprint(string id) => id == BuildCatalog.Floor ||
+        static float Footprint(string id) => id == BuildCatalog.Fence || id == BuildCatalog.Bench || id == BuildCatalog.WeaponRack ? .7f :
+            id == BuildCatalog.Shelf ? .55f : id == BuildCatalog.Beam ? .15f : BuildCatalog.IsFloor(id) ||
             id == BuildCatalog.Roof ? .72f : id == AnvilId ? .9f :
-            id == BuildCatalog.Wall || id == BuildCatalog.Doorway ? .25f : .45f;
+            BuildCatalog.IsWall(id) ? .25f : .45f;
 
     }
 }
