@@ -85,6 +85,9 @@ namespace Topaz
                 ("forest",plan.Routes[1].Points[plan.Routes[1].Points.Count-3],(plan.Routes[1].Points.Last()-plan.Routes[1].Points[plan.Routes[1].Points.Count-3]).normalized),
                 ("mountain",plan.Routes[5].Points[plan.Routes[5].Points.Count-3],(plan.Routes[5].Points.Last()-plan.Routes[5].Points[plan.Routes[5].Points.Count-3]).normalized),
                 ("river",plan.Crossings[0].Position-plan.Crossings[0].Forward*12,plan.Crossings[0].Forward)};
+            if(Environment.GetCommandLineArgs().Contains("--topaz-review-view=landmark"))
+                views=new[]{("landmark",plan.Routes[0].Points[plan.Routes[0].Points.Count-2],
+                    (plan.Routes[0].Points.Last()-plan.Routes[0].Points[plan.Routes[0].Points.Count-2]).normalized)};
             foreach(var arg in Environment.GetCommandLineArgs())if(arg.StartsWith("--topaz-review-view="))
                 views=views.Where(v=>v.Item1==arg.Substring(20)).ToArray();
             if(shadingStudy)views=new[]{("portrait",Vector3.zero,Vector3.back),("forest",plan.Routes[1].Points[plan.Routes[1].Points.Count-3],(plan.Routes[1].Points.Last()-plan.Routes[1].Points[plan.Routes[1].Points.Count-3]).normalized)};
@@ -97,7 +100,7 @@ namespace Topaz
                     var p=view.Item2;p.y=plan.Height(p.x,p.z);MovePlayer(session,p);
                     // Seat the capsule even when an unfocused review player has paused its ordinary simulation.
                     session.GetComponent<CharacterController>().Move(Vector3.down*.25f);Physics.SyncTransforms();
-                    m0Camera.SetZoom(view.Item1=="portrait"?3.2f:6.5f);
+                    m0Camera.SetZoom(view.Item1=="portrait"?24:30);
                     m0Facing=view.Item3;m0Camera.LookAtPoint(p+view.Item3*20);camera.targetTexture=target;
                     foreach(var condition in conditions)
                     {

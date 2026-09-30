@@ -43,7 +43,7 @@ namespace Topaz
             string directory=Path.Combine(Application.persistentDataPath,"Diagnostics");
             foreach(var arg in System.Environment.GetCommandLineArgs())if(arg.StartsWith("--topaz-capture-dir="))directory=arg.Substring(20);
             Directory.CreateDirectory(directory);
-            if(System.Environment.GetCommandLineArgs().Contains("--topaz-alpine-review"))StartAlpineRenderLoop();
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-alpine-review") || System.Environment.GetCommandLineArgs().Contains("--topaz-isometric-review") || System.Environment.GetCommandLineArgs().Contains("--topaz-area-review"))StartAlpineRenderLoop();
             var report=new Report{unity=Application.unityVersion,platform=Application.platform.ToString(),graphics=SystemInfo.graphicsDeviceName,pipeline=UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.GetType().Name,status="starting"};
             WorldSession session=null;float deadline=Time.realtimeSinceStartup+180;
             while(Time.realtimeSinceStartup<deadline)
@@ -57,6 +57,10 @@ namespace Topaz
                 if(System.Environment.GetCommandLineArgs().Contains("--topaz-smoke-quit"))Application.Quit(1);
                 yield break;
             }
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-area-review"))
+            {yield return CaptureAreaJourney(session,directory);yield break;}
+            if(System.Environment.GetCommandLineArgs().Contains("--topaz-isometric-review"))
+            {yield return IsometricReview(session,directory);yield break;}
             if(System.Environment.GetCommandLineArgs().Contains("--topaz-stability"))
             {yield return TerrainStability(session,directory);if(System.Environment.GetCommandLineArgs().Contains("--topaz-smoke-quit"))Application.Quit();yield break;}
             if(System.Environment.GetCommandLineArgs().Contains("--topaz-alpine-review"))

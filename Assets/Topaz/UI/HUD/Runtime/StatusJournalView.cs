@@ -15,6 +15,8 @@ namespace Topaz.Gameplay
         TMP_Text _restRow;
         TMP_Text _foodRow;
         TMP_Text _empty;
+        TMP_Text _routes;
+        Button _routesButton;
         Image _restIcon;
         Image _foodIcon;
         Button _back;
@@ -53,6 +55,15 @@ namespace Topaz.Gameplay
             _foodRow.alignment = TextAlignmentOptions.MidlineLeft;
             _empty = Label(_page.transform, "No active effects.", font, 32f,
                 new Vector2(0f, 40f), new Vector2(900f, 90f));
+            _routes=Label(_page.transform,"",font,25,new Vector2(0,50),new Vector2(1080,520));
+            _routes.alignment=TextAlignmentOptions.TopLeft;_routes.gameObject.SetActive(false);
+            _routesButton=ButtonAt(_page.transform,"Wilderness Routes",font,new Vector2(0,-250));
+            _routesButton.onClick.AddListener(()=>
+            {
+                _restRow.gameObject.SetActive(false);_foodRow.gameObject.SetActive(false);_empty.gameObject.SetActive(false);
+                _restIcon.gameObject.SetActive(false);_foodIcon.gameObject.SetActive(false);
+                _routes.text=_session.DiscoveredAreaConnections();_routes.gameObject.SetActive(true);_routesButton.gameObject.SetActive(false);
+            });
             _back = ButtonAt(_page.transform, "Back to Backpack", font,
                 new Vector2(0f, -340f));
             _back.onClick.AddListener(() =>
@@ -77,6 +88,7 @@ namespace Topaz.Gameplay
         {
             if (_page == null || _session == null) return;
             _hud.ClosePanels();
+            _routes.gameObject.SetActive(false);_routesButton.gameObject.SetActive(true);
             bool rested = _session.RestedHoursRemaining > 0d;
             bool fed = _session.FoodHoursRemaining > 0d;
             _restRow.gameObject.SetActive(rested);

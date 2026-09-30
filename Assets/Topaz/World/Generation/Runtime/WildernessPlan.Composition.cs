@@ -7,10 +7,30 @@ namespace Topaz.Generation
         // World-space fields keep habitat and trail transitions continuous across streaming boundaries.
         public float Canopy(float x,float z)
         {
+            if(Settings.boundedAreas)return AreaGrove(x,z);
             float grove=Noise(x/Settings.groveScale,z/Settings.groveScale,1103);
             float coverage=Smooth((grove-(1-Settings.groveCoverage))/.3f);
             var biome=Biomes(x,z);
             return Mathf.Lerp(.62f,1,biome.Woodland)*(1-biome.Highland*.55f)*Mathf.Lerp(.72f,1,coverage);
+        }
+        float RouteShoulder(float x,float z,float distance)
+        {
+            float pocket=Smooth((Noise(x/82,z/82,1201)-.30f)/.34f);
+            float stagger=Mathf.Lerp(.55f,1,Noise(x/37,z/37,1202));
+            float profile=Smooth((distance-7)/10)*(1-Smooth((distance-27)/18));
+
+            float clear=Smooth((Distance(x,z,0,0)-9)/8);
+            foreach(var site in Discoveries)
+                clear*=Smooth((Distance(x,z,site.X,site.Z)-20)/14);
+            foreach(var site in destinations)
+                clear*=Smooth((Distance(x,z,site.X,site.Z)-site.Radius-4)/14);
+            foreach(var site in requiredResources)
+            {
+                clear*=Smooth((Distance(x,z,site.X,site.Z)-6)/8);
+                var from=site.Id.StartsWith("starter.")?Vector3.zero:new Vector3(Discoveries[2].X,0,Discoveries[2].Z);
+                clear*=Smooth((Segment(x,z,from,new Vector3(site.X,0,site.Z),out _)-3)/8);
+            }
+            return Settings.localRelief*(2.4f+Noise(x/60,z/60,1203)*1.2f)*pocket*stagger*profile*clear;
         }
         public float TrailHalfWidth(float x,float z) => Mathf.Lerp(Settings.trailMinimumHalfWidth,
             Settings.trailMaximumHalfWidth,Noise(x/38,z/38,1102));
@@ -23,13 +43,13 @@ namespace Topaz.Generation
                 var site=Discoveries[i];
                 if(Distance(x,z,site.X,site.Z)>Settings.landmarkApproachLength+Settings.landmarkApproachWidth)continue;
                 var points=routes[i].Points;var end=points[points.Count-1];
-                float remaining=Settings.landmarkApproachLength;
+                float remaining=Settings.boundedAreas?20:Settings.landmarkApproachLength;
                 for(int n=points.Count-2;n>=0 && remaining>0;n--)
                 {
                     var start=points[n];float length=Vector3.Distance(start,end);
                     if(length>remaining)start=Vector3.Lerp(end,start,remaining/length);
                     float distance=Segment(x,z,start,end,out float t);
-                    float width=Mathf.Lerp(Settings.landmarkApproachWidth*.55f,Settings.landmarkApproachWidth,t);
+                    float width=Mathf.Lerp(Settings.boundedAreas?2.5f:Settings.landmarkApproachWidth*.55f,Settings.boundedAreas?4.5f:Settings.landmarkApproachWidth,t);
                     visibility=Mathf.Max(visibility,1-Smooth(distance/width));
                     remaining-=length;end=start;
                 }

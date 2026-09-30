@@ -127,6 +127,7 @@ Transform:
   - {fileID: 8150292079232639425}
   - {fileID: 5934699681811889863}
   - {fileID: 496741103473865574}
+  - {fileID: 7175160347014738215}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1310848077764834866
@@ -889,6 +890,51 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4765673491226124535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2129083059127278556}
+  - component: {fileID: 6231484100422237990}
+  m_Layer: 0
+  m_Name: Porch Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2129083059127278556
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4765673491226124535}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.13999999, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7175160347014738215}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6231484100422237990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4765673491226124535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c2ff44bc41944f999ecde6ff9e06dcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.Gameplay.HomeNightLight
+  glow: {fileID: 7475922963269492989}
 --- !u!1 &4892188679254973019
 GameObject:
   m_ObjectHideFlags: 0
@@ -1195,3 +1241,79 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.62758094, y: 1.3, z: 0.17549548}
   m_Center: {x: 0, y: 0.65, z: 0}
+--- !u!1001 &8716730672077953778
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 670507544792670869}
+    m_Modifications:
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6258181840846410659, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      propertyPath: m_Name
+      value: Porch Lantern
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2129083059127278556}
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+--- !u!4 &7175160347014738215 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1975749883276913621, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+  m_PrefabInstance: {fileID: 8716730672077953778}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7475922963269492989 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2254012098158295567, guid: c25fddd9affa943eaa695e8b02ac8a36, type: 3}
+  m_PrefabInstance: {fileID: 8716730672077953778}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4051a2753b8f3470f8bdd9e4db29fe17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.FeelStudy.LanternVisual

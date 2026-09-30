@@ -248,6 +248,7 @@ namespace Topaz.Combat
             if (!pressed) _guardNeedsRelease = false;
             if (pressed && !_guardHeld) _guardActiveAt = Time.time + .12f -
                 (_worldSession?.TalentAmount(SkillIds.Shield, "shield.quick-raise") ?? 0f);
+            if (_worldSession?.GameplayInputConsumed == true) _guardNeedsRelease = true;
             _guardHeld = pressed;
             if (_phase == Phase.Ready && _attackRequested && !IsGuarding &&
                 !movement.IsDodging &&
@@ -313,13 +314,14 @@ namespace Topaz.Combat
                 return;
             float range = weapon.GroundSpell.Range +
                 (_worldSession.HasTalent(SkillIds.Staff, "staff.far-sigil") ? 1f : 0f);
-            Vector3 center = movement.UsingStickAim
-                ? transform.position + movement.AimDirection * Mathf.Min(4.5f, range)
-                : movement.AimPointOnGround;
+            Vector3 center = movement.AimPointOnGround;
             Vector3 offset = center - transform.position;
             offset.y = 0f;
-            if (offset.sqrMagnitude > range * range) center = transform.position +
-                offset.normalized * range;
+            if (offset.sqrMagnitude > range * range)
+            {
+                center = transform.position + offset.normalized * range;
+                center = movement.ResolveGroundPoint(center);
+            }
             Vector3 origin = transform.position + Vector3.up;
             Vector3 direction = center + Vector3.up - origin;
             float length = direction.magnitude;
@@ -332,12 +334,13 @@ namespace Topaz.Combat
                 nearestWall = Mathf.Min(nearestWall, hit.distance);
             }
             if (nearestWall < length)
-                center = origin + direction.normalized * Mathf.Max(0f, nearestWall - .3f);
+                center = movement.ResolveGroundPoint(origin + direction.normalized * Mathf.Max(0f, nearestWall - .3f));
             int damage = Mathf.Max(1, _worldSession.Stats.Attack - 2) +
                 Mathf.RoundToInt(_worldSession.SkillOutputBonus(SkillIds.Staff));
             if (_worldSession.HasTalent(SkillIds.Staff, "staff.dodge-focus") &&
                 Time.time >= _dodgeBonusStarts && Time.time <= _dodgeBonusEnds)
                 damage++;
+            _lockedDirection = movement.AimDirection;
             _staffSpell.Begin(center, false, damage,
                 _worldSession.HasTalent(SkillIds.Staff, "staff.wide-circle") ? .25f : 0f);
         }

@@ -8,7 +8,7 @@ namespace Topaz.Generation
     /// <summary>World-space sampling is independent of chunk load order and decoration density.</summary>
     public sealed partial class WildernessPlan
     {
-        public const int Version = 6;
+        public const int Version = 8;
         public const int ChunkSize = 128;
         public const int WorldSize = 1024;
         public const int HalfSize = WorldSize / 2;
@@ -20,8 +20,8 @@ namespace Topaz.Generation
         readonly List<Site> discoveries = new List<Site>();
         public readonly IReadOnlyList<Site> Discoveries;
         public int Extent => Settings.worldSize / 2;
-        public int MinChunk => -Extent / ChunkSize;
-        public int MaxChunk => Extent / ChunkSize;
+        public int MinChunk => (int)Math.Floor(-Extent / (float)ChunkSize);
+        public int MaxChunk => (int)Math.Ceiling(Extent / (float)ChunkSize);
         public bool Contains(float x,float z) => x>=-Extent && x<Extent && z>=-Extent && z<Extent;
         public bool ContainsChunk(Chunk chunk) => chunk.X>=MinChunk && chunk.X<MaxChunk && chunk.Z>=MinChunk && chunk.Z<MaxChunk;
 
@@ -49,7 +49,7 @@ namespace Topaz.Generation
             if(settings==null)throw new ArgumentNullException(nameof(settings));
             settings.Validate();Settings=settings.Copy();Seed=seed;
             Discoveries=discoveries.AsReadOnly();
-            BuildGeography();
+            if(Settings.boundedAreas)BuildAreaGeography();else BuildGeography();
             heightRoutes=IndexHeightRoutes();
             int samples=Settings.worldSize/(int)SampleSpacing+1;
             heightSamples=new float[samples,samples];sampledHeights=new bool[samples,samples];
@@ -62,7 +62,7 @@ namespace Topaz.Generation
             landforms.Add(new Landform("ridge.0",ridgeA,ridgeB,110,Settings.relief*1.35f));
             landforms.Add(new Landform("valley.0",Rotate(-250,-160),Rotate(-40,270),95,-Settings.relief*.3f));
             BuildAlpineLandforms(Rotate);
-            reservations.Add(new Reservation("start",0,0,22));
+            reservations.Add(new Reservation("start",0,0,9));
             var destinations=new[]{new Vector2(225,15),new Vector2(-75,150),new Vector2(-145,-35),new Vector2(70,-310),new Vector2(320,255),new Vector2(-300,260)};
             for(int i=0;i<destinations.Length;i++)
             {
@@ -73,14 +73,26 @@ namespace Topaz.Generation
             }
             foreach(var site in Discoveries)
             {
-                var points=new List<Vector3>{Vector3.zero};
+                Vector3 from=Vector3.zero;
+                if(routes.Count>0)
+                {
+                    float nearest=float.MaxValue;
+                    foreach(var existing in routes)foreach(var point in existing.Points)
+                    {
+                        if(new Vector2(point.x,point.z).magnitude<64)continue;
+                        float distance=Distance(site.X,site.Z,point.x,point.z);
+                        if(distance<nearest){nearest=distance;from=point;}
+                    }
+                }
+                var delta=new Vector2(site.X-from.x,site.Z-from.z);
+                var points=new List<Vector3>{from};
                 // A bounded three-candidate search bends each approach toward lower traversal cost.
-                int routeSteps=Math.Max(8,(int)Math.Ceiling(Math.Sqrt(site.X*site.X+site.Z*site.Z)/20));
+                int routeSteps=Math.Max(8,(int)Math.Ceiling(delta.magnitude/20));
                 for(int i=1;i<=routeSteps;i++)
                 {
-                    float t=i/(float)routeSteps;var basePoint=new Vector2(site.X*t,site.Z*t);
-                    var side=new Vector2(-site.Z,site.X).normalized;
-                    float phase=(float)Math.Sqrt(site.X*site.X+site.Z*site.Z)*t/38;
+                    float t=i/(float)routeSteps;var basePoint=new Vector2(from.x,from.z)+delta*t;
+                    var side=new Vector2(-delta.y,delta.x).normalized;
+                    float phase=delta.magnitude*t/38;
                     basePoint+=side*(Settings.trailMeander*(float)Math.Sin(phase)*(float)Math.Sin(t*Math.PI));
                     Vector2 chosen=basePoint;float best=float.MaxValue;
                     for(int candidate=-1;candidate<=1;candidate++)
@@ -104,18 +116,14 @@ namespace Topaz.Generation
                     }
                     points=smooth;
                 }
-                // The authored hearth, sign and furniture occupy the center. Share its clear north departure,
-                // then branch on a 24 m ring instead of sending seed-dependent straight lines through props.
-                var departure=new List<Vector3>{Vector3.zero,new Vector3(1,0,-1),new Vector3(1,0,8),new Vector3(0,0,24)};
-                float destinationAngle=(float)Math.Atan2(site.Z,site.X);
-                float turn=Mathf.DeltaAngle(90,destinationAngle*Mathf.Rad2Deg)*Mathf.Deg2Rad;
-                int arcSteps=Math.Max(1,(int)Math.Ceiling(Math.Abs(turn)/(.2f)));
-                for(int n=1;n<=arcSteps;n++)
+                // Later paths join the existing network away from the refuge. Only the first
+                // departure clears the small authored furniture footprint; there is no ring hub.
+                var departure=points;
+                if(routes.Count==0)
                 {
-                    float a=Mathf.PI*.5f+turn*n/arcSteps;
-                    departure.Add(new Vector3(Mathf.Cos(a)*24,0,Mathf.Sin(a)*24));
+                    departure=new List<Vector3>{Vector3.zero,new Vector3(1,0,-1),new Vector3(1,0,8)};
+                    foreach(var point in points)if(new Vector2(point.x,point.z).magnitude>12)departure.Add(point);
                 }
-                foreach(var point in points)if(new Vector2(point.x,point.z).magnitude>32)departure.Add(point);
                 for(int n=1;n<departure.Count;n++)
                 {var point=departure[n];var prior=departure[n-1];float grade=Vector2.Distance(new Vector2(point.x,point.z),new Vector2(prior.x,prior.z))*.25f;point.y=Mathf.Clamp(point.y,prior.y-grade,prior.y+grade);departure[n]=point;}
                 routes.Add(new Route("route."+site.Id,site.Id,departure));
@@ -134,9 +142,9 @@ namespace Topaz.Generation
                 bool placed=false;
                 for(int candidate=0;candidate<64;candidate++)
                 {
-                    double a=i*Math.PI*2/16+candidate*.08;float radius=(i%2==0?34:44)+(candidate/16)*4;
+                    double a=Random(i,candidate,301)*Math.PI*2;float radius=Mathf.Lerp(24,65,Random(i,candidate,302));
                     float x=(float)Math.Cos(a)*radius,z=(float)Math.Sin(a)*radius;
-                    if(RouteDistance(x,z)<7 || NearRequired(x,z,7))continue;
+                    if(RouteDistance(x,z)<7 || NearRequired(x,z,7) || !SuitableRequiredResource(x,z))continue;
                     requiredResources.Add(new Site("starter.resource."+i,x,z,i%2==0?0:1));placed=true;break;
                 }
                 if(!placed)throw new InvalidOperationException($"Seed {Seed}: starter.resource.{i} exhausted 64 clearance candidates.");
@@ -174,14 +182,15 @@ namespace Topaz.Generation
             if(!sampledHeights[z,x]){heightSamples[z,x]=AnalyticHeight(x*SampleSpacing-Extent,z*SampleSpacing-Extent);sampledHeights[z,x]=true;}
             return heightSamples[z,x];
         }
-        float AnalyticHeight(float x,float z)
+        float AnalyticHeight(float x,float z,bool shoulders=true)
         {
+            if(Settings.boundedAreas)return AreaHeight(x,z);
             float height=RawHeight(x,z)+(Noise(x/23,z/23,1101)-.5f)*Settings.localRelief+(Noise(x/61,z/61,1111)-.5f)*Settings.localRelief*2;
             height+=PeakRise(x,z);
             // Ordered, bounded stamps: routes, water, destination pads. All consumers query this result.
             foreach(var site in Discoveries)
             {
-                float blend=1-Smooth((Distance(x,z,site.X,site.Z)-18)/48);
+                float blend=1-Smooth((Distance(x,z,site.X,site.Z)-18)/16);
                 if(blend>0)height=Mathf.Lerp(height,routes[discoveries.IndexOf(site)].Points[routes[discoveries.IndexOf(site)].Points.Count-1].y,blend);
             }
             float nearest=float.MaxValue,targetHeight=height,totalRouteWeight=0,weightedRouteHeight=0;
@@ -201,7 +210,11 @@ namespace Topaz.Generation
             else // Geography construction queries provisional routes before the immutable index exists.
                 foreach(var route in routes)for(int i=1;i<route.Points.Count;i++)AccumulateRoute(route.Points[i-1],route.Points[i]);
             if(totalRouteWeight>0)targetHeight=weightedRouteHeight/totalRouteWeight;
-            if(nearest<14)height=Mathf.Lerp(height,targetHeight,1-Smooth((nearest-Route.HalfWidth)/10));
+            // Sheltered route pockets alternate with softer gaps. The inner corridor
+            // stays independent of these terrain shoulders, including route junctions.
+            if(shoulders && nearest<48)
+                height+=RouteShoulder(x,z,nearest);
+            if(nearest<14)height=Mathf.Lerp(height,targetHeight,1-Smooth((nearest-Route.HalfWidth)/7));
             foreach(var water in waters)
             {
                 float distance=Distance(x,z,water.X,water.Z);
@@ -212,7 +225,7 @@ namespace Topaz.Generation
                 height=Mathf.Lerp(bed,height,Smooth((distance-water.Radius)/24));
             }
             height=CarveRiver(x,z,height);
-            return Math.Max(0,height)*Smooth((Distance(x,z,0,0)-22)/40);
+            return Math.Max(0,height)*Smooth((Distance(x,z,0,0)-9)/18);
         }
         float RawHeight(float x,float z)
         {
@@ -223,7 +236,7 @@ namespace Topaz.Generation
                 float weight=1-Smooth(d/form.Width);height+=weight*form.Height;
             }
             height=ShapeRiverValley(x,z,height);
-            height=Math.Max(0,height)*Smooth((Distance(x,z,0,0)-35)/100);
+            height=Math.Max(0,height)*Smooth((Distance(x,z,0,0)-9)/56);
             float edge=Smooth((Math.Max(Math.Abs(x),Math.Abs(z))-(Extent-62))/58);
             return edge<=0?height:height+edge*(42+16*Noise(x/85,z/85,31));
         }
@@ -244,8 +257,6 @@ namespace Topaz.Generation
         {
             float radius=(float)Math.Sqrt(x*x+z*z);
             float dirt=1-Smooth((radius-3)/3);
-            float trail=1-Smooth((Math.Abs(x-(float)Math.Sin(z*.06)*2)-.7f)/1.4f);
-            dirt=Math.Max(dirt,trail*(1-Smooth((radius-45)/35))*.8f);
             foreach(var site in Discoveries)
             {
                 float dx=x-site.X,dz=z-site.Z;
@@ -257,7 +268,7 @@ namespace Topaz.Generation
         }
         public float ClearingDistance(float x,float z)
         {
-            float d=(float)Math.Sqrt(x*x+z*z)-16;
+            float d=(float)Math.Sqrt(x*x+z*z)-7;
             foreach(var s in Discoveries) d=Math.Min(d,(float)Math.Sqrt((x-s.X)*(x-s.X)+(z-s.Z)*(z-s.Z))-9);
             foreach(var s in destinations)d=Math.Min(d,Distance(x,z,s.X,s.Z)-s.Radius);
             return d;
@@ -273,7 +284,7 @@ namespace Topaz.Generation
                 int gx=chunk.X*4+x,gz=chunk.Z*4+z;
                 float px=gx*32+6+Random(gx,gz,101)*20,pz=gz*32+6+Random(gx,gz,102)*20;
                 if(Reserved(px,pz,4) || Math.Abs(px)>Extent-64 || Math.Abs(pz)>Extent-64 || Slope(px,pz)>.35f || WaterDepth(px,pz)>0 || NearRequired(px,pz,9))continue;
-                result.Add(new Site(CoordinateId("resource",gx,gz),px,pz,(int)(Random(gx,gz,103)*4)));
+                result.Add(new Site(LogicalId(CoordinateId("resource",gx,gz)),px,pz,(int)(Random(gx,gz,103)*4)));
             }
             return result.AsReadOnly();
         }

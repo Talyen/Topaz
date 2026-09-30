@@ -42,7 +42,7 @@ namespace Topaz.Combat
             EnemyCombatant attacker, bool staggerAttackerOnBlock)
         {
             if (CampSafety.BlocksAttack(attackerPosition == Vector3.zero ? transform.position : attackerPosition, transform.position) || amount <= 0 || CurrentHealth == 0 || Time.time < _protectedUntil ||
-                (_session?.IsFastTraveling == true || _session?.IsTravelMenuOpen == true ||
+                (_session?.IsAreaTraveling == true || _session?.IsFastTraveling == true || _session?.IsTravelMenuOpen == true ||
                  _session?.IsResting == true) ||
                 movement == null || movement.IsInvulnerable) return false;
 

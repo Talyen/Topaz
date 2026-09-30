@@ -110,8 +110,8 @@ namespace Topaz.Editor
             MenuSurfacePolishSetup.ApplyToCanvas(canvas.transform);
 
             camera.orthographicSize = 7.2f;
-            Float(cameraRig, "minimumZoom", 5.5f);
-            Float(cameraRig, "maximumZoom", 12f);
+            Float(cameraRig, "minimumZoom", 24f);
+            Float(cameraRig, "maximumZoom", 38f);
             PlayerSettings.defaultScreenWidth = 1600;
             PlayerSettings.defaultScreenHeight = 900;
             PlayerSettings.resizableWindow = true;

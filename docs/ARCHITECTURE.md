@@ -5,20 +5,21 @@ Use ordinary GameObjects/components, ScriptableObject definitions and plain seri
 ## System ownership
 
 - **WorldSession** coordinates the active Character–World pair, clock/weather, atomic inventory/world transactions, resources, encounters, camp travel/recovery and persistence. Do not introduce another save or simulation authority.
-- **WildernessPlan** supplies deterministic world-space environmental, route, water and placement queries without loaded Terrain. **WoodlandRegion** composes **StreamedWilderness**, which owns resident Terrain, art, collision and asynchronous local navigation; see [world contracts](PROCEDURAL_WORLDS.md).
+- **WorldGraph** owns recorded area identities/seeds and paired passages. **AreaPlan** adapts recorded settings to an immutable local **WildernessPlan**; optional **AreaDefinition** overrides are applied when a World is created and saved in its area records. **WoodlandRegion** composes **StreamedWilderness**, reusing terrain/art realization with whole-area residency. **AreaRuntime** provides the active area scene lifetime; terrain, collision and navigation are prepared behind loading. WorldSession coordinates publication and rollback; see [world contracts](PROCEDURAL_WORLDS.md).
 - **RegionBuildings** realizes committed structures from saved records and owns the local SpatialShelter field. **WorldStorageIndex** queries saved chest stock independently of visual residency. Construction changes invalidate navigation and shelter.
 - **CampSafety** owns protection and navigation exclusion; damage/projectiles consult it. Player camps resolve from saved structures even while unloaded. Protection neither awards kills nor discards respawn deadlines.
-- **VisualLookController** derives presentation from simulation state. Unity systems supply rendering, camera collision, navigation, input, animation and UI; Topaz adapters supply game-specific rules. [Unity feature policy](UNITY_FEATURE_POLICY.md) records exceptions and upgrade considerations.
+- **PlayerCamera** owns the fixed world-space Cinemachine follow, bounded zoom, warp resets and player-centered hearing. **PlayerController** owns planar facing, ground targeting and elevated projectile aim. **SceneryCutaway** supplies a bounded gameplay-camera shader mask and local engaged-character silhouettes; it never changes world collision or shelter authority.
+- **VisualLookController** derives presentation from simulation state. Unity systems supply rendering, camera following, physics queries, navigation, input, animation and UI; Topaz adapters supply game-specific rules and lens safety. [Unity feature policy](UNITY_FEATURE_POLICY.md) records exceptions and upgrade considerations.
 
 ## Saves and state
 
 | Owner | Persistent state |
 | --- | --- |
 | Character | Inventory, equipment, skills, food/rest effects, lantern state and appearance |
-| World | Seed, generator version/settings, elapsed time, resources, structures/storage, pickups and encounter deadlines |
-| Character–World Visit | Position, discovered campfires and recovery selection |
+| World | Seed, generator/schema settings, area graph, elapsed time, area-qualified resources, structures/storage, pickups, surviving enemy state and defeated deadlines |
+| Character–World Visit | Area and local position, discovered areas/campfires and recovery selection |
 
-The supported collection root is `Alpine-v6`. ProfileRepository uses validated collection snapshots, atomic replacement, backup recovery and coalesced background writes. Unsupported or corrupt data is reported rather than overwritten with empty progress. Structures store stable IDs and world-space XYZ; unloaded visuals do not remove authoritative state.
+The supported collection root is `Application.persistentDataPath/Areas-v2`, using profile schema 4, area graph version 2 and terrain generator version 8. These are separate version fields. ProfileRepository uses validated collection snapshots, atomic replacement, backup recovery and coalesced background writes. Unsupported or corrupt data is reported rather than overwritten with empty progress. Structures store stable IDs, area IDs and local XYZ; unloaded visuals do not remove authoritative state.
 
 No legacy saves require compatibility. Incompatible geography/schema changes use a new supported version and collection rather than retaining old generators or adding migration machinery. Preserve unrelated old collections; reliability within the supported version remains mandatory. Supported worlds retain their recorded generation settings. Player-facing creation/deletion rules live in [UI flow](UI_DESIGN_SYSTEM.md#menus-and-charactersworlds).
 
@@ -36,7 +37,7 @@ Keep definitions, runtime code, prefabs and Editor tools beside their owning dom
 | UI | Journal/HUD, menus, themes, fonts and art |
 | Tests | Editor rules/asset checks and PlayMode integration |
 
-Bootstrap is the enabled player build scene and hosts the continuous world. Woodland retains historical authoring/test uses; RenderingLab is development-only. Neither is a second normal player region. `scripts/agent-areas.json` maps subsystems to source, tests and documentation.
+Bootstrap is the enabled player build scene and hosts persistent player/UI/session systems. Runtime-created area scenes own the active landscape; unloaded areas retain only saved state. Woodland retains historical authoring/test uses; it is not a second normal player region. `scripts/agent-areas.json` maps subsystems to source, tests and documentation.
 
 Licensed dependencies retain provenance under their vendor locations; restricted Synty/motion/audio sources remain ignored. See [the asset register](THIRD_PARTY_ASSETS.md). Original downloads, builds, logs, reports and caches are not repository inputs.
 

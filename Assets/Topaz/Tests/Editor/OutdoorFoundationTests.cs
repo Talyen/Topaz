@@ -20,7 +20,7 @@ namespace Topaz.Tests
         [Test]
         public void ProfileRejectsUnsupportedBoundsAndContentInsteadOfReinterpretingSaves()
         {
-            foreach(var value in new[]{("worldSize",(object)2048),("profileId",(object)"unknown"),("contentId",(object)"changed")})
+            foreach(var value in new[]{("worldSize",(object)2048),("profileId",(object)"unknown"),("contentId",(object)"changed"),("version",(object)6),("version",(object)7),("profileId",(object)"alpine-1024-v7")})
             {
                 var settings=Activator.CreateInstance(T("WoodlandSettings"));settings.GetType().GetField(value.Item1).SetValue(settings,value.Item2);
                 Assert.Throws<TargetInvocationException>(()=>Activator.CreateInstance(T("WildernessPlan"),new object[]{42,settings}));
@@ -28,6 +28,25 @@ namespace Topaz.Tests
             var world=Activator.CreateInstance(Type.GetType("Topaz.Gameplay.TopazWorldData, Assembly-CSharp",true));
             var copy=JsonUtility.FromJson(JsonUtility.ToJson(world),world.GetType());
             Assert.That(JsonUtility.ToJson(F(copy,"generationSettings")),Is.EqualTo(JsonUtility.ToJson(F(world,"generationSettings"))));
+        }
+        [TestCase(0),TestCase(42),TestCase(99)]
+        public void PrimaryRoutesBranchThroughTheNetworkInsteadOfMakingAStarterHub(int seed)
+        {
+            var settings=T("WoodlandSettings").GetMethod("LargeWorld").Invoke(null,null);
+            var plan=Activator.CreateInstance(T("WildernessPlan"),new object[]{seed,settings});
+            var routes=((IEnumerable)P(plan,"Routes")).Cast<object>().Take(6).ToArray();
+            var existing=new HashSet<Vector3>();
+            for(int i=0;i<routes.Length;i++)
+            {
+                var points=((IEnumerable)F(routes[i],"Points")).Cast<Vector3>().ToArray();
+                if(i==0)Assert.That(points[0],Is.EqualTo(Vector3.zero));
+                else
+                {
+                    Assert.That(new Vector2(points[0].x,points[0].z).magnitude,Is.GreaterThanOrEqualTo(63.99f));
+                    Assert.That(existing.Contains(points[0]),Is.True,"Each branch joins an earlier route.");
+                }
+                foreach(var point in points)existing.Add(point);
+            }
         }
         [Test, Category("Stress")]
         public void LargeProfileValidatesHundredSeedsAndOuterTileSeams() => ValidateLargeProfiles(Enumerable.Range(0,100));
@@ -53,6 +72,25 @@ namespace Topaz.Tests
                 Assert.That(Call(plan,"Contains",1023f,1023f),Is.True);
                 Assert.That(Call(plan,"Contains",1024f,0f),Is.False);
             }
+        }
+        [Test]
+        public void RunestoneGatewayKeepsControllerClearanceThroughItsActualOpening()
+        {
+            var root=UnityEditor.PrefabUtility.LoadPrefabContents("Assets/Topaz/Presentation/Art/World/Viking Runestones.prefab");
+            try
+            {
+                var arch=root.transform.Find("Rune Approach Arch");Assert.That(arch,Is.Not.Null);
+                var colliders=arch.GetComponentsInChildren<Collider>();Assert.That(colliders,Is.Not.Empty);
+                Physics.SyncTransforms();
+                foreach(float x in new[]{-.45f,0,.45f})foreach(float y in new[]{.4f,1,1.7f})
+                foreach(var collider in colliders)
+                {
+                    Assert.That(collider.enabled,Is.True);
+                    Assert.That(collider.Raycast(new Ray(new Vector3(x,y,-20),Vector3.forward),out _,25),Is.False,
+                        $"The passage clips controller clearance at x={x}, y={y}: {collider.name}.");
+                }
+            }
+            finally {UnityEditor.PrefabUtility.UnloadPrefabContents(root);}
         }
         [Test]
         public void RendererHasNativePostProcessingResourcesAndNoCameraDithering()

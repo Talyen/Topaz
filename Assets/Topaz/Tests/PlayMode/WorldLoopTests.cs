@@ -172,7 +172,7 @@ namespace Topaz.Tests
             Teleport(player, tree.transform.position + Vector3.back * 1.3f);
             Assert.That(Read<string>(session, "EquippedToolName"), Is.EqualTo("Sword"));
 
-            // The third-person right stick rotates the camera; it is no longer a world-space aim vector.
+            // Cursor targeting supplies the independent world-space aim point.
             AimAt(tree.transform.position);
             yield return null;
             yield return new WaitForSeconds(.1f);

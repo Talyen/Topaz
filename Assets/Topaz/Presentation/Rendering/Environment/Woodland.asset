@@ -15,9 +15,9 @@ MonoBehaviour:
   warmupCollections:
   - {fileID: 2233906009837495740, guid: e9c74bf8cd76e42e6b588a5843e19241, type: 2}
   settings:
-    version: 6
-    profileId: alpine-2048-v6
-    contentId: viking-alpine-v6
+    version: 8
+    profileId: alpine-2048-v8
+    contentId: viking-alpine-v8
     worldSize: 2048
     resolution: 65
     size: 128
@@ -40,7 +40,7 @@ MonoBehaviour:
   distantGroundColors:
   - {r: 0.064876884, g: 0.110404015, b: 0.017773438, a: 1}
   - {r: 0.22414303, g: 0.1577282, b: 0.10313702, a: 1}
-  - {r: 0.07857704, g: 0.07112789, b: 0.06456947, a: 1}
+  - {r: 0.23758622, g: 0.19691633, b: 0.14565754, a: 1}
   - {r: 0.0400049, g: 0.059025764, b: 0.016409112, a: 1}
   trees:
   - {fileID: 1534915113196993060, guid: 173f4b49cd94346e5a557987fc3100c5, type: 3}
@@ -213,7 +213,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 2744741529678579239, guid: de76ea02c20d1465d80d2a726477768f, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.23760001, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 3.5172575, y: 1.32, z: 1.6039551}
     footprint: 3
@@ -225,7 +225,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 2691145423057589894, guid: e938c94ae8b7d404d974a7fb3933f436, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.2772, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 4.9442277, y: 1.54, z: 1.8842833}
     footprint: 3
@@ -237,7 +237,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 2609714807496386911, guid: a7813ea0c8d60444bb153a5ffb3b7dab, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.3168, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 3.1336443, y: 1.76, z: 1.7371968}
     footprint: 3
@@ -249,7 +249,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 6043505252461806977, guid: 1f8fcc2c5859340f581c748a0988c463, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.35640004, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 2.8223069, y: 1.9800001, z: 1.8467447}
     footprint: 3
@@ -261,7 +261,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 4278089468814142477, guid: a77332e4e97384b66acb9a8b9378c0c8, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.39600003, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 5.34149, y: 2.2, z: 3.5715096}
     footprint: 3
@@ -273,7 +273,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 14807141939719224, guid: 73093d0d583e6445c9ba9b0156f199e8, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.43560004, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 5.039918, y: 2.42, z: 3.012842}
     footprint: 3
@@ -285,7 +285,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 1158140531357500896, guid: 222f5d37f51e5431a8bbcdd84db002cb, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.47520003, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 4.3248696, y: 2.64, z: 3.275514}
     footprint: 3
@@ -297,7 +297,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 6502184865137203372, guid: ad3f2fb0f4e6b46e59f372e086c6a7fb, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.54, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 6.5341725, y: 3, z: 2.6817114}
     footprint: 3
@@ -309,7 +309,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 177135040525947707, guid: 9cce0d74989c847c6a7ad77733f8ca03, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.54, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 7.0935163, y: 3, z: 3.4924438}
     footprint: 3
@@ -321,7 +321,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 1500011736451583013, guid: 8c047965568094004935195025b00b73, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.54, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 3.7809122, y: 3, z: 3.630965}
     footprint: 3
@@ -333,7 +333,7 @@ MonoBehaviour:
     developmentProxy: 0
   - role: 2
     prefab: {fileID: 776341293398178520, guid: 8007dbf55baa84f4793645437fe1c630, type: 3}
-    groundAnchor: {x: 0, y: 0, z: 0}
+    groundAnchor: {x: 0, y: 0.54, z: 0}
     interactionAnchor: {x: 0, y: 0, z: 0}
     visualSize: {x: 2.6464264, y: 3, z: 3.010958}
     footprint: 3

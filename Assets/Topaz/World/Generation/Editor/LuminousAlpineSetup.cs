@@ -15,7 +15,7 @@ namespace Topaz.Generation.Editor
         [MenuItem("Topaz/Generation/Configure Luminous Alpine")]
         public static void Apply()
         {
-            FantasyPresentationSetup.Configure(false);
+            FantasyPresentationSetup.CreateFantasyLut();
             if(!AssetDatabase.IsValidFolder(Cover.TrimEnd('/')))AssetDatabase.CreateFolder(Root.TrimEnd('/'),"GroundCover");
             var preset=AssetDatabase.LoadAssetAtPath<WoodlandPreset>("Assets/Topaz/Presentation/Rendering/Environment/Woodland.asset");
             BindTerrain(preset);
@@ -40,7 +40,9 @@ namespace Topaz.Generation.Editor
                 }
                 finally{PrefabUtility.UnloadPrefabContents(root);}
             }
+            Topaz.Rendering.Editor.FineAlpineGrassSetup.Apply();
             ConfigureTreeLods();
+            ConfigureCrownPine();
             AlpineAssetSetup.ConfigureCompositions(preset);
             ConfigureCarriedLantern();
             ConfigureCharacterMotion();
@@ -49,6 +51,63 @@ namespace Topaz.Generation.Editor
             ConfigureStarterCamp();
             preset.settings=WoodlandSettings.LargeWorld();preset.ValidateContent();EditorUtility.SetDirty(preset);AssetDatabase.SaveAssets();SurfaceCacheSetup.ConfigureModelReadability();SurfaceCacheSetup.ConfigureVolumeDefaults();
             Debug.Log("[Topaz/Art] Authored Alpine-v5 cover, grove materials and landmark compositions.");
+        }
+        [MenuItem("Topaz/Generation/Configure Viking Crown Pines")]
+        public static void ConfigureCrownPine()
+        {
+            // Fuller crowns dominate; two more open artist forms retain forest rhythm.
+            var variants=new[]{"02","02","01","02","04"};
+            for(int family=0;family<variants.Length;family++)
+            {
+                string sourcePath="Assets/Synty/PolygonVikingRealm/Prefabs/Environment/SM_Env_Tree_Pine_"+variants[family]+".prefab";
+                var source=AssetDatabase.LoadAssetAtPath<GameObject>(sourcePath);
+                if(source==null)throw new InvalidOperationException("Missing owned Viking crown pine.");
+                foreach(string path in source.GetComponentsInChildren<MeshFilter>().Select(f=>AssetDatabase.GetAssetPath(f.sharedMesh)).Distinct())
+                    if(AssetImporter.GetAtPath(path) is ModelImporter importer && (!importer.isReadable || !importer.generateMeshLods))
+                    {importer.isReadable=true;importer.generateMeshLods=true;importer.SaveAndReimport();}
+                source=AssetDatabase.LoadAssetAtPath<GameObject>(sourcePath);
+                string name="Alpine Pine "+(family+1);
+                var near=PrefabUtility.LoadPrefabContents(Root+name+".prefab");Bounds target;
+                try
+                {
+                    var group=near.GetComponentInChildren<LODGroup>();
+                    var renderers=group!=null?group.GetLODs()[0].renderers:near.GetComponentsInChildren<Renderer>();
+                    target=renderers[0].bounds;foreach(var renderer in renderers.Skip(1))target.Encapsulate(renderer.bounds);
+                }
+                finally{PrefabUtility.UnloadPrefabContents(near);}
+                foreach(bool distant in new[]{false,true})
+                {
+                    string path=Root+name+(distant?" Distant":"")+".prefab";
+                    var root=PrefabUtility.LoadPrefabContents(path);
+                    try
+                    {
+                        // Keep pivots/colliders/GUIDs; native mesh LODs simplify the same
+                        // opaque crown without changing materials or swapping to thin cards.
+                        while(root.transform.childCount>0)Object.DestroyImmediate(root.transform.GetChild(0).gameObject);
+                        var model=(GameObject)PrefabUtility.InstantiatePrefab(source,root.transform);model.name="Viking Crown Pine";
+                        SyntySampleSetup.Fit(model,target.size,new Vector3(target.center.x,target.min.y,target.center.z));
+                        foreach(var collider in model.GetComponentsInChildren<Collider>(true))Object.DestroyImmediate(collider);
+                        foreach(var renderer in model.GetComponentsInChildren<Renderer>(true))
+                        {
+                            renderer.shadowCastingMode=distant?ShadowCastingMode.Off:ShadowCastingMode.On;
+                            renderer.renderingLayerMask=distant?Topaz.Rendering.SurfaceCacheLighting.VisualOnlyRenderingLayer:1u;
+                            renderer.motionVectorGenerationMode=MotionVectorGenerationMode.Object;
+                            var mesh=renderer.GetComponent<MeshFilter>()?.sharedMesh;
+                            if(mesh!=null && mesh.lodCount>1)
+                            {
+                                renderer.forceMeshLod=distant?(short)Math.Min(5,mesh.lodCount-1):(short)-1;
+                                renderer.meshLodSelectionBias=distant?0:1;
+                                // A stable coarse crown supplies diffuse GI; presentation stays
+                                // independent so shadow/color geometry can use native screen LODs.
+                                if(renderer is MeshRenderer meshRenderer)meshRenderer.globalIlluminationMeshLod=(ushort)Math.Min(2,mesh.lodCount-1);
+                            }
+                        }
+                        PrefabUtility.SaveAsPrefabAsset(root,path);
+                    }
+                    finally{PrefabUtility.UnloadPrefabContents(root);}
+                }
+            }
+            AssetDatabase.SaveAssets();
         }
         [MenuItem("Topaz/Generation/Configure Native Tree LODs")]
         public static void ConfigureTreeLods()
@@ -246,16 +305,44 @@ namespace Topaz.Generation.Editor
                 layers[i].tileSize=Vector2.one*(i==2?4:3);layers[i].normalScale=.65f;layers[i].smoothness=.08f;
                 layers[i].diffuseRemapMin=Vector4.zero;layers[i].diffuseRemapMax=tints[i];
                 EditorUtility.SetDirty(layers[i]);
-                var rt=RenderTexture.GetTemporary(16,16,0,RenderTextureFormat.ARGBHalf,RenderTextureReadWrite.Linear);
-                var previous=RenderTexture.active;var sample=new Texture2D(16,16,TextureFormat.RGBAFloat,false,true);
-                try
-                {
-                    Graphics.Blit(source.diffuseTexture,rt);RenderTexture.active=rt;sample.ReadPixels(new Rect(0,0,16,16),0,0);sample.Apply();
-                    var pixels=sample.GetPixels();Color average=Color.clear;foreach(var pixel in pixels)average+=pixel;average/=pixels.Length;average.a=1;
-                    preset.distantGroundColors[i]=new Color(average.r*tints[i].x,average.g*tints[i].y,average.b*tints[i].z,1);
-                }
-                finally{RenderTexture.active=previous;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(sample);}
+                if(i==2)AssignFacetedRock(layers[i]);
+                preset.distantGroundColors[i]=AverageLayer(layers[i]);
             }
+        }
+        [MenuItem("Topaz/Generation/Configure Faceted Rock Ground")]
+        public static void ConfigureFacetedRockGround()
+        {
+            var preset=AssetDatabase.LoadAssetAtPath<WoodlandPreset>("Assets/Topaz/Presentation/Rendering/Environment/Woodland.asset");
+            if(preset==null || preset.rockLayer==null)throw new InvalidOperationException("Rock terrain binding is missing.");
+            AssignFacetedRock(preset.rockLayer);
+            preset.distantGroundColors[2]=AverageLayer(preset.rockLayer);
+            EditorUtility.SetDirty(preset);AssetDatabase.SaveAssets();
+        }
+        static void AssignFacetedRock(TerrainLayer layer)
+        {
+            const string textures="Assets/Synty/PolygonNatureBiomes/PNB_Alpine_Mountain/Textures/";
+            var albedo=AssetDatabase.LoadAssetAtPath<Texture2D>(textures+"Rock_Texture_01.png");
+            var normal=AssetDatabase.LoadAssetAtPath<Texture2D>(textures+"Rock_Normals_01.png");
+            if(albedo==null || normal==null)throw new InvalidOperationException("Owned faceted rock textures are missing.");
+            layer.diffuseTexture=albedo;layer.normalMapTexture=normal;layer.maskMapTexture=null;
+            layer.tileSize=Vector2.one*8;layer.normalScale=.35f;layer.smoothness=.08f;
+            layer.diffuseRemapMin=Vector4.zero;layer.diffuseRemapMax=new Vector4(.8f,.91f,1,1);
+            EditorUtility.SetDirty(layer);
+        }
+        static Color AverageLayer(TerrainLayer layer)
+        {
+            var rt=RenderTexture.GetTemporary(16,16,0,RenderTextureFormat.ARGBHalf,RenderTextureReadWrite.Linear);
+            var previous=RenderTexture.active;var sample=new Texture2D(16,16,TextureFormat.RGBAFloat,false,true);
+            try
+            {
+                Graphics.Blit(layer.diffuseTexture,rt);RenderTexture.active=rt;
+                sample.ReadPixels(new Rect(0,0,16,16),0,0);sample.Apply();
+                var pixels=sample.GetPixels();Color average=Color.clear;
+                foreach(var pixel in pixels)average+=pixel;average/=pixels.Length;
+                var tint=layer.diffuseRemapMax;
+                return new Color(average.r*tint.x,average.g*tint.y,average.b*tint.z,1);
+            }
+            finally{RenderTexture.active=previous;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(sample);}
         }
         static GroundCoverPrototype Detail(string name,string source,Vector2 width,Vector2 height)
         {

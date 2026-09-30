@@ -46,7 +46,7 @@ namespace Topaz.Menus
 
         static readonly int[] Widths = { 1280, 1600, 1920 };
         static readonly int[] Heights = { 720, 900, 1080 };
-        static readonly float[] CameraSizes = { 4.5f, 6.5f, 8f };
+        static readonly float[] CameraSizes = { 24f, 30f, 38f };
         static readonly float[] UiScales = { 1f, 1.25f, 1.5f };
         static readonly Vector2 UiReferenceResolution = new Vector2(1920f, 1080f);
 
@@ -107,7 +107,7 @@ namespace Topaz.Menus
             }
             _borderless = PlayerPrefs.GetInt("Topaz.Borderless", 1) == 1;
             _windowIndex = Mathf.Clamp(PlayerPrefs.GetInt("Topaz.WindowPreset", 1), 0, Widths.Length - 1);
-            _cameraIndex = Mathf.Clamp(PlayerPrefs.GetInt("Topaz.CameraPreset", 1), 0, CameraSizes.Length - 1);
+            _cameraIndex = Mathf.Clamp(PlayerPrefs.GetInt("Topaz.IsometricCameraPreset.v1", 1), 0, CameraSizes.Length - 1);
             cameraRig.SetZoom(CameraSizes[_cameraIndex]);
             ApplyDisplay();
             SetState(ScreenState.Title);
@@ -131,6 +131,7 @@ namespace Topaz.Menus
 
         public bool HandleEscape()
         {
+            session.ConsumeGameplayInput();
             if (visualLab.IsOpen)
             {
                 visualLab.Close();
@@ -225,6 +226,7 @@ namespace Topaz.Menus
 
         void SetState(ScreenState state)
         {
+            session.ConsumeGameplayInput();
             _inventoryFromPause = false;
             if (state != ScreenState.Selection) selection.Close();
             _state = state;
@@ -309,7 +311,7 @@ namespace Topaz.Menus
             if (Application.isEditor) return;
             PlayerPrefs.SetInt("Topaz.Borderless", _borderless ? 1 : 0);
             PlayerPrefs.SetInt("Topaz.WindowPreset", _windowIndex);
-            PlayerPrefs.SetInt("Topaz.CameraPreset", _cameraIndex);
+            PlayerPrefs.SetInt("Topaz.IsometricCameraPreset.v1", _cameraIndex);
             PlayerPrefs.SetInt("Topaz.UiScalePreset", _uiScaleIndex);
             PlayerPrefs.Save();
         }

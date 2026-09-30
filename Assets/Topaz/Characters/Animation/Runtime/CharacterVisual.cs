@@ -22,6 +22,10 @@ namespace Topaz.Characters
         GameObject toolHead;
         void Start()
         {
+            int layer=LayerMask.NameToLayer("Character Visibility");
+            if(layer>=0 && (GetComponentInParent<Topaz.Player.PlayerController>()!=null || GetComponentInParent<Topaz.Combat.EnemyCombatant>()!=null))
+                foreach(var renderer in GetComponentsInChildren<Renderer>(true))
+                {renderer.gameObject.layer=layer;renderer.renderingLayerMask|=0x80000000u;}
             if (GetComponent<PrototypeHumanoidMotion>() != null ||
                 (animator != null && animator.runtimeAnimatorController != null)) return;
             session=GetComponentInParent<Topaz.Gameplay.WorldSession>();

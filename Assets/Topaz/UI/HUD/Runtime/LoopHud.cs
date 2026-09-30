@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Topaz.Gameplay
 {
     /// <summary>Small, readable uGUI view over the first loop; it owns no game state.</summary>
-    public sealed class LoopHud : MonoBehaviour
+    public sealed partial class LoopHud : MonoBehaviour
     {
         [SerializeField] TMP_Text statusLabel;
         [SerializeField] TMP_FontAsset journalHeadingFont;

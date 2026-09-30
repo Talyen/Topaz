@@ -7,6 +7,25 @@ namespace Topaz.Tests
     {
         static readonly Type Schedule=Type.GetType("Topaz.Gameplay.WeatherSchedule, Assembly-CSharp",true);
         [Test]
+        public void MacStartingPresetPreservesOtherPreferencesAndLaterExplicitSelections()
+        {
+            var type=Type.GetType("Topaz.Rendering.GraphicsPreferences, Assembly-CSharp",true);
+            var prefs=Activator.CreateInstance(type);
+            void Set(string name,object value)=>type.GetField(name).SetValue(prefs,value);
+            object Get(string name)=>type.GetField(name).GetValue(prefs);
+            Set("bokehAperture",6f);Set("exposure",.7f);Set("foliageDensity",.9f);Set("lightingStyle",0);
+            var apply=type.GetMethod("ApplyMacStartingPreset");
+            Assert.That(apply.Invoke(prefs,null),Is.True);
+            Assert.That(Get("look"),Is.EqualTo(0));Assert.That(Get("antiAliasing"),Is.EqualTo(4));
+            Assert.That(Get("focusMode"),Is.EqualTo(2));Assert.That(Get("bokehAperture"),Is.EqualTo(6f));
+            Assert.That(Get("exposure"),Is.EqualTo(.7f));Assert.That(Get("foliageDensity"),Is.EqualTo(.9f));
+            Assert.That(Get("lightingStyle"),Is.EqualTo(0));
+            Set("look",1);Set("antiAliasing",3);
+            prefs=UnityEngine.JsonUtility.FromJson(UnityEngine.JsonUtility.ToJson(prefs),type);
+            Assert.That(apply.Invoke(prefs,null),Is.False);
+            Assert.That(Get("look"),Is.EqualTo(1));Assert.That(Get("antiAliasing"),Is.EqualTo(3));
+        }
+        [Test]
         public void WetnessAccumulatesDriesAndIsFrameRateIndependent()
         {
             var type=Type.GetType("Topaz.Rendering.EnvironmentPresentationState, Assembly-CSharp",true);

@@ -170,15 +170,15 @@ namespace Topaz.Generation
                 if(!collection.isWarmedUp)Debug.LogWarning($"[Topaz/Rendering] Shader warmup stopped at {collection.completedWarmupCount}/{collection.totalGraphicsStateCount}; remaining states compile on use.");
             }
             PreparationStage="terrain";
-            foreach(var key in Neighborhood(center,1))
+            foreach(var key in Plan.Settings.boundedAreas?AllAreaChunks():Neighborhood(center,1))
             {yield return PrepareTerrain(key);yield return CommitTerrain(key);}
             ConnectTerrains();
-            for(int i=0;i<5;i++){terrainPool.Push(CreateTerrainSlot());yield return null;}
+            if(!Plan.Settings.boundedAreas)for(int i=0;i<5;i++){terrainPool.Push(CreateTerrainSlot());yield return null;}
             PreparationStage="scenery";
             int initialBatch=0;
-            foreach(var key in Neighborhood(center,4)){CreateDistantChunk(key);if(++initialBatch%8==0)yield return null;}
-            foreach(var key in Neighborhood(center,3))yield return CreateDistantTrees(key);
-            foreach(var site in Plan.Destinations)
+            if(!Plan.Settings.boundedAreas)foreach(var key in Neighborhood(center,4)){CreateDistantChunk(key);if(++initialBatch%8==0)yield return null;}
+            if(!Plan.Settings.boundedAreas)foreach(var key in Neighborhood(center,3))yield return CreateDistantTrees(key);
+            foreach(var site in Plan.Settings.boundedAreas?Array.Empty<WildernessPlan.Destination>():Plan.Destinations)
             {
                 var source=site.Kind==DestinationKind.TitansGrave?owner.preset.titansGraveDistant:
                     site.Kind==DestinationKind.SplitPeak?owner.preset.splitPeakDistant:null;
@@ -193,7 +193,7 @@ namespace Topaz.Generation
             gameObject.AddComponent<Topaz.Rendering.WildernessWater>().Initialize(Plan);
             CreateBoundary();
             // The owned skyline bake keeps distant peaks without long-range geometry or another runtime camera.
-            if(Resources.Load<Cubemap>("TopazAlpineBackdrop")==null)
+            if(!Plan.Settings.boundedAreas && Resources.Load<Cubemap>("TopazAlpineBackdrop")==null)
             for(int i=0;i<owner.preset.backgroundMountains.Length;i++)
             {
                 float angle=i*Mathf.PI*.5f;float radius=Plan.Extent+600;
@@ -206,7 +206,63 @@ namespace Topaz.Generation
             navData=new NavMeshData(owner.navigation.agentTypeID);
             owner.navigation.navMeshData=navData;owner.navigation.AddData();
             PreparationStage="navigation and encounters";
-            yield return Stream();
+            if(Plan.Settings.boundedAreas)yield return AreaLoop();else yield return Stream();
+        }
+        IEnumerable<WildernessPlan.Chunk> AllAreaChunks()
+        {for(int z=Plan.MinChunk;z<Plan.MaxChunk;z++)for(int x=Plan.MinChunk;x<Plan.MaxChunk;x++)yield return new WildernessPlan.Chunk(x,z);}
+        IEnumerator AreaLoop()
+        {
+            yield return null; // Save authority is bound before resources realize.
+            foreach(var pair in loaded){yield return Populate(pair.Key,pair.Value);pair.Value.Populated=true;}
+            CreateAreaRockFrames();
+            CreateAreaExits();
+            session.PrepareStreamedStructures(player.position);
+            RefreshBuiltArea(new Bounds(Vector3.zero,new Vector3(Plan.Settings.worldSize,200,Plan.Settings.worldSize)));
+            yield return UpdateNavigation();session.RefreshStreamedWorld();InitialReady=true;
+            PreparationStage="ready";
+            while(!disposed)
+            {if(navigationDirty){yield return UpdateNavigation();session.RefreshStreamedWorld();}yield return new WaitForSecondsRealtime(.1f);}
+        }
+        void CreateAreaExits()
+        {
+            foreach(var passage in Plan.Settings.areaExits)
+            {
+                var point=Plan.ExitPosition(passage);point.y=Plan.Height(point.x,point.z);
+                var root=new GameObject("Passage: "+passage.kind);root.transform.SetParent(transform,false);root.transform.position=point;
+                root.AddComponent<AreaExit>().Initialize(passage,session.ActiveWorld.graph.Find(passage.destinationAreaId).label);
+                GameObject feature=passage.kind==PassageKind.Bridge?owner.preset.bridge:
+                    passage.kind==PassageKind.RuinedGate && owner.preset.destinations.Length>(int)DestinationKind.RuinArch?owner.preset.destinations[(int)DestinationKind.RuinArch]:null;
+                if(feature!=null)Instantiate(feature,point,Quaternion.Euler(0,passage.angle*Mathf.Rad2Deg,0),root.transform);
+                Vector3 side=new Vector3(Mathf.Cos(passage.angle),0,-Mathf.Sin(passage.angle));
+                var choices=passage.kind==PassageKind.WoodedBend?owner.preset.trees:owner.preset.rocks;
+                if(choices.Length==0)continue;
+                int count=passage.kind==PassageKind.WoodedBend?6:4;
+                for(int i=0;i<count;i++)
+                {
+                    Vector3 outward=passage.Position(1);
+                    var p=point+side*(i%2==0?-6:6)+outward*(i/2*6-3);p.y=Plan.Height(p.x,p.z);
+                    var source=choices[i%choices.Length];if(source==null)continue;
+                    var frame=Instantiate(source,p,Quaternion.Euler(0,passage.angle*Mathf.Rad2Deg,0),root.transform);
+                    var binding=owner.preset.Binding(source);if(binding!=null)frame.transform.position-=frame.transform.TransformVector(binding.groundAnchor);
+                }
+            }
+        }
+        void CreateAreaRockFrames()
+        {
+            int index=0;var choices=owner.preset.cliffs.Length>0?owner.preset.cliffs:owner.preset.rocks;
+            if(choices.Length==0)return;
+            foreach(var point in Plan.AreaRockFrames())
+            {
+                var source=choices[index++%choices.Length];if(source==null)continue;
+                var rock=Instantiate(source,point,Quaternion.Euler(0,Plan.Random((int)point.x,(int)point.z,21001)*360,0),transform);
+                var renderers=rock.GetComponentsInChildren<Renderer>();
+                if(renderers.Length>0)
+                {
+                    var bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);
+                    float span=Mathf.Max(bounds.size.x,bounds.size.z);if(span>9)rock.transform.localScale*=9/span;
+                }
+                var binding=owner.preset.Binding(source);if(binding!=null)rock.transform.position-=rock.transform.TransformVector(binding.groundAnchor);
+            }
         }
         public void InvalidateNavigation() => navigationDirty=true;
         void ConfigureNavigation()
@@ -215,6 +271,7 @@ namespace Topaz.Generation
             nav.collectObjects=CollectObjects.Volume;
             nav.center=nav.transform.InverseTransformPoint(new Vector3((center.X+.5f)*128,128,(center.Z+.5f)*128));
             nav.size=new Vector3(384,320,384);
+            if(Plan.Settings.boundedAreas){nav.center=nav.transform.InverseTransformPoint(new Vector3(0,128,0));nav.size=new Vector3(Plan.Settings.worldSize+128,320,Plan.Settings.worldSize+128);}
             nav.useGeometry=NavMeshCollectGeometry.PhysicsColliders;
         }
         IEnumerable<WildernessPlan.Chunk> Neighborhood(WildernessPlan.Chunk origin,int radius)
@@ -397,7 +454,7 @@ namespace Topaz.Generation
                 if(!chunk.Sites.Add(site.Id))continue;
                 GameObject prefab;
                 var choices=site.Kind==0?preset.trees:site.Kind==1?preset.rocks:preset.undergrowth;
-                if(site.Kind==1 && Plan.Slope(site.X,site.Z)>.35f && Plan.Height(site.X,site.Z)>40 && preset.cliffs.Length>0)choices=preset.cliffs;
+                if(site.Kind==1 && Plan.Slope(site.X,site.Z)>.35f && preset.cliffs.Length>0)choices=preset.cliffs;
                 if(site.Kind==1 && Plan.Height(site.X,site.Z)>70 && preset.snowRocks.Length>0 && Plan.Random((int)site.X,(int)site.Z,904)<.35f)choices=preset.snowRocks;
                 int choice=(int)(Plan.Random((int)site.X,(int)site.Z,901)*Math.Max(1,choices.Length));
                 prefab=choices.Length>0?choices[choice]:site.Kind==0?preset.treeVisual:site.Kind==1?preset.rockVisual:preset.detail;
@@ -464,6 +521,16 @@ namespace Topaz.Generation
                 int index=(int)site.Kind;
                 if(index>=preset.destinations.Length || preset.destinations[index]==null)continue;
                 var landmark=Instantiate(preset.destinations[index],Position(site),Quaternion.Euler(0,site.Yaw,0),chunk.Root.transform);
+                if(Plan.Settings.boundedAreas && (site.Kind==DestinationKind.SplitPeak || site.Kind==DestinationKind.TitansGrave))
+                {
+                    var renderers=landmark.GetComponentsInChildren<Renderer>();
+                    if(renderers.Length>0)
+                    {
+                        var bounds=renderers[0].bounds;foreach(var renderer in renderers)bounds.Encapsulate(renderer.bounds);
+                        float diameter=Mathf.Max(bounds.size.x,bounds.size.z);
+                        if(diameter>site.Radius*2)landmark.transform.localScale*=site.Radius*2/diameter;
+                    }
+                }
                 if(site.Kind==DestinationKind.SplitPeak)FitSplitPeak(site,landmark);
                 if(distantDestinations.TryGetValue(site.Id,out var far))far.SetActive(false);
                 yield return null;
@@ -490,7 +557,8 @@ namespace Topaz.Generation
             ConfigureNavigation();Physics.SyncTransforms();
             if(navData!=null) { double submit=Time.realtimeSinceStartupAsDouble;navigationOperation=owner.navigation.UpdateNavMesh(navData);PeakNavigationSubmitMs=Mathf.Max(PeakNavigationSubmitMs,(float)((Time.realtimeSinceStartupAsDouble-submit)*1000));while(!navigationOperation.isDone)yield return null;navigationOperation=null; }
             if(disposed || epoch!=requestEpoch){building=false;yield break;}
-            navigationBounds=new Bounds(new Vector3((center.X+.5f)*128,128,(center.Z+.5f)*128),new Vector3(384,320,384));
+            navigationBounds=Plan.Settings.boundedAreas?new Bounds(new Vector3(0,128,0),new Vector3(Plan.Settings.worldSize+128,320,Plan.Settings.worldSize+128)):
+                new Bounds(new Vector3((center.X+.5f)*128,128,(center.Z+.5f)*128),new Vector3(384,320,384));
             foreach(var chunk in loaded.Values)chunk.NavigationReady=false;
             foreach(var chunk in ready)chunk.NavigationReady=true;
             NavigationReady=navData!=null;building=false;
@@ -499,6 +567,7 @@ namespace Topaz.Generation
         }
         void ValidateRequiredAccess()
         {
+            if(Plan.Settings.boundedAreas)return; // Area graph/routes are checked separately; controller coverage exercises actual thresholds.
             // Player construction can intentionally alter access; validate the untouched generated baseline only.
             if(session.ActiveWorld.structures.Count>0)return;
             var path=new NavMeshPath();
@@ -514,6 +583,7 @@ namespace Topaz.Generation
             }
             foreach(var site in Plan.Discoveries)
             {
+                if(Plan.Settings.boundedAreas && site.Kind==1)continue; // The middle beat is a quiet discovery.
                 if(Math.Abs(site.Owner.X-center.X)>1||Math.Abs(site.Owner.Z-center.Z)>1||!loaded.TryGetValue(site.Owner,out var chunk)||!chunk.Populated)continue;
                 var route=Plan.Routes.First(r=>r.DestinationId==site.Id);
                 Check(route.Points[route.Points.Count-2],Position(site),site.Id);
@@ -579,12 +649,13 @@ namespace Topaz.Generation
                 string id=siteId+".enemy."+n;
                 if(enemies.Any(e=>e.SpawnId==id))continue;
                 Vector3 point=center+forward*(radius+4)+right*((n-(count-1)*.5f)*4);
+                if(Plan.Settings.boundedAreas && Plan.Settings.areaExits.Any(exit=>(Plan.ArrivalPosition(exit)-new Vector3(point.x,0,point.z)).sqrMagnitude<17*17))continue;
                 point.y=Plan.Height(point.x,point.z);
                 if(CampSafety.IsProtected(point) || !NavMesh.SamplePosition(point,out var hit,3,NavMesh.AllAreas))continue;
                 var template=templates[n%templates.Length];
                 if(template==null)continue;
                 var enemy=Instantiate(template,hit.position,Quaternion.identity,chunk.Root.transform);
-                enemy.SetGeneratedId(id);enemy.BindTarget(session.GetComponent<PlayerVitality>(),FindFirstObjectByType<SafeZone>());
+                enemy.SetGeneratedId(id);enemy.BindTarget(session.GetComponent<PlayerVitality>(),FindFirstObjectByType<SafeZone>(FindObjectsInactive.Include));
                 enemy.gameObject.SetActive(true);session.RegisterEnemy(enemy);enemies.Add(enemy);
             }
         }
@@ -600,6 +671,13 @@ namespace Topaz.Generation
         public IEnumerator PrepareDestination(Vector3 position) => Guard(PrepareDestinationCore(position));
         IEnumerator PrepareDestinationCore(Vector3 position)
         {
+            if(Plan.Settings.boundedAreas)
+            {
+                while(!InitialReady && Failure==null && !disposed)yield return null;
+                session.PrepareStreamedStructures(position);
+                while((navigationDirty || building) && Failure==null && !disposed)yield return null;
+                yield break;
+            }
             // Death recovery and diagnostic/travel requests must not populate/unload the same roots concurrently.
             while(preparingDestination && !disposed)yield return null;
             if(disposed)yield break;

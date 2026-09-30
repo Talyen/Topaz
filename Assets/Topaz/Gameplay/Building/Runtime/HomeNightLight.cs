@@ -4,6 +4,7 @@ namespace Topaz.Gameplay
 {
     public sealed class HomeNightLight : MonoBehaviour
     {
+        [SerializeField] Topaz.Player.LanternVisual glow;
         Light _light;
         WorldSession _session;
 
@@ -22,7 +23,9 @@ namespace Topaz.Gameplay
         {
             if (_light == null || _session == null) return;
             double hour = _session.WorldHours % WorldClock.HoursPerDay;
-            _light.enabled = hour >= 18d || hour < 6d;
+            bool lit = hour >= 18d || hour < 6d;
+            _light.enabled = lit;
+            if (glow != null) glow.SetLit(lit);
         }
     }
 }

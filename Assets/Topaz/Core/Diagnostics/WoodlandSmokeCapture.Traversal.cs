@@ -34,7 +34,7 @@ namespace Topaz
             public List<GpuPassTiming> gpuPasses=new List<GpuPassTiming>();
             public int seed, frames, blockedFrames, over16Ms, over20Ms, over33Ms, errors, loaded, directionChanges, width, height, gpuSamples, cpuSamples;
             public double meanGpuMs,meanCpuMs,meanMainThreadMs,meanRenderThreadMs;
-            public bool focused = true, instrumentedMotionCapture, aoDownsample;
+            public bool focused = true, instrumentedMotionCapture, aoDownsample, gpuOcclusion;
             public float seconds, distance, p50, p95, p99, maximum, terrainCommitMs, preparationMs, navigationSubmitMs;
             public long allocatedMemory;
             public Vector3 start, end, cameraStart, cameraEnd, cameraEulerStart, cameraEulerEnd;
@@ -73,13 +73,14 @@ namespace Topaz
             var downsample=aoSettings.GetType().GetField("Downsample",M0Fields);bool priorDownsample=(bool)downsample.GetValue(aoSettings);
             if(Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-half-ao")>=0)downsample.SetValue(aoSettings,true);
             report.aoDownsample=(bool)downsample.GetValue(aoSettings);
+            report.gpuOcclusion=pipeline.gpuResidentDrawerEnableOcclusionCullingInCameras;
             report.quality=look.HighQuality?"High":"Balanced";report.gi=look.GlobalIllumination;report.aa=look.CurrentAa;report.depthOfField=look.CurrentDepthMode;
             report.shadowResolution=pipeline.mainLightShadowmapResolution;report.shadowCascades=pipeline.shadowCascadeCount;report.shadowDistance=pipeline.shadowDistance;
             report.worldHours=session.WorldHours;report.cloudiness=weather.Cloudiness;report.rain=weather.Rain;
             report.initialRenderScale=report.minimumRenderScale=report.maximumRenderScale=pipeline.renderScale;
             var adapter=Camera.main.GetComponent<PlayerCamera>();bool adapterEnabled=adapter.enabled;
-            float oldZoom=adapter.CurrentZoom;var pitchField=typeof(PlayerCamera).GetField("pitch",M0Fields);float oldPitch=(float)pitchField.GetValue(adapter);
-            traversalSession=session;traversalCamera=adapter;adapter.enabled=false;adapter.SetZoom(6.5f);pitchField.SetValue(adapter,14f);
+            float oldZoom=adapter.CurrentZoom;
+            traversalSession=session;traversalCamera=adapter;adapter.SetZoom(30);
             adapter.LookAtPoint(session.transform.position+Vector3.forward*10);
             yield return null;yield return null;
             report.cameraStart=Camera.main.transform.position;report.cameraEulerStart=Camera.main.transform.eulerAngles;
@@ -131,8 +132,13 @@ namespace Topaz
             float began = Time.realtimeSinceStartup;
             bool capture=Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-traversal-motion")>=0;
             Coroutine motion=null;
+            var previousBackground=InputSystem.settings.backgroundBehavior;
             try
             {
+                // Synthetic review input must keep running when the owner uses another app,
+                // as in M0. The focused flag still disqualifies background pacing evidence.
+                InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
+                InputSystem.EnableDevice(pad);
                 while (Time.realtimeSinceStartup - began < duration)
                 {
                     if(capture && motion==null && Time.realtimeSinceStartup-began>3)
@@ -200,8 +206,9 @@ namespace Topaz
             finally
             {
                 downsample.SetValue(aoSettings,priorDownsample);InputSystem.RemoveDevice(pad);
+                InputSystem.settings.backgroundBehavior=previousBackground;
                 traversalCamera=null;traversalSession=null;traversalClock=null;
-                if(adapter!=null){adapter.SetZoom(oldZoom);pitchField.SetValue(adapter,oldPitch);adapter.enabled=adapterEnabled;}
+                if(adapter!=null){adapter.SetZoom(oldZoom);adapter.enabled=adapterEnabled;}
             }
             if (Array.IndexOf(Environment.GetCommandLineArgs(), "--topaz-smoke-quit") >= 0) Application.Quit();
         }

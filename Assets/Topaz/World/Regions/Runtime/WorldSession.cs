@@ -9,6 +9,7 @@ using Topaz.Expedition;
 using Topaz.Player;
 using Topaz.Menus;
 using Topaz.Rendering;
+using Topaz.Generation;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -78,6 +79,11 @@ namespace Topaz.Gameplay
         InputAction _placeAction;
         InputAction _cancelAction;
         InputAction _inventoryAction;
+        InputAction _pauseAction;
+        bool _pauseRequested;
+        int _inputConsumedUntil = -1;
+        public bool GameplayInputConsumed => Time.frameCount <= _inputConsumedUntil;
+        public bool IsBuilding => homeBuilds != null && homeBuilds.Active;
         InputAction _rotateBuildAction;
         MaterialPropertyBlock _previewProperties;
         Vector3 _previewPosition;
@@ -226,7 +232,7 @@ namespace Topaz.Gameplay
         public bool MenuOpen => (hud != null && hud.MenuOpen) || (menus != null && menus.BlockGameplay);
         public bool BlockMovement => (ActiveRegion?.Streaming != null && !ActiveRegion.Streaming.IsReadyAt(transform.position)) || _generationFailed || MenuOpen || _traveling || _resting || _recovering;
         public bool SuppressAttack => (ActiveRegion?.Streaming != null && !ActiveRegion.Streaming.InitialReady) || _generationFailed || MenuOpen || _placing ||
-            (homeBuilds != null && homeBuilds.Active) || _traveling || _resting || _recovering;
+            (homeBuilds != null && homeBuilds.Active) || GameplayInputConsumed || _traveling || _resting || _recovering;
         public string SaveProblem => _saveProblem;
         public string WorldProblem => ActiveRegion?.Streaming?.Failure==null ? null : "World loading failed. Return to the title and retry.";
 
@@ -267,7 +273,7 @@ namespace Topaz.Gameplay
                 (arg.Equals("-runTests", StringComparison.OrdinalIgnoreCase) || arg == "--topaz-smoke"));
             string directory = runningTests
                 ? Path.Combine(Application.temporaryCachePath, "TopazTest-" + Guid.NewGuid().ToString("N"))
-                : Path.Combine(Application.persistentDataPath, "Alpine-v6");
+                : Path.Combine(Application.persistentDataPath, "Areas-v2");
 #if UNITY_EDITOR
             if (runningTests && !string.IsNullOrEmpty(EditorTestSaveDirectory))
                 directory = EditorTestSaveDirectory;
@@ -295,6 +301,7 @@ namespace Topaz.Gameplay
             _placeAction = map.FindAction("Place", true);
             _cancelAction = map.FindAction("Cancel", true);
             _inventoryAction = map.FindAction("Inventory", true);
+            _pauseAction = map.FindAction("Pause", true);
             _rotateBuildAction = map.FindAction("RotateBuild", true);
         }
 
@@ -303,6 +310,7 @@ namespace Topaz.Gameplay
             if (_placeAction != null) _placeAction.performed += OnPlacePerformed;
             if (_cancelAction != null) _cancelAction.performed += OnCancelPerformed;
             if (_inventoryAction != null) _inventoryAction.performed += OnInventoryPerformed;
+            if (_pauseAction != null) _pauseAction.performed += OnPausePerformed;
             if (_rotateBuildAction != null) _rotateBuildAction.performed += OnRotateBuildPerformed;
         }
 
@@ -311,6 +319,7 @@ namespace Topaz.Gameplay
             if (_placeAction != null) _placeAction.performed -= OnPlacePerformed;
             if (_cancelAction != null) _cancelAction.performed -= OnCancelPerformed;
             if (_inventoryAction != null) _inventoryAction.performed -= OnInventoryPerformed;
+            if (_pauseAction != null) _pauseAction.performed -= OnPausePerformed;
             if (_rotateBuildAction != null) _rotateBuildAction.performed -= OnRotateBuildPerformed;
             if (_resting || _recovering) look?.SetRestFade(0f);
             foreach (EnemyCombatant enemy in _boundEnemies)
@@ -393,6 +402,7 @@ namespace Topaz.Gameplay
             StopAllCoroutines();
             _traveling = true;
             ClearBoundEnemies();
+            if(ActiveRegion?.Streaming!=null)yield return ActiveRegion.ReleaseArea(this);
             foreach (GameObject pickup in _spawnedPickups)
                 if (pickup != null)
                 {
@@ -414,7 +424,7 @@ namespace Topaz.Gameplay
 
         void BindPair(TopazCharacterData character, TopazWorldData world, TopazVisitData visit)
         {
-            if (!PrepareGeneratedRegion(SceneManager.GetSceneByName("Bootstrap"),world, new Vector3(visit.playerX,0,visit.playerZ))) return;
+            if (!PrepareGeneratedRegion(SceneManager.GetSceneByName("Bootstrap"),world, new Vector3(visit.playerX,0,visit.playerZ),visit.regionId)) return;
             _character = character;
             _lastExertionAt = -1000f;
             _character.EnsureSkills();
@@ -450,7 +460,8 @@ namespace Topaz.Gameplay
             look.SetInterior(false);
             Teleport(new Vector3(visit.playerX, 0f, visit.playerZ));
             BindGatherables(SceneManager.GetSceneByName("Bootstrap"));
-            homeBuilds.Bind(this, world, TopazSaveData.HomeRegion);
+            homeBuilds.Bind(this, world, visit.regionId);
+            ShowHomeFurniture(visit.regionId==TopazSaveData.HomeRegion);
             RefreshGatherables();
             combat.SetManualTool(character.selectedTool);
             _openChest = homeBuilds.Chests.FirstOrDefault();
@@ -519,6 +530,13 @@ namespace Topaz.Gameplay
                 _saveProblem = "Recent progress could not be stored. Earlier progress is safe.";
                 Debug.LogError($"[Topaz] {_saveProblem} {_repository.BackgroundError.Message}", this);
                 hud?.Refresh();
+            }
+            if (_pauseRequested)
+            {
+                _pauseRequested=false;
+                if(homeBuilds.Active)homeBuilds.Cancel();
+                if(_placing)ExitPlacement();
+                menus.HandleEscape();
             }
             if (_data == null)
             {
@@ -702,8 +720,15 @@ namespace Topaz.Gameplay
         }
 
         void OnPlacePerformed(InputAction.CallbackContext context) => _placeRequested = true;
-        void OnCancelPerformed(InputAction.CallbackContext context) => _cancelRequested = true;
-        void OnInventoryPerformed(InputAction.CallbackContext context) => _inventoryRequested = true;
+        void OnCancelPerformed(InputAction.CallbackContext context)
+        {
+            // East is Dodge in the world, and Cancel only while an overlay or placement owns input.
+            if(context.control?.device is Gamepad && !MenuOpen && !_placing && !IsBuilding)return;
+            _cancelRequested = true; ConsumeGameplayInput();
+        }
+        void OnPausePerformed(InputAction.CallbackContext context) { _pauseRequested = true; ConsumeGameplayInput(); }
+        public void ConsumeGameplayInput() => _inputConsumedUntil = Time.frameCount + 1;
+        void OnInventoryPerformed(InputAction.CallbackContext context) { _inventoryRequested = true; ConsumeGameplayInput(); }
         void OnRotateBuildPerformed(InputAction.CallbackContext context) => homeBuilds?.Rotate();
 
         public NodeStateRecord GetOrCreateNodeState(string objectId)
@@ -920,7 +945,7 @@ namespace Topaz.Gameplay
         }
 
         bool IsNodeInCurrentRegion(GameObject node) => node != null &&
-            node.scene.name == "Bootstrap";
+            (node.scene.name == "Bootstrap" || node.scene == ActiveRegion.AreaScene);
 
         readonly List<Topaz.Generation.DiscoveryCache> discoveryCaches=new List<Topaz.Generation.DiscoveryCache>();
         public void RegisterDiscoveryCache(Topaz.Generation.DiscoveryCache cache)
@@ -1039,7 +1064,9 @@ namespace Topaz.Gameplay
             EnemyRespawnRecord pending = _world.enemyRespawns.Find(value =>
                 value.spawnId == enemy.SpawnId);
             if (pending != null) enemy.SetDefeatedForPersistence();
-            else if (CampSafety.IsProtected(enemy.transform.position)) { campSuppressed.Add(enemy); enemy.gameObject.SetActive(false); }
+            else if (_world.enemyStates.Find(e=>e.spawnId==enemy.SpawnId) is EnemyStateRecord survivor)
+                enemy.RestoreSurvivor(survivor.health,new Vector3(survivor.x,survivor.y,survivor.z));
+            if (enemy.IsAlive && CampSafety.IsProtected(enemy.transform.position)) { campSuppressed.Add(enemy); enemy.gameObject.SetActive(false); }
         }
 
         readonly HashSet<EnemyCombatant> campSuppressed = new HashSet<EnemyCombatant>();
@@ -1173,6 +1200,7 @@ namespace Topaz.Gameplay
         {
             if(_data==null || ActiveRegion?.Streaming==null)return;
             bool Loaded(PickupStateRecord record)=>record!=null &&
+                (record.regionId==CurrentRegionId || (!_world.generationSettings.boundedAreas && string.IsNullOrEmpty(record.regionId))) &&
                 ActiveRegion.Streaming.HasTerrainAt(new Vector3(record.x,0,record.z));
             var present=new HashSet<string>();
             for(int i=_spawnedPickups.Count-1;i>=0;i--)
@@ -1207,6 +1235,8 @@ namespace Topaz.Gameplay
             InteractionCandidate candidate = CurrentInteraction();
             switch (candidate.kind)
             {
+                case InteractionKind.AreaExit:
+                    return RequestAreaTravel(candidate.anchor.GetComponent<AreaExit>().Connection.id);
                 case InteractionKind.SupplyCache:
                     candidate.anchor?.GetComponentInParent<Topaz.Generation.DiscoveryCache>()?.Open();
                     return true;
@@ -1217,7 +1247,7 @@ namespace Topaz.Gameplay
                     StartCoroutine(Rest());
                     return true;
                 case InteractionKind.Chest:
-                    _openChest = homeBuilds.NearestChest(transform.position, InteractionRadius);
+                    _openChest = candidate.anchor?.GetComponentInParent<StorageChest>();
                     hud.ShowChestPanel();
                     return true;
                 case InteractionKind.CampfireTravel:
@@ -1244,7 +1274,7 @@ namespace Topaz.Gameplay
             }
         }
 
-        enum InteractionKind { None, SupplyCache,
+        enum InteractionKind { None, AreaExit, SupplyCache,
             Chest, Workbench, Rest, Harvest, Mine,
             GearRack, CampfireTravel, Anvil, Forage }
 
@@ -1277,7 +1307,7 @@ namespace Topaz.Gameplay
             if (_data == null || _traveling || _resting || _recovering || _placing ||
                 homeBuilds.Active || MenuOpen ||
                 combat.IsAttackLocked || movement.IsDodging || movement.IsAirborne) return false;
-            InteractionCandidate candidate = CurrentInteraction(false);
+            InteractionCandidate candidate = CurrentInteraction();
             if (candidate.kind == InteractionKind.None) return false;
             anchor = candidate.anchor;
             verb = candidate.verb;
@@ -1289,6 +1319,8 @@ namespace Topaz.Gameplay
             if (_data == null) return default;
             float nearest = InteractionRadius * InteractionRadius;
             InteractionCandidate choice = default;
+            if(ActiveRegion?.Streaming!=null)foreach(var passage in ActiveRegion.Streaming.GetComponentsInChildren<AreaExit>())
+                Consider(ref choice,ref nearest,InteractionKind.AreaExit,passage.transform,"Travel to "+passage.DestinationLabel);
             foreach (ForagePlant plant in _foragePlants)
                 if (plant != null && plant.IsAvailable &&
                     IsNodeInCurrentRegion(plant.gameObject))
@@ -1414,6 +1446,7 @@ namespace Topaz.Gameplay
             transform.position = position;
             if (controller != null) controller.enabled = true;
             movement.ResetMotion();
+            movement.ResetCamera();
         }
 
         void InitializeGeneration(TopazWorldData world)
@@ -1426,11 +1459,22 @@ namespace Topaz.Gameplay
                 if(region.preset!=null)world.generationSettings=region.preset.settings.Copy();
             foreach(var arg in Environment.GetCommandLineArgs())
                 if(arg.StartsWith("--topaz-seed=") && int.TryParse(arg.Substring(13),out int seed))world.seed=seed;
+            world.generationSettings.boundedAreas=true;world.generationSettings.profileId="areas-v2";world.generationSettings.worldSize=256;
+            world.generationSettings.localRelief=Mathf.Min(world.generationSettings.localRelief,2);
+            world.graph=WorldGraph.Create(world.seed);
+            foreach(var area in world.graph.areas)
+            {
+                area.generationSettings=null;
+                area.generationSettings=AreaPlan.ForArea(area,world.generationSettings);
+                var recipe=Resources.Load<AreaDefinition>("Areas/"+area.kind);
+                if(recipe!=null)recipe.Apply(area.generationSettings);
+                area.generationSettings.Validate();
+            }
             world.generationSettings.Validate();
             world.generatorVersion=world.generationSettings.version;
         }
 
-        public bool PrepareGeneratedRegion(Scene scene, TopazWorldData world = null, Vector3 start = default)
+        public bool PrepareGeneratedRegion(Scene scene, TopazWorldData world = null, Vector3 start = default,string areaId=TopazSaveData.HomeRegion)
         {
             world ??= _world;
             if (!scene.isLoaded || world == null) return false;
@@ -1438,7 +1482,7 @@ namespace Topaz.Gameplay
             {
                 foreach (var root in scene.GetRootGameObjects())
                 foreach (var region in root.GetComponentsInChildren<Topaz.Generation.WoodlandRegion>(true))
-                    region.Generate(world, start);
+                    {region.regionId=areaId;region.Generate(world, start);}
                 _generationFailed=false;
                 return true;
             }
@@ -1573,7 +1617,7 @@ namespace Topaz.Gameplay
                 storageIndex.Rebuild(_world.structures);
                 storageIndexedCount=_world.structures.Count;storageIndexDirty=false;
             }
-            foreach (var record in storageIndex.Nearby(transform.position.x, transform.position.z))
+            foreach (var record in storageIndex.Nearby(transform.position.x, transform.position.z,CurrentRegionId))
                 yield return new InventorySlots(record.slots, 12);
         }
 
@@ -1610,6 +1654,7 @@ namespace Topaz.Gameplay
         public void Commit()
         {
             if (_data == null || _repository == null || !_savingEnabled || _traveling) return;
+            CaptureAreaEnemies();
             _data.playerX = transform.position.x;
             _data.playerZ = transform.position.z;
             _character.loggingExperience = LoggingExperience;

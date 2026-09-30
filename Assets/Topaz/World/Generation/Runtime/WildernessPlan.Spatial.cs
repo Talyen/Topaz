@@ -15,13 +15,13 @@ namespace Topaz.Generation
         Dictionary<Chunk,HeightRouteSegment[]> IndexHeightRoutes()
         {
             var cells=new Dictionary<Chunk,List<HeightRouteSegment>>();
-            // Height stamps have a bounded 20 m influence. Keep original segment order
+            // Height stamps have a bounded 48 m influence. Keep original segment order
             // in each cell so weighted sums retain exactly the exhaustive sampler's arithmetic.
             foreach(var route in routes)for(int i=1;i<route.Points.Count;i++)
             {
                 var a=route.Points[i-1];var b=route.Points[i];
-                var min=Chunk.At(Math.Min(a.x,b.x)-20,Math.Min(a.z,b.z)-20);
-                var max=Chunk.At(Math.Max(a.x,b.x)+20,Math.Max(a.z,b.z)+20);
+                var min=Chunk.At(Math.Min(a.x,b.x)-48,Math.Min(a.z,b.z)-48);
+                var max=Chunk.At(Math.Max(a.x,b.x)+48,Math.Max(a.z,b.z)+48);
                 for(int z=min.Z;z<=max.Z;z++)for(int x=min.X;x<=max.X;x++)
                 {
                     var key=new Chunk(x,z);

@@ -6,8 +6,8 @@ import time
 
 
 def editor_command(root, name):
-    command = ['unity', 'command', name, '--caller', 'plugin', '--skill', 'unity-cli',
-               '--project-path', str(root), '--json', '--no-banner', '--timeout', '15']
+    command = ['unity', 'command', '--caller', 'plugin', '--skill', 'unity-cli',
+               '--project-path', str(root), '--json', '--no-banner', '--timeout', '15', name]
     result = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=20)
     try:
         envelope = json.loads(result.stdout)
@@ -20,6 +20,12 @@ def editor_command(root, name):
     data = envelope.get('data')
     if isinstance(data, str):
         data = json.loads(data)
+    if isinstance(data, dict) and 'result' in data:
+        if not data.get('success'):
+            raise RuntimeError('Editor command result failed; no success inferred')
+        data = data['result']
+        if isinstance(data, str):
+            data = json.loads(data)
     if not isinstance(data, dict):
         raise RuntimeError('Unexpected Editor response; no success inferred')
     return data

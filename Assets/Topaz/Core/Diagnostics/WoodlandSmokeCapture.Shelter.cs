@@ -52,7 +52,7 @@ namespace Topaz
         IEnumerator ShelterSteps(WorldSession session, string directory, M0Report report)
         {
             yield return new WaitForSecondsRealtime(8);
-            m0Camera.SetZoom(3.5f);
+            m0Camera.SetZoom(24);
             var builds = (RegionBuildings)typeof(WorldSession).GetField("homeBuilds", M0Fields).GetValue(session);
             Vector3 center = new Vector3(-9,0,-9);
             center.y = Topaz.Generation.WoodlandRegion.GroundHeight(center);

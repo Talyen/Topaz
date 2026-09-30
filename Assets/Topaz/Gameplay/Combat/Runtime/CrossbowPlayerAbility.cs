@@ -59,9 +59,13 @@ namespace Topaz.Combat
             _aiming = false;
             if (_session.CurrentWeapon?.CrossbowAttack != _attack ||
                 _session.SuppressAttack) return;
-            Vector3 direction = _movement.AimDirection;
+            Vector3 direction = _movement.ProjectileDirection;
             if (_movement.UsingStickAim) direction = AssistedDirection(direction);
-            Vector3 origin = transform.position + Vector3.up + direction * .5f;
+            Vector3 origin = transform.position + Vector3.up;
+            if (Physics.Raycast(origin, direction, out var obstruction,
+                    Vector3.Distance(origin, _movement.ProjectileAimPoint), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) &&
+                obstruction.collider.GetComponentInParent<EnemyCombatant>() == null)
+                _session.ShowHomeStatus("Shot obstructed");
             int damage = Mathf.Max(1, _session.Stats.Attack) +
                 Mathf.RoundToInt(_session.SkillOutputBonus(SkillIds.Crossbows));
             CrossbowBolt bolt = Instantiate(_attack.BoltPrefab);
@@ -96,10 +100,12 @@ namespace Topaz.Combat
                 float range = _attack.Range +
                     _session.TalentAmount(SkillIds.Crossbows, "crossbows.long-sight");
                 if (toEnemy.sqrMagnitude > range * range) continue;
-                float angle = Vector3.Angle(raw, toEnemy);
+                float angle = Vector3.Angle(Vector3.ProjectOnPlane(raw,Vector3.up), toEnemy);
                 if (angle >= bestAngle) continue;
                 Vector3 origin = transform.position + Vector3.up;
                 Vector3 target = enemy.transform.position + Vector3.up;
+                Vector3 screen=Camera.main.WorldToViewportPoint(target);
+                if(screen.z<=0 || screen.x<0 || screen.x>1 || screen.y<0 || screen.y>1)continue;
                 if (Physics.Linecast(origin, target, out RaycastHit hit,
                         Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) &&
                     hit.collider.GetComponentInParent<EnemyCombatant>() != enemy) continue;
@@ -107,8 +113,7 @@ namespace Topaz.Combat
                 bestAngle = angle;
             }
             return nearest == null ? raw :
-                Vector3.ProjectOnPlane(nearest.transform.position - transform.position,
-                    Vector3.up).normalized;
+                (nearest.transform.position + Vector3.up - (transform.position + Vector3.up)).normalized;
         }
 
         public void OnDodgeStarted()

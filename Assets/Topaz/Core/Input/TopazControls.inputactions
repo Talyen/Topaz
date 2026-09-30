@@ -157,14 +157,13 @@
                     "priority": 0
                 },
                 {
-                    "name": "LookMouse",
-                    "type": "Value",
-                    "id": "2dc6b06f-1d62-48f6-aa14-8a9cd87fd445",
-                    "expectedControlType": "Vector2",
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "0b915ad4-9cc3-4d27-9ae3-244505cd27ca",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true,
-                    "priority": 0
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -424,7 +423,7 @@
                 {
                     "name": "",
                     "id": "eaf6d08c-f2e0-4ab4-88ff-003a005961dd",
-                    "path": "<Gamepad>/start",
+                    "path": "<Gamepad>/select",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -500,12 +499,12 @@
                 },
                 {
                     "name": "",
-                    "id": "c5055064-7b3d-40b6-8833-6cb2c5623288",
-                    "path": "<Mouse>/delta",
+                    "id": "1d8aa870-df7f-4b27-8938-76c5520cc32c",
+                    "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "LookMouse",
+                    "groups": "Gamepad",
+                    "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

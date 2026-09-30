@@ -49,7 +49,7 @@ namespace Topaz.Rendering
             float gust=1+Mathf.Sin((float)windSeconds*.37f)*.18f+Mathf.Sin((float)windSeconds*.11f)*.12f;
             wind=new Vector4((.4f+cloudiness*.45f)*gust,0,.25f*gust,(float)windSeconds);
         }
-        bool interior,noSunShadows;
+        bool interior,noSunShadows,isolatedSettings;
         public int CurrentLightingStyle => settings.lightingStyle;
         public void SetLightingStyle(int value){settings.lightingStyle=Mathf.Clamp(value,0,1);Apply();SaveSelection();}
         public int CurrentLook => settings.look;
@@ -79,6 +79,7 @@ namespace Topaz.Rendering
             windSeconds=hours*112.5;AdvancePresentation(.001f,0);previousWind=wind;
             noSunShadows=Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-no-sun-shadows")>=0;
             bool isolated=Application.isEditor || Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-smoke")>=0;
+            isolatedSettings=isolated;
             string directory=isolated?Path.Combine(Application.temporaryCachePath,"TopazVisual-"+Guid.NewGuid().ToString("N")):Application.persistentDataPath;
             Directory.CreateDirectory(directory);
             SettingsPath = Path.Combine(directory, "urp-world-settings.json");
@@ -86,13 +87,16 @@ namespace Topaz.Rendering
                 try { settings = JsonUtility.FromJson<GraphicsPreferences>(File.ReadAllText(SettingsPath)) ?? settings; }
                 catch (Exception e) { Debug.LogWarning("URP settings reset: " + e.Message); }
             if(settings.version != GraphicsPreferences.CurrentVersion) settings = new GraphicsPreferences();
+            bool adoptedMacPreset=!isolated && Application.platform==RuntimePlatform.OSXPlayer && settings.ApplyMacStartingPreset();
             if(isolated && Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-stp")>=0)settings.antiAliasing=4;
             if(isolated && Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-balanced")>=0)settings.look=0;
             if(Array.IndexOf(Environment.GetCommandLineArgs(),"--topaz-smoke")>=0)
                 foreach(var argument in Environment.GetCommandLineArgs())
                     if(argument.StartsWith("--topaz-grass-density=") && float.TryParse(argument.Substring(22),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float density))
                         settings.foliageDensity=Mathf.Clamp01(density);
-            Apply(); optionsMenu?.Bind(this);
+            Apply();
+            if(adoptedMacPreset)SaveSelection();
+            optionsMenu?.Bind(this);
         }
         public void SetLook(int look) { settings.look = Mathf.Clamp(look, 0, 1); Apply(); SaveSelection(); }
         public void SetWorldHours(double value)
@@ -125,7 +129,12 @@ namespace Topaz.Rendering
             Apply(); SaveSelection();
         }
         public string FormatSetting(int i) => GetSetting(i).ToString("0.##");
-        public void ResetSelection() { settings = new GraphicsPreferences(); Apply(); SaveSelection(); }
+        public void ResetSelection()
+        {
+            settings=new GraphicsPreferences();
+            if(!isolatedSettings && Application.platform==RuntimePlatform.OSXPlayer)settings.ApplyMacStartingPreset();
+            Apply();SaveSelection();
+        }
         public void SaveSelection()
         {
             if (string.IsNullOrEmpty(SettingsPath)) return;
@@ -151,8 +160,12 @@ namespace Topaz.Rendering
             Override<ColorLookup>().contribution.Override(.7f);
             Override<FilmGrain>().intensity.Override(0);
             Override<Bloom>().threshold.Override(settings.bloomThreshold);
-            Override<Bloom>().scatter.Override(.78f);
-            Override<Bloom>().highQualityFiltering.Override(HighQuality);
+            // Quarter-resolution Dual keeps broad authored halos without the full Gaussian pyramid.
+            Override<Bloom>().filter.Override(BloomFilterMode.Dual);
+            Override<Bloom>().downscale.Override(BloomDownscaleMode.Quarter);
+            Override<Bloom>().maxIterations.Override(5);
+            Override<Bloom>().scatter.Override(.68f);
+            Override<Bloom>().highQualityFiltering.Override(false);
             Override<MotionBlur>().intensity.Override(settings.motionBlur);
             Override<MotionBlur>().clamp.Override(.025f);
             Override<ChromaticAberration>().intensity.Override(settings.chromaticAberration);
@@ -250,7 +263,9 @@ namespace Topaz.Rendering
             var view=focusCamera!=null?focusCamera.transform:cameraData.transform;
             var subject=focusSubject!=null?focusSubject:session.transform;
             float distance=Vector3.Dot(subject.position+Vector3.up-view.position,view.forward);
-            Override<DepthOfField>().focusDistance.Override(Mathf.Max(.5f,distance));
+            float previous=focus.focusDistance.value;
+            float tracked=Mathf.Abs(previous-distance)>16?distance:Mathf.Lerp(previous,distance,1-Mathf.Exp(-Time.unscaledDeltaTime/.2f));
+            focus.focusDistance.Override(Mathf.Max(.5f,tracked));
         }
         void OnDestroy()
         {

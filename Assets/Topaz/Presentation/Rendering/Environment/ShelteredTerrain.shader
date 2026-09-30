@@ -114,7 +114,7 @@ Shader "Topaz/Sheltered Terrain"
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLitInput.hlsl"
             #include "TopazShelterLighting.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLitPasses.hlsl"
+            #include "Assets/Topaz/Presentation/Rendering/Environment/CutawayTerrainLitPasses.hlsl"
             ENDHLSL
         }
 
@@ -229,7 +229,7 @@ Shader "Topaz/Sheltered Terrain"
             #pragma instancing_options assumeuniformscaling nomatrices nolightprobe nolightmap
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLitPasses.hlsl"
+            #include "Assets/Topaz/Presentation/Rendering/Environment/CutawayTerrainLitPasses.hlsl"
             ENDHLSL
         }
 
@@ -255,7 +255,7 @@ Shader "Topaz/Sheltered Terrain"
             #pragma instancing_options assumeuniformscaling nomatrices nolightprobe nolightmap
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLitDepthNormalsPass.hlsl"
+            #include "Assets/Topaz/Presentation/Rendering/Environment/CutawayTerrainLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
 

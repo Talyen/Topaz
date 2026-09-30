@@ -8,7 +8,7 @@ namespace Topaz.Player
     /// <summary>Responsive movement and aim shared by the combat graybox.</summary>
     [DefaultExecutionOrder(-10)]
     [RequireComponent(typeof(CharacterController))]
-    public sealed class PlayerController : MonoBehaviour
+    public sealed partial class PlayerController : MonoBehaviour
     {
         public enum DodgeFacing { Forward, Backward, Left, Right }
 
@@ -88,6 +88,8 @@ namespace Topaz.Player
             _appliedColor = new Color(float.NaN, 0f, 0f, 0f);
         }
 
+        public void ResetCamera() => viewCamera.GetComponent<PlayerCamera>()?.ResetFollow();
+
         public void ResetMotion()
         {
             _verticalVelocity = 0f;
@@ -161,11 +163,11 @@ namespace Topaz.Player
             Vector2 moveInput = Vector2.ClampMagnitude(_move.ReadValue<Vector2>(), 1f);
             if (_worldSession != null && _worldSession.BlockMovement) moveInput = Vector2.zero;
             Vector3 moveDirection = ScreenRelative(moveInput);
-            UpdateAim();
+            UpdateAim(moveDirection);
 
             if (_dodgeRequested && Time.time >= _nextDodgeAt &&
                 (_combat == null || _combat.CanStartDodge) &&
-                (_worldSession == null || (!_worldSession.BlockMovement && !_worldSession.IsPlacing)))
+                (_worldSession == null || (!_worldSession.BlockMovement && !_worldSession.IsPlacing && !_worldSession.GameplayInputConsumed && !_worldSession.IsBuilding)))
             {
                 _dodgeDirection = moveDirection.sqrMagnitude > 0.01f ? moveDirection.normalized : _aimDirection;
                 LastDodgeFacing = ClassifyDodge(_dodgeDirection, _aimDirection);
@@ -181,7 +183,7 @@ namespace Topaz.Player
 
             if (_jumpRequested && Grounded && _verticalVelocity <= 0f && !IsDodging &&
                 (_combat == null || !_combat.IsAttackLocked) &&
-                (_worldSession == null || (!_worldSession.BlockMovement && !_worldSession.IsPlacing)))
+                (_worldSession == null || (!_worldSession.BlockMovement && !_worldSession.IsPlacing && !_worldSession.GameplayInputConsumed && !_worldSession.IsBuilding)))
             {
                 bool enhancedJump = _worldSession?.TryExert(15f) == true;
                 _verticalVelocity = Mathf.Sqrt(2f * 24f * jumpHeight *
@@ -223,7 +225,7 @@ namespace Topaz.Player
                 _appliedColor = tint;
             }
 
-            if (_interactRequested) _worldSession?.TryInteract();
+            if (_interactRequested && (_worldSession == null || !_worldSession.GameplayInputConsumed)) _worldSession?.TryInteract();
             _interactRequested = false;
         }
 
@@ -247,27 +249,5 @@ namespace Topaz.Player
             return right * input.x + forward * input.y;
         }
 
-        void UpdateAim()
-        {
-            Vector3 forward = viewCamera.transform.forward;
-            forward.y = 0;
-            if (forward.sqrMagnitude > .001f) _aimDirection = forward.normalized;
-            _usingStickAim = true;
-            // A view ray chooses a target, but cannot hit our own character collider.
-            Ray ray = viewCamera.ViewportPointToRay(new Vector3(.5f,.5f,0));
-            Vector3 desired = transform.position + _aimDirection * 3;
-            float nearest = float.MaxValue;
-            int hits = Physics.RaycastNonAlloc(ray, aimHits, 80, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            for (int i = 0; i < hits; i++)
-            {
-                var hit = aimHits[i];
-                if (hit.collider.transform.IsChildOf(transform) || hit.distance >= nearest) continue;
-                nearest=hit.distance; desired=hit.point;
-            }
-            Vector3 planar = desired-transform.position; planar.y=0;
-            if(planar.magnitude>6) desired=transform.position+planar.normalized*6;
-            desired.y=Topaz.Generation.WoodlandRegion.GroundHeight(desired);
-            AimPointOnGround=desired;
-        }
     }
 }

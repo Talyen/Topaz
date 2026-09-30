@@ -7,8 +7,8 @@ namespace Topaz.Generation
     public sealed class WoodlandSettings
     {
         public int version = WildernessPlan.Version;
-        public string profileId = "alpine-1024-v6";
-        public string contentId = "viking-alpine-v6";
+        public string profileId = "alpine-1024-v8";
+        public string contentId = "viking-alpine-v8";
         public int worldSize = 1024;
         public int resolution = 65;
         public float size = WildernessPlan.ChunkSize;
@@ -23,12 +23,19 @@ namespace Topaz.Generation
         public float trailMaximumHalfWidth = 1.8f;
         public float landmarkApproachLength = 44f;
         public float landmarkApproachWidth = 8f;
-        public static WoodlandSettings LargeWorld() => new WoodlandSettings {profileId="alpine-2048-v6",worldSize=2048};
+        public bool boundedAreas;
+        public string areaId = "wilderness";
+        public AreaKind areaKind;
+        public DestinationKind areaLandmark;
+        public System.Collections.Generic.List<AreaConnection> areaExits = new System.Collections.Generic.List<AreaConnection>();
+        public static WoodlandSettings BoundedWorld() => new WoodlandSettings {boundedAreas=true,profileId="areas-v2",worldSize=256,localRelief=2,trailMeander=10};
+        public static WoodlandSettings LargeWorld() => new WoodlandSettings {profileId="alpine-2048-v8",worldSize=2048};
         public WoodlandSettings Copy() => (WoodlandSettings)MemberwiseClone();
         public void Validate()
         {
             if(version!=WildernessPlan.Version)throw new ArgumentException("Unsupported wilderness generator version.");
-            if(!((profileId=="alpine-1024-v6" && worldSize==1024)||(profileId=="alpine-2048-v6" && worldSize==2048)) || contentId!="viking-alpine-v6")
+            if(!(boundedAreas ? profileId=="areas-v2" && (worldSize==256 || worldSize==384) && !string.IsNullOrEmpty(areaId) && areaExits!=null :
+                (profileId=="alpine-1024-v8" && worldSize==1024)||(profileId=="alpine-2048-v8" && worldSize==2048)) || contentId!="viking-alpine-v8")
                 throw new ArgumentException("Unsupported wilderness profile or content mapping.");
             if(resolution!=65 || size!=WildernessPlan.ChunkSize || float.IsNaN(relief) || float.IsInfinity(relief) ||
                 relief<0 || relief>20 || decorationCount<0 || decorationCount>1000)

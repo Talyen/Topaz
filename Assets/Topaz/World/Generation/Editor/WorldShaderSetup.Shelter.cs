@@ -60,6 +60,7 @@ namespace Topaz.Generation.Editor
                 throw new InvalidOperationException("Installed URP shader is missing SCGI variants: " + source);
             text = text.Insert(index, "#include \"TopazShelterLighting.hlsl\"\n            ");
             File.WriteAllText(Root + destination, "// Derived from installed URP 17.6 shader shell; Unity Companion License. Native includes remain package-owned.\n" + text);
+            if(File.Exists(Root+"CutawayLitForwardPass.hlsl"))Topaz.Player.Editor.IsometricCameraSetup.PatchShader(Root+destination);
         }
         static void AddShelterOcclusion(string name)
         {

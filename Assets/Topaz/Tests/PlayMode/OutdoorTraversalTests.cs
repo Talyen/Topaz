@@ -39,8 +39,8 @@ namespace Topaz.Tests
                 foreach(var route in ((IEnumerable)P(plan,"Routes")).Cast<object>().Take(3))
                 {
                     var points=((IEnumerable)F(route,"Points")).Cast<Vector3>().ToArray();
-                    yield return (IEnumerator)Call(stream,"PrepareDestination",Vector3.zero);
-                    BuildingTestActions.Teleport(player,Vector3.zero);
+                    yield return (IEnumerator)Call(stream,"PrepareDestination",points[0]);
+                    BuildingTestActions.Teleport(player,points[0]);
                     for(int segment=1;segment<points.Length;segment++)
                     {
                         Vector3 a=points[segment-1],b=points[segment];

@@ -51,6 +51,7 @@ namespace Topaz.Tests
         internal static IEnumerator WaitForWilderness()
         {
             float deadline=Time.realtimeSinceStartup+40;
+            string stage="no active world";
             while(Time.realtimeSinceStartup<deadline)
             {
                 var session=GameObject.Find("Player")?.GetComponent("WorldSession");
@@ -58,11 +59,12 @@ namespace Topaz.Tests
                 {
                     var region=session.GetType().GetProperty("ActiveRegion").GetValue(session);
                     var stream=region?.GetType().GetProperty("Streaming").GetValue(region);
+                    if(stream!=null)stage=stream.GetType().GetProperty("PreparationStage").GetValue(stream)?.ToString();
                     if(stream!=null && (bool)stream.GetType().GetProperty("InitialReady").GetValue(stream)) {yield return null;yield break;}
                 }
                 yield return null;
             }
-            Assert.Fail("The wilderness did not become ready within 40 seconds.");
+            Assert.Fail("The wilderness did not become ready within 40 seconds; stage="+stage+".");
         }
 
         protected static GameObject FindResource(string type,string property=null,object expected=null)
@@ -77,8 +79,10 @@ namespace Topaz.Tests
 
         protected static void AimAt(Vector3 point)
         {
-            var rig=Camera.main.GetComponent("PlayerCamera");
-            rig.GetType().GetMethod("LookAtPoint").Invoke(rig,new object[]{point});
+            var mouse=Mouse.current ?? InputSystem.AddDevice<Mouse>();
+            InputSystem.QueueDeltaStateEvent(mouse.position, (Vector2)Camera.main.WorldToScreenPoint(point));
+            InputSystem.QueueDeltaStateEvent(mouse.delta,new Vector2(10,0));
+            InputSystem.Update();
         }
     }
 }

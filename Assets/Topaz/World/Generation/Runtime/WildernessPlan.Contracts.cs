@@ -71,10 +71,10 @@ namespace Topaz.Generation
             foreach(var area in reservations)if(Distance(x,z,area.X,area.Z)<area.Radius+margin)return true;
             foreach(var site in requiredResources)
             {
-                var from=site.Id.StartsWith("starter.")?Vector3.zero:new Vector3(Discoveries[2].X,0,Discoveries[2].Z);
-                if(Segment(x,z,from,new Vector3(site.X,0,site.Z),out _)<2+margin)return true;
+                var from=Settings.boundedAreas?ResourceApproach(site):site.Id.StartsWith("starter.")?Vector3.zero:new Vector3(Discoveries[2].X,0,Discoveries[2].Z);
+                if(Segment(x,z,from,new Vector3(site.X,0,site.Z),out _)<(Settings.boundedAreas?1:2)+margin)return true;
             }
-            return RouteDistance(x,z)<Route.HalfWidth+margin;
+            return RouteDistance(x,z)<(Settings.boundedAreas?Settings.trailMaximumHalfWidth:Route.HalfWidth)+margin;
         }
         public float RouteDistance(float x,float z)
         {
@@ -101,9 +101,7 @@ namespace Topaz.Generation
             float high=0,wood=ForestIntent(x,z);
             foreach(var form in landforms)
                 if(form.Height>0)high=Math.Max(high,1-Smooth(Segment(x,z,new Vector3(form.Start.x,0,form.Start.y),new Vector3(form.End.x,0,form.End.y),out _)/form.Width));
-            float start=Smooth((Distance(x,z,0,0)-35)/60);
-            high*=start;
-            wood*=start*(1-high);
+            wood*=1-high;
             return new BiomeWeights(Math.Max(.05f,1-wood-high),wood,high);
         }
         float ForestIntent(float x,float z)

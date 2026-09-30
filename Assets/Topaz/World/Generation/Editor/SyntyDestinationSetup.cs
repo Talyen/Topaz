@@ -191,8 +191,8 @@ namespace Topaz.Generation.Editor
             preset.titansGraveDistant=Grave(true);
             preset.splitPeakDistant=Peak(true);
             preset.settings.version=WildernessPlan.Version;
-            preset.settings.profileId=preset.settings.worldSize==2048?"alpine-2048-v6":"alpine-1024-v6";
-            preset.settings.contentId="viking-alpine-v6";
+            preset.settings.profileId=preset.settings.worldSize==2048?"alpine-2048-v8":"alpine-1024-v8";
+            preset.settings.contentId="viking-alpine-v8";
             EditorUtility.SetDirty(preset);AssetDatabase.SaveAssets();
             Debug.Log("[Topaz/Generation] Authored 20 destination wrappers and two visitable megastructures.");
         }

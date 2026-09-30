@@ -11,13 +11,20 @@ namespace Topaz.Rendering
         public int look = 1;
         public int lightingStyle = 1; // Natural cycle or Golden / Silver.
         public int antiAliasing = 3;
+        public bool macPerformancePresetApplied;
+        // Apply the measured Mac starting preset once; later explicit selections stay authoritative.
+        public bool ApplyMacStartingPreset()
+        {
+            if(macPerformancePresetApplied)return false;
+            look=0;antiAliasing=4;macPerformancePresetApplied=true;return true;
+        }
         public int focusMode = 2; // Intentional player-tracked cinematic bokeh; retain the owner's depth treatment.
         public bool ambientOcclusion = true;
         public bool bloomEnabled = true;
         public float temperature = 0f;
         public float exposure = .3f;
-        public float contrast = 3f;
-        public float saturation = 5f;
+        public float contrast = 7f;
+        public float saturation = 0f;
         public float bloomIntensity = .18f;
         public float bloomThreshold = 1.25f;
         public float vignette = 0f;

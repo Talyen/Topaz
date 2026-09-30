@@ -27,12 +27,14 @@ namespace Topaz.Generation
         public double GenerationMilliseconds { get; private set; }
         int seed;
         string worldId;
+        string generatedAreaId;
+        public Scene AreaScene { get; private set; }
 
         public StreamedWilderness Streaming { get; private set; }
         public WildernessPlan Wilderness => Streaming != null ? Streaming.Plan : null;
         public void Generate(TopazWorldData world, Vector3 start = default)
         {
-            if (Ready && seed == world.seed && worldId == world.id && Streaming != null && Streaming.Failure == null) return;
+            if (Ready && seed == world.seed && worldId == world.id && generatedAreaId==regionId && Streaming != null && Streaming.Failure == null) return;
             Ready = false;
             if (world.generatorVersion != WildernessPlan.Version)
                 throw new InvalidOperationException("Unsupported wilderness generator version.");
@@ -43,15 +45,30 @@ namespace Topaz.Generation
             foreach (var plant in plants) if (plant != null) plant.gameObject.SetActive(false);
             if (exit != null) exit.gameObject.SetActive(false);
             var root = new GameObject("Streamed Wilderness");root.transform.SetParent(transform,false);
+            TopazWorldData realization=world;
+            if(world.generationSettings.boundedAreas)
+            {
+                var record=world.graph?.Find(regionId) ?? throw new InvalidOperationException("Missing active area.");
+                realization=new TopazWorldData {id=world.id,seed=record.seed,generatorVersion=world.generatorVersion,generationSettings=AreaPlan.ForArea(record,world.generationSettings)};
+                root.transform.SetParent(null,false);AreaScene=AreaRuntime.CreateScene(regionId);SceneManager.MoveGameObjectToScene(root,AreaScene);
+                root.AddComponent<AreaRuntime>();
+            }
             Streaming = root.AddComponent<StreamedWilderness>();
             var watch=System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                Streaming.Initialize(this,world,start);
-                seed=world.seed;worldId=world.id;Ready=true;Failure=null;
+                Streaming.Initialize(this,realization,start);
+                seed=world.seed;worldId=world.id;generatedAreaId=regionId;Ready=true;Failure=null;
             }
             catch(Exception error) { Failure=error.Message;throw; }
             finally {GenerationMilliseconds=watch.Elapsed.TotalMilliseconds;}
+        }
+        public System.Collections.IEnumerator ReleaseArea(WorldSession session)
+        {
+            Ready=false;
+            if(Streaming!=null){session.UnbindStreamedWorld(Streaming.gameObject);Streaming.gameObject.SetActive(false);Destroy(Streaming.gameObject);Streaming=null;}
+            yield return AreaRuntime.Release(AreaScene);AreaScene=default;
+            yield return null;
         }
         void ValidateStarterBudget()
         {

@@ -69,7 +69,7 @@ namespace Topaz.Generation
             float minimumRoute=kind==DestinationKind.SplitPeak?230:radius+7;
             if(routeDistance<minimumRoute || routeDistance>(kind==DestinationKind.SplitPeak?360:kind==DestinationKind.TitansGrave?100:65))return false;
             if(kind!=DestinationKind.SplitPeak &&
-                Math.Abs(AnalyticHeight(x,z)-trail.y)/routeDistance>.18f)return false;
+                Math.Abs(AnalyticHeight(x,z,false)-trail.y)/routeDistance>.18f)return false;
             foreach(var reservation in reservations)
                 if(Distance(x,z,reservation.X,reservation.Z)<influence+reservation.Radius+7)return false;
             foreach(var resource in requiredResources)
@@ -78,20 +78,20 @@ namespace Topaz.Generation
                 if(Distance(x,z,prior.X,prior.Z)<radius+prior.Radius+(radius>20 || prior.Radius>20?120:25))return false;
             if(kind!=DestinationKind.SplitPeak)
             {
-                float center=AnalyticHeight(x,z);
+                float center=AnalyticHeight(x,z,false);
                 float reach=Math.Min(radius*.65f,8);
                 foreach(var offset in new[]{new Vector2(reach,0),new Vector2(-reach,0),new Vector2(0,reach),new Vector2(0,-reach)})
-                    if(Math.Abs(AnalyticHeight(x+offset.x,z+offset.y)-center)>(kind==DestinationKind.TitansGrave?5:2.2f))return false;
+                    if(Math.Abs(AnalyticHeight(x+offset.x,z+offset.y,false)-center)>(kind==DestinationKind.TitansGrave?5:2.2f))return false;
             }
-            if(kind==DestinationKind.SplitPeak && AnalyticHeight(x,z)>115)return false;
+            if(kind==DestinationKind.SplitPeak && AnalyticHeight(x,z,false)>115)return false;
             if(Highland(kind) && kind!=DestinationKind.SplitPeak && RawHeight(x,z)<12)return false;
             if(kind==DestinationKind.TreeHouse && ForestIntent(x,z)<.35f)return false;
             for(int i=1;i<=12;i++)
             {
                 float t=i/13f,px=Mathf.Lerp(trail.x,x,t),pz=Mathf.Lerp(trail.z,z,t);
                 float water=WaterSurface(px,pz);
-                if(!float.IsNaN(water) && water-AnalyticHeight(px,pz)>.35f)return false;
-                if(i>1 && Math.Abs(AnalyticHeight(px,pz)-AnalyticHeight(Mathf.Lerp(trail.x,x,(i-1)/13f),Mathf.Lerp(trail.z,z,(i-1)/13f)))>3.5f)
+                if(!float.IsNaN(water) && water-AnalyticHeight(px,pz,false)>.35f)return false;
+                if(i>1 && Math.Abs(AnalyticHeight(px,pz,false)-AnalyticHeight(Mathf.Lerp(trail.x,x,(i-1)/13f),Mathf.Lerp(trail.z,z,(i-1)/13f),false))>3.5f)
                     return false;
             }
             return true;
@@ -183,7 +183,7 @@ namespace Topaz.Generation
         {
             float yaw=Mathf.Atan2(approach.x-position.x,approach.z-position.y)*Mathf.Rad2Deg;
             if(Shore(kind))yaw=ShoreYaw(position.x,position.y);
-            float baseHeight=AnalyticHeight(position.x,position.y);
+            float baseHeight=AnalyticHeight(position.x,position.y,false);
             float gain=kind==DestinationKind.SplitPeak?Mathf.Clamp(155-baseHeight,60,105):0;
             string id="destination."+kind.ToString().ToLowerInvariant();
             destinations.Add(new Destination(id,kind,position.x,position.y,yaw,radius,gain));

@@ -112,6 +112,17 @@ class IterationTests(unittest.TestCase):
         with patch.object(loop, 'editor_command', side_effect=subprocess.TimeoutExpired('unity',20)):
             self.assertEqual(loop.iterate(self.args(),tools),2)
 
+    def test_wrapped_pipeline_response_and_cli_flag_position(self):
+        response = dict(success=True, data=dict(success=True, result={'status': 'ready'}))
+        with patch.object(loop.subprocess, 'run', return_value=argparse.Namespace(returncode=0, stdout=json.dumps(response), stderr='')) as run:
+            self.assertEqual(loop.editor_command(self.root, 'editor_status')['status'], 'ready')
+            command = run.call_args.args[0]
+            self.assertLess(command.index('--caller'), command.index('editor_status'))
+        response['data']['success'] = False
+        with patch.object(loop.subprocess, 'run', return_value=argparse.Namespace(returncode=0, stdout=json.dumps(response), stderr='')):
+            with self.assertRaises(RuntimeError):
+                loop.editor_command(self.root, 'editor_status')
+
     def test_selected_test_failure_and_success_remain_narrow(self):
         for ok, expected in ((False, 1), (True, 0)):
             with patch.object(tools, 'run', return_value=ok), patch.object(tools, 'current_fingerprints', return_value={'editmode':'same'}):

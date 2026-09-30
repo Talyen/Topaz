@@ -25,7 +25,7 @@ namespace Topaz.Gameplay
     [Serializable]
     public sealed class TopazProfileData
     {
-        public const int CurrentVersion = 3;
+        public const int CurrentVersion = 4;
         public int version = CurrentVersion;
         public List<TopazCharacterData> characters = new List<TopazCharacterData>();
         public List<TopazWorldData> worlds = new List<TopazWorldData>();
@@ -70,6 +70,8 @@ namespace Topaz.Gameplay
                 id = Guid.NewGuid().ToString("N"),
                 label = "World " + ordinal
             };
+            world.generationSettings=Topaz.Generation.WoodlandSettings.BoundedWorld();
+            world.graph=Topaz.Generation.WorldGraph.Create(world.seed);
             worlds.Add(world);
             return world;
         }
@@ -170,6 +172,16 @@ namespace Topaz.Gameplay
                 if (world.generatorVersion != Topaz.Generation.WildernessPlan.Version || world.generationSettings == null)
                     throw new ArgumentException("Unsupported procedural world version or missing settings.");
                 world.generationSettings.Validate();
+                if(world.generationSettings.boundedAreas)
+                {
+                    if(world.graph==null)throw new ArgumentException("World area graph is missing.");
+                    world.graph.Validate();
+                }
+                if(world.enemyStates==null)throw new ArgumentException("Enemy state is missing.");
+                var liveIds=new HashSet<string>();
+                foreach(var enemy in world.enemyStates)
+                    if(enemy==null || string.IsNullOrEmpty(enemy.spawnId) || !liveIds.Add(enemy.spawnId) || enemy.health<1 || !float.IsFinite(enemy.x) || !float.IsFinite(enemy.y) || !float.IsFinite(enemy.z) || !RegionExists(world,enemy.areaId))
+                        throw new ArgumentException("Invalid surviving enemy state.");
                 var spawnIds = new HashSet<string>();
                 foreach (EnemyRespawnRecord enemy in world.enemyRespawns)
                     if (enemy == null || string.IsNullOrEmpty(enemy.spawnId) ||
@@ -185,7 +197,7 @@ namespace Topaz.Gameplay
                     if (structure == null || string.IsNullOrEmpty(structure.instanceId) ||
                         !structureIds.Add(structure.instanceId) ||
                         string.IsNullOrEmpty(structure.definitionId) ||
-                        structure.regionId != TopazSaveData.WildernessRegion ||
+                        !RegionExists(world,structure.regionId) ||
                         float.IsNaN(structure.y) || float.IsInfinity(structure.y) ||
                         float.IsNaN(structure.x) || float.IsInfinity(structure.x) ||
                         float.IsNaN(structure.z) || float.IsInfinity(structure.z) ||
@@ -196,7 +208,8 @@ namespace Topaz.Gameplay
                 }
                 foreach (PickupStateRecord pickup in world.pickups)
                     if (pickup == null || string.IsNullOrEmpty(pickup.instanceId) ||
-                        string.IsNullOrEmpty(pickup.itemId) || pickup.count < 1)
+                        string.IsNullOrEmpty(pickup.itemId) || pickup.count < 1 || !float.IsFinite(pickup.x) || !float.IsFinite(pickup.z) ||
+                        (world.generationSettings.boundedAreas && !RegionExists(world,pickup.regionId)))
                         throw new ArgumentException("World pickup is invalid.");
                 foreach (NodeStateRecord node in world.nodes)
                     if (node == null || double.IsNaN(node.readyAtWorldHours) ||
@@ -208,7 +221,9 @@ namespace Topaz.Gameplay
                 if (visit == null || !characterIds.Contains(visit.characterId) ||
                     !worldIds.Contains(visit.worldId) ||
                     !pairs.Add(visit.characterId + "/" + visit.worldId) ||
-                    visit.regionId != TopazSaveData.WildernessRegion ||
+                    !RegionExists(World(visit.worldId),visit.regionId) ||
+                    visit.discoveredAreaIds==null || visit.discoveredAreaIds.Distinct().Count()!=visit.discoveredAreaIds.Count ||
+                    visit.discoveredAreaIds.Any(id=>!RegionExists(World(visit.worldId),id)) ||
                     float.IsNaN(visit.playerX) || float.IsNaN(visit.playerZ) ||
                     float.IsInfinity(visit.playerX) || float.IsInfinity(visit.playerZ) ||
                     string.IsNullOrEmpty(visit.lastCampfireId) ||
@@ -225,6 +240,9 @@ namespace Topaz.Gameplay
 
         static bool ValidDeadline(double value) =>
             !double.IsNaN(value) && !double.IsInfinity(value) && value >= 0;
+
+        static bool RegionExists(TopazWorldData world,string id) => world!=null &&
+            (world.generationSettings.boundedAreas?world.graph?.Find(id)!=null:id==TopazSaveData.WildernessRegion);
 
         static void ValidateItems(List<ItemStackRecord> slots)
         {
@@ -276,6 +294,7 @@ namespace Topaz.Gameplay
         public int seed = Guid.NewGuid().GetHashCode();
         public int generatorVersion = Topaz.Generation.WildernessPlan.Version;
         public Topaz.Generation.WoodlandSettings generationSettings = new Topaz.Generation.WoodlandSettings();
+        public Topaz.Generation.WorldGraph graph;
         public string id;
         public string label;
         public double worldHours = WorldClock.StartingHour;
@@ -284,7 +303,16 @@ namespace Topaz.Gameplay
         public List<PickupStateRecord> pickups = new List<PickupStateRecord>();
         public List<string> claimedGearIds = new List<string>();
         public List<EnemyRespawnRecord> enemyRespawns = new List<EnemyRespawnRecord>();
+        public List<EnemyStateRecord> enemyStates = new List<EnemyStateRecord>();
         public bool starterBedrollInitialized;
+    }
+
+    [Serializable]
+    public sealed class EnemyStateRecord
+    {
+        public string spawnId,areaId;
+        public int health;
+        public float x,y,z;
     }
 
     [Serializable]
@@ -304,5 +332,6 @@ namespace Topaz.Gameplay
         public float playerZ;
         public string lastCampfireId = Campfire.HomeId;
         public List<string> discoveredCampfireIds = new List<string> { Campfire.HomeId };
+        public List<string> discoveredAreaIds = new List<string> { TopazSaveData.HomeRegion };
     }
 }

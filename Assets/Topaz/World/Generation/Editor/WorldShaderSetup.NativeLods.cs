@@ -48,6 +48,9 @@ namespace Topaz.Generation.Editor
                     Set(node,"sourceType",System.Enum.Parse(T("Drawing.HlslSourceType"),"File"));
                     Set(node,"functionSource",AssetDatabase.AssetPathToGUID(Root+"TopazGrassFade.hlsl"));
                     Slot(node,1,"GroundCover",false,false);
+                    Slot(node,2,"World",false,true);
+                    var world=New("PositionNode");Call(graph,"AddNode",world,true);
+                    Call(graph,"Connect",Ref(world,0),Ref(node,2));
                     var property=New("Internal.Vector1ShaderProperty");Set(property,"displayName","Topaz Ground Cover");
                     Set(property,"overrideReferenceName","_TopazGroundCover");Call(graph,"AddGraphInput",property,-1);
                     var propNode=New("PropertyNode");Call(graph,"AddNode",propNode,true);Set(propNode,"property",property);

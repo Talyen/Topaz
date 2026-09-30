@@ -13310,10 +13310,10 @@ GameObject:
   m_Component:
   - component: {fileID: 330585546}
   - component: {fileID: 330585545}
-  - component: {fileID: 330585544}
   - component: {fileID: 330585548}
   - component: {fileID: 330585549}
   - component: {fileID: 330585550}
+  - component: {fileID: 330585551}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -13321,14 +13321,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &330585544
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
 --- !u!20 &330585545
 Camera:
   m_ObjectHideFlags: 0
@@ -13409,11 +13401,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.FeelStudy.FeelStudyCamera
   target: {fileID: 5373419205281070296}
   controls: {fileID: -944628639613478452, guid: 226d696c07e9740308ee2694148ea546, type: 3}
-  mouseSensitivity: 0.12
-  stickSensitivity: 140
-  invertY: 0
-  minimumZoom: 5.5
-  maximumZoom: 9
+  worldYaw: 45
+  downwardPitch: 50
+  fieldOfView: 35
+  minimumZoom: 24
+  maximumZoom: 38
+  lookAhead: 1.5
+  followDamping: {x: 0.12, y: 0.2, z: 0.12}
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13470,6 +13464,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0d4916bf44aa41c49b1396f00f1e56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Topaz.VisualStudy.UrpRenderScaleController
+--- !u!114 &330585551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 493e293bebf13428382f1c1c253b82f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Topaz.Player.SceneryCutaway
+  explorationRadius: 3
+  combatRadius: 5
+  transitionSeconds: 0.2
+  groundMaterial: {fileID: 2100000, guid: 16e591f6825e642d89f934785e132876, type: 2}
 --- !u!1 &332878978
 GameObject:
   m_ObjectHideFlags: 0
@@ -45862,6 +45872,46 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &1257481079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1257481080}
+  - component: {fileID: 1257481081}
+  m_Layer: 0
+  m_Name: Player Hearing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1257481080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257481079}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5670095836270126792}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &1257481081
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257481079}
+  m_Enabled: 1
 --- !u!1 &1258461699
 GameObject:
   m_ObjectHideFlags: 0
@@ -97972,6 +98022,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1543518150298846990}
+  - {fileID: 1257481080}
   m_Father: {fileID: 1495785807}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &5687150517362467265

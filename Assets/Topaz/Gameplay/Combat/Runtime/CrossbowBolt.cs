@@ -30,7 +30,7 @@ namespace Topaz.Combat
             _enemyOwner = enemyOwner;
             _playerOwner = playerOwner;
             _source = origin;
-            _direction = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+            _direction = direction.normalized;
             if (_direction.sqrMagnitude < .01f) _direction = Vector3.forward;
             _remaining = attack.Range + bonusRange;
             _damage = damage;

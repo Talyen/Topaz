@@ -1,106 +1,139 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Cinemachine;
+using Unity.Cinemachine.TargetTracking;
 using Topaz.Gameplay;
 
 namespace Topaz.Player
 {
-    /// <summary>Input adapter for Unity Cinemachine's third-person follow and collision handling.</summary>
+    /// <summary>Fixed world-space isometric follow; aiming never rotates the view.</summary>
     [DefaultExecutionOrder(-20)]
     [RequireComponent(typeof(Camera))]
     public sealed class PlayerCamera : MonoBehaviour
     {
         [SerializeField] PlayerController target;
         [SerializeField] InputActionAsset controls;
-        [SerializeField] float mouseSensitivity = .12f;
-        [SerializeField] float stickSensitivity = 140;
-        [SerializeField] bool invertY;
-        [SerializeField] float minimumZoom = 2;
-        [SerializeField] float maximumZoom = 9;
-        float distance = 6.5f, yaw, pitch = 14;
-        Transform pivot;
+        [SerializeField] float worldYaw = 45;
+        [SerializeField] float downwardPitch = 50;
+        [SerializeField] float fieldOfView = 35;
+        [SerializeField] float minimumZoom = 24;
+        [SerializeField] float maximumZoom = 38;
+        [SerializeField] float lookAhead = 1.5f;
+        [SerializeField] Vector3 followDamping = new Vector3(.12f, .2f, .12f);
+        float distance = 30, requestedDistance = 30, groundY;
+        Transform pivot, listener;
         CinemachineCamera rig;
-        CinemachineThirdPersonFollow follow;
+        CinemachineFollow follow;
         WorldSession session;
-        Vector3 previousTargetPosition;
-        bool hasTargetPosition;
-        InputAction mouseLook, stickLook, wheel, zoomIn, zoomOut;
-        public float CurrentZoom => distance;
-        public void SetZoom(float value) => distance = Mathf.Clamp(value, minimumZoom, maximumZoom);
+        Camera view;
+        Vector3 previousTargetPosition, lead, lastSafeLens;
+        bool hasSafeLens;
+        bool hasTargetPosition, pendingWarp;
+        public void ResetFollow() => pendingWarp=true;
+        InputAction wheel, zoomIn, zoomOut;
+        public float CurrentZoom => requestedDistance;
+        public void SetZoom(float value) => requestedDistance = Mathf.Clamp(value, minimumZoom, maximumZoom);
+        public void SnapAfterAreaTravel() => UpdatePivot(true);
         public void SetVisibilityDistance(float value)
         {
-            GetComponent<Camera>().farClipPlane=value;
+            if(view==null)view=GetComponent<Camera>();
+            view.farClipPlane=value;
             if(rig!=null)rig.Lens.FarClipPlane=value;
         }
-        public void ConfigureLook(float mouse, float stick, bool inverted)
-        {
-            mouseSensitivity = Mathf.Clamp(mouse, .01f, 1); stickSensitivity = Mathf.Clamp(stick, 20, 300); invertY = inverted;
-            PlayerPrefs.SetFloat("Camera.Mouse",mouseSensitivity); PlayerPrefs.SetFloat("Camera.Stick",stickSensitivity);
-            PlayerPrefs.SetInt("Camera.InvertY",invertY ? 1 : 0);
-        }
-        public void LookAtPoint(Vector3 point)
-        {
-            Vector3 direction=point-target.transform.position;
-            yaw=Mathf.Atan2(direction.x,direction.z)*Mathf.Rad2Deg;
-            UpdatePivot();
-            transform.rotation=Quaternion.Euler(pitch,yaw,0);
-        }
+        // Diagnostic callers retain this API, but it no longer changes the gameplay heading.
+        public void LookAtPoint(Vector3 point) { UpdatePivot(false); }
         void Awake()
         {
             if (target == null || controls == null) { enabled=false; return; }
-            var camera = GetComponent<Camera>(); camera.orthographic=false; camera.fieldOfView=58; camera.nearClipPlane=.1f; camera.farClipPlane=3000;
+            view=GetComponent<Camera>();
+            view.orthographic=false; view.fieldOfView=fieldOfView; view.nearClipPlane=.1f;
             if (!TryGetComponent<CinemachineBrain>(out _)) gameObject.AddComponent<CinemachineBrain>();
-            session = target.GetComponent<WorldSession>();
-            var map = controls.FindActionMap("Player", true);
-            mouseLook=map.FindAction("LookMouse"); stickLook=map.FindAction("AimStick",true);
+            session=target.GetComponent<WorldSession>();
+            var map=controls.FindActionMap("Player",true);
             wheel=map.FindAction("ZoomWheel",true); zoomIn=map.FindAction("ZoomIn",true); zoomOut=map.FindAction("ZoomOut",true);
-            mouseSensitivity=PlayerPrefs.GetFloat("Camera.Mouse",.12f); stickSensitivity=PlayerPrefs.GetFloat("Camera.Stick",140);
-            invertY=PlayerPrefs.GetInt("Camera.InvertY",0)!=0;
-            pivot = new GameObject("Camera Aim Pivot").transform;
-            rig = new GameObject("Third Person Camera").AddComponent<CinemachineCamera>();
-            rig.Follow=pivot; rig.Lens.FieldOfView=58;
-            follow=rig.gameObject.AddComponent<CinemachineThirdPersonFollow>();
-            follow.ShoulderOffset=new Vector3(.35f,0,0); follow.VerticalArmLength=0; follow.CameraSide=1;
-            follow.Damping=new Vector3(.1f,.1f,.1f);
-            follow.AvoidObstacles=new CinemachineThirdPersonFollow.ObstacleSettings { Enabled=true, CollisionFilter=~(1<<2), IgnoreTag="Player", CameraRadius=.2f, DampingIntoCollision=0, DampingFromCollision=.2f };
-            UpdatePivot();
+            pivot=new GameObject("Isometric Follow Target").transform;
+            rig=new GameObject("Isometric Camera").AddComponent<CinemachineCamera>();
+            rig.Follow=pivot; rig.Lens.FieldOfView=fieldOfView; rig.Lens.NearClipPlane=.1f;rig.Lens.FarClipPlane=view.farClipPlane;
+            follow=rig.gameObject.AddComponent<CinemachineFollow>();
+            follow.TrackerSettings.BindingMode=BindingMode.WorldSpace;
+            follow.TrackerSettings.PositionDamping=followDamping;
+            listener=target.transform.Find("Player Hearing");
+            var visibility=gameObject.GetComponent<SceneryCutaway>() ?? gameObject.AddComponent<SceneryCutaway>();
+            visibility.Bind(target,view);
+            var marker=gameObject.GetComponent<WorldAimMarker>() ?? gameObject.AddComponent<WorldAimMarker>();marker.Bind(target);
+            UpdatePivot(true);
         }
         void Update()
         {
-            bool blocked = session != null && (session.BlockMovement || !session.HasActivePair);
-            bool lockCursor=!blocked && Application.isFocused;
-            Cursor.lockState=lockCursor ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible=!lockCursor;
-            if (!blocked && Time.deltaTime > 0 && (Application.isFocused || Application.isBatchMode))
+            bool blocked=session!=null && (session.BlockMovement || !session.HasActivePair);
+            Cursor.lockState=!blocked && Application.isFocused ? CursorLockMode.Confined : CursorLockMode.None;
+            Cursor.visible=true;
+            if(!blocked && (session==null || !session.GameplayInputConsumed) && Time.deltaTime>0 && (Application.isFocused || Application.isBatchMode))
             {
-                Vector2 delta=(mouseLook?.ReadValue<Vector2>() ?? Vector2.zero)*mouseSensitivity + stickLook.ReadValue<Vector2>()*stickSensitivity*Time.deltaTime;
-                yaw += delta.x; pitch=Mathf.Clamp(pitch + delta.y*(invertY ? 1 : -1),-25,70);
-                float scroll=wheel.ReadValue<float>(); if(Mathf.Abs(scroll)>.01f) SetZoom(distance-Mathf.Sign(scroll)*.5f);
-                if(zoomIn.WasPressedThisFrame()) SetZoom(distance-.5f); if(zoomOut.WasPressedThisFrame()) SetZoom(distance+.5f);
+                float scroll=wheel.ReadValue<float>();
+                if(Mathf.Abs(scroll)>.01f)SetZoom(requestedDistance-Mathf.Sign(scroll)*2);
+                if(zoomIn.WasPressedThisFrame())SetZoom(requestedDistance-2);
+                if(zoomOut.WasPressedThisFrame())SetZoom(requestedDistance+2);
             }
-            UpdatePivot();
         }
-        void LateUpdate() => UpdatePivot();
-        void UpdatePivot()
+        void LateUpdate() => UpdatePivot(false);
+        void UpdatePivot(bool force)
         {
-            if(pivot==null || target==null) return;
+            if(pivot==null || target==null)return;
             Vector3 position=target.transform.position;
             Vector3 delta=position-previousTargetPosition;
-            if(hasTargetPosition && delta.sqrMagnitude>16*16)
+            bool warp=force || pendingWarp || !hasTargetPosition || delta.sqrMagnitude>16*16;
+            pendingWarp=false;
+            if(warp)
             {
-                rig.OnTargetObjectWarped(pivot,delta);
-                rig.PreviousStateIsValid=false; // Old collision/damping history belongs to the departed terrain.
+                groundY=position.y;lead=Vector3.zero;distance=requestedDistance;hasSafeLens=false;
+                rig.OnTargetObjectWarped(pivot,delta);rig.PreviousStateIsValid=false;
                 if(TryGetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(out var data))data.resetHistory=true;
             }
+            else
+            {
+                if(!target.IsAirborne || position.y<groundY-.5f)groundY=Mathf.Lerp(groundY,position.y,1-Mathf.Exp(-Time.deltaTime/.2f));
+                groundY=Mathf.Min(groundY,position.y+3); // A long fall must remain in frame.
+                Vector3 desired=Vector3.ClampMagnitude(target.PlanarVelocity*.25f,lookAhead);
+                lead=Vector3.Lerp(lead,desired,1-Mathf.Exp(-Time.deltaTime/.18f));
+                distance=Mathf.Lerp(distance,requestedDistance,1-Mathf.Exp(-Time.deltaTime/.18f));
+            }
             hasTargetPosition=true;previousTargetPosition=position;
-            // Looking above the horizon must not drive the follow camera below the grass.
-            float rise=Mathf.Max(0,-Mathf.Sin(pitch*Mathf.Deg2Rad))*distance;
-            pivot.SetPositionAndRotation(position+Vector3.up*(1.55f+rise),Quaternion.Euler(pitch,yaw,0));
-            follow.CameraDistance=distance;
+            Quaternion rotation=Quaternion.Euler(downwardPitch,worldYaw,0);
+            Vector3 anchor=new Vector3(position.x,groundY+1.3f,position.z)+lead;
+            // Keep the lens outside occupied solids; intervening scenery is handled by cutaways.
+            float safeDistance=distance;bool found=false;
+            for(float candidate=distance;candidate<=maximumZoom+8;candidate+=1)
+            {
+                Vector3 lens=anchor-rotation*Vector3.forward*candidate;
+                float terrain=Topaz.Generation.WoodlandRegion.GroundHeight(lens);
+                if(lens.y>terrain+.5f && !Physics.CheckSphere(lens,.25f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+                {safeDistance=candidate;found=true;break;}
+            }
+            if(!found && !hasSafeLens)
+            {
+                // Initial arrival can face a taller bank. Search outward on the same viewing axis.
+                for(float candidate=maximumZoom+9;candidate<=maximumZoom+80;candidate+=2)
+                {
+                    Vector3 lens=anchor-rotation*Vector3.forward*candidate;
+                    if(lens.y>Topaz.Generation.WoodlandRegion.GroundHeight(lens)+.5f &&
+                        !Physics.CheckSphere(lens,.25f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+                    {safeDistance=candidate;found=true;break;}
+                }
+            }
+            if(found){lastSafeLens=anchor-rotation*Vector3.forward*safeDistance;hasSafeLens=true;}
+            pivot.position=anchor;
+            follow.FollowOffset=hasSafeLens ? lastSafeLens-anchor : -(rotation*Vector3.forward)*safeDistance;
+            if(view.transform.position.y<Topaz.Generation.WoodlandRegion.GroundHeight(view.transform.position)+.25f ||
+                Physics.CheckSphere(view.transform.position,.2f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))rig.PreviousStateIsValid=false;
+            rig.transform.rotation=rotation;
+            if(warp){view.transform.SetPositionAndRotation(anchor+follow.FollowOffset,rotation);}
+            if(listener!=null)listener.rotation=rotation;
         }
+        void OnDisable(){Cursor.lockState=CursorLockMode.None;Cursor.visible=true;}
         void OnDestroy()
         {
-            if(pivot!=null) Destroy(pivot.gameObject); if(rig!=null) Destroy(rig.gameObject);
-            Cursor.lockState=CursorLockMode.None; Cursor.visible=true;
+            if(pivot!=null)Destroy(pivot.gameObject);if(rig!=null)Destroy(rig.gameObject);
         }
     }
 }

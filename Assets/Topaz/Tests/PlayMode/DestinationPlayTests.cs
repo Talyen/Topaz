@@ -63,8 +63,6 @@ namespace Topaz.Tests
                 BuildingTestActions.Teleport(player,view);
                 var camera=Camera.main;
                 var cameraRig=camera.GetComponent("PlayerCamera");
-                cameraRig.GetType().GetField("pitch",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)
-                    .SetValue(cameraRig,kind=="SplitPeak"?-16f:-10f);
                 Call(cameraRig,"LookAtPoint",destination+Vector3.up*(kind=="SplitPeak"?65:11));
                 var target=new RenderTexture(1280,720,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);
                 var previous=camera.targetTexture;target.Create();camera.targetTexture=target;
@@ -112,7 +110,6 @@ namespace Topaz.Tests
                 var view=routePoints[0];view.y=(float)Call(plan,"Height",view.x,view.z);
                 BuildingTestActions.Teleport(player,view);
                 var camera=Camera.main;var rig=camera.GetComponent("PlayerCamera");
-                rig.GetType().GetField("pitch",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(rig,10f);
                 Call(rig,"LookAtPoint",point+Vector3.up*2);
                 for(int frame=0;frame<10;frame++)yield return null;
                 Capture(camera,Path.Combine(directory,kind.ToLowerInvariant()+".png"));
@@ -143,7 +140,6 @@ namespace Topaz.Tests
             dockView.y=(float)Call(plan,"Height",dockView.x,dockView.z);
             BuildingTestActions.Teleport(player,dockView);
             var dockCamera=Camera.main;var dockRig=dockCamera.GetComponent("PlayerCamera");
-            dockRig.GetType().GetField("pitch",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(dockRig,10f);
             Call(dockRig,"LookAtPoint",dockPoint+Vector3.up);
             for(int frame=0;frame<10;frame++)yield return null;
             Capture(dockCamera,Path.Combine(directory,"dock.png"));

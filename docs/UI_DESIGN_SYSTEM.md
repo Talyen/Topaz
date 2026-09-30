@@ -24,7 +24,7 @@ Inventory, equipment, skills, active effects, forging, building and travel share
 
 One action chip appears beside the nearest eligible target within **1.4 m**, using planar distance and authored interaction anchors. Binding labels are authored from the Input System and switch after meaningful keyboard/gamepad input. Hide the chip during menus, travel/rest/recovery, placement, dodge, airborne motion, committed attacks and off-screen targets. Do not add per-object Canvases or permanent controls text.
 
-`WorldSession.TryGetInteraction` uses `CurrentInteraction(false)`: trees and mining rocks are excluded from the chip, while forage, caches, chests, stations, rest spots and camps remain candidates. Empty active caches can show **Inspect empty cache**. Interact uses the broader candidate query, so the displayed chip and actual action are not guaranteed to select the same object when a gatherable is closer. This describes current behavior, not a request to redesign it.
+`WorldSession.TryGetInteraction` and Interact use the same eligible candidate query, including tool-assisted trees and mining rocks. The chip projects beside the actual target in the fixed isometric-style perspective view. Empty active caches can show **Inspect empty cache**. The selected chest is resolved from that candidate, rather than a second proximity query.
 
 Tool-assisted interaction can temporarily equip the required tool, aim and execute the normal strike/recovery, then restore the previous weapon on completion or cancellation. Temporary selection is not persisted; repeated presses during a committed swing do not queue another strike. Tool ownership is already checked, including the pickaxe requirement for rocks. Manual tool attacks remain available; yields and strike counts come from the authored definitions.
 
@@ -34,8 +34,10 @@ Judge the actual changed flow for hierarchy, spacing, typography, material/art c
 
 ## Display and review
 
-Retain display/audio controls, UI Scale, Balanced/High quality and camera zoom/rotation. Graphics separates quality from focus mode, with Golden / Silver or Natural lighting, native/adaptive AA, bloom/AO toggles and effect adjustments. Focus modes are Off, Distant softness and Cinematic bokeh; the neutral preview camera uses its own lighting and excludes world post-processing.
+Retain display/audio controls, UI Scale, Balanced/High quality and camera zoom. Graphics separates quality from focus mode, with Golden / Silver or Natural lighting, native/adaptive AA, bloom/AO toggles and effect adjustments. Focus modes are Off, Distant softness and Cinematic bokeh; the neutral preview camera uses its own lighting and excludes world post-processing.
 
 For a local edit, inspect the changed flow, its affected input route and the relevant small-window/UI-scale boundary. Shared scaling/navigation changes and release review require the full affected screen matrix at 100%, 125% and 150% scale, including 1280×720, 1600×900 and native resolution, with keyboard/mouse and gamepad. Keep text legible over illustrated backgrounds and use shape/outline as well as color for focus. Automated navigation checks do not substitute for physical-device review.
+
+Gameplay uses WASD/left stick to move and cursor/right stick to aim. Attack is left mouse/right trigger; guard is right mouse/left trigger; dodge is Shift/East; jump is Space/South; interact is E/West. Journal is B/View; pause is Escape/Menu. Shoulder buttons and mouse wheel zoom. Construction uses left mouse/South to confirm, R/right-stick press to rotate and Escape/East to cancel. Gameplay cursor is visible and confined, and overlays release it. Placement and overlay dismissal consume gameplay input to prevent jumping, attacking or dodging through the same press. Ranged weapons use a world-space destination marker, with warm red obstruction feedback.
 
 There is no runtime rebinding screen. If introduced, refresh cue labels after binding overrides change. Target highlights or discovery hints require a scoped design choice rather than permanent HUD instructions.

@@ -15,9 +15,9 @@ namespace Topaz.Rendering.Editor
         {
             if (!AssetDatabase.IsValidFolder(MeshFolder))
                 AssetDatabase.CreateFolder("Assets/Topaz/Presentation/Art/World", "FineGrass");
-            Configure("Low Grass", 0, new Color(.17f, .33f, .17f));
-            Configure("Upright Grass", 1, new Color(.21f, .37f, .18f));
-            Configure("Shade Grass", 2, new Color(.13f, .27f, .16f));
+            Configure("Low Grass", 0, new Color(.19f, .34f, .18f));
+            Configure("Upright Grass", 1, new Color(.23f, .38f, .19f));
+            Configure("Shade Grass", 2, new Color(.14f, .28f, .18f));
             AssetDatabase.SaveAssets();
             Debug.Log("[Topaz/Art] Fine Alpine grass meshes and materials updated.");
         }
@@ -76,11 +76,13 @@ namespace Topaz.Rendering.Editor
         static Mesh CreateBladeMesh(string name, int variant)
         {
             const int blades = 12;
-            var vertices = new Vector3[blades * 6];
+            int verticesPerBlade = variant == 0 ? 3 : 6;
+            int indicesPerBlade = variant == 0 ? 3 : 12;
+            var vertices = new Vector3[blades * verticesPerBlade];
             var normals = new Vector3[vertices.Length];
             var uv = new Vector2[vertices.Length];
             var colors = new Color[vertices.Length];
-            var triangles = new int[blades * 12];
+            var triangles = new int[blades * indicesPerBlade];
             for (int blade = 0; blade < blades; blade++)
             {
                 // Uneven roots and a shared prevailing lean avoid the circular brush silhouette.
@@ -90,9 +92,28 @@ namespace Topaz.Rendering.Editor
                 float yaw = (-35f + 70f * Hash(blade, variant, 2)) * Mathf.Deg2Rad;
                 var tangent = new Vector3(Mathf.Cos(yaw), 0, Mathf.Sin(yaw));
                 var side = new Vector3(-tangent.z, 0, tangent.x);
-                float height = .70f + .30f * Hash(blade, variant, 3);
+                float height = .60f + .24f * Hash(blade, variant, 3);
                 float bend = .18f + .24f * Hash(blade, variant, 4);
-                float width = .09f + .05f * Hash(blade, variant, 5);
+                float width = .065f + .035f * Hash(blade, variant, 5);
+                if (variant == 0)
+                {
+                    // Knee-low cover does not need two bent quads per blade. Keep the
+                    // same roots, atlas region and wind channels with a tapered triangle.
+                    int bladeStart = blade * verticesPerBlade;
+                    for (int point = 0; point < 3; point++)
+                    {
+                        bool tip = point == 2;
+                        float t = tip ? 1f : 0f;
+                        float edge = point == 0 ? -1f : point == 1 ? 1f : 0f;
+                        vertices[bladeStart + point] = root + Vector3.up * height * t + tangent * bend * t + side * width * 1.15f * edge;
+                        normals[bladeStart + point] = (Vector3.up * .9f + tangent * .12f + side * .12f * edge).normalized;
+                        uv[bladeStart + point] = new Vector2(tip ? .36f : point == 0 ? .32f : .40f, Mathf.Lerp(.10f, .35f, t));
+                        colors[bladeStart + point] = new Color(.04f + .27f * t, .98f * t, 1f, 1f);
+                    }
+                    int index = blade * indicesPerBlade;
+                    triangles[index] = bladeStart; triangles[index + 1] = bladeStart + 2; triangles[index + 2] = bladeStart + 1;
+                    continue;
+                }
                 for (int row = 0; row < 3; row++)
                 {
                     float t = row * .5f;

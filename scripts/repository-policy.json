@@ -17,7 +17,9 @@
     "README.md": "Project entrypoint and opening instructions",
     "AGENTS.md": "Agent working agreement and task boundaries",
     "RIGHTS.md": "Repository redistribution boundaries",
-    "LICENSE.md": "Repository license terms"
+    "LICENSE.md": "Repository license terms",
+    "docs/plans/Unity_Visual_Performance_CoDevelopment_Plan_v4_2026.md": "Owner-supplied visual and performance execution plan; bounded experiments and acceptance guidance",
+    "docs/AI_TEXTURE_PROJECTION.md": "Experimental AI projection texture authoring, rig preservation, URP comparison workflow and adoption limits"
   },
   "retention_days": 14,
   "retention_count": 10,

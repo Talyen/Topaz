@@ -112,6 +112,7 @@ namespace Topaz.Gameplay
             var center=Topaz.Generation.WildernessPlan.Chunk.At(focus.x,focus.z);
             bool Nearby(StructureStateRecord r)
             {
+                if(region?.Wilderness?.Settings.boundedAreas==true)return true;
                 float reach=192+Footprint(r.definitionId)+2;
                 return Mathf.Abs(r.x-(center.X+.5f)*128)<=reach && Mathf.Abs(r.z-(center.Z+.5f)*128)<=reach;
             }
@@ -195,6 +196,8 @@ namespace Topaz.Gameplay
         {
             if (cancel) { Cancel(); return; }
             Vector3 aim = player.AimPointOnGround;
+            Vector3 reach=Vector3.ProjectOnPlane(aim-player.transform.position,Vector3.up);
+            bool inReach=reach.sqrMagnitude<=6*6 && player.HasAimSurface;
             float grid = BuildingSettings.Current.grid;
             _position = new Vector3(Mathf.Round((aim.x-Origin.x) / grid) * grid + Origin.x, 0f,
                 Mathf.Round((aim.z-Origin.z) / grid) * grid + Origin.z);
@@ -202,16 +205,18 @@ namespace Topaz.Gameplay
             if (_placingId != null)
             {
                 if (_preview == null) { Cancel(); return; }
+                foreach(Transform child in _preview.GetComponentsInChildren<Transform>())child.gameObject.layer=2;
+                foreach(var renderer in _previewRenderers)renderer.renderingLayerMask|=0x80000000u;
                 _preview.transform.SetPositionAndRotation(_position,
                     Quaternion.Euler(0f, _quarterTurns * 90f, 0f));
-                bool valid = CanPlace(_placingId, _position, _quarterTurns, _selected);
+                bool valid = inReach && CanPlace(_placingId, _position, _quarterTurns, _selected);
                 _preview.transform.localScale = valid
                     ? Vector3.one : Vector3.one * 0.92f;
                 _previewColor.SetColor("_BaseColor", valid
                     ? new Color(0.57f, 0.9f, 0.63f) : new Color(0.98f, 0.48f, 0.43f));
                 foreach (Renderer renderer in _previewRenderers)
                     renderer.SetPropertyBlock(_previewColor);
-                if (confirm && Time.time >= _readyAt) ConfirmPlacement();
+                if (confirm && inReach && Time.time >= _readyAt) ConfirmPlacement();
             }
             else if (_editing)
             {
@@ -221,7 +226,7 @@ namespace Topaz.Gameplay
                 {
                     if (!Known(record.definitionId)) continue;
                     float candidate = (Position(record) - aim).sqrMagnitude;
-                    if (candidate >= distance) continue;
+                    if (!inReach || candidate >= distance) continue;
                     distance = candidate;
                     nearest = record;
                 }
@@ -283,6 +288,7 @@ namespace Topaz.Gameplay
             StructureStateRecord moving = null)
         {
             float radius = Footprint(id);
+            if(region?.Wilderness!=null && !region.Wilderness.AreaBuildable(position.x,position.z,radius))return false;
             if (!TerrainAllows(id, position, radius, moving)) return false;
             if (Near(position, player.transform, radius + 0.5f) ||
                 (_session.IsAtHome && Near(position, workbench, radius + 0.65f)) ||
@@ -333,7 +339,7 @@ namespace Topaz.Gameplay
 
         static bool Near(Vector3 point, Transform target, float radius)
         {
-            if (target == null) return false;
+            if (target == null || !target.gameObject.activeInHierarchy) return false;
             Vector3 delta = point - target.position;
             delta.y = 0f;
             return delta.sqrMagnitude < radius * radius;

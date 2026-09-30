@@ -10,6 +10,13 @@ namespace Topaz.Combat
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyCombatant : MonoBehaviour
     {
+        static readonly System.Collections.Generic.List<EnemyCombatant> active = new System.Collections.Generic.List<EnemyCombatant>();
+        public static System.Collections.Generic.IReadOnlyList<EnemyCombatant> Active => active;
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetActive() => active.Clear();
+        void OnEnable() { if(!active.Contains(this))active.Add(this); }
+        void OnDisable() => active.Remove(this);
+        public bool IsEngaged => _state != State.Idle && _state != State.Down;
         enum State { Idle, Pursuit, Windup, Recovery, Down }
 
         [SerializeField] EnemyDefinition definition;
@@ -110,6 +117,7 @@ namespace Topaz.Combat
 
         void Update()
         {
+            if(Time.timeScale<=0f)return;
             if (_state == State.Down)
             {
                 return;
@@ -399,6 +407,15 @@ namespace Topaz.Combat
             if (_state == State.Down) return;
             CurrentHealth = 0;
             Fall(false);
+        }
+
+        public void RestoreSurvivor(int health,Vector3 position)
+        {
+            if(!IsAlive || health<1)return;
+            CurrentHealth=Mathf.Clamp(health,1,definition.Health);
+            // Restore after navigation is ready; invalid saved positions retain the generated spawn.
+            if(NavMesh.SamplePosition(position,out var hit,3,NavMesh.AllAreas) && _agent.enabled)
+                _agent.Warp(hit.position);
         }
 
         public void ResetForRecovery()

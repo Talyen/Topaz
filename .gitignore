@@ -154,3 +154,7 @@ InitTestScene*.unity*
 /Assets/Topaz/Presentation/Effects/Resources/TopazAlpineBackdrop.asset
 
 /Assets/Topaz/Presentation/Art/World/GroundCover/PNB Grass Fade.shadergraph
+
+# Private generated visual-review scene, meshes, materials and Synty-derived textures.
+/Assets/Topaz/ReviewContent/
+/Assets/Topaz/ReviewContent.meta

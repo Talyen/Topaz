@@ -33,7 +33,7 @@ namespace Topaz.Gameplay
         IEnumerable<Campfire> CurrentCampfires()
         {
             var fixedFire = homeCampfire;
-            if (fixedFire != null) yield return fixedFire;
+            if (fixedFire != null && fixedFire.gameObject.activeInHierarchy) yield return fixedFire;
             foreach (var fire in homeBuilds.Campfires) if (fire != null) yield return fire;
         }
         Campfire NearbyCampfire() => _data == null ? null :
@@ -79,6 +79,20 @@ namespace Topaz.Gameplay
 
         IEnumerator FastTravel(CampfireTravelCatalog.Destination destination)
         {
+            if(destination!=null && _world.generationSettings.boundedAreas && destination.regionId!=CurrentRegionId)
+            {
+                Vector3 point=Vector3.zero;
+                if(destination.stableId!=Campfire.HomeId)
+                {
+                    var record=_world.structures.Find(s=>s.instanceId==destination.stableId && s.definitionId==BuildCatalog.Camp);
+                    if(record==null)yield break;
+                    point=new Vector3(record.x,record.y,record.z)+Quaternion.Euler(0,record.quarterTurns*90,0)*Vector3.forward*1.25f;
+                }
+                _fastTraveling=true;
+                yield return TravelToArea(destination.regionId,null,point);
+                if(CurrentRegionId==destination.regionId && !_generationFailed){_visit.lastCampfireId=destination.stableId;Commit();}
+                _fastTraveling=false;yield break;
+            }
             _traveling = _fastTraveling = true;
             homeBuilds.Cancel();
             hud.ClosePanels(); combat.CancelActiveAttack();

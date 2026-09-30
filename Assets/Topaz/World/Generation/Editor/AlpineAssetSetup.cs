@@ -56,9 +56,23 @@ namespace Topaz.Generation.Editor
             roles.Add(new WoodlandAssetRole { prefab = prefab, role = role, footprint = role == WoodlandRole.Canopy ? 3 : role == WoodlandRole.Rock ? 3 : 1,
                 clearance = 1, maximumSlope = role == WoodlandRole.Rock ? .8f : .35f,
                 collision = role == WoodlandRole.Undergrowth ? WoodlandCollision.None : WoodlandCollision.Solid,
+                groundAnchor = role == WoodlandRole.Rock ? Vector3.up * height * .18f : Vector3.zero,
                 scaleRange = new Vector2(.85f, 1.15f), visualSize = b.size * scale });
             return prefab;
         }
+        [MenuItem("Topaz/Generation/Ground Existing Alpine Rocks")]
+        public static void ConfigureRockGrounding()
+        {
+            var preset=AssetDatabase.LoadAssetAtPath<WoodlandPreset>("Assets/Topaz/Presentation/Rendering/Environment/Woodland.asset");
+            if(preset==null)throw new InvalidOperationException("Woodland preset is missing.");
+            var rocks=new HashSet<GameObject>(preset.rocks.Concat(preset.cliffs).Concat(preset.snowRocks));
+            foreach(var binding in preset.roles)
+                if(binding.role==WoodlandRole.Rock && rocks.Contains(binding.prefab))
+                    // Bury the irregular lowest tip so broad rock bodies meet the sloping soil.
+                    binding.groundAnchor=Vector3.up*binding.visualSize.y*.18f;
+            EditorUtility.SetDirty(preset);AssetDatabase.SaveAssets();
+        }
+
         [MenuItem("Topaz/Generation/Configure Viking Alpine")]
         public static void Apply()
         {
@@ -163,6 +177,34 @@ namespace Topaz.Generation.Editor
             so.FindProperty("visualRoot").objectReferenceValue = visual; so.FindProperty(collider).objectReferenceValue = visual.GetComponent<Collider>();
             so.ApplyModifiedPropertiesWithoutUndo();
         }
+        [MenuItem("Topaz/Generation/Frame Runestone Approach")]
+        public static void ConfigureRuneGateway()
+        {
+            string path=Root+"Viking Runestones.prefab";
+            var root=PrefabUtility.LoadPrefabContents(path);
+            try { AddRuneGateway(root.transform);PrefabUtility.SaveAsPrefabAsset(root,path); }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+        static void AddRuneGateway(Transform parent)
+        {
+            const string path="Assets/Synty/PolygonGoblinWarCamp/Prefabs/Props/SM_Prop_Ruins_Archway_01.prefab";
+            foreach(var dependency in AssetDatabase.GetDependencies(path,true))
+                if(dependency.EndsWith(".fbx",StringComparison.OrdinalIgnoreCase) &&
+                    AssetImporter.GetAtPath(dependency) is ModelImporter importer && !importer.isReadable)
+                {importer.isReadable=true;importer.SaveAndReimport();}
+            var old=parent.Find("Rune Approach Arch");if(old!=null)Object.DestroyImmediate(old.gameObject);
+            var model=Object.Instantiate(Source(path),parent,false);model.name="Rune Approach Arch";
+            // The damaged arch has an asymmetric opening; align the passage rather than its bounds.
+            StripColliders(model);SyntySampleSetup.Fit(model,new Vector3(8,6,2),new Vector3(.65f,-.35f,-13));
+            var group=model.GetComponentInChildren<LODGroup>();
+            var surfaces=group!=null?group.GetLODs()[0].renderers:model.GetComponentsInChildren<Renderer>();
+            // Surface collision preserves the walk-through opening; a bounding box would seal it.
+            foreach(var surface in surfaces)
+            {
+                var filter=surface.GetComponent<MeshFilter>();
+                if(filter!=null && filter.sharedMesh!=null)surface.gameObject.AddComponent<MeshCollider>().sharedMesh=filter.sharedMesh;
+            }
+        }
         public static void ConfigureCompositions(WoodlandPreset preset)
         {
             preset.discoveries=new[]{Composition("Viking Runestones",0),Composition("Viking Abandoned Hall",1),Composition("Viking Quarry Camp",2)};
@@ -200,6 +242,7 @@ namespace Topaz.Generation.Editor
                 Place("Buildings/SM_Bld_Wall_Logs_Half_01", new Vector3(3, 0, 4), 0, 1.3f);
                 Place("Props/SM_Prop_Table_01", new Vector3(1, 0, 2), 0, .8f);
                 Place("Props/SM_Prop_Bed_01", new Vector3(-3, 0, 0), 0, .65f);
+                AddPorchLantern(root);
             }
             else
             {
@@ -207,7 +250,28 @@ namespace Topaz.Generation.Editor
                 Place("Props/SM_Prop_Weapon_Rack_01", new Vector3(3, 0, 3), 0, 1.5f);
                 Place("Props/SM_Prop_Chest_01", new Vector3(0, 0, 4), 0, .7f);
             }
+            if(kind==0)AddRuneGateway(root.transform);
             return Save(root, Root + name + ".prefab");
+        }
+        public static void ConfigureHallLantern()
+        {
+            string path=Root+"Viking Abandoned Hall.prefab";var root=PrefabUtility.LoadPrefabContents(path);
+            try{AddPorchLantern(root);PrefabUtility.SaveAsPrefabAsset(root,path);}
+            finally{PrefabUtility.UnloadPrefabContents(root);}
+            AssetDatabase.SaveAssets();
+        }
+        static void AddPorchLantern(GameObject root)
+        {
+            var previous=root.transform.Find("Porch Lantern");if(previous!=null)Object.DestroyImmediate(previous.gameObject);
+            var lantern=(GameObject)PrefabUtility.InstantiatePrefab(Source("Assets/Topaz/Presentation/Rendering/Environment/Prototype Lantern.prefab"),root.transform);
+            lantern.name="Porch Lantern";lantern.transform.localPosition=new Vector3(3,2.1f,.25f);
+            foreach(var collider in lantern.GetComponentsInChildren<Collider>(true))Object.DestroyImmediate(collider);
+            var glow=lantern.GetComponentInChildren<Topaz.Player.LanternVisual>();
+            if(glow==null)throw new InvalidOperationException("Porch lantern needs its authored flame binding.");
+            var anchor=new GameObject("Porch Light");anchor.transform.SetParent(lantern.transform,false);
+            anchor.transform.position=glow.LightPosition;
+            var night=anchor.AddComponent<HomeNightLight>();var serialized=new SerializedObject(night);
+            serialized.FindProperty("glow").objectReferenceValue=glow;serialized.ApplyModifiedPropertiesWithoutUndo();
         }
         static GameObject FarTree(GameObject source)
         {

@@ -8,6 +8,8 @@ namespace Topaz.Gameplay
         Transform _player;
         Renderer[] _renderers;
         ShadowCastingMode[] _original;
+        bool hidden;
+        public bool IsCutAway => hidden;
         public void Bind(Transform player)
         {
             _player = player;
@@ -20,6 +22,7 @@ namespace Topaz.Gameplay
         void OnDisable() => Restore();
         void Restore()
         {
+            hidden=false;
             if (_renderers == null || _original == null) return;
             for (int i = 0; i < _renderers.Length; i++)
                 if (_renderers[i] != null) _renderers[i].shadowCastingMode = _original[i];
@@ -28,9 +31,16 @@ namespace Topaz.Gameplay
         void LateUpdate()
         {
             if (_player == null || _renderers == null) return;
-            Vector3 delta = _player.position - transform.position;
-            delta.y = 0f;
-            bool visible = delta.sqrMagnitude > 4.5f * 4.5f;
+            Bounds bounds=new Bounds();bool first=true;
+            foreach(var renderer in _renderers)
+                if(renderer!=null){if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds);}
+            Vector3 p=_player.position;
+            float margin=hidden?.35f:0;
+            // Membership follows the roof footprint and its interior below, including rotated/moved builds.
+            hidden=!first && p.x>=bounds.min.x-margin && p.x<=bounds.max.x+margin &&
+                p.z>=bounds.min.z-margin && p.z<=bounds.max.z+margin &&
+                p.y<bounds.max.y && p.y>bounds.min.y-5;
+            bool visible=!hidden;
             for (int i = 0; i < _renderers.Length; i++)
                 if (_renderers[i] != null) _renderers[i].shadowCastingMode = visible ? _original[i] : ShadowCastingMode.ShadowsOnly;
         }

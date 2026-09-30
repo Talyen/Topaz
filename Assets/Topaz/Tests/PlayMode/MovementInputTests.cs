@@ -81,7 +81,7 @@ namespace Topaz.Tests
 
             Transform visual = GameObject.Find("Facing Visual").transform;
             Vector3 screenRightOnGround = Vector3.ProjectOnPlane(camera.transform.right, Vector3.up).normalized;
-            Assert.That(Vector3.Dot(visual.forward, screenUpOnGround), Is.GreaterThan(0.8f));
+            Assert.That(Vector3.Dot(visual.forward, screenRightOnGround), Is.GreaterThan(0.8f));
         }
 
         [UnityTest]

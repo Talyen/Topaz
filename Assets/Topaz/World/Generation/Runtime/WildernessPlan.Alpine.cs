@@ -82,9 +82,10 @@ namespace Topaz.Generation
         }
         bool SuitableRequiredResource(float x,float z)
         {
-            float height=AnalyticHeight(x,z),surface=WaterSurface(x,z);
+            // Accepted nodes clear route shoulders within their footprint. Evaluate that field.
+            float height=AnalyticHeight(x,z,false),surface=WaterSurface(x,z);
             if(!float.IsNaN(surface)&&surface-height>.05f)return false;
-            float dx=(AnalyticHeight(x+1,z)-AnalyticHeight(x-1,z))*.5f,dz=(AnalyticHeight(x,z+1)-AnalyticHeight(x,z-1))*.5f;
+            float dx=(AnalyticHeight(x+1,z,false)-AnalyticHeight(x-1,z,false))*.5f,dz=(AnalyticHeight(x,z+1,false)-AnalyticHeight(x,z-1,false))*.5f;
             return dx*dx+dz*dz<.09f && !NearRequired(x,z,6) && RouteDistance(x,z)>6;
         }
         void BuildRiverCrossings()

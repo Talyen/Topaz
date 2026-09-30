@@ -66,7 +66,7 @@ namespace Topaz.Rendering
                 enabled = false;
                 return;
             }
-            SetOptions(cameraZoomDropdown, "Close", "Balanced", "Far");
+            SetOptions(cameraZoomDropdown, "Near", "Standard", "Far");
             SetOptions(antiAliasingDropdown, "Off", "FXAA", "SMAA", "TAA (native)", "STP (adaptive)");
             SetOptions(depthOfFieldDropdown, "Balanced", "High");
             cameraZoomDropdown.onValueChanged.AddListener(OnCameraZoomChanged);

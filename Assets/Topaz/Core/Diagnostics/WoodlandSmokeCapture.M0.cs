@@ -65,7 +65,7 @@ namespace Topaz
         void LateUpdate()
         {
             // Automatic traversal has a repeatable heading; physical mouse/focus changes must not steer its camera.
-            if(traversalSession!=null && traversalCamera!=null)
+            if(traversalSession!=null && traversalCamera!=null && !traversalCamera.enabled)
                 traversalCamera.LookAtPoint(traversalSession.transform.position+Vector3.forward*10);
             if(traversalClock!=null && traversalSession!=null)
             {
@@ -79,7 +79,7 @@ namespace Topaz
             m0Look.SetWorldHours(m0Data.worldHours);
             m0Session.GetComponent<PlayerLantern>()?.SetWorldHours(m0Data.worldHours);
             // Keep physical mouse movement from changing fixed review poses; Cinemachine stays active.
-            m0Camera?.LookAtPoint(m0Session.transform.position+m0Facing*10);
+            if(m0Camera!=null && !m0Camera.enabled)m0Camera.LookAtPoint(m0Session.transform.position+m0Facing*10);
         }
 
         IEnumerator ReviewM0(WorldSession session,string directory)
@@ -132,8 +132,7 @@ namespace Topaz
             InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             m0Pad=InputSystem.AddDevice<Gamepad>();
             InputSystem.EnableDevice(m0Pad);
-            m0Camera=Camera.main.GetComponent<PlayerCamera>();m0Camera.SetZoom(6.5f);
-            typeof(PlayerCamera).GetField("pitch",M0Fields).SetValue(m0Camera,14f);
+            m0Camera=Camera.main.GetComponent<PlayerCamera>();m0Camera.SetZoom(30);
             m0Camera.enabled=false;
             if (Environment.GetCommandLineArgs().Contains("--topaz-look-check"))
             { yield return FantasyChecks(directory,report); yield break; }

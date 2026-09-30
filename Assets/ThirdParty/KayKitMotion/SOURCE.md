@@ -12,4 +12,6 @@ Rig_Medium_MovementAdvanced.fbx 09a2462f554fae1f36ef083b3ea089626e60f258b09aabda
 
 Rig_Medium_Tools.fbx 83fe62f77d03caa1b221d3ce1e7b9377f486cff978204061784f9944caa00a32
 
-Rig_Medium_General.fbx 0a3420d6cbbf00694e625d84e55c2afbf0a7284c4280c46642f62f066dbd3950
+Archived source: Rig_Medium_General.fbx 0a3420d6cbbf00694e625d84e55c2afbf0a7284c4280c46642f62f066dbd3950
+
+The General FBX is retained in `LocalSourceArchives`, rather than imported here. Its validated `Hit_A` and `Death_A` curves were exported to standalone `.anim` assets under `Assets/Topaz/Characters/Animation/Clips/` to avoid import assertions from unused source tracks. The four FBXs above remain the active imported motion selection. Original downloads remain intact.
